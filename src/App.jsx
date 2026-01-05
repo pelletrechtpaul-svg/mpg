@@ -231,6 +231,47 @@ const App = () => {
     return stats;
   }, [selectedStatsChampionnat, filteredData, joueurs]);
 
+  // Evolution chart data for general classement
+  const evolutionData = useMemo(() => {
+    if (selectedChampionnat !== 'general') return [];
+
+    // Get all unique editions sorted chronologically
+    const editions = [...new Set(filteredData.map(d => d.edition))].sort();
+
+    // For each edition, calculate cumulative points and ranking for each player
+    const evolutionByEdition = editions.map(edition => {
+      const dataPoint = { edition };
+
+      // Calculate cumulative points up to this edition
+      const editionsUpToNow = editions.slice(0, editions.indexOf(edition) + 1);
+
+      joueurs.forEach(joueur => {
+        // Get all data for this player up to current edition
+        const playerDataUpToNow = filteredData.filter(d =>
+          d.joueur === joueur && editionsUpToNow.includes(d.edition)
+        );
+
+        // Calculate total points including victory bonuses
+        const totalPoints = playerDataUpToNow.reduce((sum, d) => sum + d.points, 0);
+
+        // Count victories up to this edition
+        let victories = 0;
+        editionsUpToNow.forEach(ed => {
+          const editionData = filteredData.filter(d => d.edition === ed);
+          const winner = editionData.find(d => d.rang === 1);
+          if (winner && winner.joueur === joueur) victories++;
+        });
+
+        const bonusVictoires = victories * 3;
+        dataPoint[joueur] = totalPoints + bonusVictoires;
+      });
+
+      return dataPoint;
+    });
+
+    return evolutionByEdition;
+  }, [filteredData, joueurs, selectedChampionnat]);
+
   // Face à face
   const currentVersus = useMemo(() => {
     return filteredVsData.find(vs =>
@@ -425,6 +466,48 @@ const App = () => {
                 </table>
               </div>
             </div>
+
+            {/* Evolution chart - Only for general classement */}
+            {selectedChampionnat === 'general' && evolutionData.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Évolution du classement général</h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={evolutionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="edition"
+                      stroke="#64748b"
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis stroke="#64748b" />
+                    <Tooltip />
+                    <Legend />
+                    {joueurs.map((joueur) => {
+                      const colors = {
+                        Paul: '#2563eb',
+                        Adrien: '#16a34a',
+                        Tiago: '#9333ea',
+                        Roman: '#ea580c',
+                      };
+                      return (
+                        <Line
+                          key={joueur}
+                          type="monotone"
+                          dataKey={joueur}
+                          stroke={colors[joueur] || '#6b7280'}
+                          strokeWidth={3}
+                          dot={{ r: 5 }}
+                          activeDot={{ r: 7 }}
+                        />
+                      );
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
 
             {/* Légende */}
             <div className="mt-4 bg-blue-50 rounded-xl p-4">
