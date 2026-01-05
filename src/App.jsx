@@ -4,31 +4,31 @@ import { Trophy, Lock, Plus } from 'lucide-react';
 
 // Données d'exemple - à remplacer par vos vraies données
 const defaultSampleData = [
-  { championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 78, rang: 2 },
-  { championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 65, rang: 3 },
-  { championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 82, rang: 1 },
-  { championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 58, rang: 4 },
-  { championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Paul', matchs: 6, buts_pour: 15, buts_contre: 6, ga: 9, points: 85, rang: 1 },
-  { championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 10, ga: 1, points: 68, rang: 3 },
-  { championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 2 },
-  { championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 12, ga: -4, points: 52, rang: 4 },
-  { championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 72, rang: 3 },
-  { championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 80, rang: 1 },
-  { championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 66, rang: 4 },
-  { championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 75, rang: 2 },
-  { championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 79, rang: 2 },
-  { championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 84, rang: 1 },
-  { championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 3 },
-  { championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 62, rang: 4 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 78, rang: 2 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 65, rang: 3 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 82, rang: 1 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 58, rang: 4 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Paul', matchs: 6, buts_pour: 15, buts_contre: 6, ga: 9, points: 85, rang: 1 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 10, ga: 1, points: 68, rang: 3 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 2 },
+  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 12, ga: -4, points: 52, rang: 4 },
+  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 72, rang: 3 },
+  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 80, rang: 1 },
+  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 66, rang: 4 },
+  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 75, rang: 2 },
+  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 79, rang: 2 },
+  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 84, rang: 1 },
+  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 3 },
+  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 62, rang: 4 },
 ];
 
 const defaultVsData = [
-  { joueur1: 'Paul', joueur2: 'Adrien', buts_j1: 24, buts_j2: 19, ga_j1: 5, victoires_j1: 8, victoires_j2: 6, nuls: 2 },
-  { joueur1: 'Paul', joueur2: 'Tiago', buts_j1: 22, buts_j2: 26, ga_j1: -4, victoires_j1: 6, victoires_j2: 9, nuls: 1 },
-  { joueur1: 'Paul', joueur2: 'Roman', buts_j1: 28, buts_j2: 18, ga_j1: 10, victoires_j1: 10, victoires_j2: 4, nuls: 2 },
-  { joueur1: 'Adrien', joueur2: 'Tiago', buts_j1: 20, buts_j2: 23, ga_j1: -3, victoires_j1: 7, victoires_j2: 8, nuls: 1 },
-  { joueur1: 'Adrien', joueur2: 'Roman', buts_j1: 25, buts_j2: 17, ga_j1: 8, victoires_j1: 9, victoires_j2: 5, nuls: 2 },
-  { joueur1: 'Tiago', joueur2: 'Roman', buts_j1: 27, buts_j2: 16, ga_j1: 11, victoires_j1: 11, victoires_j2: 3, nuls: 2 },
+  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Adrien', buts_j1: 24, buts_j2: 19, ga_j1: 5, victoires_j1: 8, victoires_j2: 6, nuls: 2 },
+  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Tiago', buts_j1: 22, buts_j2: 26, ga_j1: -4, victoires_j1: 6, victoires_j2: 9, nuls: 1 },
+  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Roman', buts_j1: 28, buts_j2: 18, ga_j1: 10, victoires_j1: 10, victoires_j2: 4, nuls: 2 },
+  { saison: '2024/2025', joueur1: 'Adrien', joueur2: 'Tiago', buts_j1: 20, buts_j2: 23, ga_j1: -3, victoires_j1: 7, victoires_j2: 8, nuls: 1 },
+  { saison: '2024/2025', joueur1: 'Adrien', joueur2: 'Roman', buts_j1: 25, buts_j2: 17, ga_j1: 8, victoires_j1: 9, victoires_j2: 5, nuls: 2 },
+  { saison: '2024/2025', joueur1: 'Tiago', joueur2: 'Roman', buts_j1: 27, buts_j2: 16, ga_j1: 11, victoires_j1: 11, victoires_j2: 3, nuls: 2 },
 ];
 
 const App = () => {
@@ -42,9 +42,9 @@ const App = () => {
     return saved ? JSON.parse(saved) : defaultVsData;
   });
 
+  const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
   const [selectedChampionnat, setSelectedChampionnat] = useState('general');
-  const [selectedYear, setSelectedYear] = useState('all');
   const [selectedStatsChampionnat, setSelectedStatsChampionnat] = useState('all');
   const [selectedPlayer1, setSelectedPlayer1] = useState('Paul');
   const [selectedPlayer2, setSelectedPlayer2] = useState('Adrien');
@@ -63,15 +63,30 @@ const App = () => {
     localStorage.setItem('mpg_vs_data', JSON.stringify(vsData));
   }, [vsData]);
 
+  // Filter data by selected season
+  const filteredData = useMemo(() => {
+    if (selectedSeason === 'All-Time') {
+      return sampleData;
+    }
+    return sampleData.filter(d => d.saison === selectedSeason);
+  }, [sampleData, selectedSeason]);
+
+  const filteredVsData = useMemo(() => {
+    if (selectedSeason === 'All-Time') {
+      return vsData;
+    }
+    return vsData.filter(d => d.saison === selectedSeason);
+  }, [vsData, selectedSeason]);
+
   const joueurs = useMemo(() => {
-    const uniquePlayers = [...new Set(sampleData.map(d => d.joueur))];
+    const uniquePlayers = [...new Set(filteredData.map(d => d.joueur))];
     return uniquePlayers.length > 0 ? uniquePlayers : ['Paul', 'Adrien', 'Tiago', 'Roman'];
-  }, [sampleData]);
+  }, [filteredData]);
 
   const championnats = useMemo(() => {
-    const uniqueChampionnats = [...new Set(sampleData.map(d => d.championnat))];
+    const uniqueChampionnats = [...new Set(filteredData.map(d => d.championnat))];
     return uniqueChampionnats.length > 0 ? uniqueChampionnats : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
-  }, [sampleData]);
+  }, [filteredData]);
 
   const playerColors = {
     Paul: 'bg-blue-600',
@@ -103,6 +118,7 @@ const App = () => {
     const formData = new FormData(e.target);
 
     const newScore = {
+      saison: formData.get('saison'),
       championnat: formData.get('championnat'),
       edition: formData.get('edition'),
       joueur: formData.get('joueur'),
@@ -125,21 +141,21 @@ const App = () => {
     const victoires = {};
     joueurs.forEach(j => victoires[j] = 0);
 
-    const editions = [...new Set(sampleData.map(d => `${d.championnat}-${d.edition}`))];
+    const editions = [...new Set(filteredData.map(d => `${d.championnat}-${d.edition}`))];
     editions.forEach(ed => {
-      const editionData = sampleData.filter(d => `${d.championnat}-${d.edition}` === ed);
+      const editionData = filteredData.filter(d => `${d.championnat}-${d.edition}` === ed);
       const winner = editionData.find(d => d.rang === 1);
       if (winner) victoires[winner.joueur]++;
     });
 
     return victoires;
-  }, [sampleData, joueurs]);
+  }, [filteredData, joueurs]);
 
   // Classement général
   const classementGeneral = useMemo(() => {
     const stats = {};
     joueurs.forEach(joueur => {
-      const playerData = sampleData.filter(d => d.joueur === joueur);
+      const playerData = filteredData.filter(d => d.joueur === joueur);
       const totalPoints = playerData.reduce((sum, d) => sum + d.points, 0);
       const bonusVictoires = victoiresChampionnat[joueur] * 3;
 
@@ -156,7 +172,7 @@ const App = () => {
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points - a.points);
-  }, [sampleData, joueurs, victoiresChampionnat]);
+  }, [filteredData, joueurs, victoiresChampionnat]);
 
   // Classement par championnat
   const classementParChampionnat = useMemo(() => {
@@ -164,13 +180,13 @@ const App = () => {
 
     const stats = {};
     joueurs.forEach(joueur => {
-      const playerData = sampleData.filter(d => d.joueur === joueur && d.championnat === selectedChampionnat);
+      const playerData = filteredData.filter(d => d.joueur === joueur && d.championnat === selectedChampionnat);
 
       // Compter les victoires d'édition pour ce championnat
       const editions = [...new Set(playerData.map(d => d.edition))];
       let victoiresEditions = 0;
       editions.forEach(ed => {
-        const edData = sampleData.filter(d => d.championnat === selectedChampionnat && d.edition === ed);
+        const edData = filteredData.filter(d => d.championnat === selectedChampionnat && d.edition === ed);
         const winner = edData.find(d => d.rang === 1);
         if (winner && winner.joueur === joueur) victoiresEditions++;
       });
@@ -191,17 +207,17 @@ const App = () => {
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points - a.points);
-  }, [selectedChampionnat, sampleData, joueurs, classementGeneral]);
+  }, [selectedChampionnat, filteredData, joueurs, classementGeneral]);
 
   // Stats détaillées pour l'onglet Statistiques
   const statsDetaillees = useMemo(() => {
-    const filteredData = selectedStatsChampionnat === 'all'
-      ? sampleData
-      : sampleData.filter(d => d.championnat === selectedStatsChampionnat);
+    const dataForStats = selectedStatsChampionnat === 'all'
+      ? filteredData
+      : filteredData.filter(d => d.championnat === selectedStatsChampionnat);
 
     const stats = {};
     joueurs.forEach(joueur => {
-      const playerData = filteredData.filter(d => d.joueur === joueur);
+      const playerData = dataForStats.filter(d => d.joueur === joueur);
       const totalMatchs = playerData.reduce((sum, d) => sum + d.matchs, 0);
       stats[joueur] = {
         matchs: totalMatchs,
@@ -213,15 +229,15 @@ const App = () => {
       };
     });
     return stats;
-  }, [selectedStatsChampionnat, sampleData, joueurs]);
+  }, [selectedStatsChampionnat, filteredData, joueurs]);
 
   // Face à face
   const currentVersus = useMemo(() => {
-    return vsData.find(vs =>
+    return filteredVsData.find(vs =>
       (vs.joueur1 === selectedPlayer1 && vs.joueur2 === selectedPlayer2) ||
       (vs.joueur1 === selectedPlayer2 && vs.joueur2 === selectedPlayer1)
     );
-  }, [selectedPlayer1, selectedPlayer2, vsData]);
+  }, [selectedPlayer1, selectedPlayer2, filteredVsData]);
 
   const isReversed = currentVersus && currentVersus.joueur1 === selectedPlayer2;
 
@@ -234,37 +250,46 @@ const App = () => {
           <p className="text-slate-600">Statistiques et performances</p>
         </div>
 
-        {/* Navigation tabs */}
-        <div className="flex gap-2 mb-6 flex-wrap">
+        {/* Season Navigation */}
+        <div className="flex gap-2 mb-4 flex-wrap">
           <button
-            onClick={() => setActiveTab('classements')}
+            onClick={() => {
+              setSelectedSeason('2025/2026');
+              if (activeTab === 'admin') setActiveTab('classements');
+            }}
             className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeTab === 'classements'
-                ? 'bg-blue-600 text-white shadow-lg'
+              selectedSeason === '2025/2026' && activeTab !== 'admin'
+                ? 'bg-purple-600 text-white shadow-lg'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
-            Classements
+            2025/2026
           </button>
           <button
-            onClick={() => setActiveTab('statistiques')}
+            onClick={() => {
+              setSelectedSeason('2024/2025');
+              if (activeTab === 'admin') setActiveTab('classements');
+            }}
             className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeTab === 'statistiques'
-                ? 'bg-blue-600 text-white shadow-lg'
+              selectedSeason === '2024/2025' && activeTab !== 'admin'
+                ? 'bg-purple-600 text-white shadow-lg'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
-            Statistiques
+            2024/2025
           </button>
           <button
-            onClick={() => setActiveTab('versus')}
+            onClick={() => {
+              setSelectedSeason('All-Time');
+              if (activeTab === 'admin') setActiveTab('classements');
+            }}
             className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeTab === 'versus'
-                ? 'bg-blue-600 text-white shadow-lg'
+              selectedSeason === 'All-Time' && activeTab !== 'admin'
+                ? 'bg-purple-600 text-white shadow-lg'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
-            Face à face
+            All-Time
           </button>
           <button
             onClick={() => setActiveTab('admin')}
@@ -278,6 +303,42 @@ const App = () => {
             Admin
           </button>
         </div>
+
+        {/* Sub-navigation (for season views) */}
+        {activeTab !== 'admin' && (
+          <div className="flex gap-2 mb-6 flex-wrap">
+            <button
+              onClick={() => setActiveTab('classements')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === 'classements'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Classements
+            </button>
+            <button
+              onClick={() => setActiveTab('statistiques')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === 'statistiques'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Statistiques
+            </button>
+            <button
+              onClick={() => setActiveTab('versus')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === 'versus'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Face à face
+            </button>
+          </div>
+        )}
 
         {/* ONGLET CLASSEMENTS */}
         {activeTab === 'classements' && (
@@ -652,6 +713,19 @@ const App = () => {
                       </div>
                       <form onSubmit={handleAddScore} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Saison
+                            </label>
+                            <select
+                              name="saison"
+                              required
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                              <option value="2025/2026">2025/2026</option>
+                              <option value="2024/2025">2024/2025</option>
+                            </select>
+                          </div>
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                               Championnat
