@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { Trophy, TrendingUp, Upload } from 'lucide-react';
-import Papa from 'papaparse';
+import { Trophy, Lock, Plus } from 'lucide-react';
 
 // Données d'exemple - à remplacer par vos vraies données
 const defaultSampleData = [
@@ -33,14 +32,36 @@ const defaultVsData = [
 ];
 
 const App = () => {
-  const [sampleData, setSampleData] = useState(defaultSampleData);
-  const [vsData, setVsData] = useState(defaultVsData);
+  // Load data from localStorage or use defaults
+  const [sampleData, setSampleData] = useState(() => {
+    const saved = localStorage.getItem('mpg_data');
+    return saved ? JSON.parse(saved) : defaultSampleData;
+  });
+  const [vsData, setVsData] = useState(() => {
+    const saved = localStorage.getItem('mpg_vs_data');
+    return saved ? JSON.parse(saved) : defaultVsData;
+  });
+
   const [activeTab, setActiveTab] = useState('classements');
   const [selectedChampionnat, setSelectedChampionnat] = useState('general');
   const [selectedYear, setSelectedYear] = useState('all');
   const [selectedStatsChampionnat, setSelectedStatsChampionnat] = useState('all');
   const [selectedPlayer1, setSelectedPlayer1] = useState('Paul');
   const [selectedPlayer2, setSelectedPlayer2] = useState('Adrien');
+
+  // Admin states
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showAddScoreForm, setShowAddScoreForm] = useState(false);
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    localStorage.setItem('mpg_data', JSON.stringify(sampleData));
+  }, [sampleData]);
+
+  useEffect(() => {
+    localStorage.setItem('mpg_vs_data', JSON.stringify(vsData));
+  }, [vsData]);
 
   const joueurs = useMemo(() => {
     const uniquePlayers = [...new Set(sampleData.map(d => d.joueur))];
@@ -59,40 +80,44 @@ const App = () => {
     Roman: 'bg-orange-600',
   };
 
-  // Import CSV pour les données principales
-  const handleFileUpload = (event, dataType) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        if (dataType === 'main') {
-          setSampleData(results.data);
-        } else if (dataType === 'versus') {
-          setVsData(results.data);
-        }
-      },
-      error: (error) => {
-        alert('Erreur lors de la lecture du fichier: ' + error.message);
-      }
-    });
+  // Admin authentication
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPassword === 'admin') {
+      setIsAdminAuthenticated(true);
+      setAdminPassword('');
+    } else {
+      alert('Code incorrect');
+      setAdminPassword('');
+    }
   };
 
-  // Export des données en CSV
-  const exportToCSV = (data, filename) => {
-    const csv = Papa.unparse(data);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    setShowAddScoreForm(false);
+  };
+
+  // Add new score
+  const handleAddScore = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const newScore = {
+      championnat: formData.get('championnat'),
+      edition: formData.get('edition'),
+      joueur: formData.get('joueur'),
+      matchs: parseInt(formData.get('matchs')),
+      buts_pour: parseInt(formData.get('buts_pour')),
+      buts_contre: parseInt(formData.get('buts_contre')),
+      ga: parseInt(formData.get('buts_pour')) - parseInt(formData.get('buts_contre')),
+      points: parseInt(formData.get('points')),
+      rang: parseInt(formData.get('rang')),
+    };
+
+    setSampleData([...sampleData, newScore]);
+    setShowAddScoreForm(false);
+    e.target.reset();
+    alert('Score ajouté avec succès !');
   };
 
   // Calcul des victoires en championnat (1er de chaque édition)
@@ -207,50 +232,10 @@ const App = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
           <p className="text-slate-600">Statistiques et performances</p>
-
-          {/* Boutons d'import/export */}
-          <div className="mt-4 flex gap-4 flex-wrap">
-            <div>
-              <label className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium cursor-pointer hover:bg-blue-700 transition-colors inline-flex items-center gap-2">
-                <Upload className="w-4 h-4" />
-                Importer données principales (CSV)
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => handleFileUpload(e, 'main')}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            <div>
-              <label className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium cursor-pointer hover:bg-green-700 transition-colors inline-flex items-center gap-2">
-                <Upload className="w-4 h-4" />
-                Importer face-à-face (CSV)
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => handleFileUpload(e, 'versus')}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            <button
-              onClick={() => exportToCSV(sampleData, 'donnees_mpg.csv')}
-              className="px-4 py-2 bg-slate-600 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors"
-            >
-              Exporter données principales
-            </button>
-            <button
-              onClick={() => exportToCSV(vsData, 'face_a_face_mpg.csv')}
-              className="px-4 py-2 bg-slate-600 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors"
-            >
-              Exporter face-à-face
-            </button>
-          </div>
         </div>
 
         {/* Navigation tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           <button
             onClick={() => setActiveTab('classements')}
             className={`px-6 py-3 rounded-lg font-medium transition-all ${
@@ -280,6 +265,17 @@ const App = () => {
             }`}
           >
             Face à face
+          </button>
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 ${
+              activeTab === 'admin'
+                ? 'bg-red-600 text-white shadow-lg'
+                : 'bg-white text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Lock className="w-4 h-4" />
+            Admin
           </button>
         </div>
 
@@ -593,21 +589,192 @@ const App = () => {
           </>
         )}
 
-        {/* Instructions */}
-        <div className="mt-8 bg-blue-50 rounded-xl p-6">
-          <h3 className="font-semibold text-blue-900 mb-2">📝 Comment mettre à jour vos données</h3>
-          <div className="text-blue-800 text-sm space-y-2">
-            <p>
-              <strong>Format CSV pour les données principales :</strong> championnat, edition, joueur, matchs, buts_pour, buts_contre, ga, points, rang
-            </p>
-            <p>
-              <strong>Format CSV pour le face-à-face :</strong> joueur1, joueur2, buts_j1, buts_j2, ga_j1, victoires_j1, victoires_j2, nuls
-            </p>
-            <p className="mt-2">
-              Utilisez les boutons "Exporter" pour télécharger un template avec la structure correcte, puis modifiez-le et réimportez-le !
-            </p>
-          </div>
-        </div>
+        {/* ONGLET ADMIN */}
+        {activeTab === 'admin' && (
+          <>
+            {!isAdminAuthenticated ? (
+              <div className="bg-white rounded-xl shadow-sm p-8 max-w-md mx-auto">
+                <div className="text-center mb-6">
+                  <Lock className="w-12 h-12 text-red-600 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-slate-800 mb-2">Accès Admin</h2>
+                  <p className="text-slate-600">Entrez le code d'accès</p>
+                </div>
+                <form onSubmit={handleAdminLogin}>
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Code d'accès"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Se connecter
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-slate-800">Panel Admin</h2>
+                    <button
+                      onClick={handleAdminLogout}
+                      className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                    >
+                      Déconnexion
+                    </button>
+                  </div>
+
+                  {!showAddScoreForm ? (
+                    <div>
+                      <button
+                        onClick={() => setShowAddScoreForm(true)}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                      >
+                        <Plus className="w-5 h-5" />
+                        Ajouter un score
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Nouveau score</h3>
+                        <button
+                          onClick={() => setShowAddScoreForm(false)}
+                          className="text-slate-600 hover:text-slate-800"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                      <form onSubmit={handleAddScore} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Championnat
+                            </label>
+                            <input
+                              type="text"
+                              name="championnat"
+                              required
+                              placeholder="ex: Ligue 1"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Édition
+                            </label>
+                            <input
+                              type="text"
+                              name="edition"
+                              required
+                              placeholder="ex: 01/09/24-15/10/24"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Joueur
+                            </label>
+                            <input
+                              type="text"
+                              name="joueur"
+                              required
+                              placeholder="Nom du joueur"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Nombre de matchs
+                            </label>
+                            <input
+                              type="number"
+                              name="matchs"
+                              required
+                              min="1"
+                              placeholder="6"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Buts pour
+                            </label>
+                            <input
+                              type="number"
+                              name="buts_pour"
+                              required
+                              min="0"
+                              placeholder="12"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Buts contre
+                            </label>
+                            <input
+                              type="number"
+                              name="buts_contre"
+                              required
+                              min="0"
+                              placeholder="8"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Points
+                            </label>
+                            <input
+                              type="number"
+                              name="points"
+                              required
+                              min="0"
+                              placeholder="78"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Rang
+                            </label>
+                            <input
+                              type="number"
+                              name="rang"
+                              required
+                              min="1"
+                              placeholder="2"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="submit"
+                          className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                        >
+                          Enregistrer le score
+                        </button>
+                      </form>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-blue-50 rounded-xl p-6">
+                  <h3 className="font-semibold text-blue-900 mb-2">💾 Sauvegarde automatique</h3>
+                  <p className="text-blue-800 text-sm">
+                    Toutes les données sont automatiquement sauvegardées dans votre navigateur (localStorage).
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
