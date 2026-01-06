@@ -4,6 +4,14 @@ import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
 
 const defaultMatchData = [];
 
+// Player images mapping
+const playerImages = {
+  'Roman': '/images/1.jpg',
+  'Adrien': '/images/2.jpg',
+  'Paul': '/images/3.jpg',
+  'Tiago': '/images/4.jpg'
+};
+
 const App = () => {
   // Load data from localStorage
   const [matchData, setMatchData] = useState(() => {
@@ -904,11 +912,19 @@ const App = () => {
             </div>
 
             {/* Tableau classement */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${
-              selectedSeason === '2024/2025' && selectedLigue === 'general'
-                ? 'bg-gradient-to-br from-sky-100 via-white to-sky-50'
-                : 'bg-white'
-            }`}>
+            <div
+              className={`rounded-xl shadow-sm overflow-hidden ${
+                selectedSeason === '2024/2025' && selectedLigue === 'general'
+                  ? 'bg-gradient-to-br from-sky-100 via-white to-sky-50 relative'
+                  : 'bg-white'
+              }`}
+              style={selectedSeason === '2024/2025' && selectedLigue === 'general' ? {
+                backgroundImage: 'linear-gradient(to bottom right, rgba(224, 242, 254, 0.9), rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.9)), url(https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg)',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '400px 400px'
+              } : {}}
+            >
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-slate-50">
@@ -1094,7 +1110,7 @@ const App = () => {
             )}
 
             {/* Liste des matchs */}
-            {selectedLigue !== 'general' && matchesListForChampionnat.length > 0 && (
+            {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
                   Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
@@ -1232,7 +1248,17 @@ const App = () => {
                 <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
                   <div className="flex items-center justify-between">
                     <div className="text-center flex-1">
-                      <div className={`w-20 h-20 ${playerColors[selectedVersusPlayer1] || 'bg-gray-600'} rounded-full mx-auto mb-3`}></div>
+                      <div className="w-32 h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
+                        <img
+                          src={playerImages[selectedVersusPlayer1]}
+                          alt={selectedVersusPlayer1}
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.classList.add(playerColors[selectedVersusPlayer1] || 'bg-gray-600');
+                          }}
+                        />
+                      </div>
                       <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
                     </div>
                     <div className="text-center px-8">
@@ -1246,7 +1272,17 @@ const App = () => {
                       </div>
                     </div>
                     <div className="text-center flex-1">
-                      <div className={`w-20 h-20 ${playerColors[selectedVersusPlayer2] || 'bg-gray-600'} rounded-full mx-auto mb-3`}></div>
+                      <div className="w-32 h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-purple-500 shadow-lg">
+                        <img
+                          src={playerImages[selectedVersusPlayer2]}
+                          alt={selectedVersusPlayer2}
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.classList.add(playerColors[selectedVersusPlayer2] || 'bg-gray-600');
+                          }}
+                        />
+                      </div>
                       <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer2}</h3>
                     </div>
                   </div>
