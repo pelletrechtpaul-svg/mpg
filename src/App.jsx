@@ -168,12 +168,18 @@ const App = () => {
 
     const championnatsMap = {};
     filteredData.forEach(match => {
-      const key = `${match.ligue}-${match.championnat}`;
+      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
       if (!championnatsMap[key]) championnatsMap[key] = [];
       championnatsMap[key].push(match);
     });
 
     Object.entries(championnatsMap).forEach(([key, matches]) => {
+      // Check if championship is complete
+      const metadata = ligueMetadata[key];
+      if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
+        return; // Skip incomplete championships
+      }
+
       const stats = calculatePlayerStats(matches, joueurs);
       const ranking = Object.entries(stats)
         .map(([joueur, data]) => ({ joueur, ...data }))
@@ -185,7 +191,44 @@ const App = () => {
     });
 
     return victoires;
-  }, [filteredData, joueurs]);
+  }, [filteredData, joueurs, ligueMetadata]);
+
+  // Calculate medals (for championships with < 6 matches)
+  const medaillesChampionnat = useMemo(() => {
+    const medailles = {};
+    joueurs.forEach(j => medailles[j] = 0);
+
+    const championnatsMap = {};
+    filteredData.forEach(match => {
+      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
+      if (!championnatsMap[key]) championnatsMap[key] = [];
+      championnatsMap[key].push(match);
+    });
+
+    Object.entries(championnatsMap).forEach(([key, matches]) => {
+      // Check if championship is complete
+      const metadata = ligueMetadata[key];
+      if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
+        return; // Skip incomplete championships
+      }
+
+      // Only for championships with less than 6 matches
+      if (metadata.matchsTotal >= 6) {
+        return;
+      }
+
+      const stats = calculatePlayerStats(matches, joueurs);
+      const ranking = Object.entries(stats)
+        .map(([joueur, data]) => ({ joueur, ...data }))
+        .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+      if (ranking.length > 0 && ranking[0].points > 0) {
+        medailles[ranking[0].joueur]++;
+      }
+    });
+
+    return medailles;
+  }, [filteredData, joueurs, ligueMetadata]);
 
   // Classement général
   const classementGeneral = useMemo(() => {
@@ -193,13 +236,15 @@ const App = () => {
 
     Object.keys(stats).forEach(joueur => {
       stats[joueur].points += victoiresChampionnat[joueur] * 3;
+      stats[joueur].points += medaillesChampionnat[joueur] * 2;
       stats[joueur].victoiresChampionnat = victoiresChampionnat[joueur];
+      stats[joueur].medaillesChampionnat = medaillesChampionnat[joueur];
     });
 
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-  }, [filteredData, joueurs, victoiresChampionnat]);
+  }, [filteredData, joueurs, victoiresChampionnat, medaillesChampionnat]);
 
   // Classement par ligue
   const classementParLigue = useMemo(() => {
@@ -222,29 +267,47 @@ const App = () => {
       });
 
       const ligueVictoires = {};
-      joueurs.forEach(j => ligueVictoires[j] = 0);
+      const ligueMedailles = {};
+      joueurs.forEach(j => {
+        ligueVictoires[j] = 0;
+        ligueMedailles[j] = 0;
+      });
 
       Object.entries(championnatsMap).forEach(([champ, matches]) => {
+        // Check if championship is complete
+        const metadataKey = `${selectedSeason}-${selectedLigue}-${champ}`;
+        const metadata = ligueMetadata[metadataKey];
+        if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
+          return; // Skip incomplete championships
+        }
+
         const champStats = calculatePlayerStats(matches, joueurs);
         const ranking = Object.entries(champStats)
           .map(([joueur, data]) => ({ joueur, ...data }))
           .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
         if (ranking.length > 0 && ranking[0].points > 0) {
-          ligueVictoires[ranking[0].joueur]++;
+          // Award titre (3 pts) for 6+ matches, or médaille (2 pts) for < 6 matches
+          if (metadata.matchsTotal >= 6) {
+            ligueVictoires[ranking[0].joueur]++;
+          } else {
+            ligueMedailles[ranking[0].joueur]++;
+          }
         }
       });
 
       Object.keys(stats).forEach(joueur => {
         stats[joueur].points += ligueVictoires[joueur] * 3;
+        stats[joueur].points += ligueMedailles[joueur] * 2;
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
+        stats[joueur].medaillesChampionnat = ligueMedailles[joueur];
       });
     }
 
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-  }, [selectedLigue, selectedChampionnat, filteredData, joueurs, classementGeneral]);
+  }, [selectedLigue, selectedChampionnat, filteredData, joueurs, classementGeneral, ligueMetadata, selectedSeason]);
 
   // Stats détaillées
   const statsDetaillees = useMemo(() => {
@@ -795,12 +858,16 @@ const App = () => {
                     key={ligue}
                     onClick={() => {
                       setSelectedLigue(ligue);
-                      // Select the most recent championnat (last in the list) by default
-                      const championnats = championnatsByLigue[ligue];
-                      if (championnats && championnats.length > 0) {
-                        setSelectedChampionnat(championnats[championnats.length - 1]);
-                      } else {
+                      // For All-Time, always show total. For regular seasons, select most recent championnat
+                      if (selectedSeason === 'All-Time') {
                         setSelectedChampionnat('total');
+                      } else {
+                        const championnats = championnatsByLigue[ligue];
+                        if (championnats && championnats.length > 0) {
+                          setSelectedChampionnat(championnats[championnats.length - 1]);
+                        } else {
+                          setSelectedChampionnat('total');
+                        }
                       }
                     }}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -815,7 +882,7 @@ const App = () => {
               </div>
 
               {/* Dropdown championnat */}
-              {selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
+              {selectedSeason !== 'All-Time' && selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Championnat
@@ -837,7 +904,11 @@ const App = () => {
             </div>
 
             {/* Tableau classement */}
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className={`rounded-xl shadow-sm overflow-hidden ${
+              selectedSeason === '2024/2025' && selectedLigue === 'general'
+                ? 'bg-gradient-to-br from-sky-100 via-white to-sky-50'
+                : 'bg-white'
+            }`}>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-slate-50">
@@ -850,7 +921,10 @@ const App = () => {
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">D</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
-                        <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Titres</th>
+                        <>
+                          <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Titres</th>
+                          <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Médailles</th>
+                        </>
                       )}
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Points</th>
                     </tr>
@@ -899,9 +973,14 @@ const App = () => {
                           </div>
                         </td>
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
-                          <td className="px-6 py-4 text-center">
-                            <span className="font-semibold text-yellow-600">{player.victoiresChampionnat || 0}</span>
-                          </td>
+                          <>
+                            <td className="px-6 py-4 text-center">
+                              <span className="font-semibold text-yellow-600">{player.victoiresChampionnat || 0}</span>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <span className="font-semibold text-slate-500">{player.medaillesChampionnat || 0}</span>
+                            </td>
+                          </>
                         )}
                         <td className="px-6 py-4 text-center">
                           <span className="text-xl font-bold text-blue-600">{player.points}</span>
