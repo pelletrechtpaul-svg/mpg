@@ -3,68 +3,9 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { Trophy, Lock, Plus } from 'lucide-react';
 
 // Données d'exemple - à remplacer par vos vraies données
-const defaultSampleData = [
-  // 2024/2025 - Ligue 1
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 78, rang: 2 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 65, rang: 3 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 82, rang: 1 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 58, rang: 4 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Paul', matchs: 6, buts_pour: 15, buts_contre: 6, ga: 9, points: 85, rang: 1 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 10, ga: 1, points: 68, rang: 3 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 2 },
-  { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 12, ga: -4, points: 52, rang: 4 },
+const defaultSampleData = [];
 
-  // 2024/2025 - Premier League
-  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 72, rang: 3 },
-  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 80, rang: 1 },
-  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 66, rang: 4 },
-  { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 75, rang: 2 },
-
-  // 2024/2025 - Liga
-  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 79, rang: 2 },
-  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 84, rang: 1 },
-  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 3 },
-  { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 62, rang: 4 },
-
-  // 2024/2025 - Calcio
-  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 10, buts_contre: 8, ga: 2, points: 73, rang: 3 },
-  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 77, rang: 2 },
-  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 6, ga: 7, points: 81, rang: 1 },
-  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 10, ga: -2, points: 60, rang: 4 },
-
-  // 2024/2025 - Ligue des Champions
-  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 80, rang: 1 },
-  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 8, ga: 3, points: 72, rang: 3 },
-  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 12, buts_contre: 9, ga: 3, points: 74, rang: 2 },
-  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 12, ga: -3, points: 61, rang: 4 },
-
-  // 2023/2024 - All-Time data - Ligue 1
-  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 2 },
-  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 1 },
-  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 65, rang: 3 },
-  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 11, ga: -3, points: 55, rang: 4 },
-
-  // 2023/2024 - Premier League
-  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 75, rang: 2 },
-  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 68, rang: 3 },
-  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 82, rang: 1 },
-  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 7, buts_contre: 12, ga: -5, points: 52, rang: 4 },
-
-  // 2023/2024 - Liga
-  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 77, rang: 1 },
-  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 71, rang: 3 },
-  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 74, rang: 2 },
-  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 11, ga: -3, points: 58, rang: 4 },
-];
-
-const defaultVsData = [
-  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Adrien', buts_j1: 24, buts_j2: 19, ga_j1: 5, victoires_j1: 8, victoires_j2: 6, nuls: 2 },
-  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Tiago', buts_j1: 22, buts_j2: 26, ga_j1: -4, victoires_j1: 6, victoires_j2: 9, nuls: 1 },
-  { saison: '2024/2025', joueur1: 'Paul', joueur2: 'Roman', buts_j1: 28, buts_j2: 18, ga_j1: 10, victoires_j1: 10, victoires_j2: 4, nuls: 2 },
-  { saison: '2024/2025', joueur1: 'Adrien', joueur2: 'Tiago', buts_j1: 20, buts_j2: 23, ga_j1: -3, victoires_j1: 7, victoires_j2: 8, nuls: 1 },
-  { saison: '2024/2025', joueur1: 'Adrien', joueur2: 'Roman', buts_j1: 25, buts_j2: 17, ga_j1: 8, victoires_j1: 9, victoires_j2: 5, nuls: 2 },
-  { saison: '2024/2025', joueur1: 'Tiago', joueur2: 'Roman', buts_j1: 27, buts_j2: 16, ga_j1: 11, victoires_j1: 11, victoires_j2: 3, nuls: 2 },
-];
+const defaultVsData = [];
 
 const App = () => {
   // Load data from localStorage or use defaults
@@ -75,6 +16,12 @@ const App = () => {
   const [vsData, setVsData] = useState(() => {
     const saved = localStorage.getItem('mpg_vs_data');
     return saved ? JSON.parse(saved) : defaultVsData;
+  });
+
+  // Edition metadata (creation dates, matchs count, etc.)
+  const [editionMetadata, setEditionMetadata] = useState(() => {
+    const saved = localStorage.getItem('mpg_edition_metadata');
+    return saved ? JSON.parse(saved) : {};
   });
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
@@ -89,6 +36,8 @@ const App = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddScoreForm, setShowAddScoreForm] = useState(false);
+  const [showEditScoreForm, setShowEditScoreForm] = useState(false);
+  const [editingScore, setEditingScore] = useState(null);
 
   // Admin form states
   const [adminFormData, setAdminFormData] = useState({
@@ -96,7 +45,6 @@ const App = () => {
     championnat: '',
     edition: '',
     isNewEdition: false,
-    newEditionName: '',
     newEditionMatchs: 6,
     selectedPlayers: [],
     playerScores: {}
@@ -110,6 +58,10 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('mpg_vs_data', JSON.stringify(vsData));
   }, [vsData]);
+
+  useEffect(() => {
+    localStorage.setItem('mpg_edition_metadata', JSON.stringify(editionMetadata));
+  }, [editionMetadata]);
 
   // Filter data by selected season
   const filteredData = useMemo(() => {
@@ -178,7 +130,7 @@ const App = () => {
   const handleAddScore = (e) => {
     e.preventDefault();
 
-    const { saison, championnat, edition, isNewEdition, newEditionName, newEditionMatchs, selectedPlayers, playerScores } = adminFormData;
+    const { saison, championnat, edition, isNewEdition, newEditionMatchs, selectedPlayers, playerScores } = adminFormData;
 
     if (!championnat) {
       alert('Veuillez sélectionner un championnat');
@@ -190,7 +142,32 @@ const App = () => {
       return;
     }
 
-    const editionToUse = isNewEdition ? newEditionName : edition;
+    let editionToUse = edition;
+
+    // If creating new edition, auto-increment edition name
+    if (isNewEdition) {
+      // Count existing editions for this saison/championnat
+      const existingEditionsCount = sampleData.filter(
+        d => d.saison === saison && d.championnat === championnat
+      ).reduce((acc, d) => {
+        if (!acc.includes(d.edition)) acc.push(d.edition);
+        return acc;
+      }, []).length;
+
+      editionToUse = `#${existingEditionsCount + 1}`;
+
+      // Save edition metadata
+      const editionKey = `${saison}-${championnat}-${editionToUse}`;
+      const newMetadata = {
+        ...editionMetadata,
+        [editionKey]: {
+          createdAt: new Date().toISOString(),
+          matchsTotal: newEditionMatchs,
+          matchsEntered: 0
+        }
+      };
+      setEditionMetadata(newMetadata);
+    }
 
     if (!editionToUse) {
       alert('Veuillez sélectionner ou créer une édition');
@@ -231,16 +208,34 @@ const App = () => {
       score.rang = index + 1;
     });
 
+    const currentDate = new Date().toISOString();
+
     // Add all scores to sampleData
     const finalScores = sortedScores.map(score => ({
       saison,
       championnat,
       edition: editionToUse,
       matchs: newEditionMatchs,
+      dateEntree: currentDate,
       ...score
     }));
 
     setSampleData([...sampleData, ...finalScores]);
+
+    // Update edition metadata matchs count
+    const editionKey = `${saison}-${championnat}-${editionToUse}`;
+    if (editionMetadata[editionKey]) {
+      const updatedMetadata = {
+        ...editionMetadata,
+        [editionKey]: {
+          ...editionMetadata[editionKey],
+          matchsEntered: editionMetadata[editionKey].matchsEntered + 1,
+          lastEntryDate: currentDate
+        }
+      };
+      setEditionMetadata(updatedMetadata);
+    }
+
     setShowAddScoreForm(false);
 
     // Reset form
@@ -249,7 +244,6 @@ const App = () => {
       championnat: '',
       edition: '',
       isNewEdition: false,
-      newEditionName: '',
       newEditionMatchs: 6,
       selectedPlayers: [],
       playerScores: {}
@@ -633,6 +627,33 @@ const App = () => {
               </div>
             </div>
 
+            {/* Edition metadata - dates */}
+            {selectedChampionnat !== 'general' && selectedEdition !== 'total' && (
+              (() => {
+                const editionKey = `${selectedSeason}-${selectedChampionnat}-${selectedEdition}`;
+                const metadata = editionMetadata[editionKey];
+                if (metadata) {
+                  const createdDate = new Date(metadata.createdAt).toLocaleDateString('fr-FR');
+                  const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
+                  const endDate = metadata.lastEntryDate ? new Date(metadata.lastEntryDate).toLocaleDateString('fr-FR') : null;
+
+                  return (
+                    <div className="mt-4 bg-slate-50 rounded-xl p-4">
+                      <p className="text-xs text-slate-600">
+                        <strong>Édition créée le :</strong> {createdDate}
+                        {isComplete && endDate && (
+                          <span className="ml-4">
+                            <strong>Terminée le :</strong> {endDate}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })()
+            )}
+
             {/* Evolution chart - Only when viewing 'Total' */}
             {selectedEdition === 'total' && evolutionData.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
@@ -941,8 +962,8 @@ const App = () => {
                     </button>
                   </div>
 
-                  {!showAddScoreForm ? (
-                    <div>
+                  {!showAddScoreForm && !showEditScoreForm ? (
+                    <div className="flex gap-3">
                       <button
                         onClick={() => setShowAddScoreForm(true)}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
@@ -950,6 +971,150 @@ const App = () => {
                         <Plus className="w-5 h-5" />
                         Ajouter un score
                       </button>
+                      {sampleData.length > 0 && (
+                        <button
+                          onClick={() => setShowEditScoreForm(true)}
+                          className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
+                        >
+                          Éditer un score
+                        </button>
+                      )}
+                    </div>
+                  ) : showEditScoreForm ? (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Éditer un score</h3>
+                        <button
+                          onClick={() => {
+                            setShowEditScoreForm(false);
+                            setEditingScore(null);
+                          }}
+                          className="text-slate-600 hover:text-slate-800"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+
+                      {!editingScore ? (
+                        <div className="space-y-4">
+                          <p className="text-sm text-slate-600 mb-4">Sélectionnez un score à modifier :</p>
+                          <div className="max-h-96 overflow-y-auto space-y-2">
+                            {sampleData.map((score, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setEditingScore({...score, index})}
+                                className="w-full p-4 bg-white rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="font-semibold text-slate-800">{score.joueur}</p>
+                                    <p className="text-sm text-slate-600">
+                                      {score.saison} - {score.championnat} - {score.edition}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-blue-600">{score.points} pts</p>
+                                    <p className="text-xs text-slate-500">
+                                      {score.buts_pour}-{score.buts_contre} (GA: {score.ga})
+                                    </p>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          const updatedData = [...sampleData];
+                          const buts_pour = parseInt(editingScore.buts_pour);
+                          const buts_contre = parseInt(editingScore.buts_contre);
+                          const ga = buts_pour - buts_contre;
+                          const points = (buts_pour * 3) + ga;
+
+                          updatedData[editingScore.index] = {
+                            ...editingScore,
+                            buts_pour,
+                            buts_contre,
+                            ga,
+                            points,
+                            dateEntree: new Date().toISOString()
+                          };
+
+                          // Recalculate ranks for this edition
+                          const sameEditionScores = updatedData
+                            .map((s, i) => ({...s, originalIndex: i}))
+                            .filter(s =>
+                              s.saison === editingScore.saison &&
+                              s.championnat === editingScore.championnat &&
+                              s.edition === editingScore.edition
+                            )
+                            .sort((a, b) => b.points - a.points);
+
+                          sameEditionScores.forEach((s, rank) => {
+                            updatedData[s.originalIndex].rang = rank + 1;
+                          });
+
+                          setSampleData(updatedData);
+                          setShowEditScoreForm(false);
+                          setEditingScore(null);
+                          alert('Score modifié avec succès !');
+                        }} className="space-y-4">
+                          <div>
+                            <p className="text-sm text-slate-600 mb-2">
+                              <strong>Joueur :</strong> {editingScore.joueur}
+                            </p>
+                            <p className="text-sm text-slate-600 mb-2">
+                              <strong>Édition :</strong> {editingScore.saison} - {editingScore.championnat} - {editingScore.edition}
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Buts pour
+                              </label>
+                              <input
+                                type="number"
+                                value={editingScore.buts_pour}
+                                onChange={(e) => setEditingScore({...editingScore, buts_pour: e.target.value})}
+                                min="0"
+                                required
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Buts contre
+                              </label>
+                              <input
+                                type="number"
+                                value={editingScore.buts_contre}
+                                onChange={(e) => setEditingScore({...editingScore, buts_contre: e.target.value})}
+                                min="0"
+                                required
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3">
+                            <button
+                              type="submit"
+                              className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                            >
+                              Enregistrer les modifications
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingScore(null)}
+                              className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                            >
+                              Retour
+                            </button>
+                          </div>
+                        </form>
+                      )}
                     </div>
                   ) : (
                     <div className="bg-slate-50 rounded-lg p-6">
@@ -1061,13 +1226,18 @@ const App = () => {
 
                               {adminFormData.isNewEdition && (
                                 <div className="ml-6 space-y-3">
-                                  <input
-                                    type="text"
-                                    value={adminFormData.newEditionName}
-                                    onChange={(e) => setAdminFormData({...adminFormData, newEditionName: e.target.value})}
-                                    placeholder="ex: 01/12/24-15/01/25"
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  />
+                                  <div className="bg-blue-50 p-3 rounded-lg">
+                                    <p className="text-sm text-blue-800">
+                                      <strong>Nom de l'édition :</strong> #{
+                                        sampleData.filter(
+                                          d => d.saison === adminFormData.saison && d.championnat === adminFormData.championnat
+                                        ).reduce((acc, d) => {
+                                          if (!acc.includes(d.edition)) acc.push(d.edition);
+                                          return acc;
+                                        }, []).length + 1
+                                      }
+                                    </p>
+                                  </div>
                                   <div>
                                     <label className="block text-sm text-slate-700 mb-1">
                                       Nombre de matchs
