@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { Trophy, Lock, Plus } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2 } from 'lucide-react';
 
 // Données d'exemple - à remplacer par vos vraies données
 const defaultSampleData = [];
@@ -18,17 +18,17 @@ const App = () => {
     return saved ? JSON.parse(saved) : defaultVsData;
   });
 
-  // Edition metadata (creation dates, matchs count, etc.)
-  const [editionMetadata, setEditionMetadata] = useState(() => {
-    const saved = localStorage.getItem('mpg_edition_metadata');
+  // Ligue metadata (creation dates, matchs count, etc.)
+  const [ligueMetadata, setLigueMetadata] = useState(() => {
+    const saved = localStorage.getItem('mpg_ligue_metadata');
     return saved ? JSON.parse(saved) : {};
   });
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
-  const [selectedChampionnat, setSelectedChampionnat] = useState('general');
-  const [selectedEdition, setSelectedEdition] = useState('total'); // 'total' or edition string
-  const [selectedStatsChampionnat, setSelectedStatsChampionnat] = useState('all');
+  const [selectedLigue, setSelectedLigue] = useState('general');
+  const [selectedChampionnat, setSelectedChampionnat] = useState('total'); // 'total' or championnat string
+  const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
   const [selectedPlayer1, setSelectedPlayer1] = useState('Paul');
   const [selectedPlayer2, setSelectedPlayer2] = useState('Adrien');
 
@@ -37,15 +37,19 @@ const App = () => {
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddScoreForm, setShowAddScoreForm] = useState(false);
   const [showEditScoreForm, setShowEditScoreForm] = useState(false);
+  const [showDeleteScoreForm, setShowDeleteScoreForm] = useState(false);
+  const [showEditLigueForm, setShowEditLigueForm] = useState(false);
   const [editingScore, setEditingScore] = useState(null);
+  const [editingLigue, setEditingLigue] = useState(null);
+  const [scoresToDelete, setScoresToDelete] = useState([]);
 
   // Admin form states
   const [adminFormData, setAdminFormData] = useState({
     saison: '2025/2026',
+    ligue: '',
     championnat: '',
-    edition: '',
-    isNewEdition: false,
-    newEditionMatchs: 6,
+    isNewChampionnat: false,
+    newChampionnatMatchs: 6,
     selectedPlayers: [],
     playerScores: {}
   });
@@ -60,8 +64,8 @@ const App = () => {
   }, [vsData]);
 
   useEffect(() => {
-    localStorage.setItem('mpg_edition_metadata', JSON.stringify(editionMetadata));
-  }, [editionMetadata]);
+    localStorage.setItem('mpg_ligue_metadata', JSON.stringify(ligueMetadata));
+  }, [ligueMetadata]);
 
   // Filter data by selected season
   const filteredData = useMemo(() => {
@@ -83,24 +87,24 @@ const App = () => {
     return uniquePlayers.length > 0 ? uniquePlayers : ['Paul', 'Adrien', 'Tiago', 'Roman'];
   }, [filteredData]);
 
-  const championnats = useMemo(() => {
-    const uniqueChampionnats = [...new Set(filteredData.map(d => d.championnat))];
-    return uniqueChampionnats.length > 0 ? uniqueChampionnats : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
+  const ligues = useMemo(() => {
+    const uniqueLigues = [...new Set(filteredData.map(d => d.ligue))];
+    return uniqueLigues.length > 0 ? uniqueLigues : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
   }, [filteredData]);
 
-  // Get numbered editions for each championnat
-  const editionsByChampionnat = useMemo(() => {
-    const editionsMap = {};
-    championnats.forEach(champ => {
-      const editions = [...new Set(
+  // Get numbered championnats for each ligue
+  const championnatsByLigue = useMemo(() => {
+    const championnatsMap = {};
+    ligues.forEach(ligue => {
+      const championnats = [...new Set(
         filteredData
-          .filter(d => d.championnat === champ)
-          .map(d => d.edition)
+          .filter(d => d.ligue === ligue)
+          .map(d => d.championnat)
       )].sort(); // Sorted chronologically
-      editionsMap[champ] = editions;
+      championnatsMap[ligue] = championnats;
     });
-    return editionsMap;
-  }, [filteredData, championnats]);
+    return championnatsMap;
+  }, [filteredData, ligues]);
 
   const playerColors = {
     Paul: 'bg-blue-600',
@@ -124,16 +128,19 @@ const App = () => {
   const handleAdminLogout = () => {
     setIsAdminAuthenticated(false);
     setShowAddScoreForm(false);
+    setShowEditScoreForm(false);
+    setShowDeleteScoreForm(false);
+    setShowEditLigueForm(false);
   };
 
   // Add new score
   const handleAddScore = (e) => {
     e.preventDefault();
 
-    const { saison, championnat, edition, isNewEdition, newEditionMatchs, selectedPlayers, playerScores } = adminFormData;
+    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, selectedPlayers, playerScores } = adminFormData;
 
-    if (!championnat) {
-      alert('Veuillez sélectionner un championnat');
+    if (!ligue) {
+      alert('Veuillez sélectionner une ligue');
       return;
     }
 
@@ -142,35 +149,35 @@ const App = () => {
       return;
     }
 
-    let editionToUse = edition;
+    let championnatToUse = championnat;
 
-    // If creating new edition, auto-increment edition name
-    if (isNewEdition) {
-      // Count existing editions for this saison/championnat
-      const existingEditionsCount = sampleData.filter(
-        d => d.saison === saison && d.championnat === championnat
+    // If creating new championnat, auto-increment championnat name
+    if (isNewChampionnat) {
+      // Count existing championnats for this saison/ligue
+      const existingChampionnatsCount = sampleData.filter(
+        d => d.saison === saison && d.ligue === ligue
       ).reduce((acc, d) => {
-        if (!acc.includes(d.edition)) acc.push(d.edition);
+        if (!acc.includes(d.championnat)) acc.push(d.championnat);
         return acc;
       }, []).length;
 
-      editionToUse = `#${existingEditionsCount + 1}`;
+      championnatToUse = `#${existingChampionnatsCount + 1}`;
 
-      // Save edition metadata
-      const editionKey = `${saison}-${championnat}-${editionToUse}`;
+      // Save ligue metadata
+      const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
       const newMetadata = {
-        ...editionMetadata,
-        [editionKey]: {
+        ...ligueMetadata,
+        [ligueKey]: {
           createdAt: new Date().toISOString(),
-          matchsTotal: newEditionMatchs,
+          matchsTotal: newChampionnatMatchs,
           matchsEntered: 0
         }
       };
-      setEditionMetadata(newMetadata);
+      setLigueMetadata(newMetadata);
     }
 
-    if (!editionToUse) {
-      alert('Veuillez sélectionner ou créer une édition');
+    if (!championnatToUse) {
+      alert('Veuillez sélectionner ou créer un championnat');
       return;
     }
 
@@ -213,27 +220,27 @@ const App = () => {
     // Add all scores to sampleData
     const finalScores = sortedScores.map(score => ({
       saison,
-      championnat,
-      edition: editionToUse,
-      matchs: newEditionMatchs,
+      ligue,
+      championnat: championnatToUse,
+      matchs: newChampionnatMatchs,
       dateEntree: currentDate,
       ...score
     }));
 
     setSampleData([...sampleData, ...finalScores]);
 
-    // Update edition metadata matchs count
-    const editionKey = `${saison}-${championnat}-${editionToUse}`;
-    if (editionMetadata[editionKey]) {
+    // Update ligue metadata matchs count
+    const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
+    if (ligueMetadata[ligueKey]) {
       const updatedMetadata = {
-        ...editionMetadata,
-        [editionKey]: {
-          ...editionMetadata[editionKey],
-          matchsEntered: editionMetadata[editionKey].matchsEntered + 1,
+        ...ligueMetadata,
+        [ligueKey]: {
+          ...ligueMetadata[ligueKey],
+          matchsEntered: ligueMetadata[ligueKey].matchsEntered + 1,
           lastEntryDate: currentDate
         }
       };
-      setEditionMetadata(updatedMetadata);
+      setLigueMetadata(updatedMetadata);
     }
 
     setShowAddScoreForm(false);
@@ -241,10 +248,10 @@ const App = () => {
     // Reset form
     setAdminFormData({
       saison: '2025/2026',
+      ligue: '',
       championnat: '',
-      edition: '',
-      isNewEdition: false,
-      newEditionMatchs: 6,
+      isNewChampionnat: false,
+      newChampionnatMatchs: 6,
       selectedPlayers: [],
       playerScores: {}
     });
@@ -252,15 +259,33 @@ const App = () => {
     alert('Scores ajoutés avec succès !');
   };
 
-  // Calcul des victoires en championnat (1er de chaque édition)
+  // Delete selected scores
+  const handleDeleteScores = () => {
+    if (scoresToDelete.length === 0) {
+      alert('Veuillez sélectionner au moins un score à supprimer');
+      return;
+    }
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${scoresToDelete.length} score(s) ?`)) {
+      return;
+    }
+
+    const updatedData = sampleData.filter((_, index) => !scoresToDelete.includes(index));
+    setSampleData(updatedData);
+    setScoresToDelete([]);
+    setShowDeleteScoreForm(false);
+    alert('Scores supprimés avec succès !');
+  };
+
+  // Calcul des victoires en championnat (1er de chaque championnat)
   const victoiresChampionnat = useMemo(() => {
     const victoires = {};
     joueurs.forEach(j => victoires[j] = 0);
 
-    const editions = [...new Set(filteredData.map(d => `${d.championnat}-${d.edition}`))];
-    editions.forEach(ed => {
-      const editionData = filteredData.filter(d => `${d.championnat}-${d.edition}` === ed);
-      const winner = editionData.find(d => d.rang === 1);
+    const championnats = [...new Set(filteredData.map(d => `${d.ligue}-${d.championnat}`))];
+    championnats.forEach(ch => {
+      const championnatData = filteredData.filter(d => `${d.ligue}-${d.championnat}` === ch);
+      const winner = championnatData.find(d => d.rang === 1);
       if (winner) victoires[winner.joueur]++;
     });
 
@@ -290,34 +315,34 @@ const App = () => {
       .sort((a, b) => b.points - a.points);
   }, [filteredData, joueurs, victoiresChampionnat]);
 
-  // Classement par championnat
-  const classementParChampionnat = useMemo(() => {
-    if (selectedChampionnat === 'general') return classementGeneral;
+  // Classement par ligue
+  const classementParLigue = useMemo(() => {
+    if (selectedLigue === 'general') return classementGeneral;
 
     const stats = {};
     joueurs.forEach(joueur => {
-      // Filter by championnat and optionally by edition
-      let playerData = filteredData.filter(d => d.joueur === joueur && d.championnat === selectedChampionnat);
+      // Filter by ligue and optionally by championnat
+      let playerData = filteredData.filter(d => d.joueur === joueur && d.ligue === selectedLigue);
 
-      if (selectedEdition !== 'total') {
-        playerData = playerData.filter(d => d.edition === selectedEdition);
+      if (selectedChampionnat !== 'total') {
+        playerData = playerData.filter(d => d.championnat === selectedChampionnat);
       }
 
-      // Compter les victoires d'édition pour ce championnat
-      const editions = [...new Set(playerData.map(d => d.edition))];
-      let victoiresEditions = 0;
-      editions.forEach(ed => {
-        const edData = filteredData.filter(d => d.championnat === selectedChampionnat && d.edition === ed);
-        const winner = edData.find(d => d.rang === 1);
-        if (winner && winner.joueur === joueur) victoiresEditions++;
+      // Compter les victoires de championnat pour cette ligue
+      const championnats = [...new Set(playerData.map(d => d.championnat))];
+      let victoiresChampionnats = 0;
+      championnats.forEach(ch => {
+        const chData = filteredData.filter(d => d.ligue === selectedLigue && d.championnat === ch);
+        const winner = chData.find(d => d.rang === 1);
+        if (winner && winner.joueur === joueur) victoiresChampionnats++;
       });
 
       const totalPoints = playerData.reduce((sum, d) => sum + d.points, 0);
-      const bonusVictoires = victoiresEditions * 3;
+      const bonusVictoires = victoiresChampionnats * 3;
 
       stats[joueur] = {
         points: totalPoints + bonusVictoires,
-        victoires: victoiresEditions,
+        victoires: victoiresChampionnats,
         matchs: playerData.reduce((sum, d) => sum + d.matchs, 0),
         buts_pour: playerData.reduce((sum, d) => sum + d.buts_pour, 0),
         buts_contre: playerData.reduce((sum, d) => sum + d.buts_contre, 0),
@@ -328,13 +353,13 @@ const App = () => {
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points - a.points);
-  }, [selectedChampionnat, selectedEdition, filteredData, joueurs, classementGeneral]);
+  }, [selectedLigue, selectedChampionnat, filteredData, joueurs, classementGeneral]);
 
   // Stats détaillées pour l'onglet Statistiques
   const statsDetaillees = useMemo(() => {
-    const dataForStats = selectedStatsChampionnat === 'all'
+    const dataForStats = selectedStatsLigue === 'all'
       ? filteredData
-      : filteredData.filter(d => d.championnat === selectedStatsChampionnat);
+      : filteredData.filter(d => d.ligue === selectedStatsLigue);
 
     const stats = {};
     joueurs.forEach(joueur => {
@@ -350,48 +375,48 @@ const App = () => {
       };
     });
     return stats;
-  }, [selectedStatsChampionnat, filteredData, joueurs]);
+  }, [selectedStatsLigue, filteredData, joueurs]);
 
   // Evolution chart data for classement
   const evolutionData = useMemo(() => {
-    // Only show evolution chart when viewing total (not a specific edition)
-    if (selectedEdition !== 'total') return [];
+    // Only show evolution chart when viewing total (not a specific championnat)
+    if (selectedChampionnat !== 'total') return [];
 
-    // Get all unique editions sorted chronologically
-    let editions;
+    // Get all unique championnats sorted chronologically
+    let championnats;
     let dataToUse;
 
-    if (selectedChampionnat === 'general') {
-      // For general view, use all editions
-      editions = [...new Set(filteredData.map(d => d.edition))].sort();
+    if (selectedLigue === 'general') {
+      // For general view, use all championnats
+      championnats = [...new Set(filteredData.map(d => d.championnat))].sort();
       dataToUse = filteredData;
     } else {
-      // For specific championnat, use only editions from that championnat
-      editions = editionsByChampionnat[selectedChampionnat] || [];
-      dataToUse = filteredData.filter(d => d.championnat === selectedChampionnat);
+      // For specific ligue, use only championnats from that ligue
+      championnats = championnatsByLigue[selectedLigue] || [];
+      dataToUse = filteredData.filter(d => d.ligue === selectedLigue);
     }
 
-    // For each edition, calculate cumulative points and ranking for each player
-    const evolutionByEdition = editions.map(edition => {
-      const dataPoint = { edition };
+    // For each championnat, calculate cumulative points and ranking for each player
+    const evolutionByChampionnat = championnats.map(championnat => {
+      const dataPoint = { championnat };
 
-      // Calculate cumulative points up to this edition
-      const editionsUpToNow = editions.slice(0, editions.indexOf(edition) + 1);
+      // Calculate cumulative points up to this championnat
+      const championnatsUpToNow = championnats.slice(0, championnats.indexOf(championnat) + 1);
 
       joueurs.forEach(joueur => {
-        // Get all data for this player up to current edition
+        // Get all data for this player up to current championnat
         const playerDataUpToNow = dataToUse.filter(d =>
-          d.joueur === joueur && editionsUpToNow.includes(d.edition)
+          d.joueur === joueur && championnatsUpToNow.includes(d.championnat)
         );
 
         // Calculate total points including victory bonuses
         const totalPoints = playerDataUpToNow.reduce((sum, d) => sum + d.points, 0);
 
-        // Count victories up to this edition
+        // Count victories up to this championnat
         let victories = 0;
-        editionsUpToNow.forEach(ed => {
-          const editionData = dataToUse.filter(d => d.edition === ed);
-          const winner = editionData.find(d => d.rang === 1);
+        championnatsUpToNow.forEach(ch => {
+          const championnatData = dataToUse.filter(d => d.championnat === ch);
+          const winner = championnatData.find(d => d.rang === 1);
           if (winner && winner.joueur === joueur) victories++;
         });
 
@@ -402,8 +427,8 @@ const App = () => {
       return dataPoint;
     });
 
-    return evolutionByEdition;
-  }, [filteredData, joueurs, selectedChampionnat, selectedEdition, editionsByChampionnat]);
+    return evolutionByChampionnat;
+  }, [filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue]);
 
   // Face à face
   const currentVersus = useMemo(() => {
@@ -522,50 +547,50 @@ const App = () => {
               <div className="flex flex-wrap gap-2 mb-4">
                 <button
                   onClick={() => {
-                    setSelectedChampionnat('general');
-                    setSelectedEdition('total');
+                    setSelectedLigue('general');
+                    setSelectedChampionnat('total');
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedChampionnat === 'general'
+                    selectedLigue === 'general'
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   Général
                 </button>
-                {championnats.map(c => (
+                {ligues.map(ligue => (
                   <button
-                    key={c}
+                    key={ligue}
                     onClick={() => {
-                      setSelectedChampionnat(c);
-                      setSelectedEdition('total');
+                      setSelectedLigue(ligue);
+                      setSelectedChampionnat('total');
                     }}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      selectedChampionnat === c
+                      selectedLigue === ligue
                         ? 'bg-blue-600 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    {c}
+                    {ligue}
                   </button>
                 ))}
               </div>
 
-              {/* Menu déroulant pour sélectionner l'édition (championnat) */}
-              {selectedChampionnat !== 'general' && editionsByChampionnat[selectedChampionnat] && (
+              {/* Menu déroulant pour sélectionner le championnat */}
+              {selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Championnat
                   </label>
                   <select
-                    value={selectedEdition}
-                    onChange={(e) => setSelectedEdition(e.target.value)}
+                    value={selectedChampionnat}
+                    onChange={(e) => setSelectedChampionnat(e.target.value)}
                     className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="total">Total</option>
-                    {editionsByChampionnat[selectedChampionnat].map((edition, index) => (
-                      <option key={edition} value={edition}>
-                        Championnat {index + 1}
+                    {championnatsByLigue[selectedLigue].map((championnat, index) => (
+                      <option key={championnat} value={championnat}>
+                        Championnat {index + 1} ({championnat})
                       </option>
                     ))}
                   </select>
@@ -589,7 +614,7 @@ const App = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {classementParChampionnat.map((player, index) => (
+                    {classementParLigue.map((player, index) => (
                       <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
@@ -627,11 +652,11 @@ const App = () => {
               </div>
             </div>
 
-            {/* Edition metadata - dates */}
-            {selectedChampionnat !== 'general' && selectedEdition !== 'total' && (
+            {/* Ligue metadata - dates */}
+            {selectedLigue !== 'general' && selectedChampionnat !== 'total' && (
               (() => {
-                const editionKey = `${selectedSeason}-${selectedChampionnat}-${selectedEdition}`;
-                const metadata = editionMetadata[editionKey];
+                const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+                const metadata = ligueMetadata[ligueKey];
                 if (metadata) {
                   const createdDate = new Date(metadata.createdAt).toLocaleDateString('fr-FR');
                   const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
@@ -640,7 +665,7 @@ const App = () => {
                   return (
                     <div className="mt-4 bg-slate-50 rounded-xl p-4">
                       <p className="text-xs text-slate-600">
-                        <strong>Édition créée le :</strong> {createdDate}
+                        <strong>Ligue créée le :</strong> {createdDate}
                         {isComplete && endDate && (
                           <span className="ml-4">
                             <strong>Terminée le :</strong> {endDate}
@@ -655,16 +680,16 @@ const App = () => {
             )}
 
             {/* Evolution chart - Only when viewing 'Total' */}
-            {selectedEdition === 'total' && evolutionData.length > 0 && (
+            {selectedChampionnat === 'total' && evolutionData.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                  Évolution du classement {selectedChampionnat === 'general' ? 'général' : selectedChampionnat}
+                  Évolution du classement {selectedLigue === 'general' ? 'général' : selectedLigue}
                 </h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={evolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis
-                      dataKey="edition"
+                      dataKey="championnat"
                       stroke="#64748b"
                       angle={-45}
                       textAnchor="end"
@@ -701,7 +726,7 @@ const App = () => {
             {/* Légende */}
             <div className="mt-4 bg-blue-50 rounded-xl p-4">
               <p className="text-sm text-blue-800">
-                <strong>Système de points :</strong> Chaque victoire d'édition (1er place) = +3 points au classement général
+                <strong>Système de points :</strong> Chaque victoire de championnat (1er place) = +3 points au classement général
               </p>
             </div>
           </>
@@ -710,19 +735,19 @@ const App = () => {
         {/* ONGLET STATISTIQUES */}
         {activeTab === 'statistiques' && (
           <>
-            {/* Filtre championnat */}
+            {/* Filtre ligue */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Championnat
+                Ligue
               </label>
               <select
-                value={selectedStatsChampionnat}
-                onChange={(e) => setSelectedStatsChampionnat(e.target.value)}
+                value={selectedStatsLigue}
+                onChange={(e) => setSelectedStatsLigue(e.target.value)}
                 className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">Tous les championnats</option>
-                {championnats.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                <option value="all">Toutes les ligues</option>
+                {ligues.map(ligue => (
+                  <option key={ligue} value={ligue}>{ligue}</option>
                 ))}
               </select>
             </div>
@@ -962,8 +987,8 @@ const App = () => {
                     </button>
                   </div>
 
-                  {!showAddScoreForm && !showEditScoreForm ? (
-                    <div className="flex gap-3">
+                  {!showAddScoreForm && !showEditScoreForm && !showDeleteScoreForm && !showEditLigueForm ? (
+                    <div className="flex flex-wrap gap-3">
                       <button
                         onClick={() => setShowAddScoreForm(true)}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
@@ -972,12 +997,190 @@ const App = () => {
                         Ajouter un score
                       </button>
                       {sampleData.length > 0 && (
+                        <>
+                          <button
+                            onClick={() => setShowEditScoreForm(true)}
+                            className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
+                          >
+                            Éditer un score
+                          </button>
+                          <button
+                            onClick={() => setShowDeleteScoreForm(true)}
+                            className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors inline-flex items-center gap-2"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                            Supprimer un score
+                          </button>
+                          <button
+                            onClick={() => setShowEditLigueForm(true)}
+                            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                          >
+                            Éditer une ligue
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ) : showDeleteScoreForm ? (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Supprimer des scores</h3>
                         <button
-                          onClick={() => setShowEditScoreForm(true)}
-                          className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
+                          onClick={() => {
+                            setShowDeleteScoreForm(false);
+                            setScoresToDelete([]);
+                          }}
+                          className="text-slate-600 hover:text-slate-800"
                         >
-                          Éditer un score
+                          Annuler
                         </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <p className="text-sm text-slate-600 mb-4">Sélectionnez les scores à supprimer :</p>
+                        <div className="max-h-96 overflow-y-auto space-y-2">
+                          {sampleData.map((score, index) => (
+                            <label key={index} className="flex items-center p-4 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={scoresToDelete.includes(index)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setScoresToDelete([...scoresToDelete, index]);
+                                  } else {
+                                    setScoresToDelete(scoresToDelete.filter(i => i !== index));
+                                  }
+                                }}
+                                className="w-4 h-4 text-red-600 border-slate-300 rounded focus:ring-red-500"
+                              />
+                              <div className="ml-3 flex-1">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="font-semibold text-slate-800">{score.joueur}</p>
+                                    <p className="text-sm text-slate-600">
+                                      {score.saison} - {score.ligue} - {score.championnat}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-blue-600">{score.points} pts</p>
+                                    <p className="text-xs text-slate-500">
+                                      {score.buts_pour}-{score.buts_contre} (GA: {score.ga})
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+
+                        {scoresToDelete.length > 0 && (
+                          <button
+                            onClick={handleDeleteScores}
+                            className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                          >
+                            Supprimer {scoresToDelete.length} score(s)
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : showEditLigueForm ? (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Éditer une ligue</h3>
+                        <button
+                          onClick={() => {
+                            setShowEditLigueForm(false);
+                            setEditingLigue(null);
+                          }}
+                          className="text-slate-600 hover:text-slate-800"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+
+                      {!editingLigue ? (
+                        <div className="space-y-4">
+                          <p className="text-sm text-slate-600 mb-4">Sélectionnez une ligue à modifier :</p>
+                          <div className="space-y-2">
+                            {Object.keys(ligueMetadata).map((ligueKey) => {
+                              const metadata = ligueMetadata[ligueKey];
+                              const [saison, ligue, championnat] = ligueKey.split('-');
+                              return (
+                                <button
+                                  key={ligueKey}
+                                  onClick={() => setEditingLigue({ ligueKey, ...metadata, saison, ligue, championnat })}
+                                  className="w-full p-4 bg-white rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <p className="font-semibold text-slate-800">{ligue} - {championnat}</p>
+                                      <p className="text-sm text-slate-600">{saison}</p>
+                                    </div>
+                                    <div className="text-right text-sm text-slate-600">
+                                      <p>Total matchs: {metadata.matchsTotal}</p>
+                                      <p>Matchs entrés: {metadata.matchsEntered}</p>
+                                    </div>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          const updatedMetadata = {
+                            ...ligueMetadata,
+                            [editingLigue.ligueKey]: {
+                              createdAt: editingLigue.createdAt,
+                              matchsTotal: parseInt(editingLigue.matchsTotal),
+                              matchsEntered: editingLigue.matchsEntered,
+                              lastEntryDate: editingLigue.lastEntryDate
+                            }
+                          };
+                          setLigueMetadata(updatedMetadata);
+                          setShowEditLigueForm(false);
+                          setEditingLigue(null);
+                          alert('Ligue modifiée avec succès !');
+                        }} className="space-y-4">
+                          <div>
+                            <p className="text-sm text-slate-600 mb-2">
+                              <strong>Ligue :</strong> {editingLigue.ligue} - {editingLigue.championnat}
+                            </p>
+                            <p className="text-sm text-slate-600 mb-4">
+                              <strong>Saison :</strong> {editingLigue.saison}
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                              Nombre total de matchs
+                            </label>
+                            <input
+                              type="number"
+                              value={editingLigue.matchsTotal}
+                              onChange={(e) => setEditingLigue({...editingLigue, matchsTotal: e.target.value})}
+                              min="1"
+                              required
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+
+                          <div className="flex gap-3">
+                            <button
+                              type="submit"
+                              className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                            >
+                              Enregistrer les modifications
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingLigue(null)}
+                              className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                            >
+                              Retour
+                            </button>
+                          </div>
+                        </form>
                       )}
                     </div>
                   ) : showEditScoreForm ? (
@@ -1009,7 +1212,7 @@ const App = () => {
                                   <div>
                                     <p className="font-semibold text-slate-800">{score.joueur}</p>
                                     <p className="text-sm text-slate-600">
-                                      {score.saison} - {score.championnat} - {score.edition}
+                                      {score.saison} - {score.ligue} - {score.championnat}
                                     </p>
                                   </div>
                                   <div className="text-right">
@@ -1041,17 +1244,17 @@ const App = () => {
                             dateEntree: new Date().toISOString()
                           };
 
-                          // Recalculate ranks for this edition
-                          const sameEditionScores = updatedData
+                          // Recalculate ranks for this championnat
+                          const sameChampionnatScores = updatedData
                             .map((s, i) => ({...s, originalIndex: i}))
                             .filter(s =>
                               s.saison === editingScore.saison &&
-                              s.championnat === editingScore.championnat &&
-                              s.edition === editingScore.edition
+                              s.ligue === editingScore.ligue &&
+                              s.championnat === editingScore.championnat
                             )
                             .sort((a, b) => b.points - a.points);
 
-                          sameEditionScores.forEach((s, rank) => {
+                          sameChampionnatScores.forEach((s, rank) => {
                             updatedData[s.originalIndex].rang = rank + 1;
                           });
 
@@ -1065,7 +1268,7 @@ const App = () => {
                               <strong>Joueur :</strong> {editingScore.joueur}
                             </p>
                             <p className="text-sm text-slate-600 mb-2">
-                              <strong>Édition :</strong> {editingScore.saison} - {editingScore.championnat} - {editingScore.edition}
+                              <strong>Ligue :</strong> {editingScore.saison} - {editingScore.ligue} - {editingScore.championnat}
                             </p>
                           </div>
 
@@ -1125,11 +1328,10 @@ const App = () => {
                             setShowAddScoreForm(false);
                             setAdminFormData({
                               saison: '2025/2026',
+                              ligue: '',
                               championnat: '',
-                              edition: '',
-                              isNewEdition: false,
-                              newEditionName: '',
-                              newEditionMatchs: 6,
+                              isNewChampionnat: false,
+                              newChampionnatMatchs: 6,
                               selectedPlayers: [],
                               playerScores: {}
                             });
@@ -1155,84 +1357,84 @@ const App = () => {
                           </select>
                         </div>
 
-                        {/* Championnat - Checkboxes */}
+                        {/* Ligue - Radio buttons */}
                         <div>
                           <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Championnat
+                            Ligue
                           </label>
                           <div className="flex flex-wrap gap-3">
-                            {['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'].map(champ => (
-                              <label key={champ} className="inline-flex items-center">
+                            {['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'].map(ligue => (
+                              <label key={ligue} className="inline-flex items-center">
                                 <input
                                   type="radio"
-                                  name="championnat"
-                                  value={champ}
-                                  checked={adminFormData.championnat === champ}
+                                  name="ligue"
+                                  value={ligue}
+                                  checked={adminFormData.ligue === ligue}
                                   onChange={(e) => setAdminFormData({
                                     ...adminFormData,
-                                    championnat: e.target.value,
-                                    edition: '',
-                                    isNewEdition: false
+                                    ligue: e.target.value,
+                                    championnat: '',
+                                    isNewChampionnat: false
                                   })}
                                   className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
                                 />
-                                <span className="ml-2 text-sm text-slate-700">{champ}</span>
+                                <span className="ml-2 text-sm text-slate-700">{ligue}</span>
                               </label>
                             ))}
                           </div>
                         </div>
 
-                        {/* Édition */}
-                        {adminFormData.championnat && (
+                        {/* Championnat */}
+                        {adminFormData.ligue && (
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Édition
+                              Championnat
                             </label>
                             <div className="space-y-2">
-                              {/* Existing editions */}
-                              {editionsByChampionnat[adminFormData.championnat]?.map(ed => (
-                                <label key={ed} className="flex items-center">
+                              {/* Existing championnats */}
+                              {championnatsByLigue[adminFormData.ligue]?.map(ch => (
+                                <label key={ch} className="flex items-center">
                                   <input
                                     type="radio"
-                                    name="edition"
-                                    value={ed}
-                                    checked={!adminFormData.isNewEdition && adminFormData.edition === ed}
+                                    name="championnat"
+                                    value={ch}
+                                    checked={!adminFormData.isNewChampionnat && adminFormData.championnat === ch}
                                     onChange={(e) => setAdminFormData({
                                       ...adminFormData,
-                                      edition: e.target.value,
-                                      isNewEdition: false
+                                      championnat: e.target.value,
+                                      isNewChampionnat: false
                                     })}
                                     className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
                                   />
-                                  <span className="ml-2 text-sm text-slate-700">{ed}</span>
+                                  <span className="ml-2 text-sm text-slate-700">{ch}</span>
                                 </label>
                               ))}
 
-                              {/* Create new edition */}
+                              {/* Create new championnat */}
                               <label className="flex items-center">
                                 <input
                                   type="radio"
-                                  name="edition"
-                                  checked={adminFormData.isNewEdition}
+                                  name="championnat"
+                                  checked={adminFormData.isNewChampionnat}
                                   onChange={() => setAdminFormData({
                                     ...adminFormData,
-                                    isNewEdition: true,
-                                    edition: ''
+                                    isNewChampionnat: true,
+                                    championnat: ''
                                   })}
                                   className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
                                 />
-                                <span className="ml-2 text-sm font-medium text-blue-600">Créer une nouvelle édition</span>
+                                <span className="ml-2 text-sm font-medium text-blue-600">Créer un nouveau championnat</span>
                               </label>
 
-                              {adminFormData.isNewEdition && (
+                              {adminFormData.isNewChampionnat && (
                                 <div className="ml-6 space-y-3">
                                   <div className="bg-blue-50 p-3 rounded-lg">
                                     <p className="text-sm text-blue-800">
-                                      <strong>Nom de l'édition :</strong> #{
+                                      <strong>Nom du championnat :</strong> #{
                                         sampleData.filter(
-                                          d => d.saison === adminFormData.saison && d.championnat === adminFormData.championnat
+                                          d => d.saison === adminFormData.saison && d.ligue === adminFormData.ligue
                                         ).reduce((acc, d) => {
-                                          if (!acc.includes(d.edition)) acc.push(d.edition);
+                                          if (!acc.includes(d.championnat)) acc.push(d.championnat);
                                           return acc;
                                         }, []).length + 1
                                       }
@@ -1244,8 +1446,8 @@ const App = () => {
                                     </label>
                                     <input
                                       type="number"
-                                      value={adminFormData.newEditionMatchs}
-                                      onChange={(e) => setAdminFormData({...adminFormData, newEditionMatchs: parseInt(e.target.value)})}
+                                      value={adminFormData.newChampionnatMatchs}
+                                      onChange={(e) => setAdminFormData({...adminFormData, newChampionnatMatchs: parseInt(e.target.value)})}
                                       min="1"
                                       className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
