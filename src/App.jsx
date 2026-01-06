@@ -828,17 +828,15 @@ const App = () => {
                 </h3>
                 <div className="space-y-2">
                   {matchesListForChampionnat.map((match, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                      <div className="text-slate-600">
+                    <div key={index} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <span className="text-slate-600">
                         {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-800">{match.joueur1}</span>
-                        <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
-                        <span className="text-slate-400">-</span>
-                        <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
-                        <span className="font-medium text-slate-800">{match.joueur2}</span>
-                      </div>
+                      </span>
+                      <span className="font-medium text-slate-800">{match.joueur1}</span>
+                      <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
+                      <span className="text-slate-400">-</span>
+                      <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
+                      <span className="font-medium text-slate-800">{match.joueur2}</span>
                     </div>
                   ))}
                 </div>
