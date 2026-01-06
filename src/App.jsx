@@ -1157,37 +1157,6 @@ const App = () => {
               return null;
             })()}
 
-            {/* Evolution chart */}
-            {selectedChampionnat === 'total' && evolutionData.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                  Évolution {selectedLigue === 'general' ? 'générale' : selectedLigue}
-                </h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={evolutionData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="championnat" stroke="#64748b" angle={-45} textAnchor="end" height={100} />
-                    <YAxis stroke="#64748b" />
-                    <Tooltip />
-                    <Legend />
-                    {joueurs.map(joueur => {
-                      const colors = { Paul: '#2563eb', Adrien: '#16a34a', Tiago: '#9333ea', Roman: '#ea580c' };
-                      return (
-                        <Line
-                          key={joueur}
-                          type="monotone"
-                          dataKey={joueur}
-                          stroke={colors[joueur] || '#6b7280'}
-                          strokeWidth={3}
-                          dot={{ r: 5 }}
-                        />
-                      );
-                    })}
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-
             {/* Légende */}
             <div className="mt-4 bg-blue-50 rounded-xl p-4">
               <p className="text-sm text-blue-800">
@@ -1655,7 +1624,7 @@ const App = () => {
                         {/* Second match (auto-displayed when joueur1 and joueur2 are selected) */}
                         {adminFormData.joueur1 && adminFormData.joueur2 && adminFormData.joueur3 && adminFormData.joueur4 && (
                           <div className="border-t pt-6">
-                            <h4 className="text-md font-semibold text-slate-700 mb-4">Match 2 (optionnel)</h4>
+                            <h4 className="text-md font-semibold text-slate-700 mb-4">Match 2</h4>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                               <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 3</label>
