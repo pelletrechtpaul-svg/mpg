@@ -778,11 +778,24 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
-          <p className="text-slate-600">Statistiques et performances</p>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
+            <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
+          </div>
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 border-2 border-black ${
+              activeTab === 'admin'
+                ? 'bg-red-600 text-white shadow-lg'
+                : 'bg-white text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <Lock className="w-4 h-4 text-red-600" />
+            <span className="text-red-600">Admin</span>
+          </button>
         </div>
 
         {/* Season Navigation */}
@@ -794,7 +807,7 @@ const App = () => {
                 setSelectedSeason(season);
                 if (activeTab === 'admin') setActiveTab('classements');
               }}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 selectedSeason === season && activeTab !== 'admin'
                   ? 'bg-purple-600 text-white shadow-lg'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -803,17 +816,6 @@ const App = () => {
               {season}
             </button>
           ))}
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 ${
-              activeTab === 'admin'
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <Lock className="w-4 h-4" />
-            Admin
-          </button>
         </div>
 
         {/* Sub-navigation */}
@@ -821,7 +823,7 @@ const App = () => {
           <div className="flex gap-2 mb-6 flex-wrap">
             <button
               onClick={() => setActiveTab('classements')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 activeTab === 'classements'
                   ? 'bg-blue-600 text-white shadow-lg'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -831,7 +833,7 @@ const App = () => {
             </button>
             <button
               onClick={() => setActiveTab('versus')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 activeTab === 'versus'
                   ? 'bg-blue-600 text-white shadow-lg'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -846,14 +848,14 @@ const App = () => {
         {activeTab === 'classements' && (
           <>
             {/* Onglets de ligue */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="flex flex-wrap gap-2 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-3 sm:p-6 mb-6">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
                 <button
                   onClick={() => {
                     setSelectedLigue('general');
                     setSelectedChampionnat('total');
                   }}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                     selectedLigue === 'general'
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -878,7 +880,7 @@ const App = () => {
                         }
                       }
                     }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                       selectedLigue === ligue
                         ? 'bg-blue-600 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -926,30 +928,30 @@ const App = () => {
               } : {}}
             >
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-xs sm:text-sm">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Rang</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Joueur</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Matchs</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">V</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">N</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">D</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">GA</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700">Rang</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700">Joueur</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Matchs</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">V</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">N</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">D</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Titres</th>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Médailles</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Titres</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Médailles</th>
                         </>
                       )}
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Points</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">Points</th>
                     </tr>
                   </thead>
                   <tbody>
                     {classementParLigue.map((player, index) => (
                       <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
+                        <td className="px-2 py-2 sm:px-6 sm:py-4">
+                          <div className="flex items-center gap-1 sm:gap-2">
                             {index === 0 && (() => {
                               // Show trophy only if:
                               // 1. Championship is complete (all matches played), OR
@@ -960,29 +962,29 @@ const App = () => {
                                 return metadata && metadata.matchsEntered >= metadata.matchsTotal;
                               })();
                               const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
-                              return (isComplete || isGeneral20242025) && <Trophy className="w-5 h-5 text-yellow-500" />;
+                              return (isComplete || isGeneral20242025) && <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />;
                             })()}
-                            <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                            <span className="font-bold text-base sm:text-lg text-slate-700">{index + 1}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4">
+                          <div className="flex items-center gap-1.5 sm:gap-3">
+                            <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
                             <span className="font-semibold text-slate-800">{player.joueur}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
-                        <td className="px-6 py-4 text-center text-green-600 font-semibold">{player.victoires}</td>
-                        <td className="px-6 py-4 text-center text-slate-600">{player.nuls}</td>
-                        <td className="px-6 py-4 text-center text-red-600 font-semibold">{player.defaites}</td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-2">
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 hidden md:table-cell">{player.matchs}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-green-600 font-semibold hidden lg:table-cell">{player.victoires}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-600 hidden lg:table-cell">{player.nuls}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-red-600 font-semibold hidden lg:table-cell">{player.defaites}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
+                          <div className="flex items-center justify-center gap-1 sm:gap-2">
                             <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {player.ga > 0 ? '+' : ''}{player.ga}
                             </span>
                             <button
                               onClick={() => setShowGoalsDetail(player)}
-                              className="text-blue-600 hover:text-blue-800 font-bold text-lg"
+                              className="text-blue-600 hover:text-blue-800 font-bold text-sm sm:text-lg"
                             >
                               +
                             </button>
@@ -990,16 +992,16 @@ const App = () => {
                         </td>
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                           <>
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center hidden md:table-cell">
                               <span className="font-semibold text-yellow-600">{player.victoiresChampionnat || 0}</span>
                             </td>
-                            <td className="px-6 py-4 text-center">
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center hidden md:table-cell">
                               <span className="font-semibold text-slate-500">{player.medaillesChampionnat || 0}</span>
                             </td>
                           </>
                         )}
-                        <td className="px-6 py-4 text-center">
-                          <span className="text-xl font-bold text-blue-600">{player.points}</span>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
+                          <span className="text-base sm:text-xl font-bold text-blue-600">{player.points}</span>
                         </td>
                       </tr>
                     ))}
@@ -1041,25 +1043,25 @@ const App = () => {
                     <h3 className="text-lg font-semibold text-slate-800">Statistiques Valises 💼</h3>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
                         <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Joueur</th>
-                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Utilisées</th>
-                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Reçues</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Utilisées</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Reçues</th>
                         </tr>
                       </thead>
                       <tbody>
                         {joueurs.map(joueur => (
                           <tr key={joueur} className="border-t hover:bg-slate-50">
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
+                            <td className="px-2 py-2 sm:px-6 sm:py-4">
+                              <div className="flex items-center gap-1.5 sm:gap-3">
+                                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
                                 <span className="font-semibold text-slate-800">{joueur}</span>
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-center font-semibold text-blue-600">{valiseStats[joueur].utilisees}</td>
-                            <td className="px-6 py-4 text-center font-semibold text-red-600">{valiseStats[joueur].recues}</td>
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600">{valiseStats[joueur].utilisees}</td>
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-600">{valiseStats[joueur].recues}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1074,12 +1076,12 @@ const App = () => {
                     <p className="text-xs text-slate-600 mt-1">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
                         <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Rang</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Joueur</th>
-                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Valises Efficaces</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Rang</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Valises Efficaces</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1088,17 +1090,17 @@ const App = () => {
                           .sort((a, b) => b.efficaces - a.efficaces)
                           .map((item, index) => (
                             <tr key={item.joueur} className="border-t hover:bg-slate-50">
-                              <td className="px-6 py-4">
-                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                              <td className="px-2 py-2 sm:px-6 sm:py-4">
+                                <span className="font-bold text-base sm:text-lg text-slate-700">{index + 1}</span>
                               </td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-3 h-3 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
+                              <td className="px-2 py-2 sm:px-6 sm:py-4">
+                                <div className="flex items-center gap-1.5 sm:gap-3">
+                                  <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
                                   <span className="font-semibold text-slate-800">{item.joueur}</span>
                                 </div>
                               </td>
-                              <td className="px-6 py-4 text-center">
-                                <span className="text-xl font-bold text-green-600">{item.efficaces}</span>
+                              <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
+                                <span className="text-base sm:text-xl font-bold text-green-600">{item.efficaces}</span>
                               </td>
                             </tr>
                           ))}
@@ -1117,17 +1119,17 @@ const App = () => {
                 </h3>
                 <div className="space-y-2">
                   {matchesListForChampionnat.map((match, index) => (
-                    <div key={index} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                      <span className="text-slate-600">
+                    <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-xs sm:text-base">
+                      <span className="text-slate-600 min-w-[70px] sm:min-w-0">
                         {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </span>
                       <span className="font-medium text-slate-800">{match.joueur1}</span>
-                      <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
+                      <span className="text-sm sm:text-lg font-bold text-blue-600">{match.buts_j1}</span>
                       <span className="text-slate-400">-</span>
-                      <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
+                      <span className="text-sm sm:text-lg font-bold text-purple-600">{match.buts_j2}</span>
                       <span className="font-medium text-slate-800">{match.joueur2}</span>
                       {(match.valise_j1 || match.valise_j2) && (
-                        <span className="text-sm">💼</span>
+                        <span className="text-xs sm:text-sm">💼</span>
                       )}
                     </div>
                   ))}
