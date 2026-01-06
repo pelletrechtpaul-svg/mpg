@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
 import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
 
 const defaultMatchData = [];
@@ -48,7 +48,11 @@ const App = () => {
     joueur1: '',
     joueur2: '',
     buts_j1: '',
-    buts_j2: ''
+    buts_j2: '',
+    joueur3: '',
+    joueur4: '',
+    buts_j3: '',
+    buts_j4: ''
   });
 
   // Save to localStorage
@@ -341,6 +345,37 @@ const App = () => {
     });
   }, [filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue]);
 
+  // Calculate remaining players for second match
+  const remainingPlayers = useMemo(() => {
+    if (!adminFormData.joueur1 || !adminFormData.joueur2) return [];
+    const allPlayers = ['Paul', 'Adrien', 'Tiago', 'Roman'];
+    return allPlayers.filter(p => p !== adminFormData.joueur1 && p !== adminFormData.joueur2);
+  }, [adminFormData.joueur1, adminFormData.joueur2]);
+
+  // Auto-assign joueur3 and joueur4 when joueur1 and joueur2 change
+  useEffect(() => {
+    if (remainingPlayers.length === 2) {
+      setAdminFormData(prev => ({
+        ...prev,
+        joueur3: remainingPlayers[0],
+        joueur4: remainingPlayers[1]
+      }));
+    }
+  }, [remainingPlayers]);
+
+  // Matches list for current championnat
+  const matchesListForChampionnat = useMemo(() => {
+    if (selectedLigue === 'general') return [];
+
+    let matches = filteredData.filter(d => d.ligue === selectedLigue);
+
+    if (selectedChampionnat !== 'total') {
+      matches = matches.filter(d => d.championnat === selectedChampionnat);
+    }
+
+    return matches.sort((a, b) => new Date(b.dateEntree) - new Date(a.dateEntree));
+  }, [filteredData, selectedLigue, selectedChampionnat]);
+
   // Admin: Login
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -361,14 +396,14 @@ const App = () => {
     setShowEditLigueForm(false);
   };
 
-  // Admin: Add match
+  // Admin: Add match (can add 2 matches at once)
   const handleAddMatch = (e) => {
     e.preventDefault();
 
-    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2 } = adminFormData;
+    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2, joueur3, joueur4, buts_j3, buts_j4 } = adminFormData;
 
     if (!ligue || !joueur1 || !joueur2) {
-      alert('Veuillez remplir tous les champs');
+      alert('Veuillez remplir tous les champs du premier match');
       return;
     }
 
@@ -378,9 +413,12 @@ const App = () => {
     }
 
     if (buts_j1 === '' || buts_j2 === '') {
-      alert('Veuillez entrer les buts des deux joueurs');
+      alert('Veuillez entrer les buts des deux joueurs du premier match');
       return;
     }
+
+    // Check if second match is filled
+    const hasSecondMatch = joueur3 && joueur4 && buts_j3 !== '' && buts_j4 !== '';
 
     let championnatToUse = championnat;
 
@@ -410,6 +448,10 @@ const App = () => {
       return;
     }
 
+    const newMatches = [];
+    const currentDate = new Date().toISOString();
+
+    // First match
     const butsJ1 = parseInt(buts_j1);
     const butsJ2 = parseInt(buts_j2);
 
@@ -429,7 +471,7 @@ const App = () => {
       resultat = 'nul';
     }
 
-    const newMatch = {
+    newMatches.push({
       saison,
       ligue,
       championnat: championnatToUse,
@@ -440,10 +482,46 @@ const App = () => {
       resultat,
       points_j1,
       points_j2,
-      dateEntree: new Date().toISOString()
-    };
+      dateEntree: currentDate
+    });
 
-    setMatchData([...matchData, newMatch]);
+    // Second match (if filled)
+    if (hasSecondMatch) {
+      const butsJ3 = parseInt(buts_j3);
+      const butsJ4 = parseInt(buts_j4);
+
+      let points_j3, points_j4, resultat2;
+
+      if (butsJ3 > butsJ4) {
+        points_j3 = 3;
+        points_j4 = 0;
+        resultat2 = 'victoire_j1';
+      } else if (butsJ3 < butsJ4) {
+        points_j3 = 0;
+        points_j4 = 3;
+        resultat2 = 'victoire_j2';
+      } else {
+        points_j3 = 1;
+        points_j4 = 1;
+        resultat2 = 'nul';
+      }
+
+      newMatches.push({
+        saison,
+        ligue,
+        championnat: championnatToUse,
+        joueur1: joueur3,
+        joueur2: joueur4,
+        buts_j1: butsJ3,
+        buts_j2: butsJ4,
+        resultat: resultat2,
+        points_j1: points_j3,
+        points_j2: points_j4,
+        dateEntree: currentDate
+      });
+    }
+
+    setMatchData([...matchData, ...newMatches]);
 
     // Update metadata
     const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
@@ -452,8 +530,8 @@ const App = () => {
         ...ligueMetadata,
         [ligueKey]: {
           ...ligueMetadata[ligueKey],
-          matchsEntered: ligueMetadata[ligueKey].matchsEntered + 1,
-          lastEntryDate: new Date().toISOString()
+          matchsEntered: ligueMetadata[ligueKey].matchsEntered + newMatches.length,
+          lastEntryDate: currentDate
         }
       });
     }
@@ -468,10 +546,14 @@ const App = () => {
       joueur1: '',
       joueur2: '',
       buts_j1: '',
-      buts_j2: ''
+      buts_j2: '',
+      joueur3: '',
+      joueur4: '',
+      buts_j3: '',
+      buts_j4: ''
     });
 
-    alert('Match ajouté avec succès !');
+    alert(`${newMatches.length} match${newMatches.length > 1 ? 's' : ''} ajouté${newMatches.length > 1 ? 's' : ''} avec succès !`);
   };
 
   // Admin: Delete matches
@@ -738,6 +820,31 @@ const App = () => {
               </div>
             </div>
 
+            {/* Liste des matchs */}
+            {selectedLigue !== 'general' && matchesListForChampionnat.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                  Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
+                </h3>
+                <div className="space-y-2">
+                  {matchesListForChampionnat.map((match, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-800">{match.joueur1}</span>
+                        <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
+                        <span className="text-slate-400">-</span>
+                        <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
+                        <span className="font-medium text-slate-800">{match.joueur2}</span>
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Metadata */}
             {selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
               const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
@@ -993,21 +1100,34 @@ const App = () => {
                       <div className="text-sm text-slate-600 mt-2">Buts {selectedVersusPlayer2}</div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-blue-600">{versusStats.points_j1}</div>
-                        <div className="text-sm text-slate-600 mt-1">Points {selectedVersusPlayer1}</div>
-                      </div>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-4">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-purple-600">{versusStats.points_j2}</div>
-                        <div className="text-sm text-slate-600 mt-1">Points {selectedVersusPlayer2}</div>
-                      </div>
-                    </div>
-                  </div>
+                {/* Graphique en camembert des victoires */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-slate-800 mb-4 text-center">Répartition des victoires</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: selectedVersusPlayer1, value: versusStats.victoires_j1 },
+                          { name: 'Nuls', value: versusStats.nuls },
+                          { name: selectedVersusPlayer2, value: versusStats.victoires_j2 }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({name, value, percent}) => value > 0 ? `${name}: ${value} (${(percent * 100).toFixed(0)}%)` : ''}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#94a3b8" />
+                        <Cell fill="#9333ea" />
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
 
                 <div className="bg-blue-50 rounded-xl p-4">
@@ -1105,7 +1225,11 @@ const App = () => {
                               joueur1: '',
                               joueur2: '',
                               buts_j1: '',
-                              buts_j2: ''
+                              buts_j2: '',
+                              joueur3: '',
+                              joueur4: '',
+                              buts_j3: '',
+                              buts_j4: ''
                             });
                           }}
                           className="text-slate-600 hover:text-slate-800"
@@ -1288,8 +1412,76 @@ const App = () => {
                           </div>
                         )}
 
+                        {/* Second match (auto-displayed when joueur1 and joueur2 are selected) */}
+                        {adminFormData.joueur1 && adminFormData.joueur2 && adminFormData.joueur3 && adminFormData.joueur4 && (
+                          <div className="border-t pt-6">
+                            <h4 className="text-md font-semibold text-slate-700 mb-4">Match 2 (optionnel)</h4>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 3</label>
+                                <input
+                                  type="text"
+                                  value={adminFormData.joueur3}
+                                  readOnly
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100 cursor-not-allowed"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 4</label>
+                                <input
+                                  type="text"
+                                  value={adminFormData.joueur4}
+                                  readOnly
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100 cursor-not-allowed"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Score du match</label>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur3}</label>
+                                  <input
+                                    type="number"
+                                    value={adminFormData.buts_j3}
+                                    onChange={(e) => setAdminFormData({...adminFormData, buts_j3: e.target.value})}
+                                    min="0"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur4}</label>
+                                  <input
+                                    type="number"
+                                    value={adminFormData.buts_j4}
+                                    onChange={(e) => setAdminFormData({...adminFormData, buts_j4: e.target.value})}
+                                    min="0"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                    placeholder="0"
+                                  />
+                                </div>
+                              </div>
+                              {adminFormData.buts_j3 !== '' && adminFormData.buts_j4 !== '' && (
+                                <div className="mt-3 bg-blue-50 p-3 rounded-lg">
+                                  <p className="text-sm text-blue-800">
+                                    <strong>Résultat :</strong> {
+                                      parseInt(adminFormData.buts_j3) > parseInt(adminFormData.buts_j4)
+                                        ? `Victoire ${adminFormData.joueur3} (3 pts)`
+                                        : parseInt(adminFormData.buts_j3) < parseInt(adminFormData.buts_j4)
+                                        ? `Victoire ${adminFormData.joueur4} (3 pts)`
+                                        : 'Match nul (1 pt chacun)'
+                                    }
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         <button type="submit" className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
-                          Enregistrer le match
+                          Enregistrer {adminFormData.joueur3 && adminFormData.joueur4 && adminFormData.buts_j3 !== '' && adminFormData.buts_j4 !== '' ? 'les 2 matchs' : 'le match'}
                         </button>
                       </form>
                     </div>
