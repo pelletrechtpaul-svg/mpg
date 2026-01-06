@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
 import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
+import { db } from './firebase';
+import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 
 const defaultMatchData = [];
 
@@ -13,16 +15,10 @@ const playerImages = {
 };
 
 const App = () => {
-  // Load data from localStorage
-  const [matchData, setMatchData] = useState(() => {
-    const saved = localStorage.getItem('mpg_match_data');
-    return saved ? JSON.parse(saved) : defaultMatchData;
-  });
-
-  const [ligueMetadata, setLigueMetadata] = useState(() => {
-    const saved = localStorage.getItem('mpg_ligue_metadata');
-    return saved ? JSON.parse(saved) : {};
-  });
+  // State - now synced with Firestore
+  const [matchData, setMatchData] = useState([]);
+  const [ligueMetadata, setLigueMetadata] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
@@ -71,14 +67,71 @@ const App = () => {
     dateMatch: new Date().toISOString().split('T')[0]
   });
 
-  // Save to localStorage
+  // Migrate localStorage to Firestore and setup real-time sync
   useEffect(() => {
-    localStorage.setItem('mpg_match_data', JSON.stringify(matchData));
-  }, [matchData]);
+    const migrateAndSync = async () => {
+      try {
+        // Check if localStorage has data
+        const savedMatches = localStorage.getItem('mpg_match_data');
+        const savedMetadata = localStorage.getItem('mpg_ligue_metadata');
 
-  useEffect(() => {
-    localStorage.setItem('mpg_ligue_metadata', JSON.stringify(ligueMetadata));
-  }, [ligueMetadata]);
+        // Migrate to Firestore if localStorage has data
+        if (savedMatches) {
+          const localMatches = JSON.parse(savedMatches);
+          if (localMatches.length > 0) {
+            const batch = writeBatch(db);
+            localMatches.forEach((match, index) => {
+              const matchRef = doc(collection(db, 'matches'));
+              batch.set(matchRef, { ...match, id: matchRef.id });
+            });
+            await batch.commit();
+            console.log('✅ Matches migrated to Firestore');
+            localStorage.removeItem('mpg_match_data'); // Clean up
+          }
+        }
+
+        if (savedMetadata) {
+          const localMetadata = JSON.parse(savedMetadata);
+          if (Object.keys(localMetadata).length > 0) {
+            const batch = writeBatch(db);
+            Object.entries(localMetadata).forEach(([key, value]) => {
+              const metaRef = doc(db, 'metadata', key);
+              batch.set(metaRef, value);
+            });
+            await batch.commit();
+            console.log('✅ Metadata migrated to Firestore');
+            localStorage.removeItem('mpg_ligue_metadata'); // Clean up
+          }
+        }
+
+        // Setup real-time listeners
+        const unsubscribeMatches = onSnapshot(collection(db, 'matches'), (snapshot) => {
+          const matches = snapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id }));
+          setMatchData(matches);
+          setIsLoading(false);
+        });
+
+        const unsubscribeMetadata = onSnapshot(collection(db, 'metadata'), (snapshot) => {
+          const metadata = {};
+          snapshot.docs.forEach(doc => {
+            metadata[doc.id] = doc.data();
+          });
+          setLigueMetadata(metadata);
+        });
+
+        // Cleanup listeners on unmount
+        return () => {
+          unsubscribeMatches();
+          unsubscribeMetadata();
+        };
+      } catch (error) {
+        console.error('Error syncing with Firestore:', error);
+        setIsLoading(false);
+      }
+    };
+
+    migrateAndSync();
+  }, []);
 
   // Filter data by season
   const filteredData = useMemo(() => {
@@ -545,7 +598,7 @@ const App = () => {
   };
 
   // Admin: Add match (can add 2 matches at once)
-  const handleAddMatch = (e) => {
+  const handleAddMatch = async (e) => {
     e.preventDefault();
 
     const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2, valise_j1, valise_j2, joueur3, joueur4, buts_j3, buts_j4, valise_j3, valise_j4, dateMatch } = adminFormData;
@@ -581,14 +634,20 @@ const App = () => {
       championnatToUse = `#${existingCount + 1}`;
 
       const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-      setLigueMetadata({
-        ...ligueMetadata,
-        [ligueKey]: {
+
+      // Save new championnat metadata to Firestore
+      try {
+        const metaRef = doc(db, 'metadata', ligueKey);
+        await setDoc(metaRef, {
           createdAt: new Date().toISOString(),
           matchsTotal: newChampionnatMatchs,
           matchsEntered: 0
-        }
-      });
+        });
+      } catch (error) {
+        console.error('Error creating championnat:', error);
+        alert('Erreur lors de la création du championnat');
+        return;
+      }
     }
 
     if (!championnatToUse) {
@@ -675,19 +734,31 @@ const App = () => {
       });
     }
 
-    setMatchData([...matchData, ...newMatches]);
+    // Save matches to Firestore
+    try {
+      const batch = writeBatch(db);
 
-    // Update metadata
-    const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-    if (ligueMetadata[ligueKey]) {
-      setLigueMetadata({
-        ...ligueMetadata,
-        [ligueKey]: {
+      newMatches.forEach(match => {
+        const matchRef = doc(collection(db, 'matches'));
+        batch.set(matchRef, { ...match, id: matchRef.id });
+      });
+
+      // Update metadata
+      const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
+      if (ligueMetadata[ligueKey]) {
+        const metaRef = doc(db, 'metadata', ligueKey);
+        batch.set(metaRef, {
           ...ligueMetadata[ligueKey],
           matchsEntered: ligueMetadata[ligueKey].matchsEntered + newMatches.length,
           lastEntryDate: currentDate
-        }
-      });
+        });
+      }
+
+      await batch.commit();
+    } catch (error) {
+      console.error('Error saving matches:', error);
+      alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
+      return;
     }
 
     setShowAddMatchForm(false);
@@ -716,7 +787,7 @@ const App = () => {
   };
 
   // Admin: Delete matches
-  const handleDeleteMatches = () => {
+  const handleDeleteMatches = async () => {
     if (matchesToDelete.length === 0) {
       alert('Veuillez sélectionner au moins un match');
       return;
@@ -726,14 +797,29 @@ const App = () => {
       return;
     }
 
-    setMatchData(matchData.filter((_, i) => !matchesToDelete.includes(i)));
-    setMatchesToDelete([]);
-    setShowDeleteMatchForm(false);
-    alert('Matchs supprimés !');
+    try {
+      const batch = writeBatch(db);
+
+      matchesToDelete.forEach(index => {
+        const match = matchData[index];
+        if (match.firestoreId) {
+          const matchRef = doc(db, 'matches', match.firestoreId);
+          batch.delete(matchRef);
+        }
+      });
+
+      await batch.commit();
+      setMatchesToDelete([]);
+      setShowDeleteMatchForm(false);
+      alert('Matchs supprimés !');
+    } catch (error) {
+      console.error('Error deleting matches:', error);
+      alert('Erreur lors de la suppression');
+    }
   };
 
   // Admin: Edit match
-  const handleEditMatch = (e) => {
+  const handleEditMatch = async (e) => {
     e.preventDefault();
 
     const { index, joueur1, joueur2, buts_j1, buts_j2 } = editingMatch;
@@ -757,9 +843,9 @@ const App = () => {
       resultat = 'nul';
     }
 
-    const updatedData = [...matchData];
-    updatedData[index] = {
-      ...updatedData[index],
+    const match = matchData[index];
+    const updatedMatch = {
+      ...match,
       joueur1,
       joueur2,
       buts_j1: butsJ1,
@@ -770,11 +856,31 @@ const App = () => {
       dateEntree: new Date().toISOString()
     };
 
-    setMatchData(updatedData);
-    setShowEditMatchForm(false);
-    setEditingMatch(null);
-    alert('Match modifié !');
+    try {
+      if (match.firestoreId) {
+        const matchRef = doc(db, 'matches', match.firestoreId);
+        await setDoc(matchRef, updatedMatch);
+      }
+      setShowEditMatchForm(false);
+      setEditingMatch(null);
+      alert('Match modifié !');
+    } catch (error) {
+      console.error('Error updating match:', error);
+      alert('Erreur lors de la modification');
+    }
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Chargement des données...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
