@@ -22,6 +22,11 @@ const App = () => {
   const [selectedChampionnat, setSelectedChampionnat] = useState('total');
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
 
+  // Face à face states
+  const [selectedVersusPlayer1, setSelectedVersusPlayer1] = useState('Paul');
+  const [selectedVersusPlayer2, setSelectedVersusPlayer2] = useState('Adrien');
+  const [selectedVersusLigue, setSelectedVersusLigue] = useState('all');
+
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -237,6 +242,60 @@ const App = () => {
 
     return calculatePlayerStats(matchesToUse, joueurs);
   }, [selectedStatsLigue, filteredData, joueurs]);
+
+  // Face à face stats
+  const versusStats = useMemo(() => {
+    // Filter matches between the two selected players
+    let matchesToUse = filteredData.filter(m =>
+      (m.joueur1 === selectedVersusPlayer1 && m.joueur2 === selectedVersusPlayer2) ||
+      (m.joueur1 === selectedVersusPlayer2 && m.joueur2 === selectedVersusPlayer1)
+    );
+
+    // Filter by ligue if not 'all'
+    if (selectedVersusLigue !== 'all') {
+      matchesToUse = matchesToUse.filter(m => m.ligue === selectedVersusLigue);
+    }
+
+    const stats = {
+      matchs: matchesToUse.length,
+      victoires_j1: 0,
+      victoires_j2: 0,
+      nuls: 0,
+      buts_j1: 0,
+      buts_j2: 0,
+      points_j1: 0,
+      points_j2: 0
+    };
+
+    matchesToUse.forEach(match => {
+      // Determine which player is j1 and j2 in this match
+      if (match.joueur1 === selectedVersusPlayer1) {
+        stats.buts_j1 += match.buts_j1;
+        stats.buts_j2 += match.buts_j2;
+        stats.points_j1 += match.points_j1;
+        stats.points_j2 += match.points_j2;
+
+        if (match.buts_j1 > match.buts_j2) stats.victoires_j1++;
+        else if (match.buts_j1 === match.buts_j2) stats.nuls++;
+        else stats.victoires_j2++;
+      } else {
+        // Players are reversed in the match
+        stats.buts_j1 += match.buts_j2;
+        stats.buts_j2 += match.buts_j1;
+        stats.points_j1 += match.points_j2;
+        stats.points_j2 += match.points_j1;
+
+        if (match.buts_j2 > match.buts_j1) stats.victoires_j1++;
+        else if (match.buts_j1 === match.buts_j2) stats.nuls++;
+        else stats.victoires_j2++;
+      }
+    });
+
+    stats.ga_j1 = stats.buts_j1 - stats.buts_j2;
+    stats.ga_j2 = stats.buts_j2 - stats.buts_j1;
+
+    return stats;
+  }, [filteredData, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue]);
 
   // Evolution data
   const evolutionData = useMemo(() => {
@@ -539,6 +598,16 @@ const App = () => {
             >
               Statistiques
             </button>
+            <button
+              onClick={() => setActiveTab('versus')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === 'versus'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Face à face
+            </button>
           </div>
         )}
 
@@ -839,7 +908,127 @@ const App = () => {
           </>
         )}
 
-        {/* ONGLET ADMIN - I'll add just the login form here due to length limits, full admin in next update */}
+        {/* ONGLET FACE À FACE */}
+        {activeTab === 'versus' && (
+          <>
+            {/* Sélection des joueurs et filtre ligue */}
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
+                  <select
+                    value={selectedVersusPlayer1}
+                    onChange={(e) => setSelectedVersusPlayer1(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    {joueurs.filter(j => j !== selectedVersusPlayer2).map(j => (
+                      <option key={j} value={j}>{j}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
+                  <select
+                    value={selectedVersusPlayer2}
+                    onChange={(e) => setSelectedVersusPlayer2(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    {joueurs.filter(j => j !== selectedVersusPlayer1).map(j => (
+                      <option key={j} value={j}>{j}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
+                  <select
+                    value={selectedVersusLigue}
+                    onChange={(e) => setSelectedVersusLigue(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">Toutes les ligues</option>
+                    {ligues.map(l => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Affichage du bilan */}
+            {versusStats.matchs > 0 ? (
+              <>
+                <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-center flex-1">
+                      <div className={`w-20 h-20 ${playerColors[selectedVersusPlayer1] || 'bg-gray-600'} rounded-full mx-auto mb-3`}></div>
+                      <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
+                    </div>
+                    <div className="text-center px-8">
+                      <div className="text-5xl font-bold text-slate-700">
+                        {versusStats.victoires_j1}
+                        <span className="text-slate-400 mx-3">-</span>
+                        {versusStats.victoires_j2}
+                      </div>
+                      <div className="text-sm text-slate-600 mt-2">
+                        {versusStats.nuls} match{versusStats.nuls > 1 ? 's' : ''} nul{versusStats.nuls > 1 ? 's' : ''}
+                      </div>
+                    </div>
+                    <div className="text-center flex-1">
+                      <div className={`w-20 h-20 ${playerColors[selectedVersusPlayer2] || 'bg-gray-600'} rounded-full mx-auto mb-3`}></div>
+                      <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer2}</h3>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t">
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-blue-600">{versusStats.buts_j1}</div>
+                      <div className="text-sm text-slate-600 mt-2">Buts {selectedVersusPlayer1}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className={`text-4xl font-bold ${versusStats.ga_j1 >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {versusStats.ga_j1 > 0 ? '+' : ''}{versusStats.ga_j1}
+                      </div>
+                      <div className="text-sm text-slate-600 mt-2">Goal Average</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-purple-600">{versusStats.buts_j2}</div>
+                      <div className="text-sm text-slate-600 mt-2">Buts {selectedVersusPlayer2}</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-blue-600">{versusStats.points_j1}</div>
+                        <div className="text-sm text-slate-600 mt-1">Points {selectedVersusPlayer1}</div>
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-purple-600">{versusStats.points_j2}</div>
+                        <div className="text-sm text-slate-600 mt-1">Points {selectedVersusPlayer2}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>Total des confrontations :</strong> {versusStats.matchs} match{versusStats.matchs > 1 ? 's' : ''}
+                    {selectedVersusLigue !== 'all' && ` en ${selectedVersusLigue}`}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <p className="text-slate-600">
+                  Aucune confrontation directe entre {selectedVersusPlayer1} et {selectedVersusPlayer2}
+                  {selectedVersusLigue !== 'all' && ` en ${selectedVersusLigue}`}.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ONGLET ADMIN */}
         {activeTab === 'admin' && (
           <>
             {!isAdminAuthenticated ? (
