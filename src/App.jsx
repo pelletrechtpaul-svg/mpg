@@ -566,7 +566,13 @@ const App = () => {
                     key={ligue}
                     onClick={() => {
                       setSelectedLigue(ligue);
-                      setSelectedChampionnat('total');
+                      // Select the most recent championnat (last in the list) by default
+                      const championnats = championnatsByLigue[ligue];
+                      if (championnats && championnats.length > 0) {
+                        setSelectedChampionnat(championnats[championnats.length - 1]);
+                      } else {
+                        setSelectedChampionnat('total');
+                      }
                     }}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       selectedLigue === ligue
