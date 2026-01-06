@@ -4,6 +4,7 @@ import { Trophy, Lock, Plus } from 'lucide-react';
 
 // Données d'exemple - à remplacer par vos vraies données
 const defaultSampleData = [
+  // 2024/2025 - Ligue 1
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 78, rang: 2 },
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 65, rang: 3 },
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 82, rang: 1 },
@@ -12,14 +13,48 @@ const defaultSampleData = [
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 10, ga: 1, points: 68, rang: 3 },
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 2 },
   { saison: '2024/2025', championnat: 'Ligue 1', edition: '16/10/24-30/11/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 12, ga: -4, points: 52, rang: 4 },
+
+  // 2024/2025 - Premier League
   { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 72, rang: 3 },
   { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 80, rang: 1 },
   { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 66, rang: 4 },
   { saison: '2024/2025', championnat: 'Premier League', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 12, buts_contre: 8, ga: 4, points: 75, rang: 2 },
+
+  // 2024/2025 - Liga
   { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 7, ga: 6, points: 79, rang: 2 },
   { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 84, rang: 1 },
   { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 3 },
   { saison: '2024/2025', championnat: 'Liga', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 11, ga: -2, points: 62, rang: 4 },
+
+  // 2024/2025 - Calcio
+  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 10, buts_contre: 8, ga: 2, points: 73, rang: 3 },
+  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 77, rang: 2 },
+  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 13, buts_contre: 6, ga: 7, points: 81, rang: 1 },
+  { saison: '2024/2025', championnat: 'Calcio', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 10, ga: -2, points: 60, rang: 4 },
+
+  // 2024/2025 - Ligue des Champions
+  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Paul', matchs: 6, buts_pour: 14, buts_contre: 7, ga: 7, points: 80, rang: 1 },
+  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 8, ga: 3, points: 72, rang: 3 },
+  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Tiago', matchs: 6, buts_pour: 12, buts_contre: 9, ga: 3, points: 74, rang: 2 },
+  { saison: '2024/2025', championnat: 'Ligue des Champions', edition: '01/09/24-15/10/24', joueur: 'Roman', matchs: 6, buts_pour: 9, buts_contre: 12, ga: -3, points: 61, rang: 4 },
+
+  // 2023/2024 - All-Time data - Ligue 1
+  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 70, rang: 2 },
+  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 76, rang: 1 },
+  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 10, buts_contre: 10, ga: 0, points: 65, rang: 3 },
+  { saison: '2023/2024', championnat: 'Ligue 1', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 11, ga: -3, points: 55, rang: 4 },
+
+  // 2023/2024 - Premier League
+  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 75, rang: 2 },
+  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 10, buts_contre: 9, ga: 1, points: 68, rang: 3 },
+  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 14, buts_contre: 6, ga: 8, points: 82, rang: 1 },
+  { saison: '2023/2024', championnat: 'Premier League', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 7, buts_contre: 12, ga: -5, points: 52, rang: 4 },
+
+  // 2023/2024 - Liga
+  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Paul', matchs: 6, buts_pour: 13, buts_contre: 8, ga: 5, points: 77, rang: 1 },
+  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Adrien', matchs: 6, buts_pour: 11, buts_contre: 9, ga: 2, points: 71, rang: 3 },
+  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Tiago', matchs: 6, buts_pour: 12, buts_contre: 7, ga: 5, points: 74, rang: 2 },
+  { saison: '2023/2024', championnat: 'Liga', edition: '01/09/23-15/10/23', joueur: 'Roman', matchs: 6, buts_pour: 8, buts_contre: 11, ga: -3, points: 58, rang: 4 },
 ];
 
 const defaultVsData = [
@@ -54,6 +89,18 @@ const App = () => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddScoreForm, setShowAddScoreForm] = useState(false);
+
+  // Admin form states
+  const [adminFormData, setAdminFormData] = useState({
+    saison: '2025/2026',
+    championnat: '',
+    edition: '',
+    isNewEdition: false,
+    newEditionName: '',
+    newEditionMatchs: 6,
+    selectedPlayers: [],
+    playerScores: {}
+  });
 
   // Save to localStorage whenever data changes
   useEffect(() => {
@@ -130,25 +177,85 @@ const App = () => {
   // Add new score
   const handleAddScore = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
 
-    const newScore = {
-      saison: formData.get('saison'),
-      championnat: formData.get('championnat'),
-      edition: formData.get('edition'),
-      joueur: formData.get('joueur'),
-      matchs: parseInt(formData.get('matchs')),
-      buts_pour: parseInt(formData.get('buts_pour')),
-      buts_contre: parseInt(formData.get('buts_contre')),
-      ga: parseInt(formData.get('buts_pour')) - parseInt(formData.get('buts_contre')),
-      points: parseInt(formData.get('points')),
-      rang: parseInt(formData.get('rang')),
-    };
+    const { saison, championnat, edition, isNewEdition, newEditionName, newEditionMatchs, selectedPlayers, playerScores } = adminFormData;
 
-    setSampleData([...sampleData, newScore]);
+    if (!championnat) {
+      alert('Veuillez sélectionner un championnat');
+      return;
+    }
+
+    if (selectedPlayers.length === 0) {
+      alert('Veuillez sélectionner au moins un joueur');
+      return;
+    }
+
+    const editionToUse = isNewEdition ? newEditionName : edition;
+
+    if (!editionToUse) {
+      alert('Veuillez sélectionner ou créer une édition');
+      return;
+    }
+
+    // Validate that all selected players have scores
+    for (const player of selectedPlayers) {
+      if (!playerScores[player] || playerScores[player].buts_pour === undefined || playerScores[player].buts_contre === undefined) {
+        alert(`Veuillez renseigner les buts pour ${player}`);
+        return;
+      }
+    }
+
+    // Calculate points for each player (based on their goals)
+    const newScores = selectedPlayers.map(player => {
+      const buts_pour = parseInt(playerScores[player].buts_pour);
+      const buts_contre = parseInt(playerScores[player].buts_contre);
+      const ga = buts_pour - buts_contre;
+
+      // Simple point calculation: buts_pour * 3 + ga
+      const points = (buts_pour * 3) + ga;
+
+      return {
+        joueur: player,
+        buts_pour,
+        buts_contre,
+        ga,
+        points
+      };
+    });
+
+    // Sort by points to calculate ranks
+    const sortedScores = [...newScores].sort((a, b) => b.points - a.points);
+
+    // Assign ranks
+    sortedScores.forEach((score, index) => {
+      score.rang = index + 1;
+    });
+
+    // Add all scores to sampleData
+    const finalScores = sortedScores.map(score => ({
+      saison,
+      championnat,
+      edition: editionToUse,
+      matchs: newEditionMatchs,
+      ...score
+    }));
+
+    setSampleData([...sampleData, ...finalScores]);
     setShowAddScoreForm(false);
-    e.target.reset();
-    alert('Score ajouté avec succès !');
+
+    // Reset form
+    setAdminFormData({
+      saison: '2025/2026',
+      championnat: '',
+      edition: '',
+      isNewEdition: false,
+      newEditionName: '',
+      newEditionMatchs: 6,
+      selectedPlayers: [],
+      playerScores: {}
+    });
+
+    alert('Scores ajoutés avec succès !');
   };
 
   // Calcul des victoires en championnat (1er de chaque édition)
@@ -849,134 +956,228 @@ const App = () => {
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-slate-800">Nouveau score</h3>
                         <button
-                          onClick={() => setShowAddScoreForm(false)}
+                          onClick={() => {
+                            setShowAddScoreForm(false);
+                            setAdminFormData({
+                              saison: '2025/2026',
+                              championnat: '',
+                              edition: '',
+                              isNewEdition: false,
+                              newEditionName: '',
+                              newEditionMatchs: 6,
+                              selectedPlayers: [],
+                              playerScores: {}
+                            });
+                          }}
                           className="text-slate-600 hover:text-slate-800"
                         >
                           Annuler
                         </button>
                       </div>
-                      <form onSubmit={handleAddScore} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Saison
-                            </label>
-                            <select
-                              name="saison"
-                              required
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                              <option value="2025/2026">2025/2026</option>
-                              <option value="2024/2025">2024/2025</option>
-                            </select>
+                      <form onSubmit={handleAddScore} className="space-y-6">
+                        {/* Saison */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
+                            Saison
+                          </label>
+                          <select
+                            value={adminFormData.saison}
+                            onChange={(e) => setAdminFormData({...adminFormData, saison: e.target.value})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="2025/2026">2025/2026</option>
+                            <option value="2024/2025">2024/2025</option>
+                          </select>
+                        </div>
+
+                        {/* Championnat - Checkboxes */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
+                            Championnat
+                          </label>
+                          <div className="flex flex-wrap gap-3">
+                            {['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'].map(champ => (
+                              <label key={champ} className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  name="championnat"
+                                  value={champ}
+                                  checked={adminFormData.championnat === champ}
+                                  onChange={(e) => setAdminFormData({
+                                    ...adminFormData,
+                                    championnat: e.target.value,
+                                    edition: '',
+                                    isNewEdition: false
+                                  })}
+                                  className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-sm text-slate-700">{champ}</span>
+                              </label>
+                            ))}
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Championnat
-                            </label>
-                            <input
-                              type="text"
-                              name="championnat"
-                              required
-                              placeholder="ex: Ligue 1"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
+                        </div>
+
+                        {/* Édition */}
+                        {adminFormData.championnat && (
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                               Édition
                             </label>
-                            <input
-                              type="text"
-                              name="edition"
-                              required
-                              placeholder="ex: 01/09/24-15/10/24"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <div className="space-y-2">
+                              {/* Existing editions */}
+                              {editionsByChampionnat[adminFormData.championnat]?.map(ed => (
+                                <label key={ed} className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    name="edition"
+                                    value={ed}
+                                    checked={!adminFormData.isNewEdition && adminFormData.edition === ed}
+                                    onChange={(e) => setAdminFormData({
+                                      ...adminFormData,
+                                      edition: e.target.value,
+                                      isNewEdition: false
+                                    })}
+                                    className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                  />
+                                  <span className="ml-2 text-sm text-slate-700">{ed}</span>
+                                </label>
+                              ))}
+
+                              {/* Create new edition */}
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name="edition"
+                                  checked={adminFormData.isNewEdition}
+                                  onChange={() => setAdminFormData({
+                                    ...adminFormData,
+                                    isNewEdition: true,
+                                    edition: ''
+                                  })}
+                                  className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-sm font-medium text-blue-600">Créer une nouvelle édition</span>
+                              </label>
+
+                              {adminFormData.isNewEdition && (
+                                <div className="ml-6 space-y-3">
+                                  <input
+                                    type="text"
+                                    value={adminFormData.newEditionName}
+                                    onChange={(e) => setAdminFormData({...adminFormData, newEditionName: e.target.value})}
+                                    placeholder="ex: 01/12/24-15/01/25"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  />
+                                  <div>
+                                    <label className="block text-sm text-slate-700 mb-1">
+                                      Nombre de matchs
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={adminFormData.newEditionMatchs}
+                                      onChange={(e) => setAdminFormData({...adminFormData, newEditionMatchs: parseInt(e.target.value)})}
+                                      min="1"
+                                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Joueur
-                            </label>
-                            <input
-                              type="text"
-                              name="joueur"
-                              required
-                              placeholder="Nom du joueur"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Nombre de matchs
-                            </label>
-                            <input
-                              type="number"
-                              name="matchs"
-                              required
-                              min="1"
-                              placeholder="6"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Buts pour
-                            </label>
-                            <input
-                              type="number"
-                              name="buts_pour"
-                              required
-                              min="0"
-                              placeholder="12"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Buts contre
-                            </label>
-                            <input
-                              type="number"
-                              name="buts_contre"
-                              required
-                              min="0"
-                              placeholder="8"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Points
-                            </label>
-                            <input
-                              type="number"
-                              name="points"
-                              required
-                              min="0"
-                              placeholder="78"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Rang
-                            </label>
-                            <input
-                              type="number"
-                              name="rang"
-                              required
-                              min="1"
-                              placeholder="2"
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                        )}
+
+                        {/* Joueurs - Checkboxes */}
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
+                            Joueurs
+                          </label>
+                          <div className="space-y-2">
+                            {['Paul', 'Adrien', 'Tiago', 'Roman'].map(player => (
+                              <label key={player} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={adminFormData.selectedPlayers.includes(player)}
+                                  onChange={(e) => {
+                                    const selected = e.target.checked
+                                      ? [...adminFormData.selectedPlayers, player]
+                                      : adminFormData.selectedPlayers.filter(p => p !== player);
+                                    setAdminFormData({...adminFormData, selectedPlayers: selected});
+                                  }}
+                                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                                />
+                                <span className="ml-2 text-sm text-slate-700 font-medium">{player}</span>
+                              </label>
+                            ))}
                           </div>
                         </div>
+
+                        {/* Scores for each selected player */}
+                        {adminFormData.selectedPlayers.length > 0 && (
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-3">
+                              Scores des joueurs
+                            </label>
+                            <div className="space-y-4">
+                              {adminFormData.selectedPlayers.map(player => (
+                                <div key={player} className="bg-slate-100 p-4 rounded-lg">
+                                  <h4 className="font-semibold text-slate-800 mb-3">{player}</h4>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                      <label className="block text-xs text-slate-600 mb-1">
+                                        Buts pour
+                                      </label>
+                                      <input
+                                        type="number"
+                                        value={adminFormData.playerScores[player]?.buts_pour || ''}
+                                        onChange={(e) => setAdminFormData({
+                                          ...adminFormData,
+                                          playerScores: {
+                                            ...adminFormData.playerScores,
+                                            [player]: {
+                                              ...adminFormData.playerScores[player],
+                                              buts_pour: e.target.value
+                                            }
+                                          }
+                                        })}
+                                        min="0"
+                                        placeholder="0"
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs text-slate-600 mb-1">
+                                        Buts contre
+                                      </label>
+                                      <input
+                                        type="number"
+                                        value={adminFormData.playerScores[player]?.buts_contre || ''}
+                                        onChange={(e) => setAdminFormData({
+                                          ...adminFormData,
+                                          playerScores: {
+                                            ...adminFormData.playerScores,
+                                            [player]: {
+                                              ...adminFormData.playerScores[player],
+                                              buts_contre: e.target.value
+                                            }
+                                          }
+                                        })}
+                                        min="0"
+                                        placeholder="0"
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         <button
                           type="submit"
                           className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
                         >
-                          Enregistrer le score
+                          Enregistrer les scores
                         </button>
                       </form>
                     </div>
