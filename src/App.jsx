@@ -1977,9 +1977,9 @@ const App = () => {
                 </div>
 
                 <div className="bg-blue-50 rounded-xl p-6">
-                  <h3 className="font-semibold text-blue-900 mb-2">💾 Sauvegarde automatique</h3>
+                  <h3 className="font-semibold text-blue-900 mb-2">☁️ Synchronisation Cloud</h3>
                   <p className="text-blue-800 text-sm">
-                    Toutes les données sont sauvegardées dans votre navigateur (localStorage).
+                    Toutes les données sont sauvegardées dans Firebase et synchronisées automatiquement entre tous vos appareils en temps réel.
                   </p>
                 </div>
               </div>
