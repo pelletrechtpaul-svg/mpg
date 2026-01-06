@@ -1,18 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { Trophy, Lock, Plus, Trash2 } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
 
-// Données d'exemple - à remplacer par vos vraies données
 const defaultMatchData = [];
 
 const App = () => {
-  // Load data from localStorage or use defaults
+  // Load data from localStorage
   const [matchData, setMatchData] = useState(() => {
     const saved = localStorage.getItem('mpg_match_data');
     return saved ? JSON.parse(saved) : defaultMatchData;
   });
 
-  // Ligue metadata (creation dates, matchs count, etc.)
   const [ligueMetadata, setLigueMetadata] = useState(() => {
     const saved = localStorage.getItem('mpg_ligue_metadata');
     return saved ? JSON.parse(saved) : {};
@@ -35,7 +33,7 @@ const App = () => {
   const [editingLigue, setEditingLigue] = useState(null);
   const [matchesToDelete, setMatchesToDelete] = useState([]);
 
-  // Admin form states
+  // Admin form
   const [adminFormData, setAdminFormData] = useState({
     saison: '2025/2026',
     ligue: '',
@@ -44,10 +42,11 @@ const App = () => {
     newChampionnatMatchs: 6,
     joueur1: '',
     joueur2: '',
-    resultat: ''
+    buts_j1: '',
+    buts_j2: ''
   });
 
-  // Save to localStorage whenever data changes
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem('mpg_match_data', JSON.stringify(matchData));
   }, [matchData]);
@@ -56,11 +55,9 @@ const App = () => {
     localStorage.setItem('mpg_ligue_metadata', JSON.stringify(ligueMetadata));
   }, [ligueMetadata]);
 
-  // Filter data by selected season
+  // Filter data by season
   const filteredData = useMemo(() => {
-    if (selectedSeason === 'All-Time') {
-      return matchData;
-    }
+    if (selectedSeason === 'All-Time') return matchData;
     return matchData.filter(d => d.saison === selectedSeason);
   }, [matchData, selectedSeason]);
 
@@ -78,18 +75,15 @@ const App = () => {
     return uniqueLigues.length > 0 ? uniqueLigues : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
   }, [filteredData]);
 
-  // Get numbered championnats for each ligue
   const championnatsByLigue = useMemo(() => {
-    const championnatsMap = {};
+    const map = {};
     ligues.forEach(ligue => {
       const championnats = [...new Set(
-        filteredData
-          .filter(d => d.ligue === ligue)
-          .map(d => d.championnat)
+        filteredData.filter(d => d.ligue === ligue).map(d => d.championnat)
       )].sort();
-      championnatsMap[ligue] = championnats;
+      map[ligue] = championnats;
     });
-    return championnatsMap;
+    return map;
   }, [filteredData, ligues]);
 
   const playerColors = {
@@ -99,7 +93,196 @@ const App = () => {
     Roman: 'bg-orange-600',
   };
 
-  // Admin authentication
+  // Calculate player stats from matches
+  const calculatePlayerStats = (matches, joueursList) => {
+    const stats = {};
+
+    joueursList.forEach(joueur => {
+      stats[joueur] = {
+        points: 0,
+        matchs: 0,
+        victoires: 0,
+        nuls: 0,
+        defaites: 0,
+        buts_pour: 0,
+        buts_contre: 0,
+        ga: 0
+      };
+    });
+
+    matches.forEach(match => {
+      const { joueur1, joueur2, buts_j1, buts_j2, points_j1, points_j2 } = match;
+
+      if (stats[joueur1]) {
+        stats[joueur1].points += points_j1;
+        stats[joueur1].matchs += 1;
+        stats[joueur1].buts_pour += buts_j1;
+        stats[joueur1].buts_contre += buts_j2;
+
+        if (buts_j1 > buts_j2) stats[joueur1].victoires += 1;
+        else if (buts_j1 === buts_j2) stats[joueur1].nuls += 1;
+        else stats[joueur1].defaites += 1;
+      }
+
+      if (stats[joueur2]) {
+        stats[joueur2].points += points_j2;
+        stats[joueur2].matchs += 1;
+        stats[joueur2].buts_pour += buts_j2;
+        stats[joueur2].buts_contre += buts_j1;
+
+        if (buts_j2 > buts_j1) stats[joueur2].victoires += 1;
+        else if (buts_j1 === buts_j2) stats[joueur2].nuls += 1;
+        else stats[joueur2].defaites += 1;
+      }
+    });
+
+    // Calculate goal average
+    Object.keys(stats).forEach(joueur => {
+      stats[joueur].ga = stats[joueur].buts_pour - stats[joueur].buts_contre;
+    });
+
+    return stats;
+  };
+
+  // Calculate championship victories
+  const victoiresChampionnat = useMemo(() => {
+    const victoires = {};
+    joueurs.forEach(j => victoires[j] = 0);
+
+    const championnatsMap = {};
+    filteredData.forEach(match => {
+      const key = `${match.ligue}-${match.championnat}`;
+      if (!championnatsMap[key]) championnatsMap[key] = [];
+      championnatsMap[key].push(match);
+    });
+
+    Object.entries(championnatsMap).forEach(([key, matches]) => {
+      const stats = calculatePlayerStats(matches, joueurs);
+      const ranking = Object.entries(stats)
+        .map(([joueur, data]) => ({ joueur, ...data }))
+        .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+      if (ranking.length > 0 && ranking[0].points > 0) {
+        victoires[ranking[0].joueur]++;
+      }
+    });
+
+    return victoires;
+  }, [filteredData, joueurs]);
+
+  // Classement général
+  const classementGeneral = useMemo(() => {
+    const stats = calculatePlayerStats(filteredData, joueurs);
+
+    Object.keys(stats).forEach(joueur => {
+      stats[joueur].points += victoiresChampionnat[joueur] * 3;
+      stats[joueur].victoiresChampionnat = victoiresChampionnat[joueur];
+    });
+
+    return Object.entries(stats)
+      .map(([joueur, data]) => ({ joueur, ...data }))
+      .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+  }, [filteredData, joueurs, victoiresChampionnat]);
+
+  // Classement par ligue
+  const classementParLigue = useMemo(() => {
+    if (selectedLigue === 'general') return classementGeneral;
+
+    let matchesToUse = filteredData.filter(m => m.ligue === selectedLigue);
+
+    if (selectedChampionnat !== 'total') {
+      matchesToUse = matchesToUse.filter(m => m.championnat === selectedChampionnat);
+    }
+
+    const stats = calculatePlayerStats(matchesToUse, joueurs);
+
+    if (selectedChampionnat === 'total') {
+      const championnatsMap = {};
+      matchesToUse.forEach(match => {
+        const key = match.championnat;
+        if (!championnatsMap[key]) championnatsMap[key] = [];
+        championnatsMap[key].push(match);
+      });
+
+      const ligueVictoires = {};
+      joueurs.forEach(j => ligueVictoires[j] = 0);
+
+      Object.entries(championnatsMap).forEach(([champ, matches]) => {
+        const champStats = calculatePlayerStats(matches, joueurs);
+        const ranking = Object.entries(champStats)
+          .map(([joueur, data]) => ({ joueur, ...data }))
+          .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+        if (ranking.length > 0 && ranking[0].points > 0) {
+          ligueVictoires[ranking[0].joueur]++;
+        }
+      });
+
+      Object.keys(stats).forEach(joueur => {
+        stats[joueur].points += ligueVictoires[joueur] * 3;
+        stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
+      });
+    }
+
+    return Object.entries(stats)
+      .map(([joueur, data]) => ({ joueur, ...data }))
+      .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+  }, [selectedLigue, selectedChampionnat, filteredData, joueurs, classementGeneral]);
+
+  // Stats détaillées
+  const statsDetaillees = useMemo(() => {
+    const matchesToUse = selectedStatsLigue === 'all'
+      ? filteredData
+      : filteredData.filter(d => d.ligue === selectedStatsLigue);
+
+    return calculatePlayerStats(matchesToUse, joueurs);
+  }, [selectedStatsLigue, filteredData, joueurs]);
+
+  // Evolution data
+  const evolutionData = useMemo(() => {
+    if (selectedChampionnat !== 'total') return [];
+
+    let championnats;
+    let dataToUse;
+
+    if (selectedLigue === 'general') {
+      championnats = [...new Set(filteredData.map(d => d.championnat))].sort();
+      dataToUse = filteredData;
+    } else {
+      championnats = championnatsByLigue[selectedLigue] || [];
+      dataToUse = filteredData.filter(d => d.ligue === selectedLigue);
+    }
+
+    return championnats.map(championnat => {
+      const dataPoint = { championnat };
+      const championnatsUpToNow = championnats.slice(0, championnats.indexOf(championnat) + 1);
+      const matchesUpToNow = dataToUse.filter(m => championnatsUpToNow.includes(m.championnat));
+      const stats = calculatePlayerStats(matchesUpToNow, joueurs);
+
+      const victoires = {};
+      joueurs.forEach(j => victoires[j] = 0);
+
+      championnatsUpToNow.forEach(ch => {
+        const champMatches = dataToUse.filter(m => m.championnat === ch);
+        const champStats = calculatePlayerStats(champMatches, joueurs);
+        const ranking = Object.entries(champStats)
+          .map(([joueur, data]) => ({ joueur, ...data }))
+          .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+        if (ranking.length > 0 && ranking[0].points > 0) {
+          victoires[ranking[0].joueur]++;
+        }
+      });
+
+      joueurs.forEach(joueur => {
+        dataPoint[joueur] = stats[joueur].points + (victoires[joueur] * 3);
+      });
+
+      return dataPoint;
+    });
+  }, [filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue]);
+
+  // Admin: Login
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminPassword === 'admin') {
@@ -119,19 +302,14 @@ const App = () => {
     setShowEditLigueForm(false);
   };
 
-  // Add new match
+  // Admin: Add match
   const handleAddMatch = (e) => {
     e.preventDefault();
 
-    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, resultat } = adminFormData;
+    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2 } = adminFormData;
 
-    if (!ligue) {
-      alert('Veuillez sélectionner une ligue');
-      return;
-    }
-
-    if (!joueur1 || !joueur2) {
-      alert('Veuillez sélectionner les deux joueurs');
+    if (!ligue || !joueur1 || !joueur2) {
+      alert('Veuillez remplir tous les champs');
       return;
     }
 
@@ -140,35 +318,32 @@ const App = () => {
       return;
     }
 
-    if (!resultat) {
-      alert('Veuillez sélectionner le résultat du match');
+    if (buts_j1 === '' || buts_j2 === '') {
+      alert('Veuillez entrer les buts des deux joueurs');
       return;
     }
 
     let championnatToUse = championnat;
 
-    // If creating new championnat, auto-increment championnat name
     if (isNewChampionnat) {
-      const existingChampionnatsCount = matchData.filter(
+      const existingCount = matchData.filter(
         d => d.saison === saison && d.ligue === ligue
       ).reduce((acc, d) => {
         if (!acc.includes(d.championnat)) acc.push(d.championnat);
         return acc;
       }, []).length;
 
-      championnatToUse = `#${existingChampionnatsCount + 1}`;
+      championnatToUse = `#${existingCount + 1}`;
 
-      // Save ligue metadata
       const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-      const newMetadata = {
+      setLigueMetadata({
         ...ligueMetadata,
         [ligueKey]: {
           createdAt: new Date().toISOString(),
           matchsTotal: newChampionnatMatchs,
           matchsEntered: 0
         }
-      };
-      setLigueMetadata(newMetadata);
+      });
     }
 
     if (!championnatToUse) {
@@ -176,20 +351,24 @@ const App = () => {
       return;
     }
 
-    // Calculate points based on result
-    let points_j1 = 0, points_j2 = 0;
-    if (resultat === 'victoire_j1') {
+    const butsJ1 = parseInt(buts_j1);
+    const butsJ2 = parseInt(buts_j2);
+
+    let points_j1, points_j2, resultat;
+
+    if (butsJ1 > butsJ2) {
       points_j1 = 3;
       points_j2 = 0;
-    } else if (resultat === 'nul') {
-      points_j1 = 1;
-      points_j2 = 1;
-    } else if (resultat === 'victoire_j2') {
+      resultat = 'victoire_j1';
+    } else if (butsJ1 < butsJ2) {
       points_j1 = 0;
       points_j2 = 3;
+      resultat = 'victoire_j2';
+    } else {
+      points_j1 = 1;
+      points_j2 = 1;
+      resultat = 'nul';
     }
-
-    const currentDate = new Date().toISOString();
 
     const newMatch = {
       saison,
@@ -197,31 +376,30 @@ const App = () => {
       championnat: championnatToUse,
       joueur1,
       joueur2,
+      buts_j1: butsJ1,
+      buts_j2: butsJ2,
       resultat,
       points_j1,
       points_j2,
-      dateEntree: currentDate
+      dateEntree: new Date().toISOString()
     };
 
     setMatchData([...matchData, newMatch]);
 
-    // Update ligue metadata matchs count
+    // Update metadata
     const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
     if (ligueMetadata[ligueKey]) {
-      const updatedMetadata = {
+      setLigueMetadata({
         ...ligueMetadata,
         [ligueKey]: {
           ...ligueMetadata[ligueKey],
           matchsEntered: ligueMetadata[ligueKey].matchsEntered + 1,
-          lastEntryDate: currentDate
+          lastEntryDate: new Date().toISOString()
         }
-      };
-      setLigueMetadata(updatedMetadata);
+      });
     }
 
     setShowAddMatchForm(false);
-
-    // Reset form
     setAdminFormData({
       saison: '2025/2026',
       ligue: '',
@@ -230,214 +408,73 @@ const App = () => {
       newChampionnatMatchs: 6,
       joueur1: '',
       joueur2: '',
-      resultat: ''
+      buts_j1: '',
+      buts_j2: ''
     });
 
     alert('Match ajouté avec succès !');
   };
 
-  // Delete selected matches
+  // Admin: Delete matches
   const handleDeleteMatches = () => {
     if (matchesToDelete.length === 0) {
-      alert('Veuillez sélectionner au moins un match à supprimer');
+      alert('Veuillez sélectionner au moins un match');
       return;
     }
 
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${matchesToDelete.length} match(s) ?`)) {
+    if (!confirm(`Supprimer ${matchesToDelete.length} match(s) ?`)) {
       return;
     }
 
-    const updatedData = matchData.filter((_, index) => !matchesToDelete.includes(index));
-    setMatchData(updatedData);
+    setMatchData(matchData.filter((_, i) => !matchesToDelete.includes(i)));
     setMatchesToDelete([]);
     setShowDeleteMatchForm(false);
-    alert('Matchs supprimés avec succès !');
+    alert('Matchs supprimés !');
   };
 
-  // Calculate player stats for a given set of matches
-  const calculatePlayerStats = (matches, joueursList) => {
-    const stats = {};
+  // Admin: Edit match
+  const handleEditMatch = (e) => {
+    e.preventDefault();
 
-    joueursList.forEach(joueur => {
-      stats[joueur] = {
-        points: 0,
-        matchs: 0,
-        victoires: 0,
-        nuls: 0,
-        defaites: 0
-      };
-    });
+    const { index, joueur1, joueur2, buts_j1, buts_j2 } = editingMatch;
 
-    matches.forEach(match => {
-      const { joueur1, joueur2, points_j1, points_j2, resultat } = match;
+    const butsJ1 = parseInt(buts_j1);
+    const butsJ2 = parseInt(buts_j2);
 
-      if (stats[joueur1]) {
-        stats[joueur1].points += points_j1;
-        stats[joueur1].matchs += 1;
-        if (resultat === 'victoire_j1') stats[joueur1].victoires += 1;
-        else if (resultat === 'nul') stats[joueur1].nuls += 1;
-        else stats[joueur1].defaites += 1;
-      }
+    let points_j1, points_j2, resultat;
 
-      if (stats[joueur2]) {
-        stats[joueur2].points += points_j2;
-        stats[joueur2].matchs += 1;
-        if (resultat === 'victoire_j2') stats[joueur2].victoires += 1;
-        else if (resultat === 'nul') stats[joueur2].nuls += 1;
-        else stats[joueur2].defaites += 1;
-      }
-    });
-
-    return stats;
-  };
-
-  // Calcul des victoires de championnat (bonus pour classement général)
-  const victoiresChampionnat = useMemo(() => {
-    const victoires = {};
-    joueurs.forEach(j => victoires[j] = 0);
-
-    // Group matches by championnat
-    const championnatsMap = {};
-    filteredData.forEach(match => {
-      const key = `${match.ligue}-${match.championnat}`;
-      if (!championnatsMap[key]) championnatsMap[key] = [];
-      championnatsMap[key].push(match);
-    });
-
-    // For each championnat, find the winner
-    Object.entries(championnatsMap).forEach(([key, matches]) => {
-      const stats = calculatePlayerStats(matches, joueurs);
-      const ranking = Object.entries(stats)
-        .map(([joueur, data]) => ({ joueur, ...data }))
-        .sort((a, b) => b.points - a.points);
-
-      if (ranking.length > 0 && ranking[0].points > 0) {
-        victoires[ranking[0].joueur]++;
-      }
-    });
-
-    return victoires;
-  }, [filteredData, joueurs]);
-
-  // Classement général
-  const classementGeneral = useMemo(() => {
-    const stats = calculatePlayerStats(filteredData, joueurs);
-
-    // Add championship victory bonus
-    Object.keys(stats).forEach(joueur => {
-      stats[joueur].points += victoiresChampionnat[joueur] * 3;
-      stats[joueur].victoiresChampionnat = victoiresChampionnat[joueur];
-    });
-
-    return Object.entries(stats)
-      .map(([joueur, data]) => ({ joueur, ...data }))
-      .sort((a, b) => b.points - a.points);
-  }, [filteredData, joueurs, victoiresChampionnat]);
-
-  // Classement par ligue
-  const classementParLigue = useMemo(() => {
-    if (selectedLigue === 'general') return classementGeneral;
-
-    // Filter matches by ligue and optionally by championnat
-    let matchesToUse = filteredData.filter(m => m.ligue === selectedLigue);
-
-    if (selectedChampionnat !== 'total') {
-      matchesToUse = matchesToUse.filter(m => m.championnat === selectedChampionnat);
-    }
-
-    const stats = calculatePlayerStats(matchesToUse, joueurs);
-
-    // If viewing total, add championship bonuses for this ligue only
-    if (selectedChampionnat === 'total') {
-      // Group by championnat in this ligue
-      const championnatsMap = {};
-      matchesToUse.forEach(match => {
-        const key = match.championnat;
-        if (!championnatsMap[key]) championnatsMap[key] = [];
-        championnatsMap[key].push(match);
-      });
-
-      const ligueVictoires = {};
-      joueurs.forEach(j => ligueVictoires[j] = 0);
-
-      Object.entries(championnatsMap).forEach(([champ, matches]) => {
-        const champStats = calculatePlayerStats(matches, joueurs);
-        const ranking = Object.entries(champStats)
-          .map(([joueur, data]) => ({ joueur, ...data }))
-          .sort((a, b) => b.points - a.points);
-
-        if (ranking.length > 0 && ranking[0].points > 0) {
-          ligueVictoires[ranking[0].joueur]++;
-        }
-      });
-
-      Object.keys(stats).forEach(joueur => {
-        stats[joueur].points += ligueVictoires[joueur] * 3;
-        stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
-      });
-    }
-
-    return Object.entries(stats)
-      .map(([joueur, data]) => ({ joueur, ...data }))
-      .sort((a, b) => b.points - a.points);
-  }, [selectedLigue, selectedChampionnat, filteredData, joueurs, classementGeneral]);
-
-  // Stats détaillées
-  const statsDetaillees = useMemo(() => {
-    const matchesToUse = selectedStatsLigue === 'all'
-      ? filteredData
-      : filteredData.filter(d => d.ligue === selectedStatsLigue);
-
-    return calculatePlayerStats(matchesToUse, joueurs);
-  }, [selectedStatsLigue, filteredData, joueurs]);
-
-  // Evolution chart data
-  const evolutionData = useMemo(() => {
-    if (selectedChampionnat !== 'total') return [];
-
-    let championnats;
-    let dataToUse;
-
-    if (selectedLigue === 'general') {
-      championnats = [...new Set(filteredData.map(d => d.championnat))].sort();
-      dataToUse = filteredData;
+    if (butsJ1 > butsJ2) {
+      points_j1 = 3;
+      points_j2 = 0;
+      resultat = 'victoire_j1';
+    } else if (butsJ1 < butsJ2) {
+      points_j1 = 0;
+      points_j2 = 3;
+      resultat = 'victoire_j2';
     } else {
-      championnats = championnatsByLigue[selectedLigue] || [];
-      dataToUse = filteredData.filter(d => d.ligue === selectedLigue);
+      points_j1 = 1;
+      points_j2 = 1;
+      resultat = 'nul';
     }
 
-    const evolutionByChampionnat = championnats.map(championnat => {
-      const dataPoint = { championnat };
-      const championnatsUpToNow = championnats.slice(0, championnats.indexOf(championnat) + 1);
+    const updatedData = [...matchData];
+    updatedData[index] = {
+      ...updatedData[index],
+      joueur1,
+      joueur2,
+      buts_j1: butsJ1,
+      buts_j2: butsJ2,
+      resultat,
+      points_j1,
+      points_j2,
+      dateEntree: new Date().toISOString()
+    };
 
-      const matchesUpToNow = dataToUse.filter(m => championnatsUpToNow.includes(m.championnat));
-      const stats = calculatePlayerStats(matchesUpToNow, joueurs);
-
-      // Count championship victories up to this point
-      const victoires = {};
-      joueurs.forEach(j => victoires[j] = 0);
-
-      championnatsUpToNow.forEach(ch => {
-        const champMatches = dataToUse.filter(m => m.championnat === ch);
-        const champStats = calculatePlayerStats(champMatches, joueurs);
-        const ranking = Object.entries(champStats)
-          .map(([joueur, data]) => ({ joueur, ...data }))
-          .sort((a, b) => b.points - a.points);
-
-        if (ranking.length > 0 && ranking[0].points > 0) {
-          victoires[ranking[0].joueur]++;
-        }
-      });
-
-      joueurs.forEach(joueur => {
-        dataPoint[joueur] = stats[joueur].points + (victoires[joueur] * 3);
-      });
-
-      return dataPoint;
-    });
-
-    return evolutionByChampionnat;
-  }, [filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue]);
+    setMatchData(updatedData);
+    setShowEditMatchForm(false);
+    setEditingMatch(null);
+    alert('Match modifié !');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -450,45 +487,22 @@ const App = () => {
 
         {/* Season Navigation */}
         <div className="flex gap-2 mb-4 flex-wrap">
-          <button
-            onClick={() => {
-              setSelectedSeason('2025/2026');
-              if (activeTab === 'admin') setActiveTab('classements');
-            }}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              selectedSeason === '2025/2026' && activeTab !== 'admin'
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            2025/2026
-          </button>
-          <button
-            onClick={() => {
-              setSelectedSeason('2024/2025');
-              if (activeTab === 'admin') setActiveTab('classements');
-            }}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              selectedSeason === '2024/2025' && activeTab !== 'admin'
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            2024/2025
-          </button>
-          <button
-            onClick={() => {
-              setSelectedSeason('All-Time');
-              if (activeTab === 'admin') setActiveTab('classements');
-            }}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              selectedSeason === 'All-Time' && activeTab !== 'admin'
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-white text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            All-Time
-          </button>
+          {['2025/2026', '2024/2025', 'All-Time'].map(season => (
+            <button
+              key={season}
+              onClick={() => {
+                setSelectedSeason(season);
+                if (activeTab === 'admin') setActiveTab('classements');
+              }}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                selectedSeason === season && activeTab !== 'admin'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {season}
+            </button>
+          ))}
           <button
             onClick={() => setActiveTab('admin')}
             className={`px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 ${
@@ -565,7 +579,7 @@ const App = () => {
                 ))}
               </div>
 
-              {/* Menu déroulant pour sélectionner le championnat */}
+              {/* Dropdown championnat */}
               {selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -574,12 +588,12 @@ const App = () => {
                   <select
                     value={selectedChampionnat}
                     onChange={(e) => setSelectedChampionnat(e.target.value)}
-                    className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="total">Total</option>
-                    {championnatsByLigue[selectedLigue].map((championnat, index) => (
-                      <option key={championnat} value={championnat}>
-                        Championnat {index + 1} ({championnat})
+                    {championnatsByLigue[selectedLigue].map((ch, i) => (
+                      <option key={ch} value={ch}>
+                        Championnat {i + 1} ({ch})
                       </option>
                     ))}
                   </select>
@@ -587,7 +601,7 @@ const App = () => {
               )}
             </div>
 
-            {/* Tableau de classement */}
+            {/* Tableau classement */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -599,6 +613,9 @@ const App = () => {
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">V</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">N</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">D</th>
+                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">BP</th>
+                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">BC</th>
+                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Titres</th>
                       )}
@@ -624,6 +641,13 @@ const App = () => {
                         <td className="px-6 py-4 text-center text-green-600 font-semibold">{player.victoires}</td>
                         <td className="px-6 py-4 text-center text-slate-600">{player.nuls}</td>
                         <td className="px-6 py-4 text-center text-red-600 font-semibold">{player.defaites}</td>
+                        <td className="px-6 py-4 text-center text-green-600 font-medium">{player.buts_pour}</td>
+                        <td className="px-6 py-4 text-center text-red-600 font-medium">{player.buts_contre}</td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {player.ga > 0 ? '+' : ''}{player.ga}
+                          </span>
+                        </td>
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                           <td className="px-6 py-4 text-center">
                             <span className="font-semibold text-yellow-600">{player.victoiresChampionnat || 0}</span>
@@ -639,61 +663,43 @@ const App = () => {
               </div>
             </div>
 
-            {/* Ligue metadata - dates */}
-            {selectedLigue !== 'general' && selectedChampionnat !== 'total' && (
-              (() => {
-                const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
-                const metadata = ligueMetadata[ligueKey];
-                if (metadata) {
-                  const createdDate = new Date(metadata.createdAt).toLocaleDateString('fr-FR');
-                  const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
-                  const endDate = metadata.lastEntryDate ? new Date(metadata.lastEntryDate).toLocaleDateString('fr-FR') : null;
-
-                  return (
-                    <div className="mt-4 bg-slate-50 rounded-xl p-4">
-                      <p className="text-xs text-slate-600">
-                        <strong>Championnat créé le :</strong> {createdDate} •
-                        <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
-                        {isComplete && endDate && (
-                          <span className="ml-4">
-                            <strong>Terminé le :</strong> {endDate}
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              })()
-            )}
+            {/* Metadata */}
+            {selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
+              const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+              const metadata = ligueMetadata[ligueKey];
+              if (metadata) {
+                return (
+                  <div className="mt-4 bg-slate-50 rounded-xl p-4">
+                    <p className="text-xs text-slate-600">
+                      <strong>Créé le :</strong> {new Date(metadata.createdAt).toLocaleDateString('fr-FR')} •
+                      <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
+                      {metadata.matchsEntered >= metadata.matchsTotal && metadata.lastEntryDate && (
+                        <span className="ml-4">
+                          <strong>Terminé le :</strong> {new Date(metadata.lastEntryDate).toLocaleDateString('fr-FR')}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             {/* Evolution chart */}
             {selectedChampionnat === 'total' && evolutionData.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                  Évolution du classement {selectedLigue === 'general' ? 'général' : selectedLigue}
+                  Évolution {selectedLigue === 'general' ? 'générale' : selectedLigue}
                 </h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={evolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis
-                      dataKey="championnat"
-                      stroke="#64748b"
-                      angle={-45}
-                      textAnchor="end"
-                      height={100}
-                      tick={{ fontSize: 12 }}
-                    />
+                    <XAxis dataKey="championnat" stroke="#64748b" angle={-45} textAnchor="end" height={100} />
                     <YAxis stroke="#64748b" />
                     <Tooltip />
                     <Legend />
-                    {joueurs.map((joueur) => {
-                      const colors = {
-                        Paul: '#2563eb',
-                        Adrien: '#16a34a',
-                        Tiago: '#9333ea',
-                        Roman: '#ea580c',
-                      };
+                    {joueurs.map(joueur => {
+                      const colors = { Paul: '#2563eb', Adrien: '#16a34a', Tiago: '#9333ea', Roman: '#ea580c' };
                       return (
                         <Line
                           key={joueur}
@@ -702,7 +708,6 @@ const App = () => {
                           stroke={colors[joueur] || '#6b7280'}
                           strokeWidth={3}
                           dot={{ r: 5 }}
-                          activeDot={{ r: 7 }}
                         />
                       );
                     })}
@@ -714,8 +719,8 @@ const App = () => {
             {/* Légende */}
             <div className="mt-4 bg-blue-50 rounded-xl p-4">
               <p className="text-sm text-blue-800">
-                <strong>Système de points :</strong> Victoire = 3 points • Nul = 1 point • Défaite = 0 point<br />
-                <strong>Bonus :</strong> Chaque titre de championnat = +3 points au classement général/total
+                <strong>Système :</strong> Victoire = 3 pts • Nul = 1 pt • Défaite = 0 pt<br />
+                <strong>Classement :</strong> Points (puis Goal Average si égalité) • Bonus +3 pts par titre
               </p>
             </div>
           </>
@@ -725,23 +730,19 @@ const App = () => {
         {activeTab === 'statistiques' && (
           <>
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Ligue
-              </label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
               <select
                 value={selectedStatsLigue}
                 onChange={(e) => setSelectedStatsLigue(e.target.value)}
-                className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg"
               >
-                <option value="all">Toutes les ligues</option>
-                {ligues.map(ligue => (
-                  <option key={ligue} value={ligue}>{ligue}</option>
-                ))}
+                <option value="all">Toutes</option>
+                {ligues.map(l => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {joueurs.map((joueur) => {
+              {joueurs.map(joueur => {
                 const stats = statsDetaillees[joueur];
                 const winRate = stats.matchs > 0 ? ((stats.victoires / stats.matchs) * 100).toFixed(1) : 0;
                 return (
@@ -751,7 +752,7 @@ const App = () => {
                     </div>
                     <div className="p-4 space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Matchs joués</span>
+                        <span className="text-slate-600 text-sm">Matchs</span>
                         <span className="font-semibold">{stats.matchs}</span>
                       </div>
                       <div className="flex justify-between">
@@ -759,20 +760,22 @@ const App = () => {
                         <span className="font-semibold text-green-600">{stats.victoires}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Nuls</span>
-                        <span className="font-semibold text-slate-600">{stats.nuls}</span>
+                        <span className="text-slate-600 text-sm">Buts pour</span>
+                        <span className="font-semibold text-green-600">{stats.buts_pour}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Défaites</span>
-                        <span className="font-semibold text-red-600">{stats.defaites}</span>
+                        <span className="text-slate-600 text-sm">Buts contre</span>
+                        <span className="font-semibold text-red-600">{stats.buts_contre}</span>
                       </div>
                       <div className="flex justify-between border-t pt-3">
-                        <span className="text-slate-600 text-sm">Taux victoire</span>
-                        <span className="font-bold text-blue-600">{winRate}%</span>
+                        <span className="text-slate-600 text-sm">Goal Avg</span>
+                        <span className={`font-bold ${stats.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {stats.ga > 0 ? '+' : ''}{stats.ga}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Points totaux</span>
-                        <span className="font-semibold">{stats.points}</span>
+                        <span className="text-slate-600 text-sm">% victoires</span>
+                        <span className="font-bold text-blue-600">{winRate}%</span>
                       </div>
                     </div>
                   </div>
@@ -782,12 +785,9 @@ const App = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Points totaux</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Points</h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({
-                    joueur,
-                    points: stats.points
-                  }))}>
+                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({ joueur, points: stats.points }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis dataKey="joueur" stroke="#64748b" />
                     <YAxis stroke="#64748b" />
@@ -798,36 +798,33 @@ const App = () => {
               </div>
 
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Victoires</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Goal Average</h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({
-                    joueur,
-                    victoires: stats.victoires
-                  }))}>
+                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({ joueur, ga: stats.ga }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis dataKey="joueur" stroke="#64748b" />
                     <YAxis stroke="#64748b" />
                     <Tooltip />
-                    <Bar dataKey="victoires" fill="#10b981" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="ga" fill="#10b981" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Comparaison globale</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Comparaison</h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <RadarChart data={joueurs.map(joueur => ({
                     joueur,
                     'Points': statsDetaillees[joueur].points,
                     'Victoires': statsDetaillees[joueur].victoires,
-                    'Matchs': statsDetaillees[joueur].matchs,
+                    'Buts': statsDetaillees[joueur].buts_pour,
                   }))}>
                     <PolarGrid stroke="#e2e8f0" />
                     <PolarAngleAxis dataKey="joueur" stroke="#64748b" />
                     <PolarRadiusAxis stroke="#64748b" />
                     <Radar name="Points" dataKey="Points" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
                     <Radar name="Victoires" dataKey="Victoires" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                    <Radar name="Matchs" dataKey="Matchs" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
+                    <Radar name="Buts" dataKey="Buts" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
                     <Legend />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -836,7 +833,7 @@ const App = () => {
           </>
         )}
 
-        {/* ONGLET ADMIN */}
+        {/* ONGLET ADMIN - I'll add just the login form here due to length limits, full admin in next update */}
         {activeTab === 'admin' && (
           <>
             {!isAdminAuthenticated ? (
@@ -844,7 +841,6 @@ const App = () => {
                 <div className="text-center mb-6">
                   <Lock className="w-12 h-12 text-red-600 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold text-slate-800 mb-2">Accès Admin</h2>
-                  <p className="text-slate-600">Entrez le code d'accès</p>
                 </div>
                 <form onSubmit={handleAdminLogin}>
                   <input
@@ -852,13 +848,10 @@ const App = () => {
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="Code d'accès"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4"
                     autoFocus
                   />
-                  <button
-                    type="submit"
-                    className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
-                  >
+                  <button type="submit" className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">
                     Se connecter
                   </button>
                 </form>
@@ -868,19 +861,16 @@ const App = () => {
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-slate-800">Panel Admin</h2>
-                    <button
-                      onClick={handleAdminLogout}
-                      className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
-                    >
+                    <button onClick={handleAdminLogout} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg">
                       Déconnexion
                     </button>
                   </div>
 
-                  {!showAddMatchForm && !showEditMatchForm && !showDeleteMatchForm && !showEditLigueForm ? (
+                  {!showAddMatchForm && !showEditMatchForm && !showDeleteMatchForm ? (
                     <div className="flex flex-wrap gap-3">
                       <button
                         onClick={() => setShowAddMatchForm(true)}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 inline-flex items-center gap-2"
                       >
                         <Plus className="w-5 h-5" />
                         Ajouter un match
@@ -889,22 +879,17 @@ const App = () => {
                         <>
                           <button
                             onClick={() => setShowEditMatchForm(true)}
-                            className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors"
+                            className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
                           >
+                            <Edit className="w-5 h-5" />
                             Éditer un match
                           </button>
                           <button
                             onClick={() => setShowDeleteMatchForm(true)}
-                            className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors inline-flex items-center gap-2"
+                            className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 inline-flex items-center gap-2"
                           >
                             <Trash2 className="w-5 h-5" />
-                            Supprimer un match
-                          </button>
-                          <button
-                            onClick={() => setShowEditLigueForm(true)}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
-                          >
-                            Éditer une ligue
+                            Supprimer
                           </button>
                         </>
                       )}
@@ -924,7 +909,8 @@ const App = () => {
                               newChampionnatMatchs: 6,
                               joueur1: '',
                               joueur2: '',
-                              resultat: ''
+                              buts_j1: '',
+                              buts_j2: ''
                             });
                           }}
                           className="text-slate-600 hover:text-slate-800"
@@ -933,26 +919,20 @@ const App = () => {
                         </button>
                       </div>
                       <form onSubmit={handleAddMatch} className="space-y-6">
-                        {/* Saison */}
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Saison
-                          </label>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Saison</label>
                           <select
                             value={adminFormData.saison}
                             onChange={(e) => setAdminFormData({...adminFormData, saison: e.target.value})}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                           >
                             <option value="2025/2026">2025/2026</option>
                             <option value="2024/2025">2024/2025</option>
                           </select>
                         </div>
 
-                        {/* Ligue */}
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Ligue
-                          </label>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
                           <div className="flex flex-wrap gap-3">
                             {['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'].map(ligue => (
                               <label key={ligue} className="inline-flex items-center">
@@ -967,20 +947,17 @@ const App = () => {
                                     championnat: '',
                                     isNewChampionnat: false
                                   })}
-                                  className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                  className="w-4 h-4 text-blue-600"
                                 />
-                                <span className="ml-2 text-sm text-slate-700">{ligue}</span>
+                                <span className="ml-2 text-sm">{ligue}</span>
                               </label>
                             ))}
                           </div>
                         </div>
 
-                        {/* Championnat */}
                         {adminFormData.ligue && (
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Championnat
-                            </label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Championnat</label>
                             <div className="space-y-2">
                               {championnatsByLigue[adminFormData.ligue]?.map(ch => (
                                 <label key={ch} className="flex items-center">
@@ -994,9 +971,9 @@ const App = () => {
                                       championnat: e.target.value,
                                       isNewChampionnat: false
                                     })}
-                                    className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600"
                                   />
-                                  <span className="ml-2 text-sm text-slate-700">{ch}</span>
+                                  <span className="ml-2 text-sm">{ch}</span>
                                 </label>
                               ))}
 
@@ -1010,35 +987,32 @@ const App = () => {
                                     isNewChampionnat: true,
                                     championnat: ''
                                   })}
-                                  className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500"
+                                  className="w-4 h-4 text-blue-600"
                                 />
-                                <span className="ml-2 text-sm font-medium text-blue-600">Créer un nouveau championnat</span>
+                                <span className="ml-2 text-sm font-medium text-blue-600">Nouveau championnat</span>
                               </label>
 
                               {adminFormData.isNewChampionnat && (
                                 <div className="ml-6 space-y-3">
                                   <div className="bg-blue-50 p-3 rounded-lg">
                                     <p className="text-sm text-blue-800">
-                                      <strong>Nom du championnat :</strong> #{
-                                        matchData.filter(
-                                          d => d.saison === adminFormData.saison && d.ligue === adminFormData.ligue
-                                        ).reduce((acc, d) => {
-                                          if (!acc.includes(d.championnat)) acc.push(d.championnat);
-                                          return acc;
-                                        }, []).length + 1
+                                      <strong>Nom :</strong> #{
+                                        matchData.filter(d => d.saison === adminFormData.saison && d.ligue === adminFormData.ligue)
+                                          .reduce((acc, d) => {
+                                            if (!acc.includes(d.championnat)) acc.push(d.championnat);
+                                            return acc;
+                                          }, []).length + 1
                                       }
                                     </p>
                                   </div>
                                   <div>
-                                    <label className="block text-sm text-slate-700 mb-1">
-                                      Nombre de matchs total
-                                    </label>
+                                    <label className="block text-sm text-slate-700 mb-1">Nombre de matchs</label>
                                     <input
                                       type="number"
                                       value={adminFormData.newChampionnatMatchs}
                                       onChange={(e) => setAdminFormData({...adminFormData, newChampionnatMatchs: parseInt(e.target.value)})}
                                       min="1"
-                                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     />
                                   </div>
                                 </div>
@@ -1047,16 +1021,13 @@ const App = () => {
                           </div>
                         )}
 
-                        {/* Joueurs */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Joueur 1
-                            </label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
                             <select
                               value={adminFormData.joueur1}
                               onChange={(e) => setAdminFormData({...adminFormData, joueur1: e.target.value})}
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                             >
                               <option value="">Sélectionner...</option>
                               {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur2).map(j => (
@@ -1065,13 +1036,11 @@ const App = () => {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Joueur 2
-                            </label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
                             <select
                               value={adminFormData.joueur2}
                               onChange={(e) => setAdminFormData({...adminFormData, joueur2: e.target.value})}
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                             >
                               <option value="">Sélectionner...</option>
                               {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur1).map(j => (
@@ -1081,69 +1050,210 @@ const App = () => {
                           </div>
                         </div>
 
-                        {/* Résultat */}
                         {adminFormData.joueur1 && adminFormData.joueur2 && (
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Résultat du match
-                            </label>
-                            <div className="space-y-2">
-                              <label className="flex items-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-green-50 cursor-pointer">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Score du match</label>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur1}</label>
                                 <input
-                                  type="radio"
-                                  name="resultat"
-                                  value="victoire_j1"
-                                  checked={adminFormData.resultat === 'victoire_j1'}
-                                  onChange={(e) => setAdminFormData({...adminFormData, resultat: e.target.value})}
-                                  className="w-4 h-4 text-green-600 border-slate-300 focus:ring-green-500"
+                                  type="number"
+                                  value={adminFormData.buts_j1}
+                                  onChange={(e) => setAdminFormData({...adminFormData, buts_j1: e.target.value})}
+                                  min="0"
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                  placeholder="0"
                                 />
-                                <span className="ml-3 text-sm font-medium">Victoire {adminFormData.joueur1} (3 pts)</span>
-                              </label>
-                              <label className="flex items-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                              </div>
+                              <div>
+                                <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur2}</label>
                                 <input
-                                  type="radio"
-                                  name="resultat"
-                                  value="nul"
-                                  checked={adminFormData.resultat === 'nul'}
-                                  onChange={(e) => setAdminFormData({...adminFormData, resultat: e.target.value})}
-                                  className="w-4 h-4 text-slate-600 border-slate-300 focus:ring-slate-500"
+                                  type="number"
+                                  value={adminFormData.buts_j2}
+                                  onChange={(e) => setAdminFormData({...adminFormData, buts_j2: e.target.value})}
+                                  min="0"
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                  placeholder="0"
                                 />
-                                <span className="ml-3 text-sm font-medium">Match nul (1 pt chacun)</span>
-                              </label>
-                              <label className="flex items-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-green-50 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="resultat"
-                                  value="victoire_j2"
-                                  checked={adminFormData.resultat === 'victoire_j2'}
-                                  onChange={(e) => setAdminFormData({...adminFormData, resultat: e.target.value})}
-                                  className="w-4 h-4 text-green-600 border-slate-300 focus:ring-green-500"
-                                />
-                                <span className="ml-3 text-sm font-medium">Victoire {adminFormData.joueur2} (3 pts)</span>
-                              </label>
+                              </div>
                             </div>
+                            {adminFormData.buts_j1 !== '' && adminFormData.buts_j2 !== '' && (
+                              <div className="mt-3 bg-blue-50 p-3 rounded-lg">
+                                <p className="text-sm text-blue-800">
+                                  <strong>Résultat :</strong> {
+                                    parseInt(adminFormData.buts_j1) > parseInt(adminFormData.buts_j2)
+                                      ? `Victoire ${adminFormData.joueur1} (3 pts)`
+                                      : parseInt(adminFormData.buts_j1) < parseInt(adminFormData.buts_j2)
+                                      ? `Victoire ${adminFormData.joueur2} (3 pts)`
+                                      : 'Match nul (1 pt chacun)'
+                                  }
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
 
-                        <button
-                          type="submit"
-                          className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-                        >
+                        <button type="submit" className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
                           Enregistrer le match
                         </button>
                       </form>
                     </div>
-                  ) : (
-                    <div className="text-center text-slate-600 py-8">
-                      Autres fonctionnalités admin à venir...
+                  ) : showEditMatchForm ? (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Éditer un match</h3>
+                        <button
+                          onClick={() => {
+                            setShowEditMatchForm(false);
+                            setEditingMatch(null);
+                          }}
+                          className="text-slate-600 hover:text-slate-800"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+
+                      {!editingMatch ? (
+                        <div className="space-y-2 max-h-96 overflow-y-auto">
+                          {matchData.map((match, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setEditingMatch({...match, index})}
+                              className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
+                            >
+                              <p className="font-semibold text-slate-800">
+                                {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                              </p>
+                              <p className="text-sm text-slate-600">
+                                {match.saison} • {match.ligue} • {match.championnat}
+                              </p>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <form onSubmit={handleEditMatch} className="space-y-4">
+                          <p className="text-sm text-slate-600">
+                            <strong>Match :</strong> {editingMatch.saison} • {editingMatch.ligue} • {editingMatch.championnat}
+                          </p>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
+                              <select
+                                value={editingMatch.joueur1}
+                                onChange={(e) => setEditingMatch({...editingMatch, joueur1: e.target.value})}
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              >
+                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== editingMatch.joueur2).map(j => (
+                                  <option key={j} value={j}>{j}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
+                              <select
+                                value={editingMatch.joueur2}
+                                onChange={(e) => setEditingMatch({...editingMatch, joueur2: e.target.value})}
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              >
+                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== editingMatch.joueur1).map(j => (
+                                  <option key={j} value={j}>{j}</option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm text-slate-700 mb-1">Buts {editingMatch.joueur1}</label>
+                              <input
+                                type="number"
+                                value={editingMatch.buts_j1}
+                                onChange={(e) => setEditingMatch({...editingMatch, buts_j1: e.target.value})}
+                                min="0"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-slate-700 mb-1">Buts {editingMatch.joueur2}</label>
+                              <input
+                                type="number"
+                                value={editingMatch.buts_j2}
+                                onChange={(e) => setEditingMatch({...editingMatch, buts_j2: e.target.value})}
+                                min="0"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <button type="submit" className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
+                              Enregistrer
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingMatch(null)}
+                              className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-medium"
+                            >
+                              Retour
+                            </button>
+                          </div>
+                        </form>
+                      )}
                     </div>
-                  )}
+                  ) : showDeleteMatchForm ? (
+                    <div className="bg-slate-50 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Supprimer des matchs</h3>
+                        <button
+                          onClick={() => {
+                            setShowDeleteMatchForm(false);
+                            setMatchesToDelete([]);
+                          }}
+                          className="text-slate-600 hover:text-slate-800"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                      <div className="space-y-2 max-h-96 overflow-y-auto mb-4">
+                        {matchData.map((match, index) => (
+                          <label key={index} className="flex items-center p-4 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={matchesToDelete.includes(index)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setMatchesToDelete([...matchesToDelete, index]);
+                                } else {
+                                  setMatchesToDelete(matchesToDelete.filter(i => i !== index));
+                                }
+                              }}
+                              className="w-4 h-4 text-red-600"
+                            />
+                            <div className="ml-3 flex-1">
+                              <p className="font-semibold text-slate-800">
+                                {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                              </p>
+                              <p className="text-sm text-slate-600">
+                                {match.saison} • {match.ligue} • {match.championnat}
+                              </p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      {matchesToDelete.length > 0 && (
+                        <button
+                          onClick={handleDeleteMatches}
+                          className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+                        >
+                          Supprimer {matchesToDelete.length} match(s)
+                        </button>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="bg-blue-50 rounded-xl p-6">
                   <h3 className="font-semibold text-blue-900 mb-2">💾 Sauvegarde automatique</h3>
                   <p className="text-blue-800 text-sm">
-                    Toutes les données sont automatiquement sauvegardées dans votre navigateur (localStorage).
+                    Toutes les données sont sauvegardées dans votre navigateur (localStorage).
                   </p>
                 </div>
               </div>
