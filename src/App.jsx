@@ -45,6 +45,7 @@ const App = () => {
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
   const [selectedChampionnat, setSelectedChampionnat] = useState('general');
+  const [selectedEdition, setSelectedEdition] = useState('total'); // 'total' or edition string
   const [selectedStatsChampionnat, setSelectedStatsChampionnat] = useState('all');
   const [selectedPlayer1, setSelectedPlayer1] = useState('Paul');
   const [selectedPlayer2, setSelectedPlayer2] = useState('Adrien');
@@ -87,6 +88,20 @@ const App = () => {
     const uniqueChampionnats = [...new Set(filteredData.map(d => d.championnat))];
     return uniqueChampionnats.length > 0 ? uniqueChampionnats : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
   }, [filteredData]);
+
+  // Get numbered editions for each championnat
+  const editionsByChampionnat = useMemo(() => {
+    const editionsMap = {};
+    championnats.forEach(champ => {
+      const editions = [...new Set(
+        filteredData
+          .filter(d => d.championnat === champ)
+          .map(d => d.edition)
+      )].sort(); // Sorted chronologically
+      editionsMap[champ] = editions;
+    });
+    return editionsMap;
+  }, [filteredData, championnats]);
 
   const playerColors = {
     Paul: 'bg-blue-600',
@@ -180,7 +195,12 @@ const App = () => {
 
     const stats = {};
     joueurs.forEach(joueur => {
-      const playerData = filteredData.filter(d => d.joueur === joueur && d.championnat === selectedChampionnat);
+      // Filter by championnat and optionally by edition
+      let playerData = filteredData.filter(d => d.joueur === joueur && d.championnat === selectedChampionnat);
+
+      if (selectedEdition !== 'total') {
+        playerData = playerData.filter(d => d.edition === selectedEdition);
+      }
 
       // Compter les victoires d'édition pour ce championnat
       const editions = [...new Set(playerData.map(d => d.edition))];
@@ -207,7 +227,7 @@ const App = () => {
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points - a.points);
-  }, [selectedChampionnat, filteredData, joueurs, classementGeneral]);
+  }, [selectedChampionnat, selectedEdition, filteredData, joueurs, classementGeneral]);
 
   // Stats détaillées pour l'onglet Statistiques
   const statsDetaillees = useMemo(() => {
@@ -231,12 +251,24 @@ const App = () => {
     return stats;
   }, [selectedStatsChampionnat, filteredData, joueurs]);
 
-  // Evolution chart data for general classement
+  // Evolution chart data for classement
   const evolutionData = useMemo(() => {
-    if (selectedChampionnat !== 'general') return [];
+    // Only show evolution chart when viewing total (not a specific edition)
+    if (selectedEdition !== 'total') return [];
 
     // Get all unique editions sorted chronologically
-    const editions = [...new Set(filteredData.map(d => d.edition))].sort();
+    let editions;
+    let dataToUse;
+
+    if (selectedChampionnat === 'general') {
+      // For general view, use all editions
+      editions = [...new Set(filteredData.map(d => d.edition))].sort();
+      dataToUse = filteredData;
+    } else {
+      // For specific championnat, use only editions from that championnat
+      editions = editionsByChampionnat[selectedChampionnat] || [];
+      dataToUse = filteredData.filter(d => d.championnat === selectedChampionnat);
+    }
 
     // For each edition, calculate cumulative points and ranking for each player
     const evolutionByEdition = editions.map(edition => {
@@ -247,7 +279,7 @@ const App = () => {
 
       joueurs.forEach(joueur => {
         // Get all data for this player up to current edition
-        const playerDataUpToNow = filteredData.filter(d =>
+        const playerDataUpToNow = dataToUse.filter(d =>
           d.joueur === joueur && editionsUpToNow.includes(d.edition)
         );
 
@@ -257,7 +289,7 @@ const App = () => {
         // Count victories up to this edition
         let victories = 0;
         editionsUpToNow.forEach(ed => {
-          const editionData = filteredData.filter(d => d.edition === ed);
+          const editionData = dataToUse.filter(d => d.edition === ed);
           const winner = editionData.find(d => d.rang === 1);
           if (winner && winner.joueur === joueur) victories++;
         });
@@ -270,7 +302,7 @@ const App = () => {
     });
 
     return evolutionByEdition;
-  }, [filteredData, joueurs, selectedChampionnat]);
+  }, [filteredData, joueurs, selectedChampionnat, selectedEdition, editionsByChampionnat]);
 
   // Face à face
   const currentVersus = useMemo(() => {
@@ -384,11 +416,14 @@ const App = () => {
         {/* ONGLET CLASSEMENTS */}
         {activeTab === 'classements' && (
           <>
-            {/* Filtre championnat */}
+            {/* Onglets de ligue */}
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 <button
-                  onClick={() => setSelectedChampionnat('general')}
+                  onClick={() => {
+                    setSelectedChampionnat('general');
+                    setSelectedEdition('total');
+                  }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedChampionnat === 'general'
                       ? 'bg-blue-600 text-white'
@@ -400,7 +435,10 @@ const App = () => {
                 {championnats.map(c => (
                   <button
                     key={c}
-                    onClick={() => setSelectedChampionnat(c)}
+                    onClick={() => {
+                      setSelectedChampionnat(c);
+                      setSelectedEdition('total');
+                    }}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       selectedChampionnat === c
                         ? 'bg-blue-600 text-white'
@@ -411,6 +449,27 @@ const App = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Menu déroulant pour sélectionner l'édition (championnat) */}
+              {selectedChampionnat !== 'general' && editionsByChampionnat[selectedChampionnat] && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Championnat
+                  </label>
+                  <select
+                    value={selectedEdition}
+                    onChange={(e) => setSelectedEdition(e.target.value)}
+                    className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="total">Total</option>
+                    {editionsByChampionnat[selectedChampionnat].map((edition, index) => (
+                      <option key={edition} value={edition}>
+                        Championnat {index + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Tableau de classement */}
@@ -467,10 +526,12 @@ const App = () => {
               </div>
             </div>
 
-            {/* Evolution chart - Only for general classement */}
-            {selectedChampionnat === 'general' && evolutionData.length > 0 && (
+            {/* Evolution chart - Only when viewing 'Total' */}
+            {selectedEdition === 'total' && evolutionData.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Évolution du classement général</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                  Évolution du classement {selectedChampionnat === 'general' ? 'général' : selectedChampionnat}
+                </h3>
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={evolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
