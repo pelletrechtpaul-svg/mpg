@@ -829,15 +829,15 @@ const App = () => {
                 <div className="space-y-2">
                   {matchesListForChampionnat.map((match, index) => (
                     <div key={index} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <div className="text-slate-600">
+                        {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-slate-800">{match.joueur1}</span>
                         <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
                         <span className="text-slate-400">-</span>
                         <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
                         <span className="font-medium text-slate-800">{match.joueur2}</span>
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </div>
                     </div>
                   ))}
@@ -1512,7 +1512,7 @@ const App = () => {
                                 {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
                               </p>
                               <p className="text-sm text-slate-600">
-                                {match.saison} • {match.ligue} • {match.championnat}
+                                {match.saison} • {match.ligue} • {match.championnat} • {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                               </p>
                             </button>
                           ))}
