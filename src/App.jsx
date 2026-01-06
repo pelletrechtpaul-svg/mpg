@@ -6,10 +6,10 @@ const defaultMatchData = [];
 
 // Player images mapping
 const playerImages = {
-  'Roman': '/images/1.jpg',
-  'Adrien': '/images/2.jpg',
-  'Paul': '/images/3.jpg',
-  'Tiago': '/images/4.jpg'
+  'Roman': '/images/1.png',
+  'Adrien': '/images/2.png',
+  'Paul': '/images/3.png',
+  'Tiago': '/images/4.png'
 };
 
 const App = () => {
@@ -919,10 +919,10 @@ const App = () => {
                   : 'bg-white'
               }`}
               style={selectedSeason === '2024/2025' && selectedLigue === 'general' ? {
-                backgroundImage: 'linear-gradient(to bottom right, rgba(224, 242, 254, 0.9), rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.9)), url(https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg)',
+                backgroundImage: 'linear-gradient(to bottom right, rgba(224, 242, 254, 0.6), rgba(255, 255, 255, 0.7), rgba(240, 249, 255, 0.6)), url(https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg)',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: '400px 400px'
+                backgroundSize: '650px 650px'
               } : {}}
             >
               <div className="overflow-x-auto">
