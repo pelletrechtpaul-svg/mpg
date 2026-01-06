@@ -27,6 +27,9 @@ const App = () => {
   const [selectedVersusPlayer2, setSelectedVersusPlayer2] = useState('Adrien');
   const [selectedVersusLigue, setSelectedVersusLigue] = useState('all');
 
+  // Goals detail popup
+  const [showGoalsDetail, setShowGoalsDetail] = useState(null);
+
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -49,10 +52,15 @@ const App = () => {
     joueur2: '',
     buts_j1: '',
     buts_j2: '',
+    valise_j1: false,
+    valise_j2: false,
     joueur3: '',
     joueur4: '',
     buts_j3: '',
-    buts_j4: ''
+    buts_j4: '',
+    valise_j3: false,
+    valise_j4: false,
+    dateMatch: new Date().toISOString().split('T')[0]
   });
 
   // Save to localStorage
@@ -376,6 +384,75 @@ const App = () => {
     return matches.sort((a, b) => new Date(b.dateEntree) - new Date(a.dateEntree));
   }, [filteredData, selectedLigue, selectedChampionnat]);
 
+  // Valise statistics
+  const valiseStats = useMemo(() => {
+    if (selectedLigue !== 'general' && selectedChampionnat !== 'total') return null;
+
+    let matchesToAnalyze = [];
+    if (selectedLigue === 'general') {
+      matchesToAnalyze = filteredData;
+    } else {
+      matchesToAnalyze = filteredData.filter(m => m.ligue === selectedLigue);
+    }
+
+    const stats = {};
+    joueurs.forEach(j => {
+      stats[j] = {
+        utilisees: 0,
+        recues: 0,
+        efficaces: 0
+      };
+    });
+
+    matchesToAnalyze.forEach(match => {
+      // Count valises used and received
+      if (match.valise_j1) {
+        stats[match.joueur1].utilisees++;
+        stats[match.joueur2].recues++;
+
+        // Check if valise was efficace (decisive)
+        const diff = Math.abs(match.buts_j1 - match.buts_j2);
+        const isEfficace = (diff === 0) || (match.resultat === 'victoire_j1' && diff === 1);
+        if (isEfficace) {
+          stats[match.joueur1].efficaces++;
+        }
+      }
+
+      if (match.valise_j2) {
+        stats[match.joueur2].utilisees++;
+        stats[match.joueur1].recues++;
+
+        // Check if valise was efficace
+        const diff = Math.abs(match.buts_j1 - match.buts_j2);
+        const isEfficace = (diff === 0) || (match.resultat === 'victoire_j2' && diff === 1);
+        if (isEfficace) {
+          stats[match.joueur2].efficaces++;
+        }
+      }
+    });
+
+    return stats;
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
+
+  // Check if players have used their valise in the current championnat
+  const valiseUsed = useMemo(() => {
+    if (!adminFormData.ligue || !adminFormData.championnat) return {};
+
+    const champMatches = matchData.filter(m =>
+      m.saison === adminFormData.saison &&
+      m.ligue === adminFormData.ligue &&
+      m.championnat === adminFormData.championnat
+    );
+
+    const used = {};
+    champMatches.forEach(match => {
+      if (match.valise_j1) used[match.joueur1] = true;
+      if (match.valise_j2) used[match.joueur2] = true;
+    });
+
+    return used;
+  }, [matchData, adminFormData.saison, adminFormData.ligue, adminFormData.championnat]);
+
   // Admin: Login
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -400,7 +477,7 @@ const App = () => {
   const handleAddMatch = (e) => {
     e.preventDefault();
 
-    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2, joueur3, joueur4, buts_j3, buts_j4 } = adminFormData;
+    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2, valise_j1, valise_j2, joueur3, joueur4, buts_j3, buts_j4, valise_j3, valise_j4, dateMatch } = adminFormData;
 
     if (!ligue || !joueur1 || !joueur2) {
       alert('Veuillez remplir tous les champs du premier match');
@@ -479,9 +556,12 @@ const App = () => {
       joueur2,
       buts_j1: butsJ1,
       buts_j2: butsJ2,
+      valise_j1,
+      valise_j2,
       resultat,
       points_j1,
       points_j2,
+      dateMatch,
       dateEntree: currentDate
     });
 
@@ -514,9 +594,12 @@ const App = () => {
         joueur2: joueur4,
         buts_j1: butsJ3,
         buts_j2: butsJ4,
+        valise_j1: valise_j3,
+        valise_j2: valise_j4,
         resultat: resultat2,
         points_j1: points_j3,
         points_j2: points_j4,
+        dateMatch,
         dateEntree: currentDate
       });
     }
@@ -547,10 +630,15 @@ const App = () => {
       joueur2: '',
       buts_j1: '',
       buts_j2: '',
+      valise_j1: false,
+      valise_j2: false,
       joueur3: '',
       joueur4: '',
       buts_j3: '',
-      buts_j4: ''
+      buts_j4: '',
+      valise_j3: false,
+      valise_j4: false,
+      dateMatch: new Date().toISOString().split('T')[0]
     });
 
     alert(`${newMatches.length} match${newMatches.length > 1 ? 's' : ''} ajouté${newMatches.length > 1 ? 's' : ''} avec succès !`);
@@ -671,16 +759,6 @@ const App = () => {
               Classements
             </button>
             <button
-              onClick={() => setActiveTab('statistiques')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                activeTab === 'statistiques'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Statistiques
-            </button>
-            <button
               onClick={() => setActiveTab('versus')}
               className={`px-6 py-3 rounded-lg font-medium transition-all ${
                 activeTab === 'versus'
@@ -770,8 +848,6 @@ const App = () => {
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">V</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">N</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">D</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">BP</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">BC</th>
                       <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">Titres</th>
@@ -784,7 +860,18 @@ const App = () => {
                       <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            {index === 0 && <Trophy className="w-5 h-5 text-yellow-500" />}
+                            {index === 0 && (() => {
+                              // Show trophy only if:
+                              // 1. Championship is complete (all matches played), OR
+                              // 2. It's general ranking for 2024/2025 season
+                              const isComplete = selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
+                                const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+                                const metadata = ligueMetadata[ligueKey];
+                                return metadata && metadata.matchsEntered >= metadata.matchsTotal;
+                              })();
+                              const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
+                              return (isComplete || isGeneral20242025) && <Trophy className="w-5 h-5 text-yellow-500" />;
+                            })()}
                             <span className="font-bold text-lg text-slate-700">{index + 1}</span>
                           </div>
                         </td>
@@ -798,12 +885,18 @@ const App = () => {
                         <td className="px-6 py-4 text-center text-green-600 font-semibold">{player.victoires}</td>
                         <td className="px-6 py-4 text-center text-slate-600">{player.nuls}</td>
                         <td className="px-6 py-4 text-center text-red-600 font-semibold">{player.defaites}</td>
-                        <td className="px-6 py-4 text-center text-green-600 font-medium">{player.buts_pour}</td>
-                        <td className="px-6 py-4 text-center text-red-600 font-medium">{player.buts_contre}</td>
                         <td className="px-6 py-4 text-center">
-                          <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {player.ga > 0 ? '+' : ''}{player.ga}
-                          </span>
+                          <div className="flex items-center justify-center gap-2">
+                            <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {player.ga > 0 ? '+' : ''}{player.ga}
+                            </span>
+                            <button
+                              onClick={() => setShowGoalsDetail(player)}
+                              className="text-blue-600 hover:text-blue-800 font-bold text-lg"
+                            >
+                              +
+                            </button>
+                          </div>
                         </td>
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                           <td className="px-6 py-4 text-center">
@@ -820,6 +913,107 @@ const App = () => {
               </div>
             </div>
 
+            {/* Popup détails buts */}
+            {showGoalsDetail && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowGoalsDetail(null)}>
+                <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-slate-800">{showGoalsDetail.joueur}</h3>
+                    <button onClick={() => setShowGoalsDetail(null)} className="text-slate-600 hover:text-slate-800">
+                      ✕
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-slate-700 font-medium">Buts pour</span>
+                      <span className="text-2xl font-bold text-green-600">{showGoalsDetail.buts_pour}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                      <span className="text-slate-700 font-medium">Buts contre</span>
+                      <span className="text-2xl font-bold text-red-600">{showGoalsDetail.buts_contre}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tableaux de valises (only for general and total) */}
+            {valiseStats && (selectedLigue === 'general' || selectedChampionnat === 'total') && (
+              <div className="mt-6 space-y-6">
+                {/* Tableau utilisées/reçues */}
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="p-4 bg-slate-50 border-b">
+                    <h3 className="text-lg font-semibold text-slate-800">Statistiques Valises 💼</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Joueur</th>
+                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Utilisées</th>
+                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Reçues</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {joueurs.map(joueur => (
+                          <tr key={joueur} className="border-t hover:bg-slate-50">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800">{joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center font-semibold text-blue-600">{valiseStats[joueur].utilisees}</td>
+                            <td className="px-6 py-4 text-center font-semibold text-red-600">{valiseStats[joueur].recues}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Classement valises efficaces */}
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="p-4 bg-slate-50 border-b">
+                    <h3 className="text-lg font-semibold text-slate-800">Classement Valises Efficaces 🎯</h3>
+                    <p className="text-xs text-slate-600 mt-1">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Rang</th>
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">Joueur</th>
+                          <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700">Valises Efficaces</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {joueurs
+                          .map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces }))
+                          .sort((a, b) => b.efficaces - a.efficaces)
+                          .map((item, index) => (
+                            <tr key={item.joueur} className="border-t hover:bg-slate-50">
+                              <td className="px-6 py-4">
+                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-3 h-3 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
+                                  <span className="font-semibold text-slate-800">{item.joueur}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="text-xl font-bold text-green-600">{item.efficaces}</span>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Liste des matchs */}
             {selectedLigue !== 'general' && matchesListForChampionnat.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
@@ -830,13 +1024,16 @@ const App = () => {
                   {matchesListForChampionnat.map((match, index) => (
                     <div key={index} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                       <span className="text-slate-600">
-                        {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </span>
                       <span className="font-medium text-slate-800">{match.joueur1}</span>
                       <span className="text-lg font-bold text-blue-600">{match.buts_j1}</span>
                       <span className="text-slate-400">-</span>
                       <span className="text-lg font-bold text-purple-600">{match.buts_j2}</span>
                       <span className="font-medium text-slate-800">{match.joueur2}</span>
+                      {(match.valise_j1 || match.valise_j2) && (
+                        <span className="text-sm">💼</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -902,113 +1099,6 @@ const App = () => {
                 <strong>Système :</strong> Victoire = 3 pts • Nul = 1 pt • Défaite = 0 pt<br />
                 <strong>Classement :</strong> Points (puis Goal Average si égalité) • Bonus +3 pts par titre
               </p>
-            </div>
-          </>
-        )}
-
-        {/* ONGLET STATISTIQUES */}
-        {activeTab === 'statistiques' && (
-          <>
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
-              <select
-                value={selectedStatsLigue}
-                onChange={(e) => setSelectedStatsLigue(e.target.value)}
-                className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg"
-              >
-                <option value="all">Toutes</option>
-                {ligues.map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {joueurs.map(joueur => {
-                const stats = statsDetaillees[joueur];
-                const winRate = stats.matchs > 0 ? ((stats.victoires / stats.matchs) * 100).toFixed(1) : 0;
-                return (
-                  <div key={joueur} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className={`${playerColors[joueur] || 'bg-gray-600'} p-4`}>
-                      <h3 className="text-white font-bold text-lg">{joueur}</h3>
-                    </div>
-                    <div className="p-4 space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Matchs</span>
-                        <span className="font-semibold">{stats.matchs}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Victoires</span>
-                        <span className="font-semibold text-green-600">{stats.victoires}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Buts pour</span>
-                        <span className="font-semibold text-green-600">{stats.buts_pour}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">Buts contre</span>
-                        <span className="font-semibold text-red-600">{stats.buts_contre}</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-3">
-                        <span className="text-slate-600 text-sm">Goal Avg</span>
-                        <span className={`font-bold ${stats.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stats.ga > 0 ? '+' : ''}{stats.ga}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 text-sm">% victoires</span>
-                        <span className="font-bold text-blue-600">{winRate}%</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Points</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({ joueur, points: stats.points }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="joueur" stroke="#64748b" />
-                    <YAxis stroke="#64748b" />
-                    <Tooltip />
-                    <Bar dataKey="points" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Goal Average</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={Object.entries(statsDetaillees).map(([joueur, stats]) => ({ joueur, ga: stats.ga }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="joueur" stroke="#64748b" />
-                    <YAxis stroke="#64748b" />
-                    <Tooltip />
-                    <Bar dataKey="ga" fill="#10b981" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Comparaison</h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <RadarChart data={joueurs.map(joueur => ({
-                    joueur,
-                    'Points': statsDetaillees[joueur].points,
-                    'Victoires': statsDetaillees[joueur].victoires,
-                    'Buts': statsDetaillees[joueur].buts_pour,
-                  }))}>
-                    <PolarGrid stroke="#e2e8f0" />
-                    <PolarAngleAxis dataKey="joueur" stroke="#64748b" />
-                    <PolarRadiusAxis stroke="#64748b" />
-                    <Radar name="Points" dataKey="Points" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-                    <Radar name="Victoires" dataKey="Victoires" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                    <Radar name="Buts" dataKey="Buts" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
-                    <Legend />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
             </div>
           </>
         )}
@@ -1224,10 +1314,15 @@ const App = () => {
                               joueur2: '',
                               buts_j1: '',
                               buts_j2: '',
+                              valise_j1: false,
+                              valise_j2: false,
                               joueur3: '',
                               joueur4: '',
                               buts_j3: '',
-                              buts_j4: ''
+                              buts_j4: '',
+                              valise_j3: false,
+                              valise_j4: false,
+                              dateMatch: new Date().toISOString().split('T')[0]
                             });
                           }}
                           className="text-slate-600 hover:text-slate-800"
@@ -1338,6 +1433,16 @@ const App = () => {
                           </div>
                         )}
 
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Date du match</label>
+                          <input
+                            type="date"
+                            value={adminFormData.dateMatch}
+                            onChange={(e) => setAdminFormData({...adminFormData, dateMatch: e.target.value})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                          />
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
@@ -1381,6 +1486,17 @@ const App = () => {
                                   className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                   placeholder="0"
                                 />
+                                {!valiseUsed[adminFormData.joueur1] && (
+                                  <label className="flex items-center gap-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={adminFormData.valise_j1}
+                                      onChange={(e) => setAdminFormData({...adminFormData, valise_j1: e.target.checked})}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-xs text-slate-600">Valise 💼</span>
+                                  </label>
+                                )}
                               </div>
                               <div>
                                 <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur2}</label>
@@ -1392,6 +1508,17 @@ const App = () => {
                                   className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                   placeholder="0"
                                 />
+                                {!valiseUsed[adminFormData.joueur2] && (
+                                  <label className="flex items-center gap-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={adminFormData.valise_j2}
+                                      onChange={(e) => setAdminFormData({...adminFormData, valise_j2: e.target.checked})}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-xs text-slate-600">Valise 💼</span>
+                                  </label>
+                                )}
                               </div>
                             </div>
                             {adminFormData.buts_j1 !== '' && adminFormData.buts_j2 !== '' && (
@@ -1448,6 +1575,17 @@ const App = () => {
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     placeholder="0"
                                   />
+                                  {!valiseUsed[adminFormData.joueur3] && (
+                                    <label className="flex items-center gap-2 mt-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={adminFormData.valise_j3}
+                                        onChange={(e) => setAdminFormData({...adminFormData, valise_j3: e.target.checked})}
+                                        className="w-4 h-4"
+                                      />
+                                      <span className="text-xs text-slate-600">Valise 💼</span>
+                                    </label>
+                                  )}
                                 </div>
                                 <div>
                                   <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur4}</label>
@@ -1459,6 +1597,17 @@ const App = () => {
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     placeholder="0"
                                   />
+                                  {!valiseUsed[adminFormData.joueur4] && (
+                                    <label className="flex items-center gap-2 mt-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={adminFormData.valise_j4}
+                                        onChange={(e) => setAdminFormData({...adminFormData, valise_j4: e.target.checked})}
+                                        className="w-4 h-4"
+                                      />
+                                      <span className="text-xs text-slate-600">Valise 💼</span>
+                                    </label>
+                                  )}
                                 </div>
                               </div>
                               {adminFormData.buts_j3 !== '' && adminFormData.buts_j4 !== '' && (
