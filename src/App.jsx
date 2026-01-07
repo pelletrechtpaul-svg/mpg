@@ -710,8 +710,8 @@ const App = () => {
         }
       });
 
-      // Recent form (last 10 matches)
-      const recentForm = playerMatches.slice(0, 10);
+      // Recent form (last 10 matches) - reversed to show oldest first (left) to newest (right)
+      const recentForm = playerMatches.slice(0, 10).reverse();
 
       // Calculate streaks
       let currentStreak = { type: null, count: 0 };
