@@ -1145,26 +1145,26 @@ const App = () => {
         {/* Mur d'infos button */}
         <button
           onClick={() => setActiveTab(activeTab === 'infos' ? 'classements' : 'infos')}
-          className={`px-3 py-2 rounded-lg font-medium shadow-md transition-all inline-flex items-center gap-2 border-2 ${
+          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 ${
             activeTab === 'infos'
               ? 'bg-blue-600 text-white border-blue-600'
               : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
           }`}
         >
-          <span className="text-lg">ℹ️</span>
+          <span className="text-sm sm:text-lg">ℹ️</span>
           <span className="hidden sm:inline text-xs">Infos</span>
         </button>
 
         {/* Admin button */}
         <button
           onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
-          className={`px-3 py-2 rounded-lg font-medium shadow-md transition-all inline-flex items-center gap-2 border-2 border-black ${
+          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 border-black ${
             activeTab === 'admin'
               ? 'bg-red-600 text-white'
               : 'bg-white text-red-600 hover:bg-red-50'
           }`}
         >
-          <Lock className="w-4 h-4 text-red-600" />
+          <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
           <span className="hidden sm:inline text-red-600 text-xs">Admin</span>
         </button>
       </div>
