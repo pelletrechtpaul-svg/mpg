@@ -1046,16 +1046,21 @@ const App = () => {
         const metadata = ligueMetadata[key];
 
         if (metadata) {
-          // Only update if matchsEntered doesn't match actual count
-          if (metadata.matchsEntered !== actualMatchCount) {
+          // Update if counts don't match, and also adjust matchsTotal if needed
+          const needsUpdate = metadata.matchsEntered !== actualMatchCount || metadata.matchsTotal < actualMatchCount;
+
+          if (needsUpdate) {
             const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
+            const newMatchsTotal = Math.max(metadata.matchsTotal, actualMatchCount);
+
             batch.set(metaRef, {
               ...metadata,
               matchsEntered: actualMatchCount,
+              matchsTotal: newMatchsTotal,
               lastRecalculated: new Date().toISOString()
             });
             updatedCount++;
-            console.log(`Updating ${key}: ${metadata.matchsEntered} → ${actualMatchCount}`);
+            console.log(`Updating ${key}: ${metadata.matchsEntered}/${metadata.matchsTotal} → ${actualMatchCount}/${newMatchsTotal}`);
           }
         } else {
           // Create metadata if it doesn't exist
