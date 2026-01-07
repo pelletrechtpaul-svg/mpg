@@ -793,19 +793,19 @@ const App = () => {
           matchNumber: index + 1
         };
         joueurs.forEach(j => {
-          let points = playerPoints[j] || 0;
-
-          // Add title and medal points at the last data point for general ranking
-          if (selectedLigue === 'general' && index === sortedMatches.length - 1) {
-            points += (victoiresChampionnat[j] || 0) * 3; // 3 points per championship victory
-            points += (medaillesChampionnat[j] || 0) * 2; // 2 points per medal
-          }
-
-          dataPoint[j] = points;
+          dataPoint[j] = playerPoints[j] || 0;
         });
         evolution.push(dataPoint);
       }
     });
+
+    // Add title and medal points to the last data point for general ranking
+    if (selectedLigue === 'general' && evolution.length > 0) {
+      const lastPoint = evolution[evolution.length - 1];
+      joueurs.forEach(j => {
+        lastPoint[j] = (lastPoint[j] || 0) + (victoiresChampionnat[j] || 0) * 3 + (medaillesChampionnat[j] || 0) * 2;
+      });
+    }
 
     return evolution;
   }, [filteredData, selectedLigue, selectedChampionnat, joueurs, victoiresChampionnat, medaillesChampionnat]);
