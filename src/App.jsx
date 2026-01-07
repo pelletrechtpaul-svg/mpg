@@ -3020,21 +3020,23 @@ const App = () => {
                 const matchs = parseInt(mpgForm.matchsJoues);
                 const poste = mpgForm.poste;
 
-                // Coefficients par poste pour les buts
+                // Coefficients par poste pour les buts (pondération inversée : plus rare = plus valorisé)
                 const coeffButs = {
-                  'G': 50,  // Gardien
-                  'D': 30,  // Défenseur
-                  'M': 20,  // Milieu
-                  'A': 10   // Attaquant
+                  'G': 5,  // Gardien qui marque = exceptionnel
+                  'D': 3,  // Défenseur buteur = très bon
+                  'M': 2,  // Milieu buteur = bon
+                  'A': 1   // Attaquant = normal
                 };
 
-                // Calcul de l'indice
-                const indice = Math.min(100,
-                  (note * 20) +
-                  (titu * 0.15) +
-                  (buts * coeffButs[poste]) +
-                  (matchs * 5)
-                );
+                // Nouvelle formule : Indice = Note * facteur_régularité * facteur_offensif
+                const matchsEffectifs = matchs * (titu / 100);
+                const facteurRegularite = Math.sqrt(matchsEffectifs);
+                const butsPonderes = buts * coeffButs[poste];
+                const facteurOffensif = 1 + (butsPonderes / 20);
+                const indiceBrut = note * facteurRegularite * facteurOffensif;
+
+                // Normalisation sur 100
+                const indice = Math.min(100, indiceBrut);
 
                 // Ajouter la carte
                 const newCard = {
@@ -3283,25 +3285,74 @@ const App = () => {
             {/* Explication de l'algorithme */}
             <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
               <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-3">📊 Comment est calculé l'indice ?</h3>
-              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <p><strong>Formule :</strong></p>
-                <p className="font-mono bg-white dark:bg-slate-900 p-3 rounded border border-slate-200 dark:border-slate-600">
-                  Indice = (Note moyenne × 20) + (% Titularisation × 0.15) + (Buts × Coefficient poste) + (Matchs × 5)
-                </p>
-                <p className="pt-2"><strong>Coefficients buts par poste :</strong></p>
-                <ul className="list-disc list-inside space-y-1 pl-2">
-                  <li>Gardien : ×50 (très rare !)</li>
-                  <li>Défenseur : ×30</li>
-                  <li>Milieu : ×20</li>
-                  <li>Attaquant : ×10</li>
-                </ul>
-                <p className="pt-2"><strong>Échelle de notation :</strong></p>
-                <ul className="list-disc list-inside space-y-1 pl-2">
-                  <li className="text-green-600 dark:text-green-400">80-100 : Excellent</li>
-                  <li className="text-blue-600 dark:text-blue-400">60-79 : Très bien</li>
-                  <li className="text-yellow-600 dark:text-yellow-400">40-59 : Correct</li>
-                  <li className="text-red-600 dark:text-red-400">0-39 : Faible</li>
-                </ul>
+              <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                <div>
+                  <p className="font-semibold mb-2">Formule générale :</p>
+                  <p className="font-mono bg-white dark:bg-slate-900 p-3 rounded border border-slate-200 dark:border-slate-600 text-xs">
+                    Indice = Note moyenne × Facteur régularité × Facteur offensif
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-2">Détail des facteurs :</p>
+                  <ul className="space-y-2 pl-2">
+                    <li className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-600">
+                      <strong>Facteur régularité :</strong>
+                      <p className="font-mono text-xs mt-1">√(Matchs effectifs)</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Matchs effectifs = Matchs joués × (% Titularisation / 100)
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Valorise la régularité et le temps de jeu
+                      </p>
+                    </li>
+                    <li className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-600">
+                      <strong>Facteur offensif :</strong>
+                      <p className="font-mono text-xs mt-1">1 + (Buts pondérés / 20)</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Buts pondérés = Buts × Coefficient poste
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Pondère l'apport offensif selon le poste
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-2">Coefficients par poste :</p>
+                  <ul className="list-disc list-inside space-y-1 pl-2">
+                    <li>Gardien : ×5 (un but de gardien est exceptionnel)</li>
+                    <li>Défenseur : ×3 (défenseur buteur = très bon)</li>
+                    <li>Milieu : ×2 (milieu buteur = bon)</li>
+                    <li>Attaquant : ×1 (buts = rôle normal)</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-2">Exemple de calcul :</p>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700 text-xs">
+                    <p className="font-semibold">Mbappé (Attaquant)</p>
+                    <p>Note 7.5 • 30 matchs • 90% titu • 25 buts</p>
+                    <p className="mt-2">• Matchs effectifs = 30 × 0.9 = 27</p>
+                    <p>• Facteur régularité = √27 ≈ 5.2</p>
+                    <p>• Buts pondérés = 25 × 1 = 25</p>
+                    <p>• Facteur offensif = 1 + (25/20) = 2.25</p>
+                    <p className="mt-2 font-semibold text-blue-700 dark:text-blue-300">
+                      → Indice = 7.5 × 5.2 × 2.25 ≈ 88/100
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-2">Échelle de notation :</p>
+                  <ul className="list-disc list-inside space-y-1 pl-2">
+                    <li className="text-green-600 dark:text-green-400">80-100 : Excellent</li>
+                    <li className="text-blue-600 dark:text-blue-400">60-79 : Très bien</li>
+                    <li className="text-yellow-600 dark:text-yellow-400">40-59 : Correct</li>
+                    <li className="text-red-600 dark:text-red-400">0-39 : Faible</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
