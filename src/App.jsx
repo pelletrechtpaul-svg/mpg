@@ -158,9 +158,9 @@ const App = () => {
   }, [filteredData]);
 
   const ligues = useMemo(() => {
-    const uniqueLigues = [...new Set(filteredData.map(d => d.ligue))];
-    return uniqueLigues.length > 0 ? uniqueLigues : ['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'];
-  }, [filteredData]);
+    const uniqueLigues = [...new Set(matchData.map(d => d.ligue))];
+    return uniqueLigues.length > 0 ? uniqueLigues : ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+  }, [matchData]);
 
   const championnatsByLigue = useMemo(() => {
     const map = {};
@@ -963,10 +963,10 @@ const App = () => {
                     setSelectedLigue('general');
                     setSelectedChampionnat('total');
                   }}
-                  className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+                  className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 ${
                     selectedLigue === 'general'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                      : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
                   }`}
                 >
                   Général
@@ -1559,7 +1559,7 @@ const App = () => {
                         <div>
                           <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
                           <div className="flex flex-wrap gap-3">
-                            {['Ligue 1', 'Premier League', 'Liga', 'Calcio', 'Ligue des Champions'].map(ligue => (
+                            {['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'].map(ligue => (
                               <label key={ligue} className="inline-flex items-center">
                                 <input
                                   type="radio"
