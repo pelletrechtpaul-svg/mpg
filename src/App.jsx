@@ -1768,11 +1768,27 @@ const App = () => {
                         </div>
                       </div>
 
-                      {/* Win streak only */}
+                      {/* Recent form - last 10 matches */}
                       <div>
-                        <div className="bg-green-50 rounded-lg p-6 text-center">
-                          <div className="text-4xl font-bold text-green-700 mb-2">{stats.maxWinStreak}</div>
-                          <div className="text-sm text-green-600">Plus longue série de victoires</div>
+                        <h4 className="text-sm font-semibold text-slate-700 mb-3">Forme récente (10 derniers matchs)</h4>
+                        <div className="flex gap-2 flex-wrap justify-center">
+                          {stats.recentForm.length > 0 ? (
+                            stats.recentForm.map((match, idx) => (
+                              <div
+                                key={idx}
+                                className={`w-10 h-10 rounded flex items-center justify-center font-bold text-white ${
+                                  match.result === 'W' ? 'bg-green-600' :
+                                  match.result === 'L' ? 'bg-red-600' :
+                                  'bg-slate-400'
+                                }`}
+                                title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} (${match.date})`}
+                              >
+                                {match.result}
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500">Aucun match</p>
+                          )}
                         </div>
                       </div>
                     </div>
