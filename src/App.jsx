@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
 import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const defaultMatchData = [];
 
@@ -23,6 +24,8 @@ const App = () => {
   const [matchData, setMatchData] = useState([]);
   const [ligueMetadata, setLigueMetadata] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastSyncTime, setLastSyncTime] = useState(null);
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
@@ -51,6 +54,8 @@ const App = () => {
   const [editingMatch, setEditingMatch] = useState(null);
   const [editingLigue, setEditingLigue] = useState(null);
   const [matchesToDelete, setMatchesToDelete] = useState([]);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [adminSearchQuery, setAdminSearchQuery] = useState('');
 
   // Admin form
   const [adminFormData, setAdminFormData] = useState({
@@ -73,6 +78,20 @@ const App = () => {
     valise_j4: false,
     dateMatch: new Date().toISOString().split('T')[0]
   });
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Migrate localStorage to Firestore and setup real-time sync
   useEffect(() => {
@@ -116,6 +135,7 @@ const App = () => {
           const matches = snapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id }));
           setMatchData(matches);
           setIsLoading(false);
+          setLastSyncTime(new Date());
         });
 
         const unsubscribeMetadata = onSnapshot(collection(db, 'metadata'), (snapshot) => {
@@ -126,6 +146,7 @@ const App = () => {
             metadata[originalKey] = doc.data();
           });
           setLigueMetadata(metadata);
+          setLastSyncTime(new Date());
         });
 
         // Cleanup listeners on unmount
@@ -586,24 +607,124 @@ const App = () => {
     return used;
   }, [matchData, adminFormData.saison, adminFormData.ligue, adminFormData.championnat]);
 
+  // Advanced stats: recent form and streaks (no championship filtering)
+  const advancedStats = useMemo(() => {
+    const stats = {};
+
+    // Get all matches sorted by date (newest first)
+    const sortedMatches = [...matchData]
+      .filter(m => selectedSeason === 'All-Time' || m.saison === selectedSeason)
+      .sort((a, b) => new Date(b.dateMatch) - new Date(a.dateMatch));
+
+    joueurs.forEach(joueur => {
+      // Get all matches for this player
+      const playerMatches = [];
+      sortedMatches.forEach(match => {
+        if (match.joueur1 === joueur) {
+          playerMatches.push({
+            date: match.dateMatch,
+            opponent: match.joueur2,
+            butsFor: match.buts_j1,
+            butsAgainst: match.buts_j2,
+            result: match.buts_j1 > match.buts_j2 ? 'W' : match.buts_j1 < match.buts_j2 ? 'L' : 'D'
+          });
+        } else if (match.joueur2 === joueur) {
+          playerMatches.push({
+            date: match.dateMatch,
+            opponent: match.joueur1,
+            butsFor: match.buts_j2,
+            butsAgainst: match.buts_j1,
+            result: match.buts_j2 > match.buts_j1 ? 'W' : match.buts_j2 < match.buts_j1 ? 'L' : 'D'
+          });
+        }
+      });
+
+      // Recent form (last 10 matches)
+      const recentForm = playerMatches.slice(0, 10);
+
+      // Calculate streaks
+      let currentStreak = { type: null, count: 0 };
+      let maxWinStreak = 0;
+      let maxUnbeatenStreak = 0;
+      let currentWinStreak = 0;
+      let currentUnbeatenStreak = 0;
+
+      playerMatches.forEach((match, index) => {
+        // Current streak (most recent)
+        if (index === 0) {
+          currentStreak.type = match.result;
+          currentStreak.count = 1;
+        } else if (currentStreak.count > 0 && match.result === currentStreak.type) {
+          currentStreak.count++;
+        }
+
+        // Win streak
+        if (match.result === 'W') {
+          currentWinStreak++;
+          maxWinStreak = Math.max(maxWinStreak, currentWinStreak);
+        } else {
+          currentWinStreak = 0;
+        }
+
+        // Unbeaten streak (W or D)
+        if (match.result === 'W' || match.result === 'D') {
+          currentUnbeatenStreak++;
+          maxUnbeatenStreak = Math.max(maxUnbeatenStreak, currentUnbeatenStreak);
+        } else {
+          currentUnbeatenStreak = 0;
+        }
+      });
+
+      stats[joueur] = {
+        recentForm,
+        currentStreak,
+        maxWinStreak,
+        maxUnbeatenStreak,
+        totalMatches: playerMatches.length
+      };
+    });
+
+    return stats;
+  }, [matchData, joueurs, selectedSeason]);
+
+  // Monitor auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAdminAuthenticated(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Admin: Login
-  const handleAdminLogin = (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     if (adminPassword === 'admin') {
-      setIsAdminAuthenticated(true);
-      setAdminPassword('');
+      try {
+        // Sign in with Firebase Auth
+        // Using a default admin account - you should create this user in Firebase Console
+        await signInWithEmailAndPassword(auth, 'admin@mpg-fantasy.app', 'adminmpg2025');
+        setAdminPassword('');
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Erreur de connexion. Assurez-vous que le compte admin existe dans Firebase.');
+        setAdminPassword('');
+      }
     } else {
       alert('Code incorrect');
       setAdminPassword('');
     }
   };
 
-  const handleAdminLogout = () => {
-    setIsAdminAuthenticated(false);
-    setShowAddMatchForm(false);
-    setShowEditMatchForm(false);
-    setShowDeleteMatchForm(false);
-    setShowEditLigueForm(false);
+  const handleAdminLogout = async () => {
+    try {
+      await signOut(auth);
+      setShowAddMatchForm(false);
+      setShowEditMatchForm(false);
+      setShowDeleteMatchForm(false);
+      setShowEditLigueForm(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   // Admin: Add match (can add 2 matches at once)
@@ -651,9 +772,9 @@ const App = () => {
     const newMatches = [];
     const currentDate = new Date().toISOString();
 
-    // First match
-    const butsJ1 = parseInt(buts_j1);
-    const butsJ2 = parseInt(buts_j2);
+    // First match (empty fields default to 0)
+    const butsJ1 = parseInt(buts_j1) || 0;
+    const butsJ2 = parseInt(buts_j2) || 0;
 
     let points_j1, points_j2, resultat;
 
@@ -688,10 +809,10 @@ const App = () => {
       dateEntree: currentDate
     });
 
-    // Second match (if filled)
+    // Second match (if filled, empty fields default to 0)
     if (hasSecondMatch) {
-      const butsJ3 = parseInt(buts_j3);
-      const butsJ4 = parseInt(buts_j4);
+      const butsJ3 = parseInt(buts_j3) || 0;
+      const butsJ4 = parseInt(buts_j4) || 0;
 
       let points_j3, points_j4, resultat2;
 
@@ -788,17 +909,17 @@ const App = () => {
     alert('Match ajouté avec succès !');
   };
 
-  // Admin: Delete matches
-  const handleDeleteMatches = async () => {
+  // Admin: Show delete confirmation
+  const handleDeleteMatches = () => {
     if (matchesToDelete.length === 0) {
       alert('Veuillez sélectionner au moins un match');
       return;
     }
+    setShowDeleteConfirmModal(true);
+  };
 
-    if (!confirm(`Supprimer ${matchesToDelete.length} match(s) ?`)) {
-      return;
-    }
-
+  // Admin: Confirm and delete matches
+  const confirmDeleteMatches = async () => {
     try {
       const batch = writeBatch(db);
 
@@ -813,10 +934,12 @@ const App = () => {
       await batch.commit();
       setMatchesToDelete([]);
       setShowDeleteMatchForm(false);
+      setShowDeleteConfirmModal(false);
       alert('Matchs supprimés !');
     } catch (error) {
       console.error('Error deleting matches:', error);
       alert('Erreur lors de la suppression');
+      setShowDeleteConfirmModal(false);
     }
   };
 
@@ -824,7 +947,7 @@ const App = () => {
   const handleEditMatch = async (e) => {
     e.preventDefault();
 
-    const { index, joueur1, joueur2, buts_j1, buts_j2 } = editingMatch;
+    const { index, joueur1, joueur2, buts_j1, buts_j2, dateMatch } = editingMatch;
 
     const butsJ1 = parseInt(buts_j1);
     const butsJ2 = parseInt(buts_j2);
@@ -855,6 +978,7 @@ const App = () => {
       resultat,
       points_j1,
       points_j2,
+      dateMatch: dateMatch || match.dateMatch,
       dateEntree: new Date().toISOString()
     };
 
@@ -892,6 +1016,25 @@ const App = () => {
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
             <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
+            {/* Sync indicator */}
+            <div className="flex items-center gap-2 mt-2">
+              {isOnline ? (
+                <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  <span>Synchronisé</span>
+                  {lastSyncTime && (
+                    <span className="text-slate-400">
+                      • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                  <span>Hors ligne</span>
+                </div>
+              )}
+            </div>
           </div>
           <button
             onClick={() => setActiveTab('admin')}
@@ -948,6 +1091,16 @@ const App = () => {
               }`}
             >
               Face à face
+            </button>
+            <button
+              onClick={() => setActiveTab('stats-avancees')}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                activeTab === 'stats-avancees'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Stats Avancées
             </button>
           </div>
         )}
@@ -1449,6 +1602,99 @@ const App = () => {
           </>
         )}
 
+        {/* ONGLET STATS AVANCÉES */}
+        {activeTab === 'stats-avancees' && (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {joueurs.map(joueur => {
+                const stats = advancedStats[joueur];
+                if (!stats) return null;
+
+                return (
+                  <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
+                    {/* Player header */}
+                    <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
+                        <img
+                          src={playerImages[joueur]}
+                          alt={joueur}
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
+                        <p className="text-sm text-slate-600">{stats.totalMatches} matchs joués</p>
+                      </div>
+                    </div>
+
+                    {/* Recent form */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-semibold text-slate-700 mb-3">Forme récente (10 derniers matchs)</h4>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {stats.recentForm.length > 0 ? (
+                          stats.recentForm.map((match, idx) => (
+                            <div
+                              key={idx}
+                              className={`w-8 h-8 rounded flex items-center justify-center font-bold text-white text-sm ${
+                                match.result === 'W' ? 'bg-green-600' :
+                                match.result === 'L' ? 'bg-red-600' :
+                                'bg-slate-400'
+                              }`}
+                              title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} (${match.date})`}
+                            >
+                              {match.result}
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-slate-500">Aucun match</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Current streak */}
+                    {stats.currentStreak.type && stats.currentStreak.count > 0 && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-slate-700 mb-2">Série en cours</h4>
+                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium ${
+                          stats.currentStreak.type === 'W' ? 'bg-green-100 text-green-800' :
+                          stats.currentStreak.type === 'L' ? 'bg-red-100 text-red-800' :
+                          'bg-slate-100 text-slate-800'
+                        }`}>
+                          <span className="text-2xl font-bold">{stats.currentStreak.count}</span>
+                          <span>
+                            {stats.currentStreak.type === 'W' ? 'victoire(s) consécutive(s)' :
+                             stats.currentStreak.type === 'L' ? 'défaite(s) consécutive(s)' :
+                             'match(s) nul(s) consécutif(s)'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Records */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-700 mb-3">Records</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-green-50 rounded-lg p-3">
+                          <div className="text-2xl font-bold text-green-700">{stats.maxWinStreak}</div>
+                          <div className="text-xs text-green-600 mt-1">Plus longue série de victoires</div>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-3">
+                          <div className="text-2xl font-bold text-blue-700">{stats.maxUnbeatenStreak}</div>
+                          <div className="text-xs text-blue-600 mt-1">Plus longue série sans défaite</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
         {/* ONGLET ADMIN */}
         {activeTab === 'admin' && (
           <>
@@ -1882,6 +2128,15 @@ const App = () => {
                           <p className="text-sm text-slate-600">
                             <strong>Match :</strong> {editingMatch.saison} • {editingMatch.ligue} • {editingMatch.championnat}
                           </p>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Date du match</label>
+                            <input
+                              type="date"
+                              value={editingMatch.dateMatch || new Date().toISOString().split('T')[0]}
+                              onChange={(e) => setEditingMatch({...editingMatch, dateMatch: e.target.value})}
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                            />
+                          </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
@@ -1953,37 +2208,67 @@ const App = () => {
                           onClick={() => {
                             setShowDeleteMatchForm(false);
                             setMatchesToDelete([]);
+                            setAdminSearchQuery('');
                           }}
                           className="text-slate-600 hover:text-slate-800"
                         >
                           Annuler
                         </button>
                       </div>
+
+                      {/* Search bar */}
+                      <div className="mb-4">
+                        <input
+                          type="text"
+                          placeholder="Rechercher par joueur, date, ligue..."
+                          value={adminSearchQuery}
+                          onChange={(e) => setAdminSearchQuery(e.target.value)}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
                       <div className="space-y-2 max-h-96 overflow-y-auto mb-4">
-                        {matchData.map((match, index) => (
-                          <label key={index} className="flex items-center p-4 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={matchesToDelete.includes(index)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setMatchesToDelete([...matchesToDelete, index]);
-                                } else {
-                                  setMatchesToDelete(matchesToDelete.filter(i => i !== index));
-                                }
-                              }}
-                              className="w-4 h-4 text-red-600"
-                            />
-                            <div className="ml-3 flex-1">
-                              <p className="font-semibold text-slate-800">
-                                {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
-                              </p>
-                              <p className="text-sm text-slate-600">
-                                {match.saison} • {match.ligue} • {match.championnat}
-                              </p>
-                            </div>
-                          </label>
-                        ))}
+                        {matchData
+                          .map((match, index) => ({ match, index }))
+                          .filter(({ match }) => {
+                            if (!adminSearchQuery) return true;
+                            const query = adminSearchQuery.toLowerCase();
+                            return (
+                              match.joueur1?.toLowerCase().includes(query) ||
+                              match.joueur2?.toLowerCase().includes(query) ||
+                              match.joueur3?.toLowerCase().includes(query) ||
+                              match.joueur4?.toLowerCase().includes(query) ||
+                              match.dateMatch?.includes(query) ||
+                              match.ligue?.toLowerCase().includes(query) ||
+                              match.championnat?.toLowerCase().includes(query) ||
+                              match.saison?.includes(query)
+                            );
+                          })
+                          .map(({ match, index }) => (
+                            <label key={index} className="flex items-center p-4 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={matchesToDelete.includes(index)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setMatchesToDelete([...matchesToDelete, index]);
+                                  } else {
+                                    setMatchesToDelete(matchesToDelete.filter(i => i !== index));
+                                  }
+                                }}
+                                className="w-4 h-4 text-red-600"
+                              />
+                              <div className="ml-3 flex-1">
+                                <p className="font-semibold text-slate-800">
+                                  {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                                  {match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
+                                </p>
+                                <p className="text-sm text-slate-600">
+                                  {match.dateMatch} • {match.saison} • {match.ligue} • {match.championnat}
+                                </p>
+                              </div>
+                            </label>
+                          ))}
                       </div>
                       {matchesToDelete.length > 0 && (
                         <button
@@ -2006,6 +2291,76 @@ const App = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Confirmer la suppression</h3>
+                <p className="text-slate-600 mb-4">
+                  Vous êtes sur le point de supprimer {matchesToDelete.length} match(s). Cette action est irréversible.
+                </p>
+
+                {/* Show details of matches to be deleted */}
+                <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
+                  {matchesToDelete.map((index) => {
+                    const match = matchData[index];
+                    return (
+                      <div key={index} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-semibold text-slate-700">
+                            {match.saison} • {match.ligue} • {match.championnat}
+                          </span>
+                          <span className="text-xs text-slate-500">{match.dateMatch}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="bg-white rounded p-2">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-slate-700">{match.joueur1}</span>
+                              <span className="font-bold text-slate-900">{match.buts_j1}</span>
+                            </div>
+                            <div className="flex items-center justify-between mt-1">
+                              <span className="font-medium text-slate-700">{match.joueur2}</span>
+                              <span className="font-bold text-slate-900">{match.buts_j2}</span>
+                            </div>
+                          </div>
+                          {match.joueur3 && (
+                            <div className="bg-white rounded p-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-slate-700">{match.joueur3}</span>
+                                <span className="font-bold text-slate-900">{match.buts_j3}</span>
+                              </div>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="font-medium text-slate-700">{match.joueur4}</span>
+                                <span className="font-bold text-slate-900">{match.buts_j4}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirmModal(false)}
+                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={confirmDeleteMatches}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Supprimer définitivement
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
