@@ -1022,6 +1022,63 @@ const App = () => {
     }
   };
 
+  // Recalculate all metadata based on actual match counts
+  const handleRecalculateMetadata = async () => {
+    if (!confirm('Recalculer toutes les métadonnées des championnats en fonction du nombre réel de matchs dans la base de données ?')) return;
+
+    try {
+      // Group matches by championship
+      const championshipGroups = {};
+      matchData.forEach(match => {
+        const key = `${match.saison}-${match.ligue}-${match.championnat}`;
+        if (!championshipGroups[key]) {
+          championshipGroups[key] = [];
+        }
+        championshipGroups[key].push(match);
+      });
+
+      // Update metadata for each championship
+      const batch = writeBatch(db);
+      let updatedCount = 0;
+
+      Object.entries(championshipGroups).forEach(([key, matches]) => {
+        const actualMatchCount = matches.length;
+        const metadata = ligueMetadata[key];
+
+        if (metadata) {
+          // Only update if matchsEntered doesn't match actual count
+          if (metadata.matchsEntered !== actualMatchCount) {
+            const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
+            batch.set(metaRef, {
+              ...metadata,
+              matchsEntered: actualMatchCount,
+              lastRecalculated: new Date().toISOString()
+            });
+            updatedCount++;
+            console.log(`Updating ${key}: ${metadata.matchsEntered} → ${actualMatchCount}`);
+          }
+        } else {
+          // Create metadata if it doesn't exist
+          const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
+          batch.set(metaRef, {
+            createdAt: new Date().toISOString(),
+            matchsTotal: actualMatchCount,
+            matchsEntered: actualMatchCount,
+            lastRecalculated: new Date().toISOString()
+          });
+          updatedCount++;
+          console.log(`Creating metadata for ${key}: ${actualMatchCount} matchs`);
+        }
+      });
+
+      await batch.commit();
+      alert(`✅ Recalcul terminé ! ${updatedCount} championnat(s) mis à jour.`);
+    } catch (error) {
+      console.error('Error recalculating metadata:', error);
+      alert('❌ Erreur lors du recalcul des métadonnées');
+    }
+  };
+
   // Admin: Login
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -2331,19 +2388,31 @@ const App = () => {
                         Ajouter un match
                       </button>
                       {matchData.length > 0 && (
-                        <button
-                          onClick={() => {
-                            setShowEditMatchForm(true);
-                            setEditSelectedSaison('');
-                            setEditSelectedLigue('');
-                            setEditSelectedChampionnat('');
-                            setEditingMatch(null);
-                          }}
-                          className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
-                        >
-                          <Edit className="w-5 h-5" />
-                          Éditer un match
-                        </button>
+                        <>
+                          <button
+                            onClick={() => {
+                              setShowEditMatchForm(true);
+                              setEditSelectedSaison('');
+                              setEditSelectedLigue('');
+                              setEditSelectedChampionnat('');
+                              setEditingMatch(null);
+                            }}
+                            className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
+                          >
+                            <Edit className="w-5 h-5" />
+                            Éditer un match
+                          </button>
+                          <button
+                            onClick={handleRecalculateMetadata}
+                            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 inline-flex items-center gap-2"
+                            title="Recalculer les métadonnées des championnats (nombre de matchs, etc.)"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Recalculer métadonnées
+                          </button>
+                        </>
                       )}
                     </div>
                   ) : showAddMatchForm ? (
