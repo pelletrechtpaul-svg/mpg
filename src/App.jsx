@@ -1092,6 +1092,7 @@ const App = () => {
             <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-2">
               <audio
                 controls
+                preload="metadata"
                 className="h-8"
                 style={{ width: '200px' }}
               >
