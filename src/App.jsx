@@ -752,13 +752,13 @@ const App = () => {
         batch.set(matchRef, { ...match, id: matchRef.id });
       });
 
-      // Update metadata
+      // Update metadata (1 entry = 1 match, regardless of how many scores filled)
       const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
       if (ligueMetadata[ligueKey]) {
         const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
         batch.set(metaRef, {
           ...ligueMetadata[ligueKey],
-          matchsEntered: ligueMetadata[ligueKey].matchsEntered + newMatches.length,
+          matchsEntered: ligueMetadata[ligueKey].matchsEntered + 1,
           lastEntryDate: currentDate
         });
       }
@@ -792,7 +792,7 @@ const App = () => {
       dateMatch: new Date().toISOString().split('T')[0]
     });
 
-    alert(`${newMatches.length} match${newMatches.length > 1 ? 's' : ''} ajouté${newMatches.length > 1 ? 's' : ''} avec succès !`);
+    alert('Match ajouté avec succès !');
   };
 
   // Admin: Delete matches
@@ -1694,7 +1694,7 @@ const App = () => {
 
                         {adminFormData.joueur1 && adminFormData.joueur2 && (
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Score du match</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">1er score</label>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur1}</label>
@@ -1760,7 +1760,7 @@ const App = () => {
                         {/* Second match (auto-displayed when joueur1 and joueur2 are selected) */}
                         {adminFormData.joueur1 && adminFormData.joueur2 && adminFormData.joueur3 && adminFormData.joueur4 && (
                           <div className="border-t pt-6">
-                            <h4 className="text-md font-semibold text-slate-700 mb-4">Match 2</h4>
+                            <h4 className="text-md font-semibold text-slate-700 mb-4">2ème score</h4>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                               <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 3</label>
@@ -1783,7 +1783,7 @@ const App = () => {
                             </div>
 
                             <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">Score du match</label>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Score</label>
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur3}</label>
