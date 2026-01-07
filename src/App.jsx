@@ -785,9 +785,10 @@ const App = () => {
       });
       setNewPostItText('');
       setNewPostItAuthor('');
+      alert('Post-it ajouté avec succès !');
     } catch (error) {
       console.error('Error adding post-it:', error);
-      alert('Erreur lors de l\'ajout du post-it');
+      alert(`Erreur lors de l'ajout du post-it: ${error.message}\n\nVérifiez les règles Firestore pour la collection 'postits'.`);
     }
   };
 
@@ -1170,7 +1171,7 @@ const App = () => {
         {/* Fixed bottom-right buttons */}
         <div className="fixed bottom-6 right-6 flex gap-3 z-50">
           <button
-            onClick={() => setActiveTab('infos')}
+            onClick={() => setActiveTab(activeTab === 'infos' ? 'classements' : 'infos')}
             className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 ${
               activeTab === 'infos'
                 ? 'bg-blue-600 text-white border-blue-600'
