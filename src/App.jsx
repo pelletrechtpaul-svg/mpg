@@ -96,6 +96,17 @@ const App = () => {
     dateMatch: new Date().toISOString().split('T')[0]
   });
 
+  // MPG Calculator state
+  const [mpgCards, setMpgCards] = useState([]);
+  const [mpgForm, setMpgForm] = useState({
+    nomJoueur: '',
+    poste: 'A',
+    noteMoyenne: '',
+    titularisation: '',
+    buts: '',
+    matchsJoues: ''
+  });
+
   // Dark mode state
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('mpg_dark_mode');
@@ -1816,6 +1827,16 @@ const App = () => {
             >
               Records
             </button>
+            <button
+              onClick={() => setActiveTab('calculateur-mpg')}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                activeTab === 'calculateur-mpg'
+                  ? 'bg-green-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Calculateur MPG
+            </button>
             {selectedSeason === '2025/2026' && (
               <button
                 onClick={() => setActiveTab('stats-avancees')}
@@ -2965,6 +2986,322 @@ const App = () => {
                     <p className="text-sm mt-2">Soyez le premier à en ajouter un ! 📌</p>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ONGLET CALCULATEUR MPG */}
+        {activeTab === 'calculateur-mpg' && (
+          <div className="space-y-6">
+            {/* En-tête */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-sm p-6 text-white">
+              <h2 className="text-2xl font-bold mb-2">⚽ Calculateur d'Indice de Performance MPG</h2>
+              <p className="text-green-100">Calculez et comparez les indices de performance de vos joueurs MonPetitGazon</p>
+            </div>
+
+            {/* Formulaire */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Ajouter un joueur</h3>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+
+                // Validation
+                if (!mpgForm.nomJoueur || !mpgForm.noteMoyenne || !mpgForm.titularisation || !mpgForm.buts || !mpgForm.matchsJoues) {
+                  alert('Veuillez remplir tous les champs');
+                  return;
+                }
+
+                // Calcul de l'indice
+                const note = parseFloat(mpgForm.noteMoyenne);
+                const titu = parseFloat(mpgForm.titularisation);
+                const buts = parseInt(mpgForm.buts);
+                const matchs = parseInt(mpgForm.matchsJoues);
+                const poste = mpgForm.poste;
+
+                // Coefficients par poste pour les buts
+                const coeffButs = {
+                  'G': 50,  // Gardien
+                  'D': 30,  // Défenseur
+                  'M': 20,  // Milieu
+                  'A': 10   // Attaquant
+                };
+
+                // Calcul de l'indice
+                const indice = Math.min(100,
+                  (note * 20) +
+                  (titu * 0.15) +
+                  (buts * coeffButs[poste]) +
+                  (matchs * 5)
+                );
+
+                // Ajouter la carte
+                const newCard = {
+                  id: Date.now(),
+                  ...mpgForm,
+                  indice: Math.round(indice)
+                };
+
+                setMpgCards([...mpgCards, newCard]);
+
+                // Reset form
+                setMpgForm({
+                  nomJoueur: '',
+                  poste: 'A',
+                  noteMoyenne: '',
+                  titularisation: '',
+                  buts: '',
+                  matchsJoues: ''
+                });
+              }} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Nom du joueur */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Nom du joueur
+                    </label>
+                    <input
+                      type="text"
+                      value={mpgForm.nomJoueur}
+                      onChange={(e) => setMpgForm({...mpgForm, nomJoueur: e.target.value})}
+                      placeholder="ex: Mbappé"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  {/* Poste */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Poste
+                    </label>
+                    <select
+                      value={mpgForm.poste}
+                      onChange={(e) => setMpgForm({...mpgForm, poste: e.target.value})}
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="G">Gardien (G)</option>
+                      <option value="D">Défenseur (D)</option>
+                      <option value="M">Milieu (M)</option>
+                      <option value="A">Attaquant (A)</option>
+                    </select>
+                  </div>
+
+                  {/* Note moyenne */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Note moyenne (0-10)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="10"
+                      value={mpgForm.noteMoyenne}
+                      onChange={(e) => setMpgForm({...mpgForm, noteMoyenne: e.target.value})}
+                      placeholder="ex: 6.5"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  {/* Titularisation */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Titularisation (%)
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      max="100"
+                      value={mpgForm.titularisation}
+                      onChange={(e) => setMpgForm({...mpgForm, titularisation: e.target.value})}
+                      placeholder="ex: 85"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  {/* Buts */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Nombre de buts
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={mpgForm.buts}
+                      onChange={(e) => setMpgForm({...mpgForm, buts: e.target.value})}
+                      placeholder="ex: 12"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  {/* Matchs joués */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Matchs joués
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={mpgForm.matchsJoues}
+                      onChange={(e) => setMpgForm({...mpgForm, matchsJoues: e.target.value})}
+                      placeholder="ex: 20"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    Ajouter le joueur
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Cartes de joueurs */}
+            {mpgCards.length > 0 && (
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                    Comparaison ({mpgCards.length} joueur{mpgCards.length > 1 ? 's' : ''})
+                  </h3>
+                  <button
+                    onClick={() => setMpgCards([])}
+                    className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-medium transition-colors text-sm"
+                  >
+                    Tout effacer
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mpgCards.map((card) => {
+                    // Déterminer la couleur selon l'indice
+                    let bgColor, borderColor, textColor, badgeText;
+                    if (card.indice >= 80) {
+                      bgColor = 'from-green-50 to-emerald-50 dark:from-green-900 dark:to-emerald-900';
+                      borderColor = 'border-green-300 dark:border-green-600';
+                      textColor = 'text-green-700 dark:text-green-300';
+                      badgeText = 'Excellent';
+                    } else if (card.indice >= 60) {
+                      bgColor = 'from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900';
+                      borderColor = 'border-blue-300 dark:border-blue-600';
+                      textColor = 'text-blue-700 dark:text-blue-300';
+                      badgeText = 'Très bien';
+                    } else if (card.indice >= 40) {
+                      bgColor = 'from-yellow-50 to-amber-50 dark:from-yellow-900 dark:to-amber-900';
+                      borderColor = 'border-yellow-300 dark:border-yellow-600';
+                      textColor = 'text-yellow-700 dark:text-yellow-300';
+                      badgeText = 'Correct';
+                    } else {
+                      bgColor = 'from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900';
+                      borderColor = 'border-red-300 dark:border-red-600';
+                      textColor = 'text-red-700 dark:text-red-300';
+                      badgeText = 'Faible';
+                    }
+
+                    const posteLabels = {
+                      'G': 'Gardien',
+                      'D': 'Défenseur',
+                      'M': 'Milieu',
+                      'A': 'Attaquant'
+                    };
+
+                    return (
+                      <div key={card.id} className={`bg-gradient-to-br ${bgColor} rounded-lg p-5 border-2 ${borderColor} relative`}>
+                        {/* Bouton supprimer */}
+                        <button
+                          onClick={() => setMpgCards(mpgCards.filter(c => c.id !== card.id))}
+                          className="absolute top-3 right-3 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors"
+                        >
+                          ×
+                        </button>
+
+                        {/* Nom et poste */}
+                        <div className="mb-4">
+                          <h4 className="text-xl font-bold text-slate-800 dark:text-white mb-1">{card.nomJoueur}</h4>
+                          <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${textColor} bg-white dark:bg-slate-800`}>
+                            {posteLabels[card.poste]}
+                          </span>
+                        </div>
+
+                        {/* Indice */}
+                        <div className="mb-4">
+                          <div className="flex items-end gap-2 mb-2">
+                            <span className="text-4xl font-bold text-slate-800 dark:text-white">{card.indice}</span>
+                            <span className="text-lg text-slate-600 dark:text-slate-300 mb-1">/100</span>
+                          </div>
+                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${textColor} bg-white dark:bg-slate-800`}>
+                            {badgeText}
+                          </span>
+                        </div>
+
+                        {/* Barre de progression */}
+                        <div className="mb-4">
+                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                            <div
+                              className={`h-3 rounded-full transition-all ${
+                                card.indice >= 80 ? 'bg-green-600' :
+                                card.indice >= 60 ? 'bg-blue-600' :
+                                card.indice >= 40 ? 'bg-yellow-600' : 'bg-red-600'
+                              }`}
+                              style={{ width: `${card.indice}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Stats détaillées */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-300">Note moyenne:</span>
+                            <span className="font-semibold text-slate-800 dark:text-white">{card.noteMoyenne}/10</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-300">Titularisation:</span>
+                            <span className="font-semibold text-slate-800 dark:text-white">{card.titularisation}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-300">Buts:</span>
+                            <span className="font-semibold text-slate-800 dark:text-white">{card.buts}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-300">Matchs joués:</span>
+                            <span className="font-semibold text-slate-800 dark:text-white">{card.matchsJoues}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Explication de l'algorithme */}
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-3">📊 Comment est calculé l'indice ?</h3>
+              <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                <p><strong>Formule :</strong></p>
+                <p className="font-mono bg-white dark:bg-slate-900 p-3 rounded border border-slate-200 dark:border-slate-600">
+                  Indice = (Note moyenne × 20) + (% Titularisation × 0.15) + (Buts × Coefficient poste) + (Matchs × 5)
+                </p>
+                <p className="pt-2"><strong>Coefficients buts par poste :</strong></p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li>Gardien : ×50 (très rare !)</li>
+                  <li>Défenseur : ×30</li>
+                  <li>Milieu : ×20</li>
+                  <li>Attaquant : ×10</li>
+                </ul>
+                <p className="pt-2"><strong>Échelle de notation :</strong></p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li className="text-green-600 dark:text-green-400">80-100 : Excellent</li>
+                  <li className="text-blue-600 dark:text-blue-400">60-79 : Très bien</li>
+                  <li className="text-yellow-600 dark:text-yellow-400">40-59 : Correct</li>
+                  <li className="text-red-600 dark:text-red-400">0-39 : Faible</li>
+                </ul>
               </div>
             </div>
           </div>
