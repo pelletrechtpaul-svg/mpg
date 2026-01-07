@@ -1179,7 +1179,7 @@ const App = () => {
             }`}
           >
             <span className="text-lg">ℹ️</span>
-            <span className="hidden sm:inline">Infos</span>
+            <span className="hidden sm:inline">Mur d'infos</span>
           </button>
 
           <button
@@ -1958,7 +1958,7 @@ const App = () => {
               <h2 className="text-2xl font-bold text-slate-800 mb-6">📝 Post-its collaboratifs</h2>
 
               {/* Add new post-it form */}
-              <form onSubmit={handleAddPostIt} className="mb-8 bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
+              <form onSubmit={handleAddPostIt} className="mb-8 bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200 max-w-xl mx-auto">
                 <h3 className="text-lg font-semibold text-slate-800 mb-3">Ajouter un post-it</h3>
                 <div className="space-y-3">
                   <input
