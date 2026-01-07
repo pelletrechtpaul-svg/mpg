@@ -70,8 +70,8 @@ const App = () => {
 
   // Edit form cascade states
   const [editSelectedSaison, setEditSelectedSaison] = useState('');
+  const [editSelectedLigue, setEditSelectedLigue] = useState('');
   const [editSelectedChampionnat, setEditSelectedChampionnat] = useState('');
-  const [editSelectedIteration, setEditSelectedIteration] = useState('');
 
   // Admin form
   const [adminFormData, setAdminFormData] = useState({
@@ -2477,8 +2477,8 @@ const App = () => {
                           onClick={() => {
                             setShowEditMatchForm(true);
                             setEditSelectedSaison('');
+                            setEditSelectedLigue('');
                             setEditSelectedChampionnat('');
-                            setEditSelectedIteration('');
                             setEditingMatch(null);
                           }}
                           className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
@@ -2832,8 +2832,8 @@ const App = () => {
                             setShowEditMatchForm(false);
                             setEditingMatch(null);
                             setEditSelectedSaison('');
+                            setEditSelectedLigue('');
                             setEditSelectedChampionnat('');
-                            setEditSelectedIteration('');
                           }}
                           className="text-slate-600 hover:text-slate-800"
                         >
@@ -2861,8 +2861,8 @@ const App = () => {
                             </div>
                           )}
 
-                          {/* Étape 2 : Sélection du championnat */}
-                          {editSelectedSaison && !editSelectedChampionnat && (
+                          {/* Étape 2 : Sélection de la compétition */}
+                          {editSelectedSaison && !editSelectedLigue && (
                             <div>
                               <button
                                 onClick={() => setEditSelectedSaison('')}
@@ -2871,28 +2871,65 @@ const App = () => {
                                 ← Retour aux saisons
                               </button>
                               <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Sélectionnez un championnat ({editSelectedSaison})
+                                Sélectionnez une compétition ({editSelectedSaison})
                               </label>
                               <div className="space-y-2">
                                 {Array.from(new Set(
                                   matchData
                                     .filter(m => m.saison === editSelectedSaison)
-                                    .map(m => `${m.ligue} ${m.championnat}`)
-                                )).map(champ => (
+                                    .map(m => m.ligue)
+                                )).map(ligue => (
                                   <button
-                                    key={champ}
-                                    onClick={() => setEditSelectedChampionnat(champ)}
+                                    key={ligue}
+                                    onClick={() => setEditSelectedLigue(ligue)}
                                     className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
                                   >
-                                    {champ}
+                                    {ligue}
                                   </button>
                                 ))}
                               </div>
                             </div>
                           )}
 
-                          {/* Étape 3 : Sélection de l'itération */}
-                          {editSelectedSaison && editSelectedChampionnat && !editSelectedIteration && (
+                          {/* Étape 3 : Sélection du championnat #X */}
+                          {editSelectedSaison && editSelectedLigue && !editSelectedChampionnat && (
+                            <div>
+                              <button
+                                onClick={() => setEditSelectedLigue('')}
+                                className="mb-3 text-sm text-blue-600 hover:text-blue-800"
+                              >
+                                ← Retour aux compétitions
+                              </button>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Sélectionnez un championnat ({editSelectedLigue})
+                              </label>
+                              <div className="space-y-2">
+                                {Array.from(new Set(
+                                  matchData
+                                    .filter(m =>
+                                      m.saison === editSelectedSaison &&
+                                      m.ligue === editSelectedLigue
+                                    )
+                                    .map(m => m.championnat)
+                                )).sort((a, b) => {
+                                  const numA = a.match(/#(\d+)/)?.[1] || '0';
+                                  const numB = b.match(/#(\d+)/)?.[1] || '0';
+                                  return parseInt(numA) - parseInt(numB);
+                                }).map(championnat => (
+                                  <button
+                                    key={championnat}
+                                    onClick={() => setEditSelectedChampionnat(championnat)}
+                                    className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
+                                  >
+                                    {championnat}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Étape 4 : Liste des matchs */}
+                          {editSelectedSaison && editSelectedLigue && editSelectedChampionnat && (
                             <div>
                               <button
                                 onClick={() => setEditSelectedChampionnat('')}
@@ -2901,87 +2938,33 @@ const App = () => {
                                 ← Retour aux championnats
                               </button>
                               <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Sélectionnez une itération
-                              </label>
-                              <div className="space-y-2">
-                                {(() => {
-                                  const [ligue, ...champParts] = editSelectedChampionnat.split(' ');
-                                  const championnat = champParts.join(' ');
-
-                                  const iterations = Array.from(new Set(
-                                    matchData
-                                      .filter(m =>
-                                        m.saison === editSelectedSaison &&
-                                        m.ligue === ligue &&
-                                        m.championnat === championnat
-                                      )
-                                      .map(m => m.championnat)
-                                  ));
-
-                                  // Group by iteration number
-                                  const iterationGroups = {};
-                                  iterations.forEach(it => {
-                                    const match = it.match(/#(\d+)/);
-                                    const num = match ? match[1] : '1';
-                                    if (!iterationGroups[num]) iterationGroups[num] = it;
-                                  });
-
-                                  return Object.entries(iterationGroups).map(([num, champName]) => (
-                                    <button
-                                      key={champName}
-                                      onClick={() => setEditSelectedIteration(champName)}
-                                      className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
-                                    >
-                                      #{num}
-                                    </button>
-                                  ));
-                                })()}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Étape 4 : Liste des matchs */}
-                          {editSelectedSaison && editSelectedChampionnat && editSelectedIteration && (
-                            <div>
-                              <button
-                                onClick={() => setEditSelectedIteration('')}
-                                className="mb-3 text-sm text-blue-600 hover:text-blue-800"
-                              >
-                                ← Retour aux itérations
-                              </button>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Sélectionnez un match
+                                Sélectionnez un match ({editSelectedChampionnat})
                               </label>
                               <div className="space-y-2 max-h-96 overflow-y-auto">
-                                {(() => {
-                                  const [ligue, ...champParts] = editSelectedChampionnat.split(' ');
-                                  const championnat = champParts.join(' ');
-
-                                  return matchData
-                                    .map((match, index) => ({ match, index }))
-                                    .filter(({ match }) =>
-                                      match.saison === editSelectedSaison &&
-                                      match.ligue === ligue &&
-                                      match.championnat === editSelectedIteration
-                                    )
-                                    .map(({ match, index }) => (
-                                      <button
-                                        key={index}
-                                        onClick={() => setEditingMatch({...match, index})}
-                                        className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
-                                      >
-                                        <p className="font-semibold text-slate-800">
-                                          {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
-                                          {match.joueur3 && ` • ${match.joueur3} {match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                          {match.dateMatch || 'Date non définie'}
-                                          {match.valise_j1 && ' 🧳 ' + match.joueur1}
-                                          {match.valise_j2 && ' 🧳 ' + match.joueur2}
-                                        </p>
-                                      </button>
-                                    ));
-                                })()}
+                                {matchData
+                                  .map((match, index) => ({ match, index }))
+                                  .filter(({ match }) =>
+                                    match.saison === editSelectedSaison &&
+                                    match.ligue === editSelectedLigue &&
+                                    match.championnat === editSelectedChampionnat
+                                  )
+                                  .map(({ match, index }) => (
+                                    <button
+                                      key={index}
+                                      onClick={() => setEditingMatch({...match, index})}
+                                      className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
+                                    >
+                                      <p className="font-semibold text-slate-800">
+                                        {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                                        {match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
+                                      </p>
+                                      <p className="text-sm text-slate-600">
+                                        {match.dateMatch || 'Date non définie'}
+                                        {match.valise_j1 && ' 🧳 ' + match.joueur1}
+                                        {match.valise_j2 && ' 🧳 ' + match.joueur2}
+                                      </p>
+                                    </button>
+                                  ))}
                               </div>
                             </div>
                           )}
@@ -3081,7 +3064,6 @@ const App = () => {
                                     await deleteDoc(matchDoc);
                                     alert('Match supprimé avec succès !');
                                     setEditingMatch(null);
-                                    setEditSelectedIteration('');
                                   } catch (error) {
                                     console.error('Error deleting match:', error);
                                     alert('Erreur lors de la suppression du match');
