@@ -46,8 +46,6 @@ const App = () => {
 
   // Rankings view toggle (table or graph)
   const [rankingsView, setRankingsView] = useState('table'); // 'table' or 'graph'
-  const [buteursView, setButeursView] = useState('table'); // 'table' or 'graph'
-  const [loosersView, setLoosersView] = useState('table'); // 'table' or 'graph'
 
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -1666,10 +1664,10 @@ const App = () => {
             </div>
             ) : (
             /* Graphique d'évolution */
-            <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
-              <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des points au fil du temps</h3>
+            <div className="bg-white rounded-xl shadow-sm p-0 sm:p-6">
+              <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
-                <div className="w-full sm:w-1/2 mx-auto">
+                <div className="w-full sm:w-1/2 sm:mx-auto">
                   <ResponsiveContainer width="100%" height={700}>
                     <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -2067,34 +2065,7 @@ const App = () => {
                 <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des buteurs</h2>
 
-                  {/* Toggle table/graph */}
-                  <div className="mb-4 flex justify-end">
-                    <div className="inline-flex rounded-lg border border-slate-300 bg-white">
-                      <button
-                        onClick={() => setButeursView('table')}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${
-                          buteursView === 'table'
-                            ? 'bg-blue-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        } rounded-l-lg`}
-                      >
-                        📊 Tableau
-                      </button>
-                      <button
-                        onClick={() => setButeursView('graph')}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${
-                          buteursView === 'graph'
-                            ? 'bg-blue-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        } rounded-r-lg`}
-                      >
-                        📈 Évolution
-                      </button>
-                    </div>
-                  </div>
-
-                  {buteursView === 'table' ? (
-                    <div className="overflow-x-auto">
+                  <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-50">
                         <tr>
@@ -2133,92 +2104,14 @@ const App = () => {
                           ))}
                       </tbody>
                     </table>
-                    </div>
-                  ) : (
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts inscrits au fil du temps</h3>
-                      {buteursEvolution.length > 0 ? (
-                        <div className="w-full sm:w-1/2 mx-auto">
-                          <ResponsiveContainer width="100%" height={700}>
-                            <LineChart data={buteursEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                              <XAxis
-                                dataKey="date"
-                                label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                                tick={{ fontSize: 12 }}
-                                height={60}
-                              />
-                              <YAxis
-                                label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }}
-                                domain={['dataMin - 3', 'dataMax + 3']}
-                                scale="linear"
-                              />
-                              <Tooltip
-                                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                              />
-                              <Legend
-                                verticalAlign="bottom"
-                                height={50}
-                                wrapperStyle={{ paddingTop: '20px' }}
-                              />
-                              {joueurs.map((joueur) => (
-                                <Line
-                                  key={joueur}
-                                  type="monotone"
-                                  dataKey={joueur}
-                                  stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                          playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                          playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                          playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                  strokeWidth={3}
-                                  dot={false}
-                                  activeDot={{ r: 6 }}
-                                />
-                              ))}
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      ) : (
-                        <div className="text-center text-slate-600 py-12">
-                          <p>Pas assez de données pour afficher l'évolution</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Classement des loosers */}
                 <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des loosers</h2>
 
-                  {/* Toggle table/graph */}
-                  <div className="mb-4 flex justify-end">
-                    <div className="inline-flex rounded-lg border border-slate-300 bg-white">
-                      <button
-                        onClick={() => setLoosersView('table')}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${
-                          loosersView === 'table'
-                            ? 'bg-blue-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        } rounded-l-lg`}
-                      >
-                        📊 Tableau
-                      </button>
-                      <button
-                        onClick={() => setLoosersView('graph')}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${
-                          loosersView === 'graph'
-                            ? 'bg-blue-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-50'
-                        } rounded-r-lg`}
-                      >
-                        📈 Évolution
-                      </button>
-                    </div>
-                  </div>
-
-                  {loosersView === 'table' ? (
-                    <div className="overflow-x-auto">
+                  <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-50">
                         <tr>
@@ -2257,58 +2150,7 @@ const App = () => {
                           ))}
                       </tbody>
                     </table>
-                    </div>
-                  ) : (
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts encaissés au fil du temps</h3>
-                      {loosersEvolution.length > 0 ? (
-                        <div className="w-full sm:w-1/2 mx-auto">
-                          <ResponsiveContainer width="100%" height={700}>
-                            <LineChart data={loosersEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                              <XAxis
-                                dataKey="date"
-                                label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                                tick={{ fontSize: 12 }}
-                                height={60}
-                              />
-                              <YAxis
-                                label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }}
-                                domain={['dataMin - 3', 'dataMax + 3']}
-                                scale="linear"
-                              />
-                              <Tooltip
-                                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                              />
-                              <Legend
-                                verticalAlign="bottom"
-                                height={50}
-                                wrapperStyle={{ paddingTop: '20px' }}
-                              />
-                              {joueurs.map((joueur) => (
-                                <Line
-                                  key={joueur}
-                                  type="monotone"
-                                  dataKey={joueur}
-                                  stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                          playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                          playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                          playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                  strokeWidth={3}
-                                  dot={false}
-                                  activeDot={{ r: 6 }}
-                                />
-                              ))}
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      ) : (
-                        <div className="text-center text-slate-600 py-12">
-                          <p>Pas assez de données pour afficher l'évolution</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             )}
