@@ -1087,14 +1087,14 @@ const App = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Mini MP3 Player */}
-            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-2 hidden sm:block">
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-2">
               <audio
                 controls
-                preload="none"
-                className="h-8"
-                style={{ width: '200px' }}
+                preload="metadata"
+                className="h-8 w-full sm:w-auto"
+                style={{ maxWidth: '200px' }}
               >
                 <source src="/audio/theme.mp3" type="audio/mpeg" />
               </audio>
