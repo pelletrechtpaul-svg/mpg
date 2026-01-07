@@ -1633,28 +1633,36 @@ const App = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={historicalEvolution}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                <ResponsiveContainer width="100%" height={500}>
+                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis
                       dataKey="date"
-                      label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                      label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
                       tick={{ fontSize: 12 }}
+                      height={60}
                     />
                     <YAxis label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={50}
+                      wrapperStyle={{ paddingTop: '20px' }}
+                    />
                     {joueurs.map((joueur) => (
                       <Line
                         key={joueur}
-                        type="monotone"
+                        type="natural"
                         dataKey={joueur}
                         stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                 playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
                                 playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
                                 playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
+                        strokeWidth={3}
+                        dot={false}
+                        activeDot={{ r: 6 }}
                       />
                     ))}
                   </LineChart>
@@ -2088,28 +2096,36 @@ const App = () => {
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts inscrits au fil du temps</h3>
                       {buteursEvolution.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={400}>
-                          <LineChart data={buteursEvolution}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                        <ResponsiveContainer width="100%" height={500}>
+                          <LineChart data={buteursEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis
                               dataKey="date"
-                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
                               tick={{ fontSize: 12 }}
+                              height={60}
                             />
                             <YAxis label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }} />
-                            <Tooltip />
-                            <Legend />
+                            <Tooltip
+                              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                            />
+                            <Legend
+                              verticalAlign="bottom"
+                              height={50}
+                              wrapperStyle={{ paddingTop: '20px' }}
+                            />
                             {joueurs.map((joueur) => (
                               <Line
                                 key={joueur}
-                                type="monotone"
+                                type="natural"
                                 dataKey={joueur}
                                 stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                         playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
                                         playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
                                         playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                strokeWidth={2}
-                                dot={{ r: 3 }}
+                                strokeWidth={3}
+                                dot={false}
+                                activeDot={{ r: 6 }}
                               />
                             ))}
                           </LineChart>
@@ -2198,28 +2214,36 @@ const App = () => {
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts encaissés au fil du temps</h3>
                       {loosersEvolution.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={400}>
-                          <LineChart data={loosersEvolution}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                        <ResponsiveContainer width="100%" height={500}>
+                          <LineChart data={loosersEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis
                               dataKey="date"
-                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
                               tick={{ fontSize: 12 }}
+                              height={60}
                             />
                             <YAxis label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }} />
-                            <Tooltip />
-                            <Legend />
+                            <Tooltip
+                              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                            />
+                            <Legend
+                              verticalAlign="bottom"
+                              height={50}
+                              wrapperStyle={{ paddingTop: '20px' }}
+                            />
                             {joueurs.map((joueur) => (
                               <Line
                                 key={joueur}
-                                type="monotone"
+                                type="natural"
                                 dataKey={joueur}
                                 stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                         playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
                                         playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
                                         playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                strokeWidth={2}
-                                dot={{ r: 3 }}
+                                strokeWidth={3}
+                                dot={false}
+                                activeDot={{ r: 6 }}
                               />
                             ))}
                           </LineChart>
