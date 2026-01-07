@@ -1248,16 +1248,18 @@ const App = () => {
             >
               Statistiques
             </button>
-            <button
-              onClick={() => setActiveTab('stats-avancees')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                activeTab === 'stats-avancees'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Stats Avancées
-            </button>
+            {selectedSeason === '2025/2026' && (
+              <button
+                onClick={() => setActiveTab('stats-avancees')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'stats-avancees'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                Forme
+              </button>
+            )}
           </div>
         )}
 
@@ -1886,7 +1888,7 @@ const App = () => {
           </>
         )}
 
-        {/* ONGLET STATS AVANCÉES */}
+        {/* ONGLET FORME */}
         {activeTab === 'stats-avancees' && (
           <>
             {selectedSeason === 'All-Time' ? (
