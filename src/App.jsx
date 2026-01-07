@@ -6,6 +6,10 @@ import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } f
 
 const defaultMatchData = [];
 
+// Helper function to encode keys for Firestore (no slashes allowed in doc IDs)
+const encodeFirestoreKey = (key) => key.replace(/\//g, '_');
+const decodeFirestoreKey = (key) => key.replace(/_/g, '/');
+
 // Player images mapping
 const playerImages = {
   'Roman': '/images/1.png',
