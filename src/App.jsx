@@ -1087,17 +1087,31 @@ const App = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 border-2 border-black ${
-              activeTab === 'admin'
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-red-600 hover:bg-red-50'
-            }`}
-          >
-            <Lock className="w-4 h-4 text-red-600" />
-            <span className="text-red-600">Admin</span>
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Mini MP3 Player */}
+            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-2 hidden sm:block">
+              <audio
+                controls
+                preload="none"
+                className="h-8"
+                style={{ width: '200px' }}
+              >
+                <source src="/audio/theme.mp3" type="audio/mpeg" />
+              </audio>
+            </div>
+
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 border-2 border-black ${
+                activeTab === 'admin'
+                  ? 'bg-red-600 text-white shadow-lg'
+                  : 'bg-white text-red-600 hover:bg-red-50'
+              }`}
+            >
+              <Lock className="w-4 h-4 text-red-600" />
+              <span className="text-red-600">Admin</span>
+            </button>
+          </div>
         </div>
 
         {/* Season Navigation */}
