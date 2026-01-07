@@ -581,7 +581,7 @@ const App = () => {
       matches = matches.filter(d => d.championnat === selectedChampionnat);
     }
 
-    return matches.sort((a, b) => new Date(b.dateEntree) - new Date(a.dateEntree));
+    return matches.sort((a, b) => new Date(b.dateMatch) - new Date(a.dateMatch));
   }, [filteredData, selectedLigue, selectedChampionnat]);
 
   // Valise statistics
@@ -1475,6 +1475,35 @@ const App = () => {
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
                   Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
                 </h3>
+
+                {/* Metadata - positioned above match list */}
+                {(() => {
+                  const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+                  const metadata = ligueMetadata[ligueKey];
+                  if (metadata && matchesListForChampionnat.length > 0) {
+                    // Get first and last match dates
+                    const sortedMatches = [...matchesListForChampionnat].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
+                    const firstMatchDate = sortedMatches[0]?.dateMatch;
+                    const lastMatchDate = sortedMatches[sortedMatches.length - 1]?.dateMatch;
+                    const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
+
+                    return (
+                      <div className="mb-4 bg-slate-50 rounded-xl p-4">
+                        <p className="text-xs text-slate-600">
+                          <strong>Créé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
+                          <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
+                          {isComplete && lastMatchDate && (
+                            <span className="ml-4">
+                              <strong>Terminé le :</strong> {new Date(lastMatchDate).toLocaleDateString('fr-FR')}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 <div className="space-y-2">
                   {matchesListForChampionnat.map((match, index) => (
                     <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-xs sm:text-base">
@@ -1494,28 +1523,6 @@ const App = () => {
                 </div>
               </div>
             )}
-
-            {/* Metadata */}
-            {selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
-              const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
-              const metadata = ligueMetadata[ligueKey];
-              if (metadata) {
-                return (
-                  <div className="mt-4 bg-slate-50 rounded-xl p-4">
-                    <p className="text-xs text-slate-600">
-                      <strong>Créé le :</strong> {new Date(metadata.createdAt).toLocaleDateString('fr-FR')} •
-                      <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
-                      {metadata.matchsEntered >= metadata.matchsTotal && metadata.lastEntryDate && (
-                        <span className="ml-4">
-                          <strong>Terminé le :</strong> {new Date(metadata.lastEntryDate).toLocaleDateString('fr-FR')}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
           </>
         )}
 
