@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
-import { Trophy, Lock, Plus, Trash2, Edit, Medal } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2, Edit, Medal, Music } from 'lucide-react';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -43,6 +43,15 @@ const App = () => {
 
   // Valise table toggle
   const [selectedValiseTable, setSelectedValiseTable] = useState('stats'); // 'stats' or 'efficaces'
+
+  // Audio player state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioRef] = useState(new Audio('/audio/theme.mp3'));
+
+  // Infos/Post-its state
+  const [postIts, setPostIts] = useState([]);
+  const [newPostItText, setNewPostItText] = useState('');
+  const [newPostItAuthor, setNewPostItAuthor] = useState('');
 
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
@@ -330,7 +339,9 @@ const App = () => {
   const classementGeneral = useMemo(() => {
     const stats = calculatePlayerStats(filteredData, joueurs);
 
+    // Save points from matches before adding title/medal bonuses
     Object.keys(stats).forEach(joueur => {
+      stats[joueur].pointsMatch = stats[joueur].points; // Points from match results only
       stats[joueur].points += victoiresChampionnat[joueur] * 3;
       stats[joueur].points += medaillesChampionnat[joueur] * 2;
       stats[joueur].victoiresChampionnat = victoiresChampionnat[joueur];
@@ -404,7 +415,9 @@ const App = () => {
         }
       });
 
+      // Save points from matches before adding title/medal bonuses
       Object.keys(stats).forEach(joueur => {
+        stats[joueur].pointsMatch = stats[joueur].points; // Points from match results only
         stats[joueur].points += ligueVictoires[joueur] * 3;
         stats[joueur].points += ligueMedailles[joueur] * 2;
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
@@ -745,6 +758,51 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
+  // Load post-its from Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'postits'), (snapshot) => {
+      const postitsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPostIts(postitsData.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Add post-it
+  const handleAddPostIt = async (e) => {
+    e.preventDefault();
+    if (!newPostItText.trim() || !newPostItAuthor.trim()) {
+      alert('Veuillez remplir tous les champs');
+      return;
+    }
+
+    try {
+      const postItRef = doc(collection(db, 'postits'));
+      await setDoc(postItRef, {
+        id: postItRef.id,
+        text: newPostItText,
+        author: newPostItAuthor,
+        createdAt: Date.now()
+      });
+      setNewPostItText('');
+      setNewPostItAuthor('');
+    } catch (error) {
+      console.error('Error adding post-it:', error);
+      alert('Erreur lors de l\'ajout du post-it');
+    }
+  };
+
+  // Delete post-it
+  const handleDeletePostIt = async (postItId) => {
+    if (!confirm('Supprimer ce post-it ?')) return;
+
+    try {
+      await deleteDoc(doc(db, 'postits', postItId));
+    } catch (error) {
+      console.error('Error deleting post-it:', error);
+      alert('Erreur lors de la suppression');
+    }
+  };
+
   // Admin: Login
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -1062,56 +1120,78 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
-            <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
-            {/* Sync indicator */}
-            <div className="flex items-center gap-2 mt-2">
-              {isOnline ? (
-                <div className="flex items-center gap-1.5 text-green-600 text-xs">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>Synchronisé</span>
-                  {lastSyncTime && (
-                    <span className="text-slate-400">
-                      • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-red-600 text-xs">
-                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                  <span>Hors ligne</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            {/* Mini MP3 Player */}
-            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-2">
-              <audio
-                controls
-                preload="metadata"
-                className="h-8 w-full sm:w-auto"
-                style={{ maxWidth: '200px' }}
-              >
-                <source src="/audio/theme.mp3" type="audio/mpeg" />
-              </audio>
+        <div className="mb-6">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
+              <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
+              {/* Sync indicator */}
+              <div className="flex items-center gap-2 mt-2">
+                {isOnline ? (
+                  <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Synchronisé</span>
+                    {lastSyncTime && (
+                      <span className="text-slate-400">
+                        • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                    <span>Hors ligne</span>
+                  </div>
+                )}
+              </div>
             </div>
 
+            {/* Mini MP3 Player with rainbow music note */}
             <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all inline-flex items-center gap-2 border-2 border-black ${
-                activeTab === 'admin'
-                  ? 'bg-red-600 text-white shadow-lg'
-                  : 'bg-white text-red-600 hover:bg-red-50'
-              }`}
+              onClick={() => {
+                if (isPlaying) {
+                  audioRef.pause();
+                  setIsPlaying(false);
+                } else {
+                  audioRef.play();
+                  setIsPlaying(true);
+                }
+              }}
+              className="px-4 py-3 rounded-xl shadow-lg transition-all hover:scale-110 border-2 border-transparent"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
+              }}
             >
-              <Lock className="w-4 h-4 text-red-600" />
-              <span className="text-red-600">Admin</span>
+              <Music className="w-6 h-6 text-white" />
             </button>
           </div>
+        </div>
+
+        {/* Fixed bottom-right buttons */}
+        <div className="fixed bottom-6 right-6 flex gap-3 z-50">
+          <button
+            onClick={() => setActiveTab('infos')}
+            className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 ${
+              activeTab === 'infos'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            <span className="text-lg">ℹ️</span>
+            <span className="hidden sm:inline">Infos</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 border-black ${
+              activeTab === 'admin'
+                ? 'bg-red-600 text-white'
+                : 'bg-white text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <Lock className="w-4 h-4 text-red-600" />
+            <span className="hidden sm:inline text-red-600">Admin</span>
+          </button>
         </div>
 
         {/* Season Navigation */}
@@ -1354,7 +1434,9 @@ const App = () => {
                           </>
                         )}
                         <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
-                          <span className="text-sm sm:text-xl font-bold text-blue-600">{player.points}</span>
+                          <span className="text-sm sm:text-xl font-bold text-blue-600">
+                            {(selectedChampionnat === 'total' || selectedLigue === 'general') ? (player.pointsMatch || player.points) : player.points}
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -1509,7 +1591,7 @@ const App = () => {
                     return (
                       <div className="mb-4 bg-slate-50 rounded-xl p-4">
                         <p className="text-xs text-slate-600">
-                          <strong>Créé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
+                          <strong>Commencé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
                           <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
                           {isComplete && lastMatchDate && (
                             <span className="ml-4">
@@ -1708,47 +1790,95 @@ const App = () => {
                 <p className="text-slate-600">Section en construction...</p>
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des buteurs</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-slate-50">
-                      <tr>
-                        <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
-                        <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
-                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts inscrits</th>
-                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
-                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(statsDetaillees)
-                        .map(([joueur, data]) => ({ joueur, ...data }))
-                        .sort((a, b) => b.buts_pour - a.buts_pour)
-                        .map((player, index) => (
-                          <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
-                            <td className="px-6 py-4">
-                              <span className="font-bold text-lg text-slate-700">{index + 1}</span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
-                                <span className="font-semibold text-slate-800">{player.joueur}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-center">
-                              <span className="text-xl font-bold text-green-600">{player.buts_pour}</span>
-                            </td>
-                            <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
-                            <td className="px-6 py-4 text-center">
-                              <span className="font-semibold text-blue-600">
-                                {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+              <div className="space-y-8">
+                {/* Classement des buteurs */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des buteurs</h2>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts inscrits</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(statsDetaillees)
+                          .map(([joueur, data]) => ({ joueur, ...data }))
+                          .sort((a, b) => b.buts_pour - a.buts_pour)
+                          .map((player, index) => (
+                            <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                              <td className="px-6 py-4">
+                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                  <span className="font-semibold text-slate-800">{player.joueur}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="text-xl font-bold text-green-600">{player.buts_pour}</span>
+                              </td>
+                              <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="font-semibold text-blue-600">
+                                  {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Classement des loosers */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des loosers</h2>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50">
+                        <tr>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts encaissés</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(statsDetaillees)
+                          .map(([joueur, data]) => ({ joueur, ...data }))
+                          .sort((a, b) => b.buts_contre - a.buts_contre)
+                          .map((player, index) => (
+                            <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                              <td className="px-6 py-4">
+                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                  <span className="font-semibold text-slate-800">{player.joueur}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="text-xl font-bold text-red-600">{player.buts_contre}</span>
+                              </td>
+                              <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="font-semibold text-orange-600">
+                                  {player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
@@ -1818,6 +1948,72 @@ const App = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* ONGLET INFOS */}
+        {activeTab === 'infos' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-slate-800 mb-6">📝 Post-its collaboratifs</h2>
+
+              {/* Add new post-it form */}
+              <form onSubmit={handleAddPostIt} className="mb-8 bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-3">Ajouter un post-it</h3>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={newPostItAuthor}
+                    onChange={(e) => setNewPostItAuthor(e.target.value)}
+                    placeholder="Votre nom..."
+                    className="w-full px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
+                  <textarea
+                    value={newPostItText}
+                    onChange={(e) => setNewPostItText(e.target.value)}
+                    placeholder="Écrivez votre message..."
+                    rows="3"
+                    className="w-full px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-yellow-400 text-slate-800 rounded-lg font-medium hover:bg-yellow-500 transition-colors"
+                  >
+                    Ajouter
+                  </button>
+                </div>
+              </form>
+
+              {/* Post-its grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {postIts.map((postIt) => (
+                  <div
+                    key={postIt.id}
+                    className="bg-yellow-100 rounded-lg p-4 shadow-md border-l-4 border-yellow-400 relative hover:shadow-lg transition-shadow"
+                  >
+                    <button
+                      onClick={() => handleDeletePostIt(postIt.id)}
+                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 flex items-center justify-center text-xs font-bold"
+                    >
+                      ×
+                    </button>
+                    <p className="text-slate-800 mb-3 pr-6 whitespace-pre-wrap break-words">{postIt.text}</p>
+                    <div className="flex items-center justify-between text-xs text-slate-600">
+                      <span className="font-semibold">— {postIt.author}</span>
+                      {postIt.createdAt && (
+                        <span>{new Date(postIt.createdAt).toLocaleDateString('fr-FR')}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {postIts.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-slate-500">
+                    <p className="text-lg">Aucun post-it pour le moment.</p>
+                    <p className="text-sm mt-2">Soyez le premier à en ajouter un ! 📌</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ONGLET ADMIN */}
