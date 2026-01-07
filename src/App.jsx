@@ -1175,17 +1175,14 @@ const App = () => {
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                     }`}
                   >
-                    Classement valises efficaces 🎯
+                    valises efficaces 🎯
                   </button>
                 </div>
 
                 {/* Tableau utilisées/reçues */}
                 {selectedValiseTable === 'stats' && (
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-4 bg-slate-50 border-b">
-                      <h3 className="text-lg font-semibold text-slate-800">Valises 💼</h3>
-                    </div>
-                  <div className="overflow-x-auto">
+                    <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
                         <tr>
@@ -1217,10 +1214,9 @@ const App = () => {
                 {selectedValiseTable === 'efficaces' && (
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="p-4 bg-slate-50 border-b">
-                      <h3 className="text-lg font-semibold text-slate-800">Classement valises efficaces 🎯</h3>
-                      <p className="text-xs text-slate-600 mt-1">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
+                      <p className="text-xs text-slate-600">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
                     </div>
-                  <div className="overflow-x-auto">
+                    <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
                         <tr>
