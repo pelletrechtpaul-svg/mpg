@@ -1667,7 +1667,7 @@ const App = () => {
                       {joueurs.map((joueur) => (
                         <Line
                           key={joueur}
-                          type="natural"
+                          type="monotone"
                           dataKey={joueur}
                           stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                   playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
@@ -2136,7 +2136,7 @@ const App = () => {
                               {joueurs.map((joueur) => (
                                 <Line
                                   key={joueur}
-                                  type="natural"
+                                  type="monotone"
                                   dataKey={joueur}
                                   stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                           playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
@@ -2260,7 +2260,7 @@ const App = () => {
                               {joueurs.map((joueur) => (
                                 <Line
                                   key={joueur}
-                                  type="natural"
+                                  type="monotone"
                                   dataKey={joueur}
                                   stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
                                           playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
