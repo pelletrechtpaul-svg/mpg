@@ -778,6 +778,7 @@ const App = () => {
 
     // Build a map of championship end dates and winners for general ranking
     const championshipBonuses = new Map(); // key: championshipKey, value: { endDate, winner, points }
+    const appliedBonuses = new Set(); // Track which bonuses have been applied
 
     if (selectedLigue === 'general') {
       const championnatsMap = {};
@@ -802,14 +803,13 @@ const App = () => {
           .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
         if (ranking.length > 0 && ranking[0].points > 0) {
-          const bonusPoints = metadata.matchsTotal === 6 ? 3 : (metadata.matchsTotal < 6 ? 2 : 0);
-          if (bonusPoints > 0) {
-            championshipBonuses.set(key, {
-              endDate: new Date(lastMatch.dateMatch),
-              winner: ranking[0].joueur,
-              points: bonusPoints
-            });
-          }
+          // FIX: Use >= 6 for titles (3 pts), < 6 for medals (2 pts)
+          const bonusPoints = metadata.matchsTotal >= 6 ? 3 : 2;
+          championshipBonuses.set(key, {
+            endDate: new Date(lastMatch.dateMatch),
+            winner: ranking[0].joueur,
+            points: bonusPoints
+          });
         }
       });
     }
@@ -823,6 +823,21 @@ const App = () => {
       playerBonusPoints[j] = 0;
     });
 
+    // Add artificial titles for 2024/2025 season (at the very end)
+    if (selectedLigue === 'general' && selectedSeason === '2024/2025' && sortedMatches.length > 0) {
+      const lastMatchDate = new Date(sortedMatches[sortedMatches.length - 1].dateMatch);
+      championshipBonuses.set('artificial-adrien', {
+        endDate: lastMatchDate,
+        winner: 'Adrien',
+        points: 3
+      });
+      championshipBonuses.set('artificial-paul', {
+        endDate: lastMatchDate,
+        winner: 'Paul',
+        points: 3
+      });
+    }
+
     sortedMatches.forEach((match, index) => {
       // Add points for this match
       if (match.joueur1) playerPoints[match.joueur1] = (playerPoints[match.joueur1] || 0) + (match.points_j1 || 0);
@@ -830,12 +845,13 @@ const App = () => {
       if (match.joueur3) playerPoints[match.joueur3] = (playerPoints[match.joueur3] || 0) + (match.points_j3 || 0);
       if (match.joueur4) playerPoints[match.joueur4] = (playerPoints[match.joueur4] || 0) + (match.points_j4 || 0);
 
-      // Check if any championship ends with this match
+      // Check if any championship ends with this match (only add bonus once per championship)
       if (selectedLigue === 'general') {
         const matchDate = new Date(match.dateMatch);
         championshipBonuses.forEach((bonus, champKey) => {
-          if (Math.abs(bonus.endDate - matchDate) < 1000 * 60 * 60 * 24) { // Same day
+          if (!appliedBonuses.has(champKey) && Math.abs(bonus.endDate - matchDate) < 1000 * 60 * 60 * 24) {
             playerBonusPoints[bonus.winner] = (playerBonusPoints[bonus.winner] || 0) + bonus.points;
+            appliedBonuses.add(champKey); // Mark as applied to avoid duplicates
           }
         });
       }
@@ -854,7 +870,7 @@ const App = () => {
     });
 
     return evolution;
-  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata]);
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata, selectedSeason]);
 
   // Historical evolution for buteurs (goals scored)
   const buteursEvolution = useMemo(() => {
