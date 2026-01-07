@@ -672,7 +672,9 @@ const App = () => {
             opponent: match.joueur2,
             butsFor: match.buts_j1,
             butsAgainst: match.buts_j2,
-            result: match.buts_j1 > match.buts_j2 ? 'W' : match.buts_j1 < match.buts_j2 ? 'L' : 'D'
+            result: match.buts_j1 > match.buts_j2 ? 'W' : match.buts_j1 < match.buts_j2 ? 'L' : 'D',
+            championnat: match.championnat,
+            ligue: match.ligue
           });
         } else if (match.joueur2 === joueur) {
           playerMatches.push({
@@ -680,7 +682,9 @@ const App = () => {
             opponent: match.joueur1,
             butsFor: match.buts_j2,
             butsAgainst: match.buts_j1,
-            result: match.buts_j2 > match.buts_j1 ? 'W' : match.buts_j2 < match.buts_j1 ? 'L' : 'D'
+            result: match.buts_j2 > match.buts_j1 ? 'W' : match.buts_j2 < match.buts_j1 ? 'L' : 'D',
+            championnat: match.championnat,
+            ligue: match.ligue
           });
         }
       });
@@ -1783,7 +1787,7 @@ const App = () => {
                                   match.result === 'L' ? 'bg-red-600' :
                                   'bg-slate-400'
                                 }`}
-                                title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} (${match.date})`}
+                                title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} | ${match.ligue} ${match.championnat} (${match.date})`}
                               >
                                 {match.result}
                               </div>
