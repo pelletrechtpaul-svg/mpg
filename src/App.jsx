@@ -1222,40 +1222,6 @@ const App = () => {
     alert('Match ajouté avec succès !');
   };
 
-  // Admin: Show delete confirmation
-  const handleDeleteMatches = () => {
-    if (matchesToDelete.length === 0) {
-      alert('Veuillez sélectionner au moins un match');
-      return;
-    }
-    setShowDeleteConfirmModal(true);
-  };
-
-  // Admin: Confirm and delete matches
-  const confirmDeleteMatches = async () => {
-    try {
-      const batch = writeBatch(db);
-
-      matchesToDelete.forEach(index => {
-        const match = matchData[index];
-        if (match.firestoreId) {
-          const matchRef = doc(db, 'matches', match.firestoreId);
-          batch.delete(matchRef);
-        }
-      });
-
-      await batch.commit();
-      setMatchesToDelete([]);
-      setShowDeleteMatchForm(false);
-      setShowDeleteConfirmModal(false);
-      alert('Matchs supprimés !');
-    } catch (error) {
-      console.error('Error deleting matches:', error);
-      alert('Erreur lors de la suppression');
-      setShowDeleteConfirmModal(false);
-    }
-  };
-
   // Admin: Edit match
   const handleEditMatch = async (e) => {
     e.preventDefault();
@@ -3151,75 +3117,6 @@ const App = () => {
           </>
         )}
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteConfirmModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-4">Confirmer la suppression</h3>
-                <p className="text-slate-600 mb-4">
-                  Vous êtes sur le point de supprimer {matchesToDelete.length} match(s). Cette action est irréversible.
-                </p>
-
-                {/* Show details of matches to be deleted */}
-                <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
-                  {matchesToDelete.map((index) => {
-                    const match = matchData[index];
-                    return (
-                      <div key={index} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-semibold text-slate-700">
-                            {match.saison} • {match.ligue} • {match.championnat}
-                          </span>
-                          <span className="text-xs text-slate-500">{match.dateMatch}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="bg-white rounded p-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-slate-700">{match.joueur1}</span>
-                              <span className="font-bold text-slate-900">{match.buts_j1}</span>
-                            </div>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="font-medium text-slate-700">{match.joueur2}</span>
-                              <span className="font-bold text-slate-900">{match.buts_j2}</span>
-                            </div>
-                          </div>
-                          {match.joueur3 && (
-                            <div className="bg-white rounded p-2">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-slate-700">{match.joueur3}</span>
-                                <span className="font-bold text-slate-900">{match.buts_j3}</span>
-                              </div>
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="font-medium text-slate-700">{match.joueur4}</span>
-                                <span className="font-bold text-slate-900">{match.buts_j4}</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirmModal(false)}
-                    className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors font-medium"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={confirmDeleteMatches}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                  >
-                    Supprimer définitivement
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
