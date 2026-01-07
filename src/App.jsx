@@ -641,22 +641,6 @@ const App = () => {
       }, []).length;
 
       championnatToUse = `#${existingCount + 1}`;
-
-      const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-
-      // Save new championnat metadata to Firestore
-      try {
-        const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
-        await setDoc(metaRef, {
-          createdAt: new Date().toISOString(),
-          matchsTotal: newChampionnatMatchs,
-          matchsEntered: 0
-        });
-      } catch (error) {
-        console.error('Error creating championnat:', error);
-        alert('Erreur lors de la création du championnat');
-        return;
-      }
     }
 
     if (!championnatToUse) {
@@ -754,8 +738,17 @@ const App = () => {
 
       // Update metadata (1 entry = 1 match, regardless of how many scores filled)
       const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-      if (ligueMetadata[ligueKey]) {
-        const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
+      const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
+
+      // If new championnat, create metadata, otherwise update existing
+      if (isNewChampionnat) {
+        batch.set(metaRef, {
+          createdAt: currentDate,
+          matchsTotal: newChampionnatMatchs,
+          matchsEntered: 1, // This is the first match
+          lastEntryDate: currentDate
+        });
+      } else if (ligueMetadata[ligueKey]) {
         batch.set(metaRef, {
           ...ligueMetadata[ligueKey],
           matchsEntered: ligueMetadata[ligueKey].matchsEntered + 1,
