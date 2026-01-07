@@ -1369,7 +1369,7 @@ const App = () => {
                         </>
                       )}
                       <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">
-                        {selectedChampionnat === 'total' ? 'Points en match' : 'Points'}
+                        {selectedLigue === 'general' ? 'Points' : selectedChampionnat === 'total' ? 'Points en match' : 'Points'}
                       </th>
                     </tr>
                   </thead>
@@ -1440,7 +1440,7 @@ const App = () => {
                         )}
                         <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
                           <span className="text-sm sm:text-xl font-bold text-blue-600">
-                            {(selectedChampionnat === 'total' || selectedLigue === 'general') ? (player.pointsMatch || player.points) : player.points}
+                            {selectedLigue === 'general' ? player.points : selectedChampionnat === 'total' ? (player.pointsMatch || player.points) : player.points}
                           </span>
                         </td>
                       </tr>
