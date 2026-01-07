@@ -1630,11 +1630,11 @@ const App = () => {
             </div>
             ) : (
             /* Graphique d'évolution */
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des points au fil du temps</h3>
+            <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
+              <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
                 <ResponsiveContainer width="100%" height={500}>
-                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis
                       dataKey="date"
@@ -1642,7 +1642,11 @@ const App = () => {
                       tick={{ fontSize: 12 }}
                       height={60}
                     />
-                    <YAxis label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }} />
+                    <YAxis
+                      label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }}
+                      domain={['dataMin - 5', 'dataMax + 5']}
+                      scale="linear"
+                    />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
                     />
@@ -2022,8 +2026,8 @@ const App = () => {
             ) : (
               <div className="space-y-8">
                 {/* Classement des buteurs */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des buteurs</h2>
+                <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des buteurs</h2>
 
                   {/* Toggle table/graph */}
                   <div className="mb-4 flex justify-end">
@@ -2094,10 +2098,10 @@ const App = () => {
                     </div>
                   ) : (
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts inscrits au fil du temps</h3>
+                      <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts inscrits au fil du temps</h3>
                       {buteursEvolution.length > 0 ? (
                         <ResponsiveContainer width="100%" height={500}>
-                          <LineChart data={buteursEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                          <LineChart data={buteursEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis
                               dataKey="date"
@@ -2105,7 +2109,11 @@ const App = () => {
                               tick={{ fontSize: 12 }}
                               height={60}
                             />
-                            <YAxis label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }} />
+                            <YAxis
+                              label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }}
+                              domain={['dataMin - 3', 'dataMax + 3']}
+                              scale="linear"
+                            />
                             <Tooltip
                               contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
                             />
@@ -2140,8 +2148,8 @@ const App = () => {
                 </div>
 
                 {/* Classement des loosers */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des loosers</h2>
+                <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des loosers</h2>
 
                   {/* Toggle table/graph */}
                   <div className="mb-4 flex justify-end">
@@ -2212,10 +2220,10 @@ const App = () => {
                     </div>
                   ) : (
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts encaissés au fil du temps</h3>
+                      <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts encaissés au fil du temps</h3>
                       {loosersEvolution.length > 0 ? (
                         <ResponsiveContainer width="100%" height={500}>
-                          <LineChart data={loosersEvolution} margin={{ top: 5, right: 30, left: 20, bottom: 40 }}>
+                          <LineChart data={loosersEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis
                               dataKey="date"
@@ -2223,7 +2231,11 @@ const App = () => {
                               tick={{ fontSize: 12 }}
                               height={60}
                             />
-                            <YAxis label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }} />
+                            <YAxis
+                              label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }}
+                              domain={['dataMin - 3', 'dataMax + 3']}
+                              scale="linear"
+                            />
                             <Tooltip
                               contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
                             />
