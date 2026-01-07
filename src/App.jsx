@@ -99,7 +99,7 @@ const App = () => {
           if (Object.keys(localMetadata).length > 0) {
             const batch = writeBatch(db);
             Object.entries(localMetadata).forEach(([key, value]) => {
-              const metaRef = doc(db, 'metadata', key);
+              const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
               batch.set(metaRef, value);
             });
             await batch.commit();
@@ -118,7 +118,9 @@ const App = () => {
         const unsubscribeMetadata = onSnapshot(collection(db, 'metadata'), (snapshot) => {
           const metadata = {};
           snapshot.docs.forEach(doc => {
-            metadata[doc.id] = doc.data();
+            // Decode the Firestore key back to original format
+            const originalKey = decodeFirestoreKey(doc.id);
+            metadata[originalKey] = doc.data();
           });
           setLigueMetadata(metadata);
         });
@@ -641,7 +643,7 @@ const App = () => {
 
       // Save new championnat metadata to Firestore
       try {
-        const metaRef = doc(db, 'metadata', ligueKey);
+        const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
         await setDoc(metaRef, {
           createdAt: new Date().toISOString(),
           matchsTotal: newChampionnatMatchs,
@@ -750,7 +752,7 @@ const App = () => {
       // Update metadata
       const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
       if (ligueMetadata[ligueKey]) {
-        const metaRef = doc(db, 'metadata', ligueKey);
+        const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
         batch.set(metaRef, {
           ...ligueMetadata[ligueKey],
           matchsEntered: ligueMetadata[ligueKey].matchsEntered + newMatches.length,
