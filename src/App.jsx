@@ -3029,17 +3029,17 @@ const App = () => {
                 };
 
                 // Score de base ajusté à l'échelle MPG (note 3-8, avec 5+ = bon, 6+ = excellent, 7+ = exceptionnel)
-                // Note 3 = 0, Note 5 = 50, Note 6 = 75, Note 7 = 100
-                const scoreBase = (note - 3) * 25;
+                // Note 3 = 0, Note 5 = 44, Note 6 = 66, Note 7 = 88
+                const scoreBase = (note - 3) * 22;
 
                 // Facteur régularité : uniquement basé sur % titularisation (pas de bonus pour nb matchs)
                 // 0% titu = 0.7, 100% titu = 1.0
                 const facteurRegularite = 0.7 + (titu / 100 * 0.3);
 
-                // Facteur offensif : ratio buts/matchs effectifs pondéré par poste
+                // Facteur offensif : ratio buts/matchs effectifs pondéré par poste (impact significatif)
                 const matchsEffectifs = Math.max(1, matchs * (titu / 100));
                 const ratioButs = buts / matchsEffectifs;
-                const facteurOffensif = 1 + (ratioButs * coeffButs[poste] / 10);
+                const facteurOffensif = 1 + (ratioButs * coeffButs[poste] / 3);
 
                 // Calcul final
                 const indiceBrut = scoreBase * facteurRegularite * facteurOffensif;
@@ -3305,12 +3305,12 @@ const App = () => {
                 <div>
                   <p className="font-semibold mb-2">Échelle MPG (adaptée à la réalité) :</p>
                   <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded border border-amber-200 dark:border-amber-700 text-xs">
-                    <p className="mb-2"><strong>Score de base = (Note - 3) × 25</strong></p>
+                    <p className="mb-2"><strong>Score de base = (Note - 3) × 22</strong></p>
                     <ul className="list-disc list-inside space-y-1 pl-2">
-                      <li>Note 7+ = 100 pts (exceptionnel, quasi-inexistant)</li>
-                      <li>Note 6+ = 75 pts (excellent)</li>
-                      <li>Note 5+ = 50 pts (bon)</li>
-                      <li>Note 4 = 25 pts (moyen)</li>
+                      <li>Note 7+ = 88 pts (exceptionnel, quasi-inexistant)</li>
+                      <li>Note 6+ = 66 pts (excellent)</li>
+                      <li>Note 5+ = 44 pts (bon)</li>
+                      <li>Note 4 = 22 pts (moyen)</li>
                       <li>Note 3 = 0 pts (faible)</li>
                     </ul>
                   </div>
@@ -3331,7 +3331,7 @@ const App = () => {
                     </li>
                     <li className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-600">
                       <strong>Facteur offensif :</strong>
-                      <p className="font-mono text-xs mt-1">1 + (Ratio buts × Coeff poste / 10)</p>
+                      <p className="font-mono text-xs mt-1">1 + (Ratio buts × Coeff poste / 3)</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         Ratio buts = Buts / Matchs effectifs
                       </p>
@@ -3339,7 +3339,7 @@ const App = () => {
                         Matchs effectifs = Matchs × (% Titu / 100)
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Pondère l'efficacité offensive selon le poste
+                        Impact significatif : doubler les buts = ~10 points d'indice
                       </p>
                     </li>
                   </ul>
@@ -3359,27 +3359,27 @@ const App = () => {
                   <p className="font-semibold mb-2">Exemples de calcul :</p>
                   <div className="space-y-2">
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700 text-xs">
-                      <p className="font-semibold">Joueur A (Attaquant) - Début de saison</p>
-                      <p>Note 6.5 • 5 matchs • 100% titu • 4 buts</p>
-                      <p className="mt-2">• Score base = (6.5 - 3) × 25 = 87.5</p>
-                      <p>• Facteur régularité = 0.7 + 0.3 = 1.0</p>
-                      <p>• Matchs effectifs = 5 × 1.0 = 5</p>
-                      <p>• Ratio buts = 4/5 = 0.8</p>
-                      <p>• Facteur offensif = 1 + (0.8 × 1 / 10) = 1.08</p>
+                      <p className="font-semibold">Attaquant buteur</p>
+                      <p>Note 6.2 • 22 matchs • 88% titu • 14 buts</p>
+                      <p className="mt-2">• Score base = (6.2 - 3) × 22 = 70.4</p>
+                      <p>• Facteur régularité = 0.7 + (0.88 × 0.3) = 0.964</p>
+                      <p>• Matchs effectifs = 22 × 0.88 = 19.36</p>
+                      <p>• Ratio buts = 14/19.36 = 0.723</p>
+                      <p>• Facteur offensif = 1 + (0.723 × 1 / 3) = 1.241</p>
                       <p className="mt-2 font-semibold text-blue-700 dark:text-blue-300">
-                        → Indice = 87.5 × 1.0 × 1.08 ≈ 95/100
+                        → Indice = 70.4 × 0.964 × 1.241 ≈ 84/100
                       </p>
                     </div>
                     <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-700 text-xs">
-                      <p className="font-semibold">Joueur B (Milieu) - Saison complète</p>
+                      <p className="font-semibold">Milieu régulier</p>
                       <p>Note 6 • 30 matchs • 80% titu • 8 buts</p>
-                      <p className="mt-2">• Score base = (6 - 3) × 25 = 75</p>
+                      <p className="mt-2">• Score base = (6 - 3) × 22 = 66</p>
                       <p>• Facteur régularité = 0.7 + (0.8 × 0.3) = 0.94</p>
                       <p>• Matchs effectifs = 30 × 0.8 = 24</p>
-                      <p>• Ratio buts = 8/24 = 0.33</p>
-                      <p>• Facteur offensif = 1 + (0.33 × 2 / 10) = 1.067</p>
+                      <p>• Ratio buts = 8/24 = 0.333</p>
+                      <p>• Facteur offensif = 1 + (0.333 × 2 / 3) = 1.222</p>
                       <p className="mt-2 font-semibold text-green-700 dark:text-green-300">
-                        → Indice = 75 × 0.94 × 1.067 ≈ 75/100
+                        → Indice = 66 × 0.94 × 1.222 ≈ 76/100
                       </p>
                     </div>
                   </div>
