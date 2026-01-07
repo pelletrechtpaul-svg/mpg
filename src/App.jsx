@@ -755,6 +755,279 @@ const App = () => {
     return stats;
   }, [matchData, joueurs, selectedSeason]);
 
+  // Calculate records for the selected season
+  const seasonRecords = useMemo(() => {
+    const seasonMatches = filteredData;
+
+    if (seasonMatches.length === 0) {
+      return null;
+    }
+
+    const records = {
+      // 1. Le plus grand nombre de buts inscrits dans un match
+      mostGoalsInMatch: null,
+
+      // 2. Le plus gros écart de buts dans une victoire
+      biggestWinMargin: null,
+
+      // 5. Le match le plus prolifique
+      mostProlificMatch: null,
+
+      // Series records (8-13)
+      longestWinStreak: {},
+      longestUnbeatenStreak: {},
+      longestLossStreak: {},
+      longestDrawStreak: {},
+      longestGoalDrought: {},
+      longestCleanSheetStreak: {},
+
+      // 16-17. Regularity
+      mostRegular: null,
+      mostUnpredictable: null
+    };
+
+    // Record 1: Most goals scored in a single match
+    seasonMatches.forEach(match => {
+      [
+        { joueur: match.joueur1, buts: match.buts_j1, adversaire: match.joueur2, butsAdv: match.buts_j2 },
+        { joueur: match.joueur2, buts: match.buts_j2, adversaire: match.joueur1, butsAdv: match.buts_j1 }
+      ].forEach(perf => {
+        if (!records.mostGoalsInMatch || perf.buts > records.mostGoalsInMatch.buts) {
+          records.mostGoalsInMatch = {
+            joueur: perf.joueur,
+            buts: perf.buts,
+            adversaire: perf.adversaire,
+            butsAdv: perf.butsAdv,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          };
+        }
+      });
+    });
+
+    // Record 2: Biggest win margin
+    seasonMatches.forEach(match => {
+      const diff1 = match.buts_j1 - match.buts_j2;
+      const diff2 = match.buts_j2 - match.buts_j1;
+
+      if (diff1 > 0 && (!records.biggestWinMargin || diff1 > records.biggestWinMargin.margin)) {
+        records.biggestWinMargin = {
+          joueur: match.joueur1,
+          adversaire: match.joueur2,
+          score: `${match.buts_j1}-${match.buts_j2}`,
+          margin: diff1,
+          date: match.dateMatch,
+          ligue: match.ligue,
+          championnat: match.championnat
+        };
+      }
+
+      if (diff2 > 0 && (!records.biggestWinMargin || diff2 > records.biggestWinMargin.margin)) {
+        records.biggestWinMargin = {
+          joueur: match.joueur2,
+          adversaire: match.joueur1,
+          score: `${match.buts_j2}-${match.buts_j1}`,
+          margin: diff2,
+          date: match.dateMatch,
+          ligue: match.ligue,
+          championnat: match.championnat
+        };
+      }
+    });
+
+    // Record 5: Most prolific match (total goals)
+    seasonMatches.forEach(match => {
+      const totalGoals = match.buts_j1 + match.buts_j2;
+      if (!records.mostProlificMatch || totalGoals > records.mostProlificMatch.totalGoals) {
+        records.mostProlificMatch = {
+          joueur1: match.joueur1,
+          joueur2: match.joueur2,
+          score: `${match.buts_j1}-${match.buts_j2}`,
+          totalGoals,
+          date: match.dateMatch,
+          ligue: match.ligue,
+          championnat: match.championnat
+        };
+      }
+    });
+
+    // Sort matches by date for series calculation
+    const sortedMatches = [...seasonMatches].sort((a, b) =>
+      new Date(a.dateMatch) - new Date(b.dateMatch)
+    );
+
+    // Calculate series for each player
+    joueurs.forEach(joueur => {
+      const playerMatches = sortedMatches.filter(m =>
+        m.joueur1 === joueur || m.joueur2 === joueur
+      ).map(m => {
+        const isJ1 = m.joueur1 === joueur;
+        return {
+          date: m.dateMatch,
+          buts: isJ1 ? m.buts_j1 : m.buts_j2,
+          butsAdv: isJ1 ? m.buts_j2 : m.buts_j1,
+          result: isJ1
+            ? (m.buts_j1 > m.buts_j2 ? 'W' : m.buts_j1 < m.buts_j2 ? 'L' : 'D')
+            : (m.buts_j2 > m.buts_j1 ? 'W' : m.buts_j2 < m.buts_j1 ? 'L' : 'D'),
+          ligue: m.ligue,
+          championnat: m.championnat
+        };
+      });
+
+      // Series 8: Longest win streak
+      let currentWins = 0;
+      let maxWins = 0;
+      let maxWinsEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.result === 'W') {
+          currentWins++;
+          if (currentWins > maxWins) {
+            maxWins = currentWins;
+            maxWinsEnd = idx;
+          }
+        } else {
+          currentWins = 0;
+        }
+      });
+      if (maxWins > 0) {
+        records.longestWinStreak[joueur] = {
+          length: maxWins,
+          endDate: playerMatches[maxWinsEnd]?.date
+        };
+      }
+
+      // Series 9: Longest unbeaten streak
+      let currentUnbeaten = 0;
+      let maxUnbeaten = 0;
+      let maxUnbeatenEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.result !== 'L') {
+          currentUnbeaten++;
+          if (currentUnbeaten > maxUnbeaten) {
+            maxUnbeaten = currentUnbeaten;
+            maxUnbeatenEnd = idx;
+          }
+        } else {
+          currentUnbeaten = 0;
+        }
+      });
+      if (maxUnbeaten > 0) {
+        records.longestUnbeatenStreak[joueur] = {
+          length: maxUnbeaten,
+          endDate: playerMatches[maxUnbeatenEnd]?.date
+        };
+      }
+
+      // Series 10: Longest loss streak
+      let currentLosses = 0;
+      let maxLosses = 0;
+      let maxLossesEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.result === 'L') {
+          currentLosses++;
+          if (currentLosses > maxLosses) {
+            maxLosses = currentLosses;
+            maxLossesEnd = idx;
+          }
+        } else {
+          currentLosses = 0;
+        }
+      });
+      if (maxLosses > 0) {
+        records.longestLossStreak[joueur] = {
+          length: maxLosses,
+          endDate: playerMatches[maxLossesEnd]?.date
+        };
+      }
+
+      // Series 11: Longest draw streak
+      let currentDraws = 0;
+      let maxDraws = 0;
+      let maxDrawsEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.result === 'D') {
+          currentDraws++;
+          if (currentDraws > maxDraws) {
+            maxDraws = currentDraws;
+            maxDrawsEnd = idx;
+          }
+        } else {
+          currentDraws = 0;
+        }
+      });
+      if (maxDraws > 0) {
+        records.longestDrawStreak[joueur] = {
+          length: maxDraws,
+          endDate: playerMatches[maxDrawsEnd]?.date
+        };
+      }
+
+      // Series 12: Longest goal drought (without scoring)
+      let currentDrought = 0;
+      let maxDrought = 0;
+      let maxDroughtEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.buts === 0) {
+          currentDrought++;
+          if (currentDrought > maxDrought) {
+            maxDrought = currentDrought;
+            maxDroughtEnd = idx;
+          }
+        } else {
+          currentDrought = 0;
+        }
+      });
+      if (maxDrought > 0) {
+        records.longestGoalDrought[joueur] = {
+          length: maxDrought,
+          endDate: playerMatches[maxDroughtEnd]?.date
+        };
+      }
+
+      // Series 13: Longest clean sheet streak (without conceding)
+      let currentCleanSheet = 0;
+      let maxCleanSheet = 0;
+      let maxCleanSheetEnd = null;
+      playerMatches.forEach((match, idx) => {
+        if (match.butsAdv === 0) {
+          currentCleanSheet++;
+          if (currentCleanSheet > maxCleanSheet) {
+            maxCleanSheet = currentCleanSheet;
+            maxCleanSheetEnd = idx;
+          }
+        } else {
+          currentCleanSheet = 0;
+        }
+      });
+      if (maxCleanSheet > 0) {
+        records.longestCleanSheetStreak[joueur] = {
+          length: maxCleanSheet,
+          endDate: playerMatches[maxCleanSheetEnd]?.date
+        };
+      }
+
+      // Calculate standard deviation for regularity (16-17)
+      if (playerMatches.length > 2) {
+        const goalDiffs = playerMatches.map(m => m.buts - m.butsAdv);
+        const mean = goalDiffs.reduce((a, b) => a + b, 0) / goalDiffs.length;
+        const squaredDiffs = goalDiffs.map(x => Math.pow(x - mean, 2));
+        const variance = squaredDiffs.reduce((a, b) => a + b, 0) / goalDiffs.length;
+        const stdDev = Math.sqrt(variance);
+
+        if (!records.mostRegular || stdDev < records.mostRegular.stdDev) {
+          records.mostRegular = { joueur, stdDev, matchs: playerMatches.length };
+        }
+
+        if (!records.mostUnpredictable || stdDev > records.mostUnpredictable.stdDev) {
+          records.mostUnpredictable = { joueur, stdDev, matchs: playerMatches.length };
+        }
+      }
+    });
+
+    return records;
+  }, [filteredData, joueurs]);
+
   // Historical evolution for graph view
   const historicalEvolution = useMemo(() => {
     let matchesToUse = filteredData;
@@ -1497,6 +1770,16 @@ const App = () => {
             >
               Statistiques
             </button>
+            <button
+              onClick={() => setActiveTab('records')}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                activeTab === 'records'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Records
+            </button>
             {selectedSeason === '2025/2026' && (
               <button
                 onClick={() => setActiveTab('stats-avancees')}
@@ -2213,6 +2496,252 @@ const App = () => {
                           ))}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ONGLET RECORDS */}
+        {activeTab === 'records' && (
+          <>
+            {selectedSeason === 'All-Time' || !seasonRecords ? (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <p className="text-slate-600">
+                  {selectedSeason === 'All-Time'
+                    ? 'Les records ne sont disponibles que pour une saison spécifique'
+                    : 'Aucune donnée disponible pour cette saison'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Records individuels */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">🏆 Records individuels</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Record 1: Plus de buts dans un match */}
+                    {seasonRecords.mostGoalsInMatch && (
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Plus de buts marqués dans un match</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInMatch.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-green-700">{seasonRecords.mostGoalsInMatch.buts} buts</p>
+                            <p className="text-sm text-slate-600">
+                              <strong>{seasonRecords.mostGoalsInMatch.joueur}</strong> contre {seasonRecords.mostGoalsInMatch.adversaire}
+                              ({seasonRecords.mostGoalsInMatch.buts}-{seasonRecords.mostGoalsInMatch.butsAdv})
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(seasonRecords.mostGoalsInMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostGoalsInMatch.ligue} {seasonRecords.mostGoalsInMatch.championnat}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Record 2: Plus gros écart */}
+                    {seasonRecords.biggestWinMargin && (
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">💪 Plus grosse victoire</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.biggestWinMargin.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-blue-700">+{seasonRecords.biggestWinMargin.margin} buts</p>
+                            <p className="text-sm text-slate-600">
+                              <strong>{seasonRecords.biggestWinMargin.joueur}</strong> {seasonRecords.biggestWinMargin.score} contre {seasonRecords.biggestWinMargin.adversaire}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(seasonRecords.biggestWinMargin.date).toLocaleDateString('fr-FR')} • {seasonRecords.biggestWinMargin.ligue} {seasonRecords.biggestWinMargin.championnat}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Record du match */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Record de match</h2>
+
+                  {seasonRecords.mostProlificMatch && (
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
+                      <h3 className="text-sm font-semibold text-slate-700 mb-2">🔥 Match le plus prolifique</h3>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600">
+                            <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
+                            {' '}({seasonRecords.mostProlificMatch.score})
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Séries */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">📊 Séries remarquables</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Série de victoires */}
+                    {Object.keys(seasonRecords.longestWinStreak).length > 0 && (
+                      <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🏆 Plus longue série de victoires</h3>
+                        {Object.entries(seasonRecords.longestWinStreak)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-green-700 text-xl">{data.length} victoires</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Série sans défaite */}
+                    {Object.keys(seasonRecords.longestUnbeatenStreak).length > 0 && (
+                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🛡️ Plus longue série sans défaite</h3>
+                        {Object.entries(seasonRecords.longestUnbeatenStreak)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-blue-700 text-xl">{data.length} matchs</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Série de défaites */}
+                    {Object.keys(seasonRecords.longestLossStreak).length > 0 && (
+                      <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">💔 Plus longue série de défaites</h3>
+                        {Object.entries(seasonRecords.longestLossStreak)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-red-700 text-xl">{data.length} défaites</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Série de nuls */}
+                    {Object.keys(seasonRecords.longestDrawStreak).length > 0 && (
+                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🤝 Plus longue série de nuls</h3>
+                        {Object.entries(seasonRecords.longestDrawStreak)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-slate-700 text-xl">{data.length} nuls</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Série sans marquer */}
+                    {Object.keys(seasonRecords.longestGoalDrought).length > 0 && (
+                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🚫 Plus longue disette offensive</h3>
+                        {Object.entries(seasonRecords.longestGoalDrought)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-amber-700 text-xl">{data.length} matchs</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Série sans encaisser */}
+                    {Object.keys(seasonRecords.longestCleanSheetStreak).length > 0 && (
+                      <div className="bg-teal-50 rounded-lg p-4 border border-teal-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
+                        {Object.entries(seasonRecords.longestCleanSheetStreak)
+                          .sort((a, b) => b[1].length - a[1].length)
+                          .slice(0, 1)
+                          .map(([joueur, data]) => (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
+                              <div>
+                                <p className="font-bold text-teal-700 text-xl">{data.length} matchs</p>
+                                <p className="text-sm text-slate-600">{joueur}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Régularité */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">📈 Régularité</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Plus régulier */}
+                    {seasonRecords.mostRegular && (
+                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Joueur le plus régulier</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostRegular.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-purple-700">{seasonRecords.mostRegular.joueur}</p>
+                            <p className="text-xs text-slate-500">
+                              Écart-type: {seasonRecords.mostRegular.stdDev.toFixed(2)} • {seasonRecords.mostRegular.matchs} matchs
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Plus imprévisible */}
+                    {seasonRecords.mostUnpredictable && (
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-4 border-2 border-pink-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎲 Joueur le plus imprévisible</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostUnpredictable.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-pink-700">{seasonRecords.mostUnpredictable.joueur}</p>
+                            <p className="text-xs text-slate-500">
+                              Écart-type: {seasonRecords.mostUnpredictable.stdDev.toFixed(2)} • {seasonRecords.mostUnpredictable.matchs} matchs
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
