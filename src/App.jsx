@@ -1053,7 +1053,10 @@ const App = () => {
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <>
                           <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">Titres</th>
-                          <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">Médailles</th>
+                          <th className="px-0 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">
+                            <span className="hidden sm:inline">Médailles</span>
+                            <span className="sm:hidden">Méd.</span>
+                          </th>
                         </>
                       )}
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">Points</th>
@@ -1107,7 +1110,7 @@ const App = () => {
                             <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
                               <span className="font-semibold text-yellow-600 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
                             </td>
-                            <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
+                            <td className="px-0 py-2 sm:px-6 sm:py-4 text-center">
                               <span className="font-semibold text-slate-500 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
                             </td>
                           </>
