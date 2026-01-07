@@ -774,10 +774,52 @@ const App = () => {
       new Date(a.dateMatch) - new Date(b.dateMatch)
     );
 
+    // Build a map of championship end dates and winners for general ranking
+    const championshipBonuses = new Map(); // key: championshipKey, value: { endDate, winner, points }
+
+    if (selectedLigue === 'general') {
+      const championnatsMap = {};
+      matchesToUse.forEach(match => {
+        const key = `${match.saison}-${match.ligue}-${match.championnat}`;
+        if (!championnatsMap[key]) championnatsMap[key] = [];
+        championnatsMap[key].push(match);
+      });
+
+      Object.entries(championnatsMap).forEach(([key, matches]) => {
+        const metadata = ligueMetadata[key];
+        if (!metadata || metadata.matchsEntered < metadata.matchsTotal) return;
+
+        // Find last match date of this championship
+        const lastMatch = matches.reduce((latest, m) =>
+          new Date(m.dateMatch) > new Date(latest.dateMatch) ? m : latest
+        );
+
+        const stats = calculatePlayerStats(matches, joueurs);
+        const ranking = Object.entries(stats)
+          .map(([joueur, data]) => ({ joueur, ...data }))
+          .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+        if (ranking.length > 0 && ranking[0].points > 0) {
+          const bonusPoints = metadata.matchsTotal === 6 ? 3 : (metadata.matchsTotal < 6 ? 2 : 0);
+          if (bonusPoints > 0) {
+            championshipBonuses.set(key, {
+              endDate: new Date(lastMatch.dateMatch),
+              winner: ranking[0].joueur,
+              points: bonusPoints
+            });
+          }
+        }
+      });
+    }
+
     // Calculate cumulative points over time
     const evolution = [];
     const playerPoints = {};
-    joueurs.forEach(j => playerPoints[j] = 0);
+    const playerBonusPoints = {};
+    joueurs.forEach(j => {
+      playerPoints[j] = 0;
+      playerBonusPoints[j] = 0;
+    });
 
     sortedMatches.forEach((match, index) => {
       // Add points for this match
@@ -786,29 +828,31 @@ const App = () => {
       if (match.joueur3) playerPoints[match.joueur3] = (playerPoints[match.joueur3] || 0) + (match.points_j3 || 0);
       if (match.joueur4) playerPoints[match.joueur4] = (playerPoints[match.joueur4] || 0) + (match.points_j4 || 0);
 
+      // Check if any championship ends with this match
+      if (selectedLigue === 'general') {
+        const matchDate = new Date(match.dateMatch);
+        championshipBonuses.forEach((bonus, champKey) => {
+          if (Math.abs(bonus.endDate - matchDate) < 1000 * 60 * 60 * 24) { // Same day
+            playerBonusPoints[bonus.winner] = (playerBonusPoints[bonus.winner] || 0) + bonus.points;
+          }
+        });
+      }
+
       // Record snapshot every few matches to avoid too many data points
       if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
         const dataPoint = {
-          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
           matchNumber: index + 1
         };
         joueurs.forEach(j => {
-          dataPoint[j] = playerPoints[j] || 0;
+          dataPoint[j] = (playerPoints[j] || 0) + (playerBonusPoints[j] || 0);
         });
         evolution.push(dataPoint);
       }
     });
 
-    // Add title and medal points to the last data point for general ranking
-    if (selectedLigue === 'general' && evolution.length > 0) {
-      const lastPoint = evolution[evolution.length - 1];
-      joueurs.forEach(j => {
-        lastPoint[j] = (lastPoint[j] || 0) + (victoiresChampionnat[j] || 0) * 3 + (medaillesChampionnat[j] || 0) * 2;
-      });
-    }
-
     return evolution;
-  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, victoiresChampionnat, medaillesChampionnat]);
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata]);
 
   // Historical evolution for buteurs (goals scored)
   const buteursEvolution = useMemo(() => {
@@ -846,7 +890,7 @@ const App = () => {
       // Record snapshot every few matches
       if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
         const dataPoint = {
-          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
           matchNumber: index + 1
         };
         joueurs.forEach(j => {
@@ -895,7 +939,7 @@ const App = () => {
       // Record snapshot every few matches
       if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
         const dataPoint = {
-          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
           matchNumber: index + 1
         };
         joueurs.forEach(j => {
