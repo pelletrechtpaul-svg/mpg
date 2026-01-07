@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
-import { Trophy, Lock, Plus, Trash2, Edit } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2, Edit, Medal } from 'lucide-react';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -271,6 +271,11 @@ const App = () => {
         return; // Skip incomplete championships
       }
 
+      // Only count victories for championships with exactly 6 matches (titles)
+      if (metadata.matchsTotal !== 6) {
+        return;
+      }
+
       const stats = calculatePlayerStats(matches, joueurs);
       const ranking = Object.entries(stats)
         .map(([joueur, data]) => ({ joueur, ...data }))
@@ -332,10 +337,22 @@ const App = () => {
       stats[joueur].medaillesChampionnat = medaillesChampionnat[joueur];
     });
 
+    // Add artificial titles for 2024/2025 General ranking
+    if (selectedSeason === '2024/2025') {
+      if (stats['Adrien']) {
+        stats['Adrien'].victoiresChampionnat += 1;
+        stats['Adrien'].points += 3;
+      }
+      if (stats['Paul']) {
+        stats['Paul'].victoiresChampionnat += 1;
+        stats['Paul'].points += 3;
+      }
+    }
+
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-  }, [filteredData, joueurs, victoiresChampionnat, medaillesChampionnat]);
+  }, [filteredData, joueurs, victoiresChampionnat, medaillesChampionnat, selectedSeason]);
 
   // Classement par ligue
   const classementParLigue = useMemo(() => {
@@ -393,6 +410,35 @@ const App = () => {
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
         stats[joueur].medaillesChampionnat = ligueMedailles[joueur];
       });
+    }
+
+    // Add artificial data for 2024/2025 Ligue 1 Total
+    if (selectedSeason === '2024/2025' && selectedLigue === 'Ligue 1' && selectedChampionnat === 'total') {
+      if (stats['Paul']) {
+        stats['Paul'].matchs += 12;
+        stats['Paul'].ga -= 3;
+        stats['Paul'].buts_pour += stats['Paul'].ga < 0 ? 0 : -3;
+        stats['Paul'].buts_contre += 3;
+        stats['Paul'].points += 15;
+      }
+      if (stats['Adrien']) {
+        stats['Adrien'].matchs += 12;
+        stats['Adrien'].ga += 7;
+        stats['Adrien'].buts_pour += 7;
+        stats['Adrien'].points += 19;
+      }
+      if (stats['Tiago']) {
+        stats['Tiago'].matchs += 12;
+        stats['Tiago'].ga += 6;
+        stats['Tiago'].buts_pour += 6;
+        stats['Tiago'].points += 22;
+      }
+      if (stats['Roman']) {
+        stats['Roman'].matchs += 12;
+        stats['Roman'].ga -= 10;
+        stats['Roman'].buts_contre += 10;
+        stats['Roman'].points += 15;
+      }
     }
 
     return Object.entries(stats)
@@ -1093,6 +1139,16 @@ const App = () => {
               Face à face
             </button>
             <button
+              onClick={() => setActiveTab('statistiques')}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                activeTab === 'statistiques'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Statistiques
+            </button>
+            <button
               onClick={() => setActiveTab('stats-avancees')}
               className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 activeTab === 'stats-avancees'
@@ -1208,7 +1264,9 @@ const App = () => {
                           </th>
                         </>
                       )}
-                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">Points</th>
+                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">
+                        {selectedChampionnat === 'total' ? 'Points en match' : 'Points'}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1217,7 +1275,7 @@ const App = () => {
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             {index === 0 && (() => {
-                              // Show trophy only if:
+                              // Show trophy/medal only if:
                               // 1. Championship is complete (all matches played), OR
                               // 2. It's general ranking for 2024/2025 season
                               const isComplete = selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
@@ -1226,7 +1284,19 @@ const App = () => {
                                 return metadata && metadata.matchsEntered >= metadata.matchsTotal;
                               })();
                               const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
-                              return (isComplete || isGeneral20242025) && <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
+
+                              if (isComplete || isGeneral20242025) {
+                                // Check if it's a medal (< 6 matches) or trophy (6 matches)
+                                if (isComplete && !isGeneral20242025) {
+                                  const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+                                  const metadata = ligueMetadata[ligueKey];
+                                  if (metadata && metadata.matchsTotal < 6) {
+                                    return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-slate-400" />;
+                                  }
+                                }
+                                return <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
+                              }
+                              return null;
                             })()}
                             <span className="font-bold text-sm sm:text-lg text-slate-700">{index + 1}</span>
                           </div>
@@ -1285,12 +1355,12 @@ const App = () => {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                      <span className="text-slate-700 font-medium">Buts pour</span>
+                    <div className="flex flex-col items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-slate-700 font-medium mb-2">Buts inscrits</span>
                       <span className="text-2xl font-bold text-green-600">{showGoalsDetail.buts_pour}</span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                      <span className="text-slate-700 font-medium">Buts contre</span>
+                    <div className="flex flex-col items-center p-3 bg-red-50 rounded-lg">
+                      <span className="text-slate-700 font-medium mb-2">Buts encaissés</span>
                       <span className="text-2xl font-bold text-red-600">{showGoalsDetail.buts_contre}</span>
                     </div>
                   </div>
@@ -1368,7 +1438,7 @@ const App = () => {
                         <tr>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Rang</th>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">valises efficaces</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Valises efficaces</th>
                         </tr>
                       </thead>
                       <tbody>
