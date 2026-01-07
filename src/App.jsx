@@ -1175,7 +1175,7 @@ const App = () => {
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                     }`}
                   >
-                    valises efficaces 🎯
+                    Valises efficaces 🎯
                   </button>
                 </div>
 
@@ -1300,14 +1300,6 @@ const App = () => {
               }
               return null;
             })()}
-
-            {/* Légende */}
-            <div className="mt-4 bg-blue-50 rounded-xl p-4">
-              <p className="text-sm text-blue-800">
-                <strong>Système :</strong> Victoire = 3 pts • Nul = 1 pt • Défaite = 0 pt<br />
-                <strong>Classement :</strong> Points (puis Goal Average si égalité) • Bonus +3 pts par titre
-              </p>
-            </div>
           </>
         )}
 
