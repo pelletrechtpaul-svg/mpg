@@ -38,6 +38,9 @@ const App = () => {
   // Goals detail popup
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
 
+  // Valise table toggle
+  const [selectedValiseTable, setSelectedValiseTable] = useState('stats'); // 'stats' or 'efficaces'
+
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -1151,12 +1154,37 @@ const App = () => {
 
             {/* Tableaux de valises (only for general and total) */}
             {valiseStats && (selectedLigue === 'general' || selectedChampionnat === 'total') && (
-              <div className="mt-6 space-y-6">
+              <div className="mt-6">
+                {/* Toggle buttons */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setSelectedValiseTable('stats')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      selectedValiseTable === 'stats'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                    }`}
+                  >
+                    Valises 💼
+                  </button>
+                  <button
+                    onClick={() => setSelectedValiseTable('efficaces')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      selectedValiseTable === 'efficaces'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                    }`}
+                  >
+                    Classement valises efficaces 🎯
+                  </button>
+                </div>
+
                 {/* Tableau utilisées/reçues */}
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  <div className="p-4 bg-slate-50 border-b">
-                    <h3 className="text-lg font-semibold text-slate-800">Statistiques Valises 💼</h3>
-                  </div>
+                {selectedValiseTable === 'stats' && (
+                  <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div className="p-4 bg-slate-50 border-b">
+                      <h3 className="text-lg font-semibold text-slate-800">Valises 💼</h3>
+                    </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
@@ -1183,20 +1211,22 @@ const App = () => {
                     </table>
                   </div>
                 </div>
+                )}
 
                 {/* Classement valises efficaces */}
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  <div className="p-4 bg-slate-50 border-b">
-                    <h3 className="text-lg font-semibold text-slate-800">Classement Valises Efficaces 🎯</h3>
-                    <p className="text-xs text-slate-600 mt-1">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
-                  </div>
+                {selectedValiseTable === 'efficaces' && (
+                  <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div className="p-4 bg-slate-50 border-b">
+                      <h3 className="text-lg font-semibold text-slate-800">Classement valises efficaces 🎯</h3>
+                      <p className="text-xs text-slate-600 mt-1">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
+                    </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50">
                         <tr>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Rang</th>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Valises Efficaces</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">valises efficaces</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1223,6 +1253,7 @@ const App = () => {
                     </table>
                   </div>
                 </div>
+                )}
               </div>
             )}
 
