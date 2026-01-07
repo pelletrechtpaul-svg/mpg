@@ -63,13 +63,15 @@ const App = () => {
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddMatchForm, setShowAddMatchForm] = useState(false);
   const [showEditMatchForm, setShowEditMatchForm] = useState(false);
-  const [showDeleteMatchForm, setShowDeleteMatchForm] = useState(false);
   const [showEditLigueForm, setShowEditLigueForm] = useState(false);
   const [editingMatch, setEditingMatch] = useState(null);
   const [editingLigue, setEditingLigue] = useState(null);
-  const [matchesToDelete, setMatchesToDelete] = useState([]);
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
+
+  // Edit form cascade states
+  const [editSelectedSaison, setEditSelectedSaison] = useState('');
+  const [editSelectedChampionnat, setEditSelectedChampionnat] = useState('');
+  const [editSelectedIteration, setEditSelectedIteration] = useState('');
 
   // Admin form
   const [adminFormData, setAdminFormData] = useState({
@@ -2495,7 +2497,7 @@ const App = () => {
                     </button>
                   </div>
 
-                  {!showAddMatchForm && !showEditMatchForm && !showDeleteMatchForm ? (
+                  {!showAddMatchForm && !showEditMatchForm ? (
                     <div className="flex flex-wrap gap-3">
                       <button
                         onClick={() => setShowAddMatchForm(true)}
@@ -2505,22 +2507,19 @@ const App = () => {
                         Ajouter un match
                       </button>
                       {matchData.length > 0 && (
-                        <>
-                          <button
-                            onClick={() => setShowEditMatchForm(true)}
-                            className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
-                          >
-                            <Edit className="w-5 h-5" />
-                            Éditer un match
-                          </button>
-                          <button
-                            onClick={() => setShowDeleteMatchForm(true)}
-                            className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 inline-flex items-center gap-2"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                            Supprimer
-                          </button>
-                        </>
+                        <button
+                          onClick={() => {
+                            setShowEditMatchForm(true);
+                            setEditSelectedSaison('');
+                            setEditSelectedChampionnat('');
+                            setEditSelectedIteration('');
+                            setEditingMatch(null);
+                          }}
+                          className="px-6 py-3 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 inline-flex items-center gap-2"
+                        >
+                          <Edit className="w-5 h-5" />
+                          Éditer un match
+                        </button>
                       )}
                     </div>
                   ) : showAddMatchForm ? (
@@ -2861,11 +2860,14 @@ const App = () => {
                   ) : showEditMatchForm ? (
                     <div className="bg-slate-50 rounded-lg p-6">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-slate-800">Éditer un match</h3>
+                        <h3 className="text-lg font-semibold text-slate-800">Éditer / Supprimer un match</h3>
                         <button
                           onClick={() => {
                             setShowEditMatchForm(false);
                             setEditingMatch(null);
+                            setEditSelectedSaison('');
+                            setEditSelectedChampionnat('');
+                            setEditSelectedIteration('');
                           }}
                           className="text-slate-600 hover:text-slate-800"
                         >
@@ -2874,21 +2876,149 @@ const App = () => {
                       </div>
 
                       {!editingMatch ? (
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                          {matchData.map((match, index) => (
-                            <button
-                              key={index}
-                              onClick={() => setEditingMatch({...match, index})}
-                              className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
-                            >
-                              <p className="font-semibold text-slate-800">
-                                {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
-                              </p>
-                              <p className="text-sm text-slate-600">
-                                {match.saison} • {match.ligue} • {match.championnat} • {new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                              </p>
-                            </button>
-                          ))}
+                        <div className="space-y-4">
+                          {/* Étape 1 : Sélection de la saison */}
+                          {!editSelectedSaison && (
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">Sélectionnez une saison</label>
+                              <div className="space-y-2">
+                                {['2025/2026', '2024/2025'].map(saison => (
+                                  <button
+                                    key={saison}
+                                    onClick={() => setEditSelectedSaison(saison)}
+                                    className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
+                                  >
+                                    {saison}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Étape 2 : Sélection du championnat */}
+                          {editSelectedSaison && !editSelectedChampionnat && (
+                            <div>
+                              <button
+                                onClick={() => setEditSelectedSaison('')}
+                                className="mb-3 text-sm text-blue-600 hover:text-blue-800"
+                              >
+                                ← Retour aux saisons
+                              </button>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Sélectionnez un championnat ({editSelectedSaison})
+                              </label>
+                              <div className="space-y-2">
+                                {Array.from(new Set(
+                                  matchData
+                                    .filter(m => m.saison === editSelectedSaison)
+                                    .map(m => `${m.ligue} ${m.championnat}`)
+                                )).map(champ => (
+                                  <button
+                                    key={champ}
+                                    onClick={() => setEditSelectedChampionnat(champ)}
+                                    className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
+                                  >
+                                    {champ}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Étape 3 : Sélection de l'itération */}
+                          {editSelectedSaison && editSelectedChampionnat && !editSelectedIteration && (
+                            <div>
+                              <button
+                                onClick={() => setEditSelectedChampionnat('')}
+                                className="mb-3 text-sm text-blue-600 hover:text-blue-800"
+                              >
+                                ← Retour aux championnats
+                              </button>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Sélectionnez une itération
+                              </label>
+                              <div className="space-y-2">
+                                {(() => {
+                                  const [ligue, ...champParts] = editSelectedChampionnat.split(' ');
+                                  const championnat = champParts.join(' ');
+
+                                  const iterations = Array.from(new Set(
+                                    matchData
+                                      .filter(m =>
+                                        m.saison === editSelectedSaison &&
+                                        m.ligue === ligue &&
+                                        m.championnat === championnat
+                                      )
+                                      .map(m => m.championnat)
+                                  ));
+
+                                  // Group by iteration number
+                                  const iterationGroups = {};
+                                  iterations.forEach(it => {
+                                    const match = it.match(/#(\d+)/);
+                                    const num = match ? match[1] : '1';
+                                    if (!iterationGroups[num]) iterationGroups[num] = it;
+                                  });
+
+                                  return Object.entries(iterationGroups).map(([num, champName]) => (
+                                    <button
+                                      key={champName}
+                                      onClick={() => setEditSelectedIteration(champName)}
+                                      className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
+                                    >
+                                      #{num}
+                                    </button>
+                                  ));
+                                })()}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Étape 4 : Liste des matchs */}
+                          {editSelectedSaison && editSelectedChampionnat && editSelectedIteration && (
+                            <div>
+                              <button
+                                onClick={() => setEditSelectedIteration('')}
+                                className="mb-3 text-sm text-blue-600 hover:text-blue-800"
+                              >
+                                ← Retour aux itérations
+                              </button>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Sélectionnez un match
+                              </label>
+                              <div className="space-y-2 max-h-96 overflow-y-auto">
+                                {(() => {
+                                  const [ligue, ...champParts] = editSelectedChampionnat.split(' ');
+                                  const championnat = champParts.join(' ');
+
+                                  return matchData
+                                    .map((match, index) => ({ match, index }))
+                                    .filter(({ match }) =>
+                                      match.saison === editSelectedSaison &&
+                                      match.ligue === ligue &&
+                                      match.championnat === editSelectedIteration
+                                    )
+                                    .map(({ match, index }) => (
+                                      <button
+                                        key={index}
+                                        onClick={() => setEditingMatch({...match, index})}
+                                        className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
+                                      >
+                                        <p className="font-semibold text-slate-800">
+                                          {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                                          {match.joueur3 && ` • ${match.joueur3} {match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
+                                        </p>
+                                        <p className="text-sm text-slate-600">
+                                          {match.dateMatch || 'Date non définie'}
+                                          {match.valise_j1 && ' 🧳 ' + match.joueur1}
+                                          {match.valise_j2 && ' 🧳 ' + match.joueur2}
+                                        </p>
+                                      </button>
+                                    ));
+                                })()}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <form onSubmit={handleEditMatch} className="space-y-4">
@@ -2912,7 +3042,7 @@ const App = () => {
                                 onChange={(e) => setEditingMatch({...editingMatch, joueur1: e.target.value})}
                                 className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                               >
-                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== editingMatch.joueur2).map(j => (
+                                {joueurs.filter(j => j !== editingMatch.joueur2).map(j => (
                                   <option key={j} value={j}>{j}</option>
                                 ))}
                               </select>
@@ -2924,7 +3054,7 @@ const App = () => {
                                 onChange={(e) => setEditingMatch({...editingMatch, joueur2: e.target.value})}
                                 className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                               >
-                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== editingMatch.joueur1).map(j => (
+                                {joueurs.filter(j => j !== editingMatch.joueur1).map(j => (
                                   <option key={j} value={j}>{j}</option>
                                 ))}
                               </select>
@@ -2952,9 +3082,49 @@ const App = () => {
                               />
                             </div>
                           </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <label className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={editingMatch.valise_j1 || false}
+                                onChange={(e) => setEditingMatch({...editingMatch, valise_j1: e.target.checked})}
+                                className="w-4 h-4"
+                              />
+                              <span className="text-sm">🧳 Valise {editingMatch.joueur1}</span>
+                            </label>
+                            <label className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={editingMatch.valise_j2 || false}
+                                onChange={(e) => setEditingMatch({...editingMatch, valise_j2: e.target.checked})}
+                                className="w-4 h-4"
+                              />
+                              <span className="text-sm">🧳 Valise {editingMatch.joueur2}</span>
+                            </label>
+                          </div>
                           <div className="flex gap-3">
                             <button type="submit" className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
                               Enregistrer
+                            </button>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) {
+                                  try {
+                                    const matchDoc = doc(db, 'matchs', matchData[editingMatch.index].id);
+                                    await deleteDoc(matchDoc);
+                                    alert('Match supprimé avec succès !');
+                                    setEditingMatch(null);
+                                    setEditSelectedIteration('');
+                                  } catch (error) {
+                                    console.error('Error deleting match:', error);
+                                    alert('Erreur lors de la suppression du match');
+                                  }
+                                }
+                              }}
+                              className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
+                            >
+                              Supprimer
                             </button>
                             <button
                               type="button"
@@ -2965,85 +3135,6 @@ const App = () => {
                             </button>
                           </div>
                         </form>
-                      )}
-                    </div>
-                  ) : showDeleteMatchForm ? (
-                    <div className="bg-slate-50 rounded-lg p-6">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-slate-800">Supprimer des matchs</h3>
-                        <button
-                          onClick={() => {
-                            setShowDeleteMatchForm(false);
-                            setMatchesToDelete([]);
-                            setAdminSearchQuery('');
-                          }}
-                          className="text-slate-600 hover:text-slate-800"
-                        >
-                          Annuler
-                        </button>
-                      </div>
-
-                      {/* Search bar */}
-                      <div className="mb-4">
-                        <input
-                          type="text"
-                          placeholder="Rechercher par joueur, date, ligue..."
-                          value={adminSearchQuery}
-                          onChange={(e) => setAdminSearchQuery(e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-
-                      <div className="space-y-2 max-h-96 overflow-y-auto mb-4">
-                        {matchData
-                          .map((match, index) => ({ match, index }))
-                          .filter(({ match }) => {
-                            if (!adminSearchQuery) return true;
-                            const query = adminSearchQuery.toLowerCase();
-                            return (
-                              match.joueur1?.toLowerCase().includes(query) ||
-                              match.joueur2?.toLowerCase().includes(query) ||
-                              match.joueur3?.toLowerCase().includes(query) ||
-                              match.joueur4?.toLowerCase().includes(query) ||
-                              match.dateMatch?.includes(query) ||
-                              match.ligue?.toLowerCase().includes(query) ||
-                              match.championnat?.toLowerCase().includes(query) ||
-                              match.saison?.includes(query)
-                            );
-                          })
-                          .map(({ match, index }) => (
-                            <label key={index} className="flex items-center p-4 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={matchesToDelete.includes(index)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setMatchesToDelete([...matchesToDelete, index]);
-                                  } else {
-                                    setMatchesToDelete(matchesToDelete.filter(i => i !== index));
-                                  }
-                                }}
-                                className="w-4 h-4 text-red-600"
-                              />
-                              <div className="ml-3 flex-1">
-                                <p className="font-semibold text-slate-800">
-                                  {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
-                                  {match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
-                                </p>
-                                <p className="text-sm text-slate-600">
-                                  {match.dateMatch} • {match.saison} • {match.ligue} • {match.championnat}
-                                </p>
-                              </div>
-                            </label>
-                          ))}
-                      </div>
-                      {matchesToDelete.length > 0 && (
-                        <button
-                          onClick={handleDeleteMatches}
-                          className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700"
-                        >
-                          Supprimer {matchesToDelete.length} match(s)
-                        </button>
                       )}
                     </div>
                   ) : null}
