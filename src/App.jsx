@@ -44,6 +44,9 @@ const App = () => {
   // Valise table toggle
   const [selectedValiseTable, setSelectedValiseTable] = useState('stats'); // 'stats' or 'efficaces'
 
+  // Rankings view toggle (table or graph)
+  const [rankingsView, setRankingsView] = useState('table'); // 'table' or 'graph'
+
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioRef] = useState(new Audio('/audio/theme.mp3'));
@@ -750,6 +753,53 @@ const App = () => {
     return stats;
   }, [matchData, joueurs, selectedSeason]);
 
+  // Historical evolution for graph view
+  const historicalEvolution = useMemo(() => {
+    let matchesToUse = filteredData;
+
+    // Filter by ligue if not general
+    if (selectedLigue !== 'general') {
+      matchesToUse = matchesToUse.filter(m => m.ligue === selectedLigue);
+
+      // Filter by championnat if not total
+      if (selectedChampionnat !== 'total') {
+        matchesToUse = matchesToUse.filter(m => m.championnat === selectedChampionnat);
+      }
+    }
+
+    // Sort matches by date
+    const sortedMatches = [...matchesToUse].sort((a, b) =>
+      new Date(a.dateMatch) - new Date(b.dateMatch)
+    );
+
+    // Calculate cumulative points over time
+    const evolution = [];
+    const playerPoints = {};
+    joueurs.forEach(j => playerPoints[j] = 0);
+
+    sortedMatches.forEach((match, index) => {
+      // Add points for this match
+      if (match.joueur1) playerPoints[match.joueur1] = (playerPoints[match.joueur1] || 0) + (match.points_j1 || 0);
+      if (match.joueur2) playerPoints[match.joueur2] = (playerPoints[match.joueur2] || 0) + (match.points_j2 || 0);
+      if (match.joueur3) playerPoints[match.joueur3] = (playerPoints[match.joueur3] || 0) + (match.points_j3 || 0);
+      if (match.joueur4) playerPoints[match.joueur4] = (playerPoints[match.joueur4] || 0) + (match.points_j4 || 0);
+
+      // Record snapshot every few matches to avoid too many data points
+      if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
+        const dataPoint = {
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          matchNumber: index + 1
+        };
+        joueurs.forEach(j => {
+          dataPoint[j] = playerPoints[j] || 0;
+        });
+        evolution.push(dataPoint);
+      }
+    });
+
+    return evolution;
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
+
   // Monitor auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -1334,7 +1384,34 @@ const App = () => {
               )}
             </div>
 
+            {/* Toggle Tableau/Graphique */}
+            <div className="mb-4 flex justify-end">
+              <div className="inline-flex rounded-lg border border-slate-300 bg-white">
+                <button
+                  onClick={() => setRankingsView('table')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    rankingsView === 'table'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  } rounded-l-lg`}
+                >
+                  📊 Tableau
+                </button>
+                <button
+                  onClick={() => setRankingsView('graph')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    rankingsView === 'graph'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  } rounded-r-lg`}
+                >
+                  📈 Évolution
+                </button>
+              </div>
+            </div>
+
             {/* Tableau classement */}
+            {rankingsView === 'table' ? (
             <div
               className={`rounded-xl shadow-sm overflow-hidden ${
                 selectedSeason === '2024/2025' && selectedLigue === 'general'
@@ -1449,6 +1526,44 @@ const App = () => {
                 </table>
               </div>
             </div>
+            ) : (
+            /* Graphique d'évolution */
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des points au fil du temps</h3>
+              {historicalEvolution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={historicalEvolution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="date"
+                      label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Legend />
+                    {joueurs.map((joueur) => (
+                      <Line
+                        key={joueur}
+                        type="monotone"
+                        dataKey={joueur}
+                        stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center text-slate-600 py-12">
+                  <p>Pas assez de données pour afficher l'évolution</p>
+                </div>
+              )}
+            </div>
+            )}
 
             {/* Popup détails buts */}
             {showGoalsDetail && (
