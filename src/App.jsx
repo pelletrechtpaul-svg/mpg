@@ -3028,15 +3028,24 @@ const App = () => {
                   'A': 1   // Attaquant = normal
                 };
 
-                // Nouvelle formule : Indice = Note * facteur_régularité * facteur_offensif
-                const matchsEffectifs = matchs * (titu / 100);
-                const facteurRegularite = Math.sqrt(matchsEffectifs);
-                const butsPonderes = buts * coeffButs[poste];
-                const facteurOffensif = 1 + (butsPonderes / 20);
-                const indiceBrut = note * facteurRegularite * facteurOffensif;
+                // Score de base ajusté à l'échelle MPG (note 3-8, avec 5+ = bon, 6+ = excellent, 7+ = exceptionnel)
+                // Note 3 = 0, Note 5 = 50, Note 6 = 75, Note 7 = 100
+                const scoreBase = (note - 3) * 25;
+
+                // Facteur régularité : uniquement basé sur % titularisation (pas de bonus pour nb matchs)
+                // 0% titu = 0.7, 100% titu = 1.0
+                const facteurRegularite = 0.7 + (titu / 100 * 0.3);
+
+                // Facteur offensif : ratio buts/matchs effectifs pondéré par poste
+                const matchsEffectifs = Math.max(1, matchs * (titu / 100));
+                const ratioButs = buts / matchsEffectifs;
+                const facteurOffensif = 1 + (ratioButs * coeffButs[poste] / 10);
+
+                // Calcul final
+                const indiceBrut = scoreBase * facteurRegularite * facteurOffensif;
 
                 // Normalisation sur 100
-                const indice = Math.min(100, indiceBrut);
+                const indice = Math.min(100, Math.max(0, indiceBrut));
 
                 // Ajouter la carte
                 const newCard = {
@@ -3289,8 +3298,22 @@ const App = () => {
                 <div>
                   <p className="font-semibold mb-2">Formule générale :</p>
                   <p className="font-mono bg-white dark:bg-slate-900 p-3 rounded border border-slate-200 dark:border-slate-600 text-xs">
-                    Indice = Note moyenne × Facteur régularité × Facteur offensif
+                    Indice = Score de base × Facteur régularité × Facteur offensif
                   </p>
+                </div>
+
+                <div>
+                  <p className="font-semibold mb-2">Échelle MPG (adaptée à la réalité) :</p>
+                  <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded border border-amber-200 dark:border-amber-700 text-xs">
+                    <p className="mb-2"><strong>Score de base = (Note - 3) × 25</strong></p>
+                    <ul className="list-disc list-inside space-y-1 pl-2">
+                      <li>Note 7+ = 100 pts (exceptionnel, quasi-inexistant)</li>
+                      <li>Note 6+ = 75 pts (excellent)</li>
+                      <li>Note 5+ = 50 pts (bon)</li>
+                      <li>Note 4 = 25 pts (moyen)</li>
+                      <li>Note 3 = 0 pts (faible)</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <div>
@@ -3298,22 +3321,25 @@ const App = () => {
                   <ul className="space-y-2 pl-2">
                     <li className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-600">
                       <strong>Facteur régularité :</strong>
-                      <p className="font-mono text-xs mt-1">√(Matchs effectifs)</p>
+                      <p className="font-mono text-xs mt-1">0.7 + (% Titularisation / 100 × 0.3)</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        Matchs effectifs = Matchs joués × (% Titularisation / 100)
+                        0% titu = 0.7 • 100% titu = 1.0
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Valorise la régularité et le temps de jeu
+                        Valorise uniquement la régularité de titularisation, PAS le nombre de matchs
                       </p>
                     </li>
                     <li className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-600">
                       <strong>Facteur offensif :</strong>
-                      <p className="font-mono text-xs mt-1">1 + (Buts pondérés / 20)</p>
+                      <p className="font-mono text-xs mt-1">1 + (Ratio buts × Coeff poste / 10)</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        Buts pondérés = Buts × Coefficient poste
+                        Ratio buts = Buts / Matchs effectifs
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Pondère l'apport offensif selon le poste
+                        Matchs effectifs = Matchs × (% Titu / 100)
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Pondère l'efficacité offensive selon le poste
                       </p>
                     </li>
                   </ul>
@@ -3330,22 +3356,37 @@ const App = () => {
                 </div>
 
                 <div>
-                  <p className="font-semibold mb-2">Exemple de calcul :</p>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700 text-xs">
-                    <p className="font-semibold">Mbappé (Attaquant)</p>
-                    <p>Note 7.5 • 30 matchs • 90% titu • 25 buts</p>
-                    <p className="mt-2">• Matchs effectifs = 30 × 0.9 = 27</p>
-                    <p>• Facteur régularité = √27 ≈ 5.2</p>
-                    <p>• Buts pondérés = 25 × 1 = 25</p>
-                    <p>• Facteur offensif = 1 + (25/20) = 2.25</p>
-                    <p className="mt-2 font-semibold text-blue-700 dark:text-blue-300">
-                      → Indice = 7.5 × 5.2 × 2.25 ≈ 88/100
-                    </p>
+                  <p className="font-semibold mb-2">Exemples de calcul :</p>
+                  <div className="space-y-2">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700 text-xs">
+                      <p className="font-semibold">Joueur A (Attaquant) - Début de saison</p>
+                      <p>Note 6.5 • 5 matchs • 100% titu • 4 buts</p>
+                      <p className="mt-2">• Score base = (6.5 - 3) × 25 = 87.5</p>
+                      <p>• Facteur régularité = 0.7 + 0.3 = 1.0</p>
+                      <p>• Matchs effectifs = 5 × 1.0 = 5</p>
+                      <p>• Ratio buts = 4/5 = 0.8</p>
+                      <p>• Facteur offensif = 1 + (0.8 × 1 / 10) = 1.08</p>
+                      <p className="mt-2 font-semibold text-blue-700 dark:text-blue-300">
+                        → Indice = 87.5 × 1.0 × 1.08 ≈ 95/100
+                      </p>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-700 text-xs">
+                      <p className="font-semibold">Joueur B (Milieu) - Saison complète</p>
+                      <p>Note 6 • 30 matchs • 80% titu • 8 buts</p>
+                      <p className="mt-2">• Score base = (6 - 3) × 25 = 75</p>
+                      <p>• Facteur régularité = 0.7 + (0.8 × 0.3) = 0.94</p>
+                      <p>• Matchs effectifs = 30 × 0.8 = 24</p>
+                      <p>• Ratio buts = 8/24 = 0.33</p>
+                      <p>• Facteur offensif = 1 + (0.33 × 2 / 10) = 1.067</p>
+                      <p className="mt-2 font-semibold text-green-700 dark:text-green-300">
+                        → Indice = 75 × 0.94 × 1.067 ≈ 75/100
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <p className="font-semibold mb-2">Échelle de notation :</p>
+                  <p className="font-semibold mb-2">Échelle de résultat :</p>
                   <ul className="list-disc list-inside space-y-1 pl-2">
                     <li className="text-green-600 dark:text-green-400">80-100 : Excellent</li>
                     <li className="text-blue-600 dark:text-blue-400">60-79 : Très bien</li>
