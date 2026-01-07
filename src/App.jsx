@@ -1119,26 +1119,55 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Fixed top-right MP3 Player */}
-      <button
-        onClick={() => {
-          if (isPlaying) {
-            audioRef.pause();
-            setIsPlaying(false);
-          } else {
-            audioRef.play();
-            setIsPlaying(true);
-          }
-        }}
-        className={`fixed top-4 right-4 z-50 px-2 py-2 rounded-lg shadow-md transition-all hover:shadow-lg border ${
-          isPlaying
-            ? 'bg-blue-600 text-white border-blue-600 animate-pulse'
-            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-        }`}
-        title={isPlaying ? 'Pause' : 'Lecture'}
-      >
-        <Music className="w-4 h-4" />
-      </button>
+      {/* Fixed top-right controls: MP3 Player + Buttons */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+        {/* MP3 Player */}
+        <button
+          onClick={() => {
+            if (isPlaying) {
+              audioRef.pause();
+              setIsPlaying(false);
+            } else {
+              audioRef.play();
+              setIsPlaying(true);
+            }
+          }}
+          className={`px-2 py-2 rounded-lg shadow-md transition-all hover:shadow-lg border ${
+            isPlaying
+              ? 'bg-blue-600 text-white border-blue-600 animate-pulse'
+              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+          }`}
+          title={isPlaying ? 'Pause' : 'Lecture'}
+        >
+          <Music className="w-4 h-4" />
+        </button>
+
+        {/* Mur d'infos button */}
+        <button
+          onClick={() => setActiveTab(activeTab === 'infos' ? 'classements' : 'infos')}
+          className={`px-3 py-2 rounded-lg font-medium shadow-md transition-all inline-flex items-center gap-2 border-2 ${
+            activeTab === 'infos'
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
+          }`}
+        >
+          <span className="text-lg">ℹ️</span>
+          <span className="hidden sm:inline text-xs">Infos</span>
+        </button>
+
+        {/* Admin button */}
+        <button
+          onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
+          className={`px-3 py-2 rounded-lg font-medium shadow-md transition-all inline-flex items-center gap-2 border-2 border-black ${
+            activeTab === 'admin'
+              ? 'bg-red-600 text-white'
+              : 'bg-white text-red-600 hover:bg-red-50'
+          }`}
+        >
+          <Lock className="w-4 h-4 text-red-600" />
+          <span className="hidden sm:inline text-red-600 text-xs">Admin</span>
+        </button>
+      </div>
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
@@ -1166,33 +1195,6 @@ const App = () => {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Fixed bottom-right buttons */}
-        <div className="fixed bottom-6 right-6 flex gap-3 z-50">
-          <button
-            onClick={() => setActiveTab(activeTab === 'infos' ? 'classements' : 'infos')}
-            className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 ${
-              activeTab === 'infos'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            <span className="text-lg">ℹ️</span>
-            <span className="hidden sm:inline">Mur d'infos</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
-            className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 border-black ${
-              activeTab === 'admin'
-                ? 'bg-red-600 text-white'
-                : 'bg-white text-red-600 hover:bg-red-50'
-            }`}
-          >
-            <Lock className="w-4 h-4 text-red-600" />
-            <span className="hidden sm:inline text-red-600">Admin</span>
-          </button>
         </div>
 
         {/* Season Navigation */}
