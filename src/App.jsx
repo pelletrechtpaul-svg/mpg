@@ -1118,52 +1118,52 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Fixed top-right MP3 Player */}
+      <button
+        onClick={() => {
+          if (isPlaying) {
+            audioRef.pause();
+            setIsPlaying(false);
+          } else {
+            audioRef.play();
+            setIsPlaying(true);
+          }
+        }}
+        className={`fixed top-4 right-4 z-50 px-2 py-2 rounded-lg shadow-md transition-all hover:shadow-lg border ${
+          isPlaying
+            ? 'bg-blue-600 text-white border-blue-600 animate-pulse'
+            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+        }`}
+        title={isPlaying ? 'Pause' : 'Lecture'}
+      >
+        <Music className="w-4 h-4" />
+      </button>
+
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
-              <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
-              {/* Sync indicator */}
-              <div className="flex items-center gap-2 mt-2">
-                {isOnline ? (
-                  <div className="flex items-center gap-1.5 text-green-600 text-xs">
-                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                    <span>Synchronisé</span>
-                    {lastSyncTime && (
-                      <span className="text-slate-400">
-                        • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 text-red-600 text-xs">
-                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                    <span>Hors ligne</span>
-                  </div>
-                )}
-              </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">MonPetitGazon</h1>
+            <p className="text-slate-600 text-sm sm:text-base">Statistiques et performances</p>
+            {/* Sync indicator */}
+            <div className="flex items-center gap-2 mt-2">
+              {isOnline ? (
+                <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  <span>Synchronisé</span>
+                  {lastSyncTime && (
+                    <span className="text-slate-400">
+                      • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                  <span>Hors ligne</span>
+                </div>
+              )}
             </div>
-
-            {/* Mini MP3 Player with rainbow music note */}
-            <button
-              onClick={() => {
-                if (isPlaying) {
-                  audioRef.pause();
-                  setIsPlaying(false);
-                } else {
-                  audioRef.play();
-                  setIsPlaying(true);
-                }
-              }}
-              className="px-4 py-3 rounded-xl shadow-lg transition-all hover:scale-110 border-2 border-transparent"
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)',
-              }}
-            >
-              <Music className="w-6 h-6 text-white" />
-            </button>
           </div>
         </div>
 
