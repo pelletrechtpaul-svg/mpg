@@ -1046,14 +1046,14 @@ const App = () => {
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700">Rang</th>
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700">Joueur</th>
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Matchs</th>
-                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">V</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">V</th>
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">N</th>
-                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden lg:table-cell">D</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">D</th>
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <>
-                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Titres</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Médailles</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">Titres</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">Médailles</th>
                         </>
                       )}
                       <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700">Points</th>
@@ -1086,9 +1086,9 @@ const App = () => {
                           </div>
                         </td>
                         <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 hidden md:table-cell">{player.matchs}</td>
-                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-green-600 font-semibold hidden lg:table-cell">{player.victoires}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-green-600 font-semibold">{player.victoires}</td>
                         <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-600 hidden lg:table-cell">{player.nuls}</td>
-                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-red-600 font-semibold hidden lg:table-cell">{player.defaites}</td>
+                        <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-red-600 font-semibold">{player.defaites}</td>
                         <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
                           <div className="flex items-center justify-center gap-1 sm:gap-2">
                             <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -1104,10 +1104,10 @@ const App = () => {
                         </td>
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                           <>
-                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center hidden md:table-cell">
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
                               <span className="font-semibold text-yellow-600">{player.victoiresChampionnat || 0}</span>
                             </td>
-                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center hidden md:table-cell">
+                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
                               <span className="font-semibold text-slate-500">{player.medaillesChampionnat || 0}</span>
                             </td>
                           </>
@@ -1328,10 +1328,10 @@ const App = () => {
             {/* Affichage du bilan */}
             {versusStats.matchs > 0 ? (
               <>
-                <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-                  <div className="flex items-center justify-between">
+                <div className="bg-white rounded-xl shadow-sm p-4 sm:p-8 mb-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="text-center flex-1">
-                      <div className="w-32 h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
                         <img
                           src={playerImages[selectedVersusPlayer1]}
                           alt={selectedVersusPlayer1}
@@ -1342,20 +1342,20 @@ const App = () => {
                           }}
                         />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
+                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
                     </div>
-                    <div className="text-center px-8">
-                      <div className="text-5xl font-bold text-slate-700">
+                    <div className="text-center px-4 md:px-8">
+                      <div className="text-4xl sm:text-5xl font-bold text-slate-700">
                         {versusStats.victoires_j1}
-                        <span className="text-slate-400 mx-3">-</span>
+                        <span className="text-slate-400 mx-2 sm:mx-3">-</span>
                         {versusStats.victoires_j2}
                       </div>
-                      <div className="text-sm text-slate-600 mt-2">
+                      <div className="text-xs sm:text-sm text-slate-600 mt-2">
                         {versusStats.nuls} match{versusStats.nuls > 1 ? 's' : ''} nul{versusStats.nuls > 1 ? 's' : ''}
                       </div>
                     </div>
                     <div className="text-center flex-1">
-                      <div className="w-32 h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-purple-500 shadow-lg">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-purple-500 shadow-lg">
                         <img
                           src={playerImages[selectedVersusPlayer2]}
                           alt={selectedVersusPlayer2}
@@ -1366,7 +1366,7 @@ const App = () => {
                           }}
                         />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-800">{selectedVersusPlayer2}</h3>
+                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedVersusPlayer2}</h3>
                     </div>
                   </div>
 
