@@ -1516,7 +1516,9 @@ const App = () => {
                       <span className="text-sm sm:text-lg font-bold text-purple-600">{match.buts_j2}</span>
                       <span className="font-medium text-slate-800">{match.joueur2}</span>
                       {(match.valise_j1 || match.valise_j2) && (
-                        <span className="text-xs sm:text-sm">💼</span>
+                        <span className="text-xs sm:text-sm">
+                          {match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}
+                        </span>
                       )}
                     </div>
                   ))}
