@@ -793,14 +793,22 @@ const App = () => {
           matchNumber: index + 1
         };
         joueurs.forEach(j => {
-          dataPoint[j] = playerPoints[j] || 0;
+          let points = playerPoints[j] || 0;
+
+          // Add title and medal points at the last data point for general ranking
+          if (selectedLigue === 'general' && index === sortedMatches.length - 1) {
+            points += (victoiresChampionnat[j] || 0) * 3; // 3 points per championship victory
+            points += (medaillesChampionnat[j] || 0) * 2; // 2 points per medal
+          }
+
+          dataPoint[j] = points;
         });
         evolution.push(dataPoint);
       }
     });
 
     return evolution;
-  }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, victoiresChampionnat, medaillesChampionnat]);
 
   // Historical evolution for buteurs (goals scored)
   const buteursEvolution = useMemo(() => {
@@ -1633,44 +1641,46 @@ const App = () => {
             <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
-                <ResponsiveContainer width="100%" height={500}>
-                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis
-                      dataKey="date"
-                      label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                      tick={{ fontSize: 12 }}
-                      height={60}
-                    />
-                    <YAxis
-                      label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }}
-                      domain={['dataMin - 5', 'dataMax + 5']}
-                      scale="linear"
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    />
-                    <Legend
-                      verticalAlign="bottom"
-                      height={50}
-                      wrapperStyle={{ paddingTop: '20px' }}
-                    />
-                    {joueurs.map((joueur) => (
-                      <Line
-                        key={joueur}
-                        type="natural"
-                        dataKey={joueur}
-                        stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                        strokeWidth={3}
-                        dot={false}
-                        activeDot={{ r: 6 }}
+                <div className="w-full sm:w-1/2 mx-auto">
+                  <ResponsiveContainer width="100%" height={700}>
+                    <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis
+                        dataKey="date"
+                        label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
+                        tick={{ fontSize: 12 }}
+                        height={60}
                       />
-                    ))}
-                  </LineChart>
-                </ResponsiveContainer>
+                      <YAxis
+                        label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }}
+                        domain={['dataMin - 5', 'dataMax + 5']}
+                        scale="linear"
+                      />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={50}
+                        wrapperStyle={{ paddingTop: '20px' }}
+                      />
+                      {joueurs.map((joueur) => (
+                        <Line
+                          key={joueur}
+                          type="natural"
+                          dataKey={joueur}
+                          stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                  playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                  playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                  playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                          strokeWidth={3}
+                          dot={false}
+                          activeDot={{ r: 6 }}
+                        />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <div className="text-center text-slate-600 py-12">
                   <p>Pas assez de données pour afficher l'évolution</p>
@@ -2100,44 +2110,46 @@ const App = () => {
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts inscrits au fil du temps</h3>
                       {buteursEvolution.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={500}>
-                          <LineChart data={buteursEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                            <XAxis
-                              dataKey="date"
-                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                              tick={{ fontSize: 12 }}
-                              height={60}
-                            />
-                            <YAxis
-                              label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }}
-                              domain={['dataMin - 3', 'dataMax + 3']}
-                              scale="linear"
-                            />
-                            <Tooltip
-                              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                            />
-                            <Legend
-                              verticalAlign="bottom"
-                              height={50}
-                              wrapperStyle={{ paddingTop: '20px' }}
-                            />
-                            {joueurs.map((joueur) => (
-                              <Line
-                                key={joueur}
-                                type="natural"
-                                dataKey={joueur}
-                                stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                        playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                        playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                        playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                strokeWidth={3}
-                                dot={false}
-                                activeDot={{ r: 6 }}
+                        <div className="w-full sm:w-1/2 mx-auto">
+                          <ResponsiveContainer width="100%" height={700}>
+                            <LineChart data={buteursEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                              <XAxis
+                                dataKey="date"
+                                label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
+                                tick={{ fontSize: 12 }}
+                                height={60}
                               />
-                            ))}
-                          </LineChart>
-                        </ResponsiveContainer>
+                              <YAxis
+                                label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }}
+                                domain={['dataMin - 3', 'dataMax + 3']}
+                                scale="linear"
+                              />
+                              <Tooltip
+                                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                              />
+                              <Legend
+                                verticalAlign="bottom"
+                                height={50}
+                                wrapperStyle={{ paddingTop: '20px' }}
+                              />
+                              {joueurs.map((joueur) => (
+                                <Line
+                                  key={joueur}
+                                  type="natural"
+                                  dataKey={joueur}
+                                  stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                          playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                          playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                          playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                                  strokeWidth={3}
+                                  dot={false}
+                                  activeDot={{ r: 6 }}
+                                />
+                              ))}
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
                       ) : (
                         <div className="text-center text-slate-600 py-12">
                           <p>Pas assez de données pour afficher l'évolution</p>
@@ -2222,44 +2234,46 @@ const App = () => {
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Évolution des buts encaissés au fil du temps</h3>
                       {loosersEvolution.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={500}>
-                          <LineChart data={loosersEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                            <XAxis
-                              dataKey="date"
-                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                              tick={{ fontSize: 12 }}
-                              height={60}
-                            />
-                            <YAxis
-                              label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }}
-                              domain={['dataMin - 3', 'dataMax + 3']}
-                              scale="linear"
-                            />
-                            <Tooltip
-                              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                            />
-                            <Legend
-                              verticalAlign="bottom"
-                              height={50}
-                              wrapperStyle={{ paddingTop: '20px' }}
-                            />
-                            {joueurs.map((joueur) => (
-                              <Line
-                                key={joueur}
-                                type="natural"
-                                dataKey={joueur}
-                                stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                        playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                        playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                        playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
-                                strokeWidth={3}
-                                dot={false}
-                                activeDot={{ r: 6 }}
+                        <div className="w-full sm:w-1/2 mx-auto">
+                          <ResponsiveContainer width="100%" height={700}>
+                            <LineChart data={loosersEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                              <XAxis
+                                dataKey="date"
+                                label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
+                                tick={{ fontSize: 12 }}
+                                height={60}
                               />
-                            ))}
-                          </LineChart>
-                        </ResponsiveContainer>
+                              <YAxis
+                                label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }}
+                                domain={['dataMin - 3', 'dataMax + 3']}
+                                scale="linear"
+                              />
+                              <Tooltip
+                                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                              />
+                              <Legend
+                                verticalAlign="bottom"
+                                height={50}
+                                wrapperStyle={{ paddingTop: '20px' }}
+                              />
+                              {joueurs.map((joueur) => (
+                                <Line
+                                  key={joueur}
+                                  type="natural"
+                                  dataKey={joueur}
+                                  stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                          playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                          playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                          playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                                  strokeWidth={3}
+                                  dot={false}
+                                  activeDot={{ r: 6 }}
+                                />
+                              ))}
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
                       ) : (
                         <div className="text-center text-slate-600 py-12">
                           <p>Pas assez de données pour afficher l'évolution</p>
