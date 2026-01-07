@@ -1042,34 +1042,38 @@ const App = () => {
       let updatedCount = 0;
 
       Object.entries(championshipGroups).forEach(([key, matches]) => {
-        const actualMatchCount = matches.length;
+        // Count unique match dates to get number of "match days" (rounds)
+        // Each round = 1 match per player (even if 2 games happen simultaneously)
+        const uniqueDates = new Set(matches.map(m => m.dateMatch));
+        const actualMatchDays = uniqueDates.size;
+        const actualEntries = matches.length;
         const metadata = ligueMetadata[key];
 
         if (metadata) {
-          // Only update matchsEntered, keep matchsTotal as configured
-          if (metadata.matchsEntered !== actualMatchCount) {
+          // Only update matchsEntered (match days), keep matchsTotal as configured
+          if (metadata.matchsEntered !== actualMatchDays) {
             const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
 
             batch.set(metaRef, {
               ...metadata,
-              matchsEntered: actualMatchCount,
-              // matchsTotal stays unchanged - manually configured
+              matchsEntered: actualMatchDays,
+              // matchsTotal stays unchanged - manually configured (match days)
               lastRecalculated: new Date().toISOString()
             });
             updatedCount++;
-            console.log(`Updating ${key}: ${metadata.matchsEntered}/${metadata.matchsTotal} → ${actualMatchCount}/${metadata.matchsTotal}`);
+            console.log(`Updating ${key}: ${metadata.matchsEntered}/${metadata.matchsTotal} → ${actualMatchDays}/${metadata.matchsTotal} (${actualEntries} entrées, ${uniqueDates.size} dates)`);
           }
         } else {
           // Create metadata if it doesn't exist
           const metaRef = doc(db, 'metadata', encodeFirestoreKey(key));
           batch.set(metaRef, {
             createdAt: new Date().toISOString(),
-            matchsTotal: actualMatchCount,
-            matchsEntered: actualMatchCount,
+            matchsTotal: actualMatchDays,
+            matchsEntered: actualMatchDays,
             lastRecalculated: new Date().toISOString()
           });
           updatedCount++;
-          console.log(`Creating metadata for ${key}: ${actualMatchCount} matchs`);
+          console.log(`Creating metadata for ${key}: ${actualMatchDays} journées (${actualEntries} entrées)`);
         }
       });
 
