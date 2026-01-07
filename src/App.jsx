@@ -46,6 +46,8 @@ const App = () => {
 
   // Rankings view toggle (table or graph)
   const [rankingsView, setRankingsView] = useState('table'); // 'table' or 'graph'
+  const [buteursView, setButeursView] = useState('table'); // 'table' or 'graph'
+  const [loosersView, setLoosersView] = useState('table'); // 'table' or 'graph'
 
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -800,6 +802,104 @@ const App = () => {
     return evolution;
   }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
 
+  // Historical evolution for buteurs (goals scored)
+  const buteursEvolution = useMemo(() => {
+    // Use all matches for the selected season
+    const seasonMatches = matchData.filter(m => {
+      if (selectedSeason === 'All-Time') return true;
+      return m.saison === selectedSeason;
+    });
+
+    // Sort matches by date
+    const sortedMatches = [...seasonMatches].sort((a, b) =>
+      new Date(a.dateMatch) - new Date(b.dateMatch)
+    );
+
+    // Calculate cumulative goals over time
+    const evolution = [];
+    const playerGoals = {};
+    joueurs.forEach(j => playerGoals[j] = 0);
+
+    sortedMatches.forEach((match, index) => {
+      // Add goals scored in this match
+      const goals = {
+        [match.joueur1]: match.buts_j1 || 0,
+        [match.joueur2]: match.buts_j2 || 0,
+        [match.joueur3]: match.buts_j3 || 0,
+        [match.joueur4]: match.buts_j4 || 0
+      };
+
+      Object.entries(goals).forEach(([joueur, goalsScored]) => {
+        if (joueur && joueur !== 'undefined') {
+          playerGoals[joueur] = (playerGoals[joueur] || 0) + goalsScored;
+        }
+      });
+
+      // Record snapshot every few matches
+      if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
+        const dataPoint = {
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          matchNumber: index + 1
+        };
+        joueurs.forEach(j => {
+          dataPoint[j] = playerGoals[j] || 0;
+        });
+        evolution.push(dataPoint);
+      }
+    });
+
+    return evolution;
+  }, [matchData, selectedSeason, joueurs]);
+
+  // Historical evolution for loosers (goals conceded)
+  const loosersEvolution = useMemo(() => {
+    // Use all matches for the selected season
+    const seasonMatches = matchData.filter(m => {
+      if (selectedSeason === 'All-Time') return true;
+      return m.saison === selectedSeason;
+    });
+
+    // Sort matches by date
+    const sortedMatches = [...seasonMatches].sort((a, b) =>
+      new Date(a.dateMatch) - new Date(b.dateMatch)
+    );
+
+    // Calculate cumulative goals conceded over time
+    const evolution = [];
+    const playerGoalsConceded = {};
+    joueurs.forEach(j => playerGoalsConceded[j] = 0);
+
+    sortedMatches.forEach((match, index) => {
+      // For each player, add the goals scored by their opponents
+      const goalsConceded = {
+        [match.joueur1]: (match.buts_j2 || 0) + (match.buts_j3 || 0) + (match.buts_j4 || 0),
+        [match.joueur2]: (match.buts_j1 || 0) + (match.buts_j3 || 0) + (match.buts_j4 || 0),
+        [match.joueur3]: (match.buts_j1 || 0) + (match.buts_j2 || 0) + (match.buts_j4 || 0),
+        [match.joueur4]: (match.buts_j1 || 0) + (match.buts_j2 || 0) + (match.buts_j3 || 0)
+      };
+
+      Object.entries(goalsConceded).forEach(([joueur, conceded]) => {
+        if (joueur && joueur !== 'undefined') {
+          playerGoalsConceded[joueur] = (playerGoalsConceded[joueur] || 0) + conceded;
+        }
+      });
+
+      // Record snapshot every few matches
+      if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
+        const dataPoint = {
+          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          matchNumber: index + 1
+        };
+        joueurs.forEach(j => {
+          dataPoint[j] = playerGoalsConceded[j] || 0;
+        });
+        evolution.push(dataPoint);
+      }
+    });
+
+    return evolution;
+  }, [matchData, selectedSeason, joueurs]);
+
   // Monitor auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -1384,34 +1484,36 @@ const App = () => {
               )}
             </div>
 
-            {/* Toggle Tableau/Graphique */}
-            <div className="mb-4 flex justify-end">
-              <div className="inline-flex rounded-lg border border-slate-300 bg-white">
-                <button
-                  onClick={() => setRankingsView('table')}
-                  className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    rankingsView === 'table'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  } rounded-l-lg`}
-                >
-                  📊 Tableau
-                </button>
-                <button
-                  onClick={() => setRankingsView('graph')}
-                  className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    rankingsView === 'graph'
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  } rounded-r-lg`}
-                >
-                  📈 Évolution
-                </button>
+            {/* Toggle Tableau/Graphique (uniquement pour classement général) */}
+            {selectedLigue === 'general' && (
+              <div className="mb-4 flex justify-end">
+                <div className="inline-flex rounded-lg border border-slate-300 bg-white">
+                  <button
+                    onClick={() => setRankingsView('table')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      rankingsView === 'table'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    } rounded-l-lg`}
+                  >
+                    📊 Tableau
+                  </button>
+                  <button
+                    onClick={() => setRankingsView('graph')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      rankingsView === 'graph'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    } rounded-r-lg`}
+                  >
+                    📈 Évolution
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Tableau classement */}
-            {rankingsView === 'table' ? (
+            {(selectedLigue !== 'general' || rankingsView === 'table') ? (
             <div
               className={`rounded-xl shadow-sm overflow-hidden ${
                 selectedSeason === '2024/2025' && selectedLigue === 'general'
@@ -1914,7 +2016,35 @@ const App = () => {
                 {/* Classement des buteurs */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des buteurs</h2>
-                  <div className="overflow-x-auto">
+
+                  {/* Toggle table/graph */}
+                  <div className="mb-4 flex justify-end">
+                    <div className="inline-flex rounded-lg border border-slate-300 bg-white">
+                      <button
+                        onClick={() => setButeursView('table')}
+                        className={`px-4 py-2 text-sm font-medium transition-colors ${
+                          buteursView === 'table'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        } rounded-l-lg`}
+                      >
+                        📊 Tableau
+                      </button>
+                      <button
+                        onClick={() => setButeursView('graph')}
+                        className={`px-4 py-2 text-sm font-medium transition-colors ${
+                          buteursView === 'graph'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        } rounded-r-lg`}
+                      >
+                        📈 Évolution
+                      </button>
+                    </div>
+                  </div>
+
+                  {buteursView === 'table' ? (
+                    <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-50">
                         <tr>
@@ -1953,13 +2083,78 @@ const App = () => {
                           ))}
                       </tbody>
                     </table>
-                  </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts inscrits au fil du temps</h3>
+                      {buteursEvolution.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={400}>
+                          <LineChart data={buteursEvolution}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                              dataKey="date"
+                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <YAxis label={{ value: 'Buts inscrits cumulés', angle: -90, position: 'insideLeft' }} />
+                            <Tooltip />
+                            <Legend />
+                            {joueurs.map((joueur) => (
+                              <Line
+                                key={joueur}
+                                type="monotone"
+                                dataKey={joueur}
+                                stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                        playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                        playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                        playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                              />
+                            ))}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="text-center text-slate-600 py-12">
+                          <p>Pas assez de données pour afficher l'évolution</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Classement des loosers */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des loosers</h2>
-                  <div className="overflow-x-auto">
+
+                  {/* Toggle table/graph */}
+                  <div className="mb-4 flex justify-end">
+                    <div className="inline-flex rounded-lg border border-slate-300 bg-white">
+                      <button
+                        onClick={() => setLoosersView('table')}
+                        className={`px-4 py-2 text-sm font-medium transition-colors ${
+                          loosersView === 'table'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        } rounded-l-lg`}
+                      >
+                        📊 Tableau
+                      </button>
+                      <button
+                        onClick={() => setLoosersView('graph')}
+                        className={`px-4 py-2 text-sm font-medium transition-colors ${
+                          loosersView === 'graph'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        } rounded-r-lg`}
+                      >
+                        📈 Évolution
+                      </button>
+                    </div>
+                  </div>
+
+                  {loosersView === 'table' ? (
+                    <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-slate-50">
                         <tr>
@@ -1998,7 +2193,44 @@ const App = () => {
                           ))}
                       </tbody>
                     </table>
-                  </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-6">Évolution des buts encaissés au fil du temps</h3>
+                      {loosersEvolution.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={400}>
+                          <LineChart data={loosersEvolution}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                              dataKey="date"
+                              label={{ value: 'Date des matchs', position: 'insideBottom', offset: -5 }}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <YAxis label={{ value: 'Buts encaissés cumulés', angle: -90, position: 'insideLeft' }} />
+                            <Tooltip />
+                            <Legend />
+                            {joueurs.map((joueur) => (
+                              <Line
+                                key={joueur}
+                                type="monotone"
+                                dataKey={joueur}
+                                stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
+                                        playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
+                                        playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
+                                        playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                              />
+                            ))}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="text-center text-slate-600 py-12">
+                          <p>Pas assez de données pour afficher l'évolution</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
