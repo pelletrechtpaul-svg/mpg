@@ -1183,7 +1183,7 @@ const App = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab('admin')}
+            onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
             className={`px-4 py-3 rounded-lg font-medium shadow-xl transition-all inline-flex items-center gap-2 border-2 border-black ${
               activeTab === 'admin'
                 ? 'bg-red-600 text-white'
