@@ -47,6 +47,9 @@ const App = () => {
   // Rankings view toggle (table or graph)
   const [rankingsView, setRankingsView] = useState('table'); // 'table' or 'graph'
 
+  // Form match tooltip state
+  const [activeMatchTooltip, setActiveMatchTooltip] = useState(null); // { joueur, index }
+
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioRef] = useState(new Audio('/audio/theme.mp3'));
@@ -2757,48 +2760,102 @@ const App = () => {
                 <p className="text-slate-600">Section en construction...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {joueurs.map(joueur => {
-                  const stats = advancedStats[joueur];
-                  if (!stats) return null;
-
-                  return (
-                    <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
-                      {/* Player header */}
-                      <div className="flex items-center gap-4 mb-6 pb-4 border-b">
-                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
-                          <img
-                            src={playerImages[joueur]}
-                            alt={joueur}
-                            className="w-full h-full object-cover object-center"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
-                          <p className="text-sm text-slate-600">{stats.totalMatches} matchs joués</p>
-                        </div>
+              <div className="space-y-6">
+                {/* Header with common info */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-800">Forme récente</h2>
+                      <p className="text-sm text-slate-600">10 derniers matchs</p>
+                    </div>
+                    {advancedStats[joueurs[0]] && (
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-blue-600">{advancedStats[joueurs[0]].totalMatches}</p>
+                        <p className="text-sm text-slate-600">matchs joués</p>
                       </div>
+                    )}
+                  </div>
+                </div>
 
-                      {/* Recent form - last 10 matches */}
-                      <div>
-                        <h4 className="text-sm font-semibold text-slate-700 mb-3">Forme récente (10 derniers matchs)</h4>
-                        <div className="flex gap-2 flex-wrap justify-center">
+                {/* Player forms grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {joueurs.map(joueur => {
+                    const stats = advancedStats[joueur];
+                    if (!stats) return null;
+
+                    return (
+                      <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
+                        {/* Player header */}
+                        <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+                          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
+                            <img
+                              src={playerImages[joueur]}
+                              alt={joueur}
+                              className="w-full h-full object-cover object-center"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
+                          </div>
+                        </div>
+
+                        {/* Recent form squares */}
+                        <div className="flex gap-2 flex-wrap justify-center relative">
                           {stats.recentForm.length > 0 ? (
                             stats.recentForm.map((match, idx) => (
-                              <div
-                                key={idx}
-                                className={`w-10 h-10 rounded flex items-center justify-center font-bold text-white ${
-                                  match.result === 'W' ? 'bg-green-600' :
-                                  match.result === 'L' ? 'bg-red-600' :
-                                  'bg-slate-400'
-                                }`}
-                                title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} | ${match.ligue} ${match.championnat} (${match.date})`}
-                              >
-                                {match.result}
+                              <div key={idx} className="relative">
+                                <div
+                                  className={`w-10 h-10 rounded flex items-center justify-center font-bold text-white cursor-pointer transition-transform hover:scale-110 ${
+                                    match.result === 'W' ? 'bg-green-600' :
+                                    match.result === 'L' ? 'bg-red-600' :
+                                    'bg-slate-400'
+                                  }`}
+                                  onClick={() => {
+                                    if (activeMatchTooltip?.joueur === joueur && activeMatchTooltip?.index === idx) {
+                                      setActiveMatchTooltip(null);
+                                    } else {
+                                      setActiveMatchTooltip({ joueur, index: idx });
+                                    }
+                                  }}
+                                >
+                                  {match.result}
+                                </div>
+
+                                {/* Tooltip */}
+                                {activeMatchTooltip?.joueur === joueur && activeMatchTooltip?.index === idx && (
+                                  <>
+                                    {/* Backdrop to close tooltip */}
+                                    <div
+                                      className="fixed inset-0 z-40"
+                                      onClick={() => setActiveMatchTooltip(null)}
+                                    />
+                                    {/* Tooltip content */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64">
+                                      <div className="bg-slate-800 text-white rounded-lg p-3 shadow-lg">
+                                        <div className="text-center mb-2">
+                                          <p className="text-2xl font-bold">
+                                            {match.butsFor} - {match.butsAgainst}
+                                          </p>
+                                          <p className="text-sm text-slate-300">
+                                            vs {match.opponent}
+                                          </p>
+                                        </div>
+                                        <div className="text-xs text-slate-400 text-center space-y-1">
+                                          <p>{match.ligue} {match.championnat}</p>
+                                          <p>{match.date}</p>
+                                        </div>
+                                        {/* Arrow */}
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1">
+                                          <div className="border-8 border-transparent border-t-slate-800"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             ))
                           ) : (
@@ -2806,9 +2863,9 @@ const App = () => {
                           )}
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             )}
           </>
