@@ -1159,20 +1159,20 @@ const App = () => {
                 <div className="flex gap-2 mb-4">
                   <button
                     onClick={() => setSelectedValiseTable('stats')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       selectedValiseTable === 'stats'
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                        ? 'bg-slate-700 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                     }`}
                   >
                     Valises 💼
                   </button>
                   <button
                     onClick={() => setSelectedValiseTable('efficaces')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       selectedValiseTable === 'efficaces'
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                        ? 'bg-slate-700 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                     }`}
                   >
                     Classement valises efficaces 🎯
