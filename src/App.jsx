@@ -1672,96 +1672,107 @@ const App = () => {
           </>
         )}
 
+        {/* ONGLET STATISTIQUES */}
+        {activeTab === 'statistiques' && (
+          <>
+            {selectedSeason === 'All-Time' ? (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <p className="text-slate-600">Section en construction...</p>
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-2xl font-bold text-slate-800 mb-6">Classement des buteurs</h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
+                        <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
+                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts inscrits</th>
+                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
+                        <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(statsDetaillees)
+                        .map(([joueur, data]) => ({ joueur, ...data }))
+                        .sort((a, b) => b.buts_pour - a.buts_pour)
+                        .map((player, index) => (
+                          <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                            <td className="px-6 py-4">
+                              <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800">{player.joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <span className="text-xl font-bold text-green-600">{player.buts_pour}</span>
+                            </td>
+                            <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
+                            <td className="px-6 py-4 text-center">
+                              <span className="font-semibold text-blue-600">
+                                {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         {/* ONGLET STATS AVANCÉES */}
         {activeTab === 'stats-avancees' && (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {joueurs.map(joueur => {
-                const stats = advancedStats[joueur];
-                if (!stats) return null;
+            {selectedSeason === 'All-Time' ? (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <p className="text-slate-600">Section en construction...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {joueurs.map(joueur => {
+                  const stats = advancedStats[joueur];
+                  if (!stats) return null;
 
-                return (
-                  <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
-                    {/* Player header */}
-                    <div className="flex items-center gap-4 mb-6 pb-4 border-b">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
-                        <img
-                          src={playerImages[joueur]}
-                          alt={joueur}
-                          className="w-full h-full object-cover object-center"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
-                          }}
-                        />
+                  return (
+                    <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
+                      {/* Player header */}
+                      <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
+                          <img
+                            src={playerImages[joueur]}
+                            alt={joueur}
+                            className="w-full h-full object-cover object-center"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
+                          <p className="text-sm text-slate-600">{stats.totalMatches} matchs joués</p>
+                        </div>
                       </div>
+
+                      {/* Win streak only */}
                       <div>
-                        <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
-                        <p className="text-sm text-slate-600">{stats.totalMatches} matchs joués</p>
-                      </div>
-                    </div>
-
-                    {/* Recent form */}
-                    <div className="mb-6">
-                      <h4 className="text-sm font-semibold text-slate-700 mb-3">Forme récente (10 derniers matchs)</h4>
-                      <div className="flex gap-1.5 flex-wrap">
-                        {stats.recentForm.length > 0 ? (
-                          stats.recentForm.map((match, idx) => (
-                            <div
-                              key={idx}
-                              className={`w-8 h-8 rounded flex items-center justify-center font-bold text-white text-sm ${
-                                match.result === 'W' ? 'bg-green-600' :
-                                match.result === 'L' ? 'bg-red-600' :
-                                'bg-slate-400'
-                              }`}
-                              title={`${match.butsFor}-${match.butsAgainst} vs ${match.opponent} (${match.date})`}
-                            >
-                              {match.result}
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-slate-500">Aucun match</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Current streak */}
-                    {stats.currentStreak.type && stats.currentStreak.count > 0 && (
-                      <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-slate-700 mb-2">Série en cours</h4>
-                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium ${
-                          stats.currentStreak.type === 'W' ? 'bg-green-100 text-green-800' :
-                          stats.currentStreak.type === 'L' ? 'bg-red-100 text-red-800' :
-                          'bg-slate-100 text-slate-800'
-                        }`}>
-                          <span className="text-2xl font-bold">{stats.currentStreak.count}</span>
-                          <span>
-                            {stats.currentStreak.type === 'W' ? 'victoire(s) consécutive(s)' :
-                             stats.currentStreak.type === 'L' ? 'défaite(s) consécutive(s)' :
-                             'match(s) nul(s) consécutif(s)'}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Records */}
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-3">Records</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-green-50 rounded-lg p-3">
-                          <div className="text-2xl font-bold text-green-700">{stats.maxWinStreak}</div>
-                          <div className="text-xs text-green-600 mt-1">Plus longue série de victoires</div>
-                        </div>
-                        <div className="bg-blue-50 rounded-lg p-3">
-                          <div className="text-2xl font-bold text-blue-700">{stats.maxUnbeatenStreak}</div>
-                          <div className="text-xs text-blue-600 mt-1">Plus longue série sans défaite</div>
+                        <div className="bg-green-50 rounded-lg p-6 text-center">
+                          <div className="text-4xl font-bold text-green-700 mb-2">{stats.maxWinStreak}</div>
+                          <div className="text-sm text-green-600">Plus longue série de victoires</div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
 
