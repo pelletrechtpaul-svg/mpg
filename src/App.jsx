@@ -1059,7 +1059,7 @@ const App = () => {
       }
 
       // NEW: Calculate best win ratio peak (at any moment T)
-      if (playerMatches.length >= 3) {
+      if (playerMatches.length >= 10) {
         let wins = 0;
         let totalMatches = 0;
         let bestRatio = 0;
@@ -1071,8 +1071,8 @@ const App = () => {
           totalMatches++;
           if (match.result === 'W') wins++;
 
-          // Calculate ratio after this match (minimum 3 matches)
-          if (totalMatches >= 3) {
+          // Calculate ratio after this match (minimum 10 matches)
+          if (totalMatches >= 10) {
             const ratio = wins / totalMatches;
             if (ratio > bestRatio || (ratio === bestRatio && totalMatches > bestRatioMatches)) {
               bestRatio = ratio;
@@ -1107,7 +1107,8 @@ const App = () => {
           (m.joueur1 === j2 && m.joueur2 === j1)
         );
 
-        if (h2hMatches.length === 0) return;
+        // Require minimum 8 confrontations for significance
+        if (h2hMatches.length < 8) return;
 
         let j1Wins = 0, j1GA = 0;
         let j2Wins = 0, j2GA = 0;
