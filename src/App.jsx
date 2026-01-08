@@ -73,6 +73,7 @@ const App = () => {
   const [editSelectedSaison, setEditSelectedSaison] = useState('');
   const [editSelectedLigue, setEditSelectedLigue] = useState('');
   const [editSelectedChampionnat, setEditSelectedChampionnat] = useState('');
+  const [selectedMatchesToDelete, setSelectedMatchesToDelete] = useState([]);
 
   // Admin form
   const [adminFormData, setAdminFormData] = useState({
@@ -3839,10 +3840,9 @@ const App = () => {
 
                         {adminFormData.joueur1 && adminFormData.joueur2 && (
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">1er score</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Score</label>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur1}</label>
                                 <input
                                   type="number"
                                   value={adminFormData.buts_j1}
@@ -3864,7 +3864,6 @@ const App = () => {
                                 )}
                               </div>
                               <div>
-                                <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur2}</label>
                                 <input
                                   type="number"
                                   value={adminFormData.buts_j2}
@@ -3905,90 +3904,64 @@ const App = () => {
                         {/* Second match (auto-displayed when joueur1 and joueur2 are selected) */}
                         {adminFormData.joueur1 && adminFormData.joueur2 && adminFormData.joueur3 && adminFormData.joueur4 && (
                           <div className="border-t pt-6">
-                            <h4 className="text-md font-semibold text-slate-700 mb-4">2ème score</h4>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <h4 className="text-md font-semibold text-slate-700 mb-4">2ème match • {adminFormData.joueur3} vs {adminFormData.joueur4}</h4>
+                            <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 3</label>
                                 <input
-                                  type="text"
-                                  value={adminFormData.joueur3}
-                                  readOnly
-                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100 cursor-not-allowed"
+                                  type="number"
+                                  value={adminFormData.buts_j3}
+                                  onChange={(e) => setAdminFormData({...adminFormData, buts_j3: e.target.value})}
+                                  min="0"
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                  placeholder="0"
                                 />
+                                {!valiseUsed[adminFormData.joueur3] && (
+                                  <label className="flex items-center gap-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={adminFormData.valise_j3}
+                                      onChange={(e) => setAdminFormData({...adminFormData, valise_j3: e.target.checked})}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-xs text-slate-600">Valise 💼</span>
+                                  </label>
+                                )}
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 4</label>
                                 <input
-                                  type="text"
-                                  value={adminFormData.joueur4}
-                                  readOnly
-                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-100 cursor-not-allowed"
+                                  type="number"
+                                  value={adminFormData.buts_j4}
+                                  onChange={(e) => setAdminFormData({...adminFormData, buts_j4: e.target.value})}
+                                  min="0"
+                                  className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                                  placeholder="0"
                                 />
+                                {!valiseUsed[adminFormData.joueur4] && (
+                                  <label className="flex items-center gap-2 mt-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={adminFormData.valise_j4}
+                                      onChange={(e) => setAdminFormData({...adminFormData, valise_j4: e.target.checked})}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-xs text-slate-600">Valise 💼</span>
+                                  </label>
+                                )}
                               </div>
                             </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">Score</label>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur3}</label>
-                                  <input
-                                    type="number"
-                                    value={adminFormData.buts_j3}
-                                    onChange={(e) => setAdminFormData({...adminFormData, buts_j3: e.target.value})}
-                                    min="0"
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-                                    placeholder="0"
-                                  />
-                                  {!valiseUsed[adminFormData.joueur3] && (
-                                    <label className="flex items-center gap-2 mt-2">
-                                      <input
-                                        type="checkbox"
-                                        checked={adminFormData.valise_j3}
-                                        onChange={(e) => setAdminFormData({...adminFormData, valise_j3: e.target.checked})}
-                                        className="w-4 h-4"
-                                      />
-                                      <span className="text-xs text-slate-600">Valise 💼</span>
-                                    </label>
-                                  )}
-                                </div>
-                                <div>
-                                  <label className="block text-xs text-slate-600 mb-1">Buts {adminFormData.joueur4}</label>
-                                  <input
-                                    type="number"
-                                    value={adminFormData.buts_j4}
-                                    onChange={(e) => setAdminFormData({...adminFormData, buts_j4: e.target.value})}
-                                    min="0"
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-                                    placeholder="0"
-                                  />
-                                  {!valiseUsed[adminFormData.joueur4] && (
-                                    <label className="flex items-center gap-2 mt-2">
-                                      <input
-                                        type="checkbox"
-                                        checked={adminFormData.valise_j4}
-                                        onChange={(e) => setAdminFormData({...adminFormData, valise_j4: e.target.checked})}
-                                        className="w-4 h-4"
-                                      />
-                                      <span className="text-xs text-slate-600">Valise 💼</span>
-                                    </label>
-                                  )}
-                                </div>
+                            {adminFormData.buts_j3 !== '' && adminFormData.buts_j4 !== '' && (
+                              <div className="mt-3 bg-blue-50 p-3 rounded-lg">
+                                <p className="text-sm text-blue-800">
+                                  <strong>Résultat :</strong> {
+                                    parseInt(adminFormData.buts_j3) > parseInt(adminFormData.buts_j4)
+                                      ? `Victoire ${adminFormData.joueur3} (3 pts)`
+                                      : parseInt(adminFormData.buts_j3) < parseInt(adminFormData.buts_j4)
+                                      ? `Victoire ${adminFormData.joueur4} (3 pts)`
+                                      : 'Match nul (1 pt chacun)'
+                                  }
+                                </p>
                               </div>
-                              {adminFormData.buts_j3 !== '' && adminFormData.buts_j4 !== '' && (
-                                <div className="mt-3 bg-blue-50 p-3 rounded-lg">
-                                  <p className="text-sm text-blue-800">
-                                    <strong>Résultat :</strong> {
-                                      parseInt(adminFormData.buts_j3) > parseInt(adminFormData.buts_j4)
-                                        ? `Victoire ${adminFormData.joueur3} (3 pts)`
-                                        : parseInt(adminFormData.buts_j3) < parseInt(adminFormData.buts_j4)
-                                        ? `Victoire ${adminFormData.joueur4} (3 pts)`
-                                        : 'Match nul (1 pt chacun)'
-                                    }
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+                            )}
                           </div>
                         )}
 
@@ -4106,14 +4079,42 @@ const App = () => {
                           {editSelectedSaison && editSelectedLigue && editSelectedChampionnat && (
                             <div>
                               <button
-                                onClick={() => setEditSelectedChampionnat('')}
+                                onClick={() => {
+                                  setEditSelectedChampionnat('');
+                                  setSelectedMatchesToDelete([]);
+                                }}
                                 className="mb-3 text-sm text-blue-600 hover:text-blue-800"
                               >
                                 ← Retour aux championnats
                               </button>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Sélectionnez un match ({editSelectedChampionnat})
-                              </label>
+                              <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-slate-700">
+                                  Sélectionnez un match ({editSelectedChampionnat})
+                                </label>
+                                {selectedMatchesToDelete.length > 0 && (
+                                  <button
+                                    onClick={async () => {
+                                      if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedMatchesToDelete.length} match(s) ?`)) {
+                                        try {
+                                          await Promise.all(
+                                            selectedMatchesToDelete.map(id =>
+                                              deleteDoc(doc(db, 'matchs', id))
+                                            )
+                                          );
+                                          alert(`${selectedMatchesToDelete.length} match(s) supprimé(s) avec succès !`);
+                                          setSelectedMatchesToDelete([]);
+                                        } catch (error) {
+                                          console.error('Error deleting matches:', error);
+                                          alert('Erreur lors de la suppression des matchs');
+                                        }
+                                      }
+                                    }}
+                                    className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+                                  >
+                                    Supprimer ({selectedMatchesToDelete.length})
+                                  </button>
+                                )}
+                              </div>
                               <div className="space-y-2 max-h-96 overflow-y-auto">
                                 {matchData
                                   .map((match, index) => ({ match, index }))
@@ -4123,21 +4124,38 @@ const App = () => {
                                     match.championnat === editSelectedChampionnat
                                   )
                                   .map(({ match, index }) => (
-                                    <button
+                                    <div
                                       key={index}
-                                      onClick={() => setEditingMatch({...match, index})}
-                                      className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left"
+                                      className="flex items-center gap-2 p-4 bg-white rounded-lg border"
                                     >
-                                      <p className="font-semibold text-slate-800">
-                                        {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
-                                        {match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
-                                      </p>
-                                      <p className="text-sm text-slate-600">
-                                        {match.dateMatch || 'Date non définie'}
-                                        {match.valise_j1 && ' 🧳 ' + match.joueur1}
-                                        {match.valise_j2 && ' 🧳 ' + match.joueur2}
-                                      </p>
-                                    </button>
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedMatchesToDelete.includes(match.id)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            setSelectedMatchesToDelete([...selectedMatchesToDelete, match.id]);
+                                          } else {
+                                            setSelectedMatchesToDelete(selectedMatchesToDelete.filter(id => id !== match.id));
+                                          }
+                                        }}
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="w-4 h-4 text-red-600 cursor-pointer"
+                                      />
+                                      <button
+                                        onClick={() => setEditingMatch({...match, index})}
+                                        className="flex-1 text-left hover:bg-slate-50 rounded px-2 py-1"
+                                      >
+                                        <p className="font-semibold text-slate-800">
+                                          {match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}
+                                          {match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}
+                                        </p>
+                                        <p className="text-sm text-slate-600">
+                                          {match.dateMatch || 'Date non définie'}
+                                          {match.valise_j1 && ' 🧳 ' + match.joueur1}
+                                          {match.valise_j2 && ' 🧳 ' + match.joueur2}
+                                        </p>
+                                      </button>
+                                    </div>
                                   ))}
                               </div>
                             </div>
