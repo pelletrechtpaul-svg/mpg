@@ -3809,32 +3809,33 @@ const App = () => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
-                            <select
-                              value={adminFormData.joueur1}
-                              onChange={(e) => setAdminFormData({...adminFormData, joueur1: e.target.value})}
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-                            >
-                              <option value="">Sélectionner...</option>
-                              {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur2).map(j => (
-                                <option key={j} value={j}>{j}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
-                            <select
-                              value={adminFormData.joueur2}
-                              onChange={(e) => setAdminFormData({...adminFormData, joueur2: e.target.value})}
-                              className="w-full px-4 py-2 border border-slate-300 rounded-lg"
-                            >
-                              <option value="">Sélectionner...</option>
-                              {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur1).map(j => (
-                                <option key={j} value={j}>{j}</option>
-                              ))}
-                            </select>
+                        <div>
+                          <h4 className="text-md font-semibold text-slate-700 mb-4">1er match</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <select
+                                value={adminFormData.joueur1}
+                                onChange={(e) => setAdminFormData({...adminFormData, joueur1: e.target.value})}
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              >
+                                <option value="">Sélectionner...</option>
+                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur2).map(j => (
+                                  <option key={j} value={j}>{j}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <select
+                                value={adminFormData.joueur2}
+                                onChange={(e) => setAdminFormData({...adminFormData, joueur2: e.target.value})}
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                              >
+                                <option value="">Sélectionner...</option>
+                                {['Paul', 'Adrien', 'Tiago', 'Roman'].filter(j => j !== adminFormData.joueur1).map(j => (
+                                  <option key={j} value={j}>{j}</option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         </div>
 
@@ -3904,7 +3905,27 @@ const App = () => {
                         {/* Second match (auto-displayed when joueur1 and joueur2 are selected) */}
                         {adminFormData.joueur1 && adminFormData.joueur2 && adminFormData.joueur3 && adminFormData.joueur4 && (
                           <div className="border-t pt-6">
-                            <h4 className="text-md font-semibold text-slate-700 mb-4">2ème match • {adminFormData.joueur3} vs {adminFormData.joueur4}</h4>
+                            <div className="flex items-center gap-2 mb-4">
+                              <h4 className="text-md font-semibold text-slate-700">2ème match • {adminFormData.joueur3} vs {adminFormData.joueur4}</h4>
+                              <button
+                                type="button"
+                                onClick={() => setAdminFormData({
+                                  ...adminFormData,
+                                  joueur3: adminFormData.joueur4,
+                                  joueur4: adminFormData.joueur3,
+                                  buts_j3: adminFormData.buts_j4,
+                                  buts_j4: adminFormData.buts_j3,
+                                  valise_j3: adminFormData.valise_j4,
+                                  valise_j4: adminFormData.valise_j3
+                                })}
+                                className="p-1 hover:bg-slate-100 rounded transition-colors"
+                                title="Inverser les joueurs"
+                              >
+                                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                </svg>
+                              </button>
+                            </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <input
