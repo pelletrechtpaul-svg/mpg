@@ -1906,7 +1906,7 @@ const App = () => {
               className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                 selectedSeason === season && activeTab !== 'admin'
                   ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
               {season}
@@ -1994,7 +1994,7 @@ const App = () => {
         {activeTab === 'classements' && (
           <>
             {/* Onglets de ligue */}
-            <div className="bg-white rounded-xl shadow-sm p-3 sm:p-6 mb-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-3 sm:p-6 mb-6">
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
                 <button
                   onClick={() => {
@@ -2040,13 +2040,13 @@ const App = () => {
               {/* Dropdown championnat */}
               {selectedSeason !== 'All-Time' && selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                     Championnat
                   </label>
                   <select
                     value={selectedChampionnat}
                     onChange={(e) => setSelectedChampionnat(e.target.value)}
-                    className="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full md:w-64 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="total">Total</option>
                     {championnatsByLigue[selectedLigue].map((ch, i) => (
@@ -2062,7 +2062,7 @@ const App = () => {
             {/* Toggle Tableau/Graphique (uniquement pour classement général) */}
             {selectedLigue === 'general' && (
               <div className="mb-4 flex justify-end">
-                <div className="inline-flex rounded-lg border border-slate-300 bg-white">
+                <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
                   <button
                     onClick={() => setRankingsView('table')}
                     className={`px-4 py-2 text-sm font-medium transition-colors ${
@@ -2093,7 +2093,7 @@ const App = () => {
               className={`rounded-xl shadow-sm overflow-hidden ${
                 selectedSeason === '2024/2025' && selectedLigue === 'general'
                   ? 'bg-gradient-to-br from-sky-100 via-white to-sky-50 relative'
-                  : 'bg-white'
+                  : 'bg-white dark:bg-slate-800'
               }`}
               style={selectedSeason === '2024/2025' && selectedLigue === 'general' ? {
                 backgroundImage: 'linear-gradient(to bottom right, rgba(224, 242, 254, 0.6), rgba(255, 255, 255, 0.7), rgba(240, 249, 255, 0.6)), url(https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg)',
@@ -2104,32 +2104,32 @@ const App = () => {
             >
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm">
-                  <thead className="bg-slate-50">
+                  <thead className="bg-slate-50 dark:bg-slate-700">
                     <tr>
-                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 text-xs sm:text-sm">Rang</th>
-                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 text-xs sm:text-sm">Joueur</th>
-                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 hidden md:table-cell">Matchs</th>
-                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">V</th>
-                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">N</th>
-                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">D</th>
-                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">GA</th>
+                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Rang</th>
+                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                      <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 hidden md:table-cell">Matchs</th>
+                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">V</th>
+                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">N</th>
+                      <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">D</th>
+                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">GA</th>
                       {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                         <>
-                          <th className="px-0.5 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">Titres</th>
-                          <th className="px-0 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">
+                          <th className="px-0.5 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Titres</th>
+                          <th className="px-0 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
                             <span className="hidden sm:inline">Médailles</span>
                             <span className="sm:hidden">Méd.</span>
                           </th>
                         </>
                       )}
-                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 text-xs sm:text-sm">
+                      <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
                         {selectedLigue === 'general' ? 'Points' : selectedChampionnat === 'total' ? 'Points en match' : 'Points'}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {classementParLigue.map((player, index) => (
-                      <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                      <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             {index === 0 && (() => {
@@ -2156,7 +2156,7 @@ const App = () => {
                               }
                               return null;
                             })()}
-                            <span className="font-bold text-sm sm:text-lg text-slate-700">{index + 1}</span>
+                            <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                           </div>
                         </td>
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
@@ -2205,7 +2205,7 @@ const App = () => {
             </div>
             ) : (
             /* Graphique d'évolution */
-            <div className="bg-white rounded-xl shadow-sm p-0 sm:p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-0 sm:p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
                 <div className="w-full sm:w-1/2 sm:mx-auto">
@@ -2259,10 +2259,10 @@ const App = () => {
             {/* Popup détails buts */}
             {showGoalsDetail && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowGoalsDetail(null)}>
-                <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-slate-800">{showGoalsDetail.joueur}</h3>
-                    <button onClick={() => setShowGoalsDetail(null)} className="text-slate-600 hover:text-slate-800">
+                    <button onClick={() => setShowGoalsDetail(null)} className="text-slate-600 hover:text-slate-800 dark:hover:text-slate-100">
                       ✕
                     </button>
                   </div>
@@ -2309,19 +2309,19 @@ const App = () => {
 
                 {/* Tableau utilisées/reçues */}
                 {selectedValiseTable === 'stats' && (
-                  <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Utilisées</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Reçues</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Utilisées</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
                         </tr>
                       </thead>
                       <tbody>
                         {joueurs.map(joueur => (
-                          <tr key={joueur} className="border-t hover:bg-slate-50">
+                          <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
                             <td className="px-2 py-2 sm:px-6 sm:py-4">
                               <div className="flex items-center gap-1.5 sm:gap-3">
                                 <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
@@ -2340,17 +2340,17 @@ const App = () => {
 
                 {/* Classement valises efficaces */}
                 {selectedValiseTable === 'efficaces' && (
-                  <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-4 bg-slate-50 border-b">
-                      <p className="text-xs text-slate-600">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-700 border-b dark:border-slate-600">
+                      <p className="text-xs text-slate-600 dark:text-slate-300">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
                     </div>
                     <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Rang</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700">Valises efficaces</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Valises efficaces</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2358,9 +2358,9 @@ const App = () => {
                           .map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces }))
                           .sort((a, b) => b.efficaces - a.efficaces)
                           .map((item, index) => (
-                            <tr key={item.joueur} className="border-t hover:bg-slate-50">
+                            <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
                               <td className="px-2 py-2 sm:px-6 sm:py-4">
-                                <span className="font-bold text-base sm:text-lg text-slate-700">{index + 1}</span>
+                                <span className="font-bold text-base sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                               </td>
                               <td className="px-2 py-2 sm:px-6 sm:py-4">
                                 <div className="flex items-center gap-1.5 sm:gap-3">
@@ -2383,7 +2383,7 @@ const App = () => {
 
             {/* Liste des matchs */}
             {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mt-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
                   Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
                 </h3>
@@ -2400,8 +2400,8 @@ const App = () => {
                     const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
 
                     return (
-                      <div className="mb-4 bg-slate-50 rounded-xl p-4">
-                        <p className="text-xs text-slate-600">
+                      <div className="mb-4 bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
+                        <p className="text-xs text-slate-600 dark:text-slate-300">
                           <strong>Commencé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
                           <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
                           {isComplete && lastMatchDate && (
@@ -2418,7 +2418,7 @@ const App = () => {
 
                 <div className="space-y-2">
                   {matchesListForChampionnat.map((match, index) => (
-                    <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-xs sm:text-base">
+                    <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors text-xs sm:text-base">
                       <span className="text-slate-600 min-w-[70px] sm:min-w-0">
                         {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </span>
@@ -2444,14 +2444,14 @@ const App = () => {
         {activeTab === 'versus' && (
           <>
             {/* Sélection des joueurs et filtre ligue */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Joueur 1</label>
                   <select
                     value={selectedVersusPlayer1}
                     onChange={(e) => setSelectedVersusPlayer1(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     {joueurs.filter(j => j !== selectedVersusPlayer2).map(j => (
                       <option key={j} value={j}>{j}</option>
@@ -2459,11 +2459,11 @@ const App = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Joueur 2</label>
                   <select
                     value={selectedVersusPlayer2}
                     onChange={(e) => setSelectedVersusPlayer2(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     {joueurs.filter(j => j !== selectedVersusPlayer1).map(j => (
                       <option key={j} value={j}>{j}</option>
@@ -2471,11 +2471,11 @@ const App = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Ligue</label>
                   <select
                     value={selectedVersusLigue}
                     onChange={(e) => setSelectedVersusLigue(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="all">Toutes les ligues</option>
                     {ligues.map(l => <option key={l} value={l}>{l}</option>)}
@@ -2487,7 +2487,7 @@ const App = () => {
             {/* Affichage du bilan */}
             {versusStats.matchs > 0 ? (
               <>
-                <div className="bg-white rounded-xl shadow-sm p-4 sm:p-8 mb-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-8 mb-6">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="text-center flex-1">
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
@@ -2504,7 +2504,7 @@ const App = () => {
                       <h3 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
                     </div>
                     <div className="text-center px-4 md:px-8">
-                      <div className="text-4xl sm:text-5xl font-bold text-slate-700">
+                      <div className="text-4xl sm:text-5xl font-bold text-slate-700 dark:text-slate-200">
                         {versusStats.victoires_j1}
                         <span className="text-slate-400 mx-2 sm:mx-3">-</span>
                         {versusStats.victoires_j2}
@@ -2529,7 +2529,7 @@ const App = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t">
+                  <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t dark:border-slate-700">
                     <div className="text-center">
                       <div className="text-4xl font-bold text-blue-600">{versusStats.buts_j1}</div>
                       <div className="text-sm text-slate-600 mt-2">Buts {selectedVersusPlayer1}</div>
@@ -2548,7 +2548,7 @@ const App = () => {
                 </div>
 
                 {/* Graphique en camembert des victoires */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h3 className="text-lg font-semibold text-slate-800 mb-4 text-center">Répartition des victoires</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
@@ -2583,7 +2583,7 @@ const App = () => {
                 </div>
               </>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
                 <p className="text-slate-600">
                   Aucune confrontation directe entre {selectedVersusPlayer1} et {selectedVersusPlayer2}
                   {selectedVersusLigue !== 'all' && ` en ${selectedVersusLigue}`}.
@@ -2597,24 +2597,24 @@ const App = () => {
         {activeTab === 'statistiques' && (
           <>
             {selectedSeason === 'All-Time' ? (
-              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
                 <p className="text-slate-600">Section en construction...</p>
               </div>
             ) : (
               <div className="space-y-8">
                 {/* Classement des buteurs */}
-                <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des buteurs</h2>
 
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts inscrits</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Buts inscrits</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Matchs</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Moyenne</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2622,9 +2622,9 @@ const App = () => {
                           .map(([joueur, data]) => ({ joueur, ...data }))
                           .sort((a, b) => b.buts_pour - a.buts_pour)
                           .map((player, index) => (
-                            <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                            <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                               <td className="px-6 py-4">
-                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                                <span className="font-bold text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
@@ -2635,7 +2635,7 @@ const App = () => {
                               <td className="px-6 py-4 text-center">
                                 <span className="text-xl font-bold text-green-600">{player.buts_pour}</span>
                               </td>
-                              <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
+                              <td className="px-6 py-4 text-center text-slate-700 dark:text-slate-200">{player.matchs}</td>
                               <td className="px-6 py-4 text-center">
                                 <span className="font-semibold text-blue-600">
                                   {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
@@ -2649,18 +2649,18 @@ const App = () => {
                 </div>
 
                 {/* Classement des loosers */}
-                <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des loosers</h2>
 
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Rang</th>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700">Joueur</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Buts encaissés</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Matchs</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700">Moyenne</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
+                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Buts encaissés</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Matchs</th>
+                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Moyenne</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2668,9 +2668,9 @@ const App = () => {
                           .map(([joueur, data]) => ({ joueur, ...data }))
                           .sort((a, b) => b.buts_contre - a.buts_contre)
                           .map((player, index) => (
-                            <tr key={player.joueur} className="border-t hover:bg-slate-50 transition-colors">
+                            <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                               <td className="px-6 py-4">
-                                <span className="font-bold text-lg text-slate-700">{index + 1}</span>
+                                <span className="font-bold text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
@@ -2681,7 +2681,7 @@ const App = () => {
                               <td className="px-6 py-4 text-center">
                                 <span className="text-xl font-bold text-red-600">{player.buts_contre}</span>
                               </td>
-                              <td className="px-6 py-4 text-center text-slate-700">{player.matchs}</td>
+                              <td className="px-6 py-4 text-center text-slate-700 dark:text-slate-200">{player.matchs}</td>
                               <td className="px-6 py-4 text-center">
                                 <span className="font-semibold text-orange-600">
                                   {player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}
@@ -2702,7 +2702,7 @@ const App = () => {
         {activeTab === 'records' && (
           <>
             {selectedSeason === 'All-Time' || !seasonRecords ? (
-              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
                 <p className="text-slate-600">
                   {selectedSeason === 'All-Time'
                     ? 'Les records ne sont disponibles que pour une saison spécifique'
@@ -2712,7 +2712,7 @@ const App = () => {
             ) : (
               <div className="space-y-6">
                 {/* Records individuels */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">🏆 Records individuels</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2724,7 +2724,7 @@ const App = () => {
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInMatch.joueur]}`}></div>
                           <div>
                             <p className="text-2xl font-bold text-green-700">{seasonRecords.mostGoalsInMatch.buts} buts</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.mostGoalsInMatch.joueur}</strong> contre {seasonRecords.mostGoalsInMatch.adversaire}
                               ({seasonRecords.mostGoalsInMatch.buts}-{seasonRecords.mostGoalsInMatch.butsAdv})
                             </p>
@@ -2744,7 +2744,7 @@ const App = () => {
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.biggestWinMargin.joueur]}`}></div>
                           <div>
                             <p className="text-2xl font-bold text-blue-700">+{seasonRecords.biggestWinMargin.margin} buts</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.biggestWinMargin.joueur}</strong> {seasonRecords.biggestWinMargin.score} contre {seasonRecords.biggestWinMargin.adversaire}
                             </p>
                             <p className="text-xs text-slate-500">
@@ -2763,7 +2763,7 @@ const App = () => {
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestWinRatioPeak.joueur]}`}></div>
                           <div>
                             <p className="text-2xl font-bold text-purple-700">{(seasonRecords.bestWinRatioPeak.ratio * 100).toFixed(1)}%</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestWinRatioPeak.joueur}</strong> ({seasonRecords.bestWinRatioPeak.wins}V sur {seasonRecords.bestWinRatioPeak.totalMatches} matchs)
                             </p>
                             <p className="text-xs text-slate-500">
@@ -2782,7 +2782,7 @@ const App = () => {
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestCurrentWinRatio.joueur]}`}></div>
                           <div>
                             <p className="text-2xl font-bold text-cyan-700">{(seasonRecords.bestCurrentWinRatio.ratio * 100).toFixed(1)}%</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestCurrentWinRatio.joueur}</strong> ({seasonRecords.bestCurrentWinRatio.wins}V sur {seasonRecords.bestCurrentWinRatio.totalMatches} matchs)
                             </p>
                             <p className="text-xs text-slate-500">
@@ -2801,7 +2801,7 @@ const App = () => {
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestHeadToHead.dominant]}`}></div>
                           <div>
                             <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestHeadToHead.wins}V-{seasonRecords.bestHeadToHead.draws}N-{seasonRecords.bestHeadToHead.losses}D</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestHeadToHead.dominant}</strong> vs {seasonRecords.bestHeadToHead.dominated}
                             </p>
                             <p className="text-xs text-slate-500">
@@ -2815,7 +2815,7 @@ const App = () => {
                 </div>
 
                 {/* Record du match */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Record de match</h2>
 
                   {seasonRecords.mostProlificMatch && (
@@ -2824,7 +2824,7 @@ const App = () => {
                       <div className="flex items-center gap-3">
                         <div>
                           <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
                             <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
                             {' '}({seasonRecords.mostProlificMatch.score})
                           </p>
@@ -2838,7 +2838,7 @@ const App = () => {
                 </div>
 
                 {/* Séries */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">📊 Séries remarquables</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2854,7 +2854,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-green-700 text-xl">{data.length} victoires</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2873,7 +2873,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-blue-700 text-xl">{data.length} matchs</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2892,7 +2892,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-red-700 text-xl">{data.length} défaites</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2901,7 +2901,7 @@ const App = () => {
 
                     {/* Série de nuls */}
                     {Object.keys(seasonRecords.longestDrawStreak).length > 0 && (
-                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
                         <h3 className="text-sm font-semibold text-slate-700 mb-3">🤝 Plus longue série de nuls</h3>
                         {Object.entries(seasonRecords.longestDrawStreak)
                           .sort((a, b) => b[1].length - a[1].length)
@@ -2911,7 +2911,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-slate-700 text-xl">{data.length} nuls</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2930,7 +2930,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-amber-700 text-xl">{data.length} matchs</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2949,7 +2949,7 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
                                 <p className="font-bold text-teal-700 text-xl">{data.length} matchs</p>
-                                <p className="text-sm text-slate-600">{joueur}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
                           ))}
@@ -2959,7 +2959,7 @@ const App = () => {
                 </div>
 
                 {/* Régularité */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">📈 Régularité</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
