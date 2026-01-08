@@ -816,8 +816,9 @@ const App = () => {
       mostUnpredictable: null,
 
       // New records
-      bestWinRatioPeak: null,    // Meilleur ratio de victoires atteint à un moment T
-      bestHeadToHead: null        // Meilleur versus contre un autre joueur
+      bestWinRatioPeak: null,      // Meilleur ratio de victoires atteint à un moment T
+      bestCurrentWinRatio: null,   // Meilleur ratio de victoires actuel (fin de saison)
+      bestHeadToHead: null         // Meilleur versus contre un autre joueur
     };
 
     // Record 1: Most goals scored in a single match
@@ -1090,6 +1091,21 @@ const App = () => {
             wins: bestRatioWins,
             totalMatches: bestRatioMatches,
             date: bestRatioDate
+          };
+        }
+      }
+
+      // NEW: Calculate current win ratio (at end of season)
+      if (playerMatches.length >= 10) {
+        const totalWins = playerMatches.filter(m => m.result === 'W').length;
+        const currentRatio = totalWins / playerMatches.length;
+
+        if (!records.bestCurrentWinRatio || currentRatio > records.bestCurrentWinRatio.ratio) {
+          records.bestCurrentWinRatio = {
+            joueur,
+            ratio: currentRatio,
+            wins: totalWins,
+            totalMatches: playerMatches.length
           };
         }
       }
@@ -2750,6 +2766,25 @@ const App = () => {
                             </p>
                             <p className="text-xs text-slate-500">
                               Pic atteint le {new Date(seasonRecords.bestWinRatioPeak.date).toLocaleDateString('fr-FR')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* NEW: Meilleur ratio de victoires actuel */}
+                    {seasonRecords.bestCurrentWinRatio && (
+                      <div className="bg-gradient-to-br from-cyan-50 to-sky-50 rounded-lg p-4 border-2 border-cyan-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Meilleur ratio de victoires actuel</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestCurrentWinRatio.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-cyan-700">{(seasonRecords.bestCurrentWinRatio.ratio * 100).toFixed(1)}%</p>
+                            <p className="text-sm text-slate-600">
+                              <strong>{seasonRecords.bestCurrentWinRatio.joueur}</strong> ({seasonRecords.bestCurrentWinRatio.wins}V sur {seasonRecords.bestCurrentWinRatio.totalMatches} matchs)
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              Ratio final sur l'ensemble de la saison
                             </p>
                           </div>
                         </div>
