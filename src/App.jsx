@@ -3149,7 +3149,6 @@ const App = () => {
 
                 // Coefficients par poste pour les buts (pondération inversée : plus rare = plus valorisé)
                 const coeffButs = {
-                  'G': 5,  // Gardien qui marque = exceptionnel
                   'D': 3,  // Défenseur buteur = très bon
                   'M': 2,  // Milieu buteur = bon
                   'A': 1   // Attaquant = normal
@@ -3218,7 +3217,6 @@ const App = () => {
                       onChange={(e) => setMpgForm({...mpgForm, poste: e.target.value})}
                       className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                      <option value="G">Gardien (G)</option>
                       <option value="D">Défenseur (D)</option>
                       <option value="M">Milieu (M)</option>
                       <option value="A">Attaquant (A)</option>
@@ -3343,7 +3341,6 @@ const App = () => {
                     }
 
                     const posteLabels = {
-                      'G': 'Gardien',
                       'D': 'Défenseur',
                       'M': 'Milieu',
                       'A': 'Attaquant'
@@ -3475,7 +3472,6 @@ const App = () => {
                 <div>
                   <p className="font-semibold mb-2">Coefficients par poste :</p>
                   <ul className="list-disc list-inside space-y-1 pl-2">
-                    <li>Gardien : ×5 (un but de gardien est exceptionnel)</li>
                     <li>Défenseur : ×3 (défenseur buteur = très bon)</li>
                     <li>Milieu : ×2 (milieu buteur = bon)</li>
                     <li>Attaquant : ×1 (buts = rôle normal)</li>
