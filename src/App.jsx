@@ -1786,52 +1786,67 @@ const App = () => {
 
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
-          <div className="flex gap-2 mb-6 flex-wrap">
-            <button
-              onClick={() => setActiveTab('classements')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                activeTab === 'classements'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Classements
-            </button>
-            <button
-              onClick={() => setActiveTab('versus')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                activeTab === 'versus'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Face à face
-            </button>
-            <button
-              onClick={() => setActiveTab('statistiques')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                activeTab === 'statistiques'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Statistiques
-            </button>
-            <button
-              onClick={() => setActiveTab('records')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                activeTab === 'records'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              Records
-            </button>
+          <div className="flex gap-4 mb-6 flex-wrap items-center">
+            {/* Onglets principaux */}
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setActiveTab('classements')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'classements'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Classements
+              </button>
+              <button
+                onClick={() => setActiveTab('versus')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'versus'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Face à face
+              </button>
+              <button
+                onClick={() => setActiveTab('statistiques')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'statistiques'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Statistiques
+              </button>
+              <button
+                onClick={() => setActiveTab('records')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'records'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Records
+              </button>
+              {selectedSeason === '2025/2026' && (
+                <button
+                  onClick={() => setActiveTab('stats-avancees')}
+                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                    activeTab === 'stats-avancees'
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                  }`}
+                >
+                  Forme
+                </button>
+              )}
+            </div>
 
             {/* Séparateur */}
-            <div className="hidden sm:block w-px bg-slate-300 dark:bg-slate-600 self-stretch mx-2"></div>
+            <div className="hidden sm:block w-px bg-slate-300 dark:bg-slate-600 h-10"></div>
 
-            {/* Calculateur MPG - séparé visuellement */}
+            {/* Calculateur MPG - séparé dans l'espace */}
             <button
               onClick={() => setActiveTab('calculateur-mpg')}
               className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base border-2 ${
@@ -1842,19 +1857,6 @@ const App = () => {
             >
               ⚽ Calculateur MPG
             </button>
-
-            {selectedSeason === '2025/2026' && (
-              <button
-                onClick={() => setActiveTab('stats-avancees')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'stats-avancees'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                Forme
-              </button>
-            )}
           </div>
         )}
 
