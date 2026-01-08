@@ -779,7 +779,9 @@ const App = () => {
       // New records
       bestWinRatioPeak: null,      // Meilleur ratio de victoires atteint à un moment T
       bestCurrentWinRatio: null,   // Meilleur ratio de victoires actuel (fin de saison)
-      bestHeadToHead: null         // Meilleur versus contre un autre joueur
+      bestHeadToHead: null,        // Meilleur versus contre un autre joueur
+      mostGoalsInChampionship: null,     // Plus de buts marqués en 1 championnat (6 matches)
+      mostConcededInChampionship: null   // Plus de buts encaissés en 1 championnat (6 matches)
     };
 
     // Record 1: Most goals scored in a single match
@@ -1139,6 +1141,69 @@ const App = () => {
             gaAdvantage,
             winRatio,
             dominanceScore
+          };
+        }
+      });
+    });
+
+    // NEW: Calculate most goals scored/conceded in a single championship (6-match championships only)
+    const championshipsMap = {};
+    seasonMatches.forEach(match => {
+      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
+      if (!championshipsMap[key]) championshipsMap[key] = [];
+      championshipsMap[key].push(match);
+    });
+
+    Object.entries(championshipsMap).forEach(([key, matches]) => {
+      // Only consider 6-match championships
+      if (matches.length !== 6) return;
+
+      const championshipStats = {};
+      joueurs.forEach(j => {
+        championshipStats[j] = { goalsScored: 0, goalsConceded: 0 };
+      });
+
+      matches.forEach(match => {
+        // Process all 4 players in the match
+        if (match.joueur1) {
+          championshipStats[match.joueur1].goalsScored += match.buts_j1 || 0;
+          championshipStats[match.joueur1].goalsConceded += match.buts_j2 || 0;
+        }
+        if (match.joueur2) {
+          championshipStats[match.joueur2].goalsScored += match.buts_j2 || 0;
+          championshipStats[match.joueur2].goalsConceded += match.buts_j1 || 0;
+        }
+        if (match.joueur3) {
+          championshipStats[match.joueur3].goalsScored += match.buts_j3 || 0;
+          championshipStats[match.joueur3].goalsConceded += match.buts_j4 || 0;
+        }
+        if (match.joueur4) {
+          championshipStats[match.joueur4].goalsScored += match.buts_j4 || 0;
+          championshipStats[match.joueur4].goalsConceded += match.buts_j3 || 0;
+        }
+      });
+
+      // Check for records
+      Object.entries(championshipStats).forEach(([joueur, stats]) => {
+        // Most goals scored
+        if (!records.mostGoalsInChampionship || stats.goalsScored > records.mostGoalsInChampionship.goals) {
+          records.mostGoalsInChampionship = {
+            joueur,
+            goals: stats.goalsScored,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
+          };
+        }
+
+        // Most goals conceded
+        if (!records.mostConcededInChampionship || stats.goalsConceded > records.mostConcededInChampionship.goals) {
+          records.mostConcededInChampionship = {
+            joueur,
+            goals: stats.goalsConceded,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
           };
         }
       });
@@ -2762,9 +2827,60 @@ const App = () => {
                   )}
                 </div>
 
+                {/* NEW: Championship Records */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏆 Records de championnat</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Most goals scored in championship */}
+                    {seasonRecords.mostGoalsInChampionship && (
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Plus de buts marqués en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInChampionship.goals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.mostGoalsInChampionship.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {seasonRecords.mostGoalsInChampionship.ligue} {seasonRecords.mostGoalsInChampionship.championnat} • {seasonRecords.mostGoalsInChampionship.saison}
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                              Championnats à 6 matchs uniquement
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Most goals conceded in championship */}
+                    {seasonRecords.mostConcededInChampionship && (
+                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥅 Plus de buts encaissés en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostConcededInChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-red-700 dark:text-red-400">{seasonRecords.mostConcededInChampionship.goals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.mostConcededInChampionship.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {seasonRecords.mostConcededInChampionship.ligue} {seasonRecords.mostConcededInChampionship.championnat} • {seasonRecords.mostConcededInChampionship.saison}
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                              Championnats à 6 matchs uniquement
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Séries */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">📊 Séries remarquables</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Série de victoires */}
