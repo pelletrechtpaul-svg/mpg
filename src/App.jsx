@@ -2420,9 +2420,9 @@ const App = () => {
             {versusStats.matchs > 0 ? (
               <>
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-8 mb-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-center flex-1">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
+                  <div className="grid grid-cols-3 items-center gap-4 md:gap-6">
+                    <div className="text-left">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
                         <img
                           src={playerImages[selectedVersusPlayer1]}
                           alt={selectedVersusPlayer1}
@@ -2433,20 +2433,20 @@ const App = () => {
                           }}
                         />
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedVersusPlayer1}</h3>
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedVersusPlayer1}</h3>
                     </div>
-                    <div className="text-center px-4 md:px-8">
-                      <div className="text-4xl sm:text-5xl font-bold text-slate-700 dark:text-slate-200">
+                    <div className="text-center">
+                      <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-700 dark:text-slate-200">
                         {versusStats.victoires_j1}
                         <span className="text-slate-400 mx-2 sm:mx-3">-</span>
                         {versusStats.victoires_j2}
                       </div>
-                      <div className="text-xs sm:text-sm text-slate-600 mt-2">
+                      <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
                         {versusStats.nuls} match{versusStats.nuls > 1 ? 's' : ''} nul{versusStats.nuls > 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="text-center flex-1">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 overflow-hidden border-4 border-purple-500 shadow-lg">
+                    <div className="text-right">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-purple-500 shadow-lg ml-auto">
                         <img
                           src={playerImages[selectedVersusPlayer2]}
                           alt={selectedVersusPlayer2}
@@ -2457,7 +2457,7 @@ const App = () => {
                           }}
                         />
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedVersusPlayer2}</h3>
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedVersusPlayer2}</h3>
                     </div>
                   </div>
 
@@ -2505,13 +2505,6 @@ const App = () => {
                       <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
-                </div>
-
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Total des confrontations :</strong> {versusStats.matchs} match{versusStats.matchs > 1 ? 's' : ''}
-                    {selectedVersusLigue !== 'all' && ` en ${selectedVersusLigue}`}
-                  </p>
                 </div>
               </>
             ) : (
