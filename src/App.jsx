@@ -4144,7 +4144,7 @@ const App = () => {
                                                   );
                                                   await Promise.all(
                                                     matchesToDelete.map(match =>
-                                                      deleteDoc(doc(db, 'matchs', match.id))
+                                                      deleteDoc(doc(db, 'matches', match.firestoreId))
                                                     )
                                                   );
                                                   alert(`${matchesToDelete.length} match(s) supprimé(s) avec succès !`);
@@ -4236,7 +4236,7 @@ const App = () => {
                                           <button
                                             type="button"
                                             onClick={() => {
-                                              const currentMatchIds = currentMatches.map(m => m.id);
+                                              const currentMatchIds = currentMatches.map(m => m.firestoreId);
                                               if (selectedMatchesToDelete.length === currentMatchIds.length) {
                                                 setSelectedMatchesToDelete([]);
                                               } else {
@@ -4256,7 +4256,7 @@ const App = () => {
                                                 try {
                                                   await Promise.all(
                                                     selectedMatchesToDelete.map(id =>
-                                                      deleteDoc(doc(db, 'matchs', id))
+                                                      deleteDoc(doc(db, 'matches', id))
                                                     )
                                                   );
                                                   alert(`${selectedMatchesToDelete.length} match(s) supprimé(s) avec succès !`);
@@ -4292,12 +4292,12 @@ const App = () => {
                                     >
                                       <input
                                         type="checkbox"
-                                        checked={selectedMatchesToDelete.includes(match.id)}
+                                        checked={selectedMatchesToDelete.includes(match.firestoreId)}
                                         onChange={(e) => {
                                           if (e.target.checked) {
-                                            setSelectedMatchesToDelete([...selectedMatchesToDelete, match.id]);
+                                            setSelectedMatchesToDelete([...selectedMatchesToDelete, match.firestoreId]);
                                           } else {
-                                            setSelectedMatchesToDelete(selectedMatchesToDelete.filter(id => id !== match.id));
+                                            setSelectedMatchesToDelete(selectedMatchesToDelete.filter(id => id !== match.firestoreId));
                                           }
                                         }}
                                         onClick={(e) => e.stopPropagation()}
@@ -4414,7 +4414,7 @@ const App = () => {
                               onClick={async () => {
                                 if (confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) {
                                   try {
-                                    const matchDoc = doc(db, 'matchs', matchData[editingMatch.index].id);
+                                    const matchDoc = doc(db, 'matches', matchData[editingMatch.index].firestoreId);
                                     await deleteDoc(matchDoc);
                                     alert('Match supprimé avec succès !');
                                     setEditingMatch(null);
