@@ -813,7 +813,11 @@ const App = () => {
 
       // 16-17. Regularity
       mostRegular: null,
-      mostUnpredictable: null
+      mostUnpredictable: null,
+
+      // New records
+      bestWinRatioPeak: null,    // Meilleur ratio de victoires atteint à un moment T
+      bestHeadToHead: null        // Meilleur versus contre un autre joueur
     };
 
     // Record 1: Most goals scored in a single match
@@ -1053,6 +1057,113 @@ const App = () => {
           records.mostUnpredictable = { joueur, stdDev, matchs: playerMatches.length };
         }
       }
+
+      // NEW: Calculate best win ratio peak (at any moment T)
+      if (playerMatches.length >= 3) {
+        let wins = 0;
+        let totalMatches = 0;
+        let bestRatio = 0;
+        let bestRatioDate = null;
+        let bestRatioWins = 0;
+        let bestRatioMatches = 0;
+
+        playerMatches.forEach((match) => {
+          totalMatches++;
+          if (match.result === 'W') wins++;
+
+          // Calculate ratio after this match (minimum 3 matches)
+          if (totalMatches >= 3) {
+            const ratio = wins / totalMatches;
+            if (ratio > bestRatio || (ratio === bestRatio && totalMatches > bestRatioMatches)) {
+              bestRatio = ratio;
+              bestRatioDate = match.date;
+              bestRatioWins = wins;
+              bestRatioMatches = totalMatches;
+            }
+          }
+        });
+
+        if (bestRatio > 0 && (!records.bestWinRatioPeak || bestRatio > records.bestWinRatioPeak.ratio)) {
+          records.bestWinRatioPeak = {
+            joueur,
+            ratio: bestRatio,
+            wins: bestRatioWins,
+            totalMatches: bestRatioMatches,
+            date: bestRatioDate
+          };
+        }
+      }
+    });
+
+    // NEW: Calculate best head-to-head versus record
+    const h2hStats = {};
+
+    joueurs.forEach(j1 => {
+      joueurs.forEach(j2 => {
+        if (j1 >= j2) return; // Skip self and duplicates
+
+        const h2hMatches = sortedMatches.filter(m =>
+          (m.joueur1 === j1 && m.joueur2 === j2) ||
+          (m.joueur1 === j2 && m.joueur2 === j1)
+        );
+
+        if (h2hMatches.length === 0) return;
+
+        let j1Wins = 0, j1GA = 0;
+        let j2Wins = 0, j2GA = 0;
+
+        h2hMatches.forEach(m => {
+          if (m.joueur1 === j1) {
+            j1GA += (m.buts_j1 - m.buts_j2);
+            j2GA += (m.buts_j2 - m.buts_j1);
+            if (m.buts_j1 > m.buts_j2) j1Wins++;
+            else if (m.buts_j2 > m.buts_j1) j2Wins++;
+          } else {
+            j1GA += (m.buts_j2 - m.buts_j1);
+            j2GA += (m.buts_j1 - m.buts_j2);
+            if (m.buts_j2 > m.buts_j1) j1Wins++;
+            else if (m.buts_j1 > m.buts_j2) j2Wins++;
+          }
+        });
+
+        // Determine dominant player (by wins first, then GA)
+        let dominant, dominated, dominantWins, dominatedWins, gaAdvantage, winRatio;
+
+        if (j1Wins > j2Wins || (j1Wins === j2Wins && j1GA > j2GA)) {
+          dominant = j1;
+          dominated = j2;
+          dominantWins = j1Wins;
+          dominatedWins = j2Wins;
+          gaAdvantage = j1GA;
+          winRatio = j1Wins / h2hMatches.length;
+        } else if (j2Wins > j1Wins || (j2Wins === j1Wins && j2GA > j1GA)) {
+          dominant = j2;
+          dominated = j1;
+          dominantWins = j2Wins;
+          dominatedWins = j1Wins;
+          gaAdvantage = j2GA;
+          winRatio = j2Wins / h2hMatches.length;
+        } else {
+          return; // Perfect equality, skip
+        }
+
+        // Score based on dominance (win ratio × GA advantage)
+        const dominanceScore = winRatio * Math.abs(gaAdvantage);
+
+        if (!records.bestHeadToHead || dominanceScore > records.bestHeadToHead.dominanceScore) {
+          records.bestHeadToHead = {
+            dominant,
+            dominated,
+            wins: dominantWins,
+            losses: dominatedWins,
+            draws: h2hMatches.length - dominantWins - dominatedWins,
+            totalMatches: h2hMatches.length,
+            gaAdvantage,
+            winRatio,
+            dominanceScore
+          };
+        }
+      });
     });
 
     return records;
@@ -2619,6 +2730,44 @@ const App = () => {
                             </p>
                             <p className="text-xs text-slate-500">
                               {new Date(seasonRecords.biggestWinMargin.date).toLocaleDateString('fr-FR')} • {seasonRecords.biggestWinMargin.ligue} {seasonRecords.biggestWinMargin.championnat}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* NEW: Meilleur ratio de victoires à un moment T */}
+                    {seasonRecords.bestWinRatioPeak && (
+                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📈 Meilleur ratio de victoires atteint</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestWinRatioPeak.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-purple-700">{(seasonRecords.bestWinRatioPeak.ratio * 100).toFixed(1)}%</p>
+                            <p className="text-sm text-slate-600">
+                              <strong>{seasonRecords.bestWinRatioPeak.joueur}</strong> ({seasonRecords.bestWinRatioPeak.wins}V sur {seasonRecords.bestWinRatioPeak.totalMatches} matchs)
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              Pic atteint le {new Date(seasonRecords.bestWinRatioPeak.date).toLocaleDateString('fr-FR')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* NEW: Meilleur versus contre un autre joueur */}
+                    {seasonRecords.bestHeadToHead && (
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 border-2 border-amber-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">⚔️ Meilleure domination en face-à-face</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestHeadToHead.dominant]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestHeadToHead.wins}V-{seasonRecords.bestHeadToHead.draws}N-{seasonRecords.bestHeadToHead.losses}D</p>
+                            <p className="text-sm text-slate-600">
+                              <strong>{seasonRecords.bestHeadToHead.dominant}</strong> vs {seasonRecords.bestHeadToHead.dominated}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              GA: {seasonRecords.bestHeadToHead.gaAdvantage > 0 ? '+' : ''}{seasonRecords.bestHeadToHead.gaAdvantage} • {(seasonRecords.bestHeadToHead.winRatio * 100).toFixed(0)}% victoires
                             </p>
                           </div>
                         </div>
