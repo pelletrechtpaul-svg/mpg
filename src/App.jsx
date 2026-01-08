@@ -3005,7 +3005,7 @@ const App = () => {
             {/* En-tête */}
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-sm p-6 text-white">
               <h2 className="text-2xl font-bold mb-2">⚽ Calculateur d'Indice de Performance MPG</h2>
-              <p className="text-green-100">Calculez et comparez les indices de performance de vos joueurs MonPetitGazon</p>
+              <p className="text-green-100">Calculez et comparez les indices de performance de vos joueurs MonPetitGazon pour préparer vos mercatos</p>
             </div>
 
             {/* Formulaire */}
