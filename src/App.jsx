@@ -1827,16 +1827,22 @@ const App = () => {
             >
               Records
             </button>
+
+            {/* Séparateur */}
+            <div className="hidden sm:block w-px bg-slate-300 dark:bg-slate-600 self-stretch mx-2"></div>
+
+            {/* Calculateur MPG - séparé visuellement */}
             <button
               onClick={() => setActiveTab('calculateur-mpg')}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base border-2 ${
                 activeTab === 'calculateur-mpg'
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                  ? 'bg-green-600 text-white shadow-lg border-green-600'
+                  : 'bg-white text-green-600 border-green-600 hover:bg-green-50 dark:bg-slate-800 dark:text-green-400 dark:border-green-500'
               }`}
             >
-              Calculateur MPG
+              ⚽ Calculateur MPG
             </button>
+
             {selectedSeason === '2025/2026' && (
               <button
                 onClick={() => setActiveTab('stats-avancees')}
