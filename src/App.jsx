@@ -74,6 +74,7 @@ const App = () => {
   const [editSelectedLigue, setEditSelectedLigue] = useState('');
   const [editSelectedChampionnat, setEditSelectedChampionnat] = useState('');
   const [selectedMatchesToDelete, setSelectedMatchesToDelete] = useState([]);
+  const [selectedChampionnatsToDelete, setSelectedChampionnatsToDelete] = useState([]);
 
   // Admin form
   const [adminFormData, setAdminFormData] = useState({
@@ -4091,14 +4092,79 @@ const App = () => {
                           {editSelectedSaison && editSelectedLigue && !editSelectedChampionnat && (
                             <div>
                               <button
-                                onClick={() => setEditSelectedLigue('')}
+                                onClick={() => {
+                                  setEditSelectedLigue('');
+                                  setSelectedChampionnatsToDelete([]);
+                                }}
                                 className="mb-3 text-sm text-blue-600 hover:text-blue-800"
                               >
                                 ← Retour aux compétitions
                               </button>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Sélectionnez un championnat ({editSelectedLigue})
-                              </label>
+                              <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-medium text-slate-700">
+                                  Sélectionnez un championnat ({editSelectedLigue})
+                                </label>
+                                <div className="flex gap-2">
+                                  {(() => {
+                                    const championnats = Array.from(new Set(
+                                      matchData
+                                        .filter(m =>
+                                          m.saison === editSelectedSaison &&
+                                          m.ligue === editSelectedLigue
+                                        )
+                                        .map(m => m.championnat)
+                                    ));
+                                    return (
+                                      <>
+                                        {championnats.length > 0 && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              if (selectedChampionnatsToDelete.length === championnats.length) {
+                                                setSelectedChampionnatsToDelete([]);
+                                              } else {
+                                                setSelectedChampionnatsToDelete(championnats);
+                                              }
+                                            }}
+                                            className="px-3 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                                          >
+                                            {selectedChampionnatsToDelete.length === championnats.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                          </button>
+                                        )}
+                                        {selectedChampionnatsToDelete.length > 0 && (
+                                          <button
+                                            type="button"
+                                            onClick={async () => {
+                                              if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedChampionnatsToDelete.length} championnat(s) et tous leurs matchs ?`)) {
+                                                try {
+                                                  const matchesToDelete = matchData.filter(m =>
+                                                    selectedChampionnatsToDelete.includes(m.championnat) &&
+                                                    m.saison === editSelectedSaison &&
+                                                    m.ligue === editSelectedLigue
+                                                  );
+                                                  await Promise.all(
+                                                    matchesToDelete.map(match =>
+                                                      deleteDoc(doc(db, 'matchs', match.id))
+                                                    )
+                                                  );
+                                                  alert(`${matchesToDelete.length} match(s) supprimé(s) avec succès !`);
+                                                  setSelectedChampionnatsToDelete([]);
+                                                } catch (error) {
+                                                  console.error('Error deleting championships:', error);
+                                                  alert('Erreur lors de la suppression des championnats');
+                                                }
+                                              }
+                                            }}
+                                            className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+                                          >
+                                            Supprimer ({selectedChampionnatsToDelete.length})
+                                          </button>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              </div>
                               <div className="space-y-2">
                                 {Array.from(new Set(
                                   matchData
@@ -4112,13 +4178,30 @@ const App = () => {
                                   const numB = b.match(/#(\d+)/)?.[1] || '0';
                                   return parseInt(numA) - parseInt(numB);
                                 }).map(championnat => (
-                                  <button
+                                  <div
                                     key={championnat}
-                                    onClick={() => setEditSelectedChampionnat(championnat)}
-                                    className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold"
+                                    className="flex items-center gap-2 p-4 bg-white rounded-lg border"
                                   >
-                                    {championnat}
-                                  </button>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedChampionnatsToDelete.includes(championnat)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedChampionnatsToDelete([...selectedChampionnatsToDelete, championnat]);
+                                        } else {
+                                          setSelectedChampionnatsToDelete(selectedChampionnatsToDelete.filter(c => c !== championnat));
+                                        }
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-4 h-4 text-red-600 cursor-pointer"
+                                    />
+                                    <button
+                                      onClick={() => setEditSelectedChampionnat(championnat)}
+                                      className="flex-1 text-left hover:bg-slate-50 rounded px-2 py-1 font-semibold"
+                                    >
+                                      {championnat}
+                                    </button>
+                                  </div>
                                 ))}
                               </div>
                             </div>
@@ -4140,29 +4223,59 @@ const App = () => {
                                 <label className="block text-sm font-medium text-slate-700">
                                   Sélectionnez un match ({editSelectedChampionnat})
                                 </label>
-                                {selectedMatchesToDelete.length > 0 && (
-                                  <button
-                                    onClick={async () => {
-                                      if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedMatchesToDelete.length} match(s) ?`)) {
-                                        try {
-                                          await Promise.all(
-                                            selectedMatchesToDelete.map(id =>
-                                              deleteDoc(doc(db, 'matchs', id))
-                                            )
-                                          );
-                                          alert(`${selectedMatchesToDelete.length} match(s) supprimé(s) avec succès !`);
-                                          setSelectedMatchesToDelete([]);
-                                        } catch (error) {
-                                          console.error('Error deleting matches:', error);
-                                          alert('Erreur lors de la suppression des matchs');
-                                        }
-                                      }
-                                    }}
-                                    className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
-                                  >
-                                    Supprimer ({selectedMatchesToDelete.length})
-                                  </button>
-                                )}
+                                <div className="flex gap-2">
+                                  {(() => {
+                                    const currentMatches = matchData.filter(m =>
+                                      m.saison === editSelectedSaison &&
+                                      m.ligue === editSelectedLigue &&
+                                      m.championnat === editSelectedChampionnat
+                                    );
+                                    return (
+                                      <>
+                                        {currentMatches.length > 0 && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const currentMatchIds = currentMatches.map(m => m.id);
+                                              if (selectedMatchesToDelete.length === currentMatchIds.length) {
+                                                setSelectedMatchesToDelete([]);
+                                              } else {
+                                                setSelectedMatchesToDelete(currentMatchIds);
+                                              }
+                                            }}
+                                            className="px-3 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                                          >
+                                            {selectedMatchesToDelete.length === currentMatches.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                          </button>
+                                        )}
+                                        {selectedMatchesToDelete.length > 0 && (
+                                          <button
+                                            type="button"
+                                            onClick={async () => {
+                                              if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedMatchesToDelete.length} match(s) ?`)) {
+                                                try {
+                                                  await Promise.all(
+                                                    selectedMatchesToDelete.map(id =>
+                                                      deleteDoc(doc(db, 'matchs', id))
+                                                    )
+                                                  );
+                                                  alert(`${selectedMatchesToDelete.length} match(s) supprimé(s) avec succès !`);
+                                                  setSelectedMatchesToDelete([]);
+                                                } catch (error) {
+                                                  console.error('Error deleting matches:', error);
+                                                  alert('Erreur lors de la suppression des matchs');
+                                                }
+                                              }
+                                            }}
+                                            className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+                                          >
+                                            Supprimer ({selectedMatchesToDelete.length})
+                                          </button>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </div>
                               </div>
                               <div className="space-y-2 max-h-96 overflow-y-auto">
                                 {matchData
