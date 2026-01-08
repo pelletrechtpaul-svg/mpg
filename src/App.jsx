@@ -2159,7 +2159,57 @@ const App = () => {
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
                           <div className="flex items-center gap-1 sm:gap-3">
                             <div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
-                            <span className="font-semibold text-slate-800 text-xs sm:text-base">{player.joueur}</span>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span>
+                            {/* Jersey icon for winners (1st place) */}
+                            {index === 0 && (() => {
+                              const jerseyIcons = {
+                                'Paul': (
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 8L4 6V12L6 10V8Z" fill="#1e3a8a"/>
+                                    <path d="M18 8L20 6V12L18 10V8Z" fill="#1e3a8a"/>
+                                    <rect x="6" y="7" width="12" height="13" rx="1" fill="#1e3a8a"/>
+                                    <rect x="7" y="11" width="10" height="2" fill="#dc2626"/>
+                                    <rect x="7" y="10.5" width="10" height="0.5" fill="white"/>
+                                    <rect x="7" y="13.5" width="10" height="0.5" fill="white"/>
+                                  </svg>
+                                ),
+                                'Adrien': (
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 8L4 6V12L6 10V8Z" fill="#dc2626"/>
+                                    <path d="M18 8L20 6V12L18 10V8Z" fill="white"/>
+                                    <rect x="6" y="7" width="1.5" height="13" fill="#dc2626"/>
+                                    <rect x="7.5" y="7" width="1.5" height="13" fill="white"/>
+                                    <rect x="9" y="7" width="1.5" height="13" fill="#dc2626"/>
+                                    <rect x="10.5" y="7" width="1.5" height="13" fill="white"/>
+                                    <rect x="12" y="7" width="1.5" height="13" fill="#dc2626"/>
+                                    <rect x="13.5" y="7" width="1.5" height="13" fill="white"/>
+                                    <rect x="15" y="7" width="1.5" height="13" fill="#dc2626"/>
+                                    <rect x="16.5" y="7" width="1.5" height="13" fill="white"/>
+                                  </svg>
+                                ),
+                                'Roman': (
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 8L4 6V12L6 10V8Z" fill="#7dd3fc"/>
+                                    <path d="M18 8L20 6V12L18 10V8Z" fill="#7dd3fc"/>
+                                    <rect x="6" y="7" width="12" height="13" rx="1" fill="white"/>
+                                    <rect x="6" y="7" width="3" height="13" fill="#7dd3fc"/>
+                                    <rect x="15" y="7" width="3" height="13" fill="#7dd3fc"/>
+                                    <rect x="6" y="7" width="12" height="2" fill="#7dd3fc"/>
+                                  </svg>
+                                ),
+                                'Tiago': (
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 8L4 6V12L6 10V8Z" fill="#15803d"/>
+                                    <path d="M18 8L20 6V12L18 10V8Z" fill="#15803d"/>
+                                    <rect x="6" y="7" width="12" height="13" rx="1" fill="#fde047"/>
+                                    <rect x="6" y="7" width="3" height="13" fill="#15803d"/>
+                                    <rect x="15" y="7" width="3" height="13" fill="#15803d"/>
+                                    <rect x="6" y="7" width="12" height="2" fill="#15803d"/>
+                                  </svg>
+                                )
+                              };
+                              return jerseyIcons[player.joueur] || null;
+                            })()}
                           </div>
                         </td>
                         <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 hidden md:table-cell">{player.matchs}</td>
