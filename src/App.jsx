@@ -2149,7 +2149,7 @@ const App = () => {
                                   const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
                                   const metadata = ligueMetadata[ligueKey];
                                   if (metadata && metadata.matchsTotal < 6) {
-                                    return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-slate-400" />;
+                                    return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
                                   }
                                 }
                                 return <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
