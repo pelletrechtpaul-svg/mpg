@@ -1061,7 +1061,7 @@ const App = () => {
       }
 
       // NEW: Calculate best win ratio peak (at any moment T)
-      if (playerMatches.length >= 10) {
+      if (playerMatches.length >= 30) {
         let wins = 0;
         let totalMatches = 0;
         let bestRatio = 0;
@@ -1073,8 +1073,8 @@ const App = () => {
           totalMatches++;
           if (match.result === 'W') wins++;
 
-          // Calculate ratio after this match (minimum 10 matches)
-          if (totalMatches >= 10) {
+          // Calculate ratio after this match (minimum 30 matches)
+          if (totalMatches >= 30) {
             const ratio = wins / totalMatches;
             if (ratio > bestRatio || (ratio === bestRatio && totalMatches > bestRatioMatches)) {
               bestRatio = ratio;
@@ -1097,7 +1097,7 @@ const App = () => {
       }
 
       // NEW: Calculate current win ratio (at end of season)
-      if (playerMatches.length >= 10) {
+      if (playerMatches.length >= 30) {
         const totalWins = playerMatches.filter(m => m.result === 'W').length;
         const currentRatio = totalWins / playerMatches.length;
 
@@ -2766,7 +2766,7 @@ const App = () => {
                               <strong>{seasonRecords.bestWinRatioPeak.joueur}</strong> ({seasonRecords.bestWinRatioPeak.wins}V sur {seasonRecords.bestWinRatioPeak.totalMatches} matchs)
                             </p>
                             <p className="text-xs text-slate-500">
-                              Pic atteint le {new Date(seasonRecords.bestWinRatioPeak.date).toLocaleDateString('fr-FR')}
+                              Pic atteint le {new Date(seasonRecords.bestWinRatioPeak.date).toLocaleDateString('fr-FR')} • min 30 matchs
                             </p>
                           </div>
                         </div>
