@@ -385,18 +385,6 @@ const App = () => {
       stats[joueur].medaillesChampionnat = medaillesChampionnat[joueur];
     });
 
-    // Add artificial titles for 2024/2025 General ranking
-    if (selectedSeason === '2024/2025') {
-      if (stats['Adrien']) {
-        stats['Adrien'].victoiresChampionnat += 1;
-        stats['Adrien'].points += 3;
-      }
-      if (stats['Paul']) {
-        stats['Paul'].victoiresChampionnat += 1;
-        stats['Paul'].points += 3;
-      }
-    }
-
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
@@ -460,35 +448,6 @@ const App = () => {
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
         stats[joueur].medaillesChampionnat = ligueMedailles[joueur];
       });
-    }
-
-    // Add artificial data for 2024/2025 Ligue 1 Total
-    if (selectedSeason === '2024/2025' && selectedLigue === 'Ligue 1' && selectedChampionnat === 'total') {
-      if (stats['Paul']) {
-        stats['Paul'].matchs += 12;
-        stats['Paul'].ga -= 3;
-        stats['Paul'].buts_pour += stats['Paul'].ga < 0 ? 0 : -3;
-        stats['Paul'].buts_contre += 3;
-        stats['Paul'].points += 15;
-      }
-      if (stats['Adrien']) {
-        stats['Adrien'].matchs += 12;
-        stats['Adrien'].ga += 7;
-        stats['Adrien'].buts_pour += 7;
-        stats['Adrien'].points += 19;
-      }
-      if (stats['Tiago']) {
-        stats['Tiago'].matchs += 12;
-        stats['Tiago'].ga += 6;
-        stats['Tiago'].buts_pour += 6;
-        stats['Tiago'].points += 22;
-      }
-      if (stats['Roman']) {
-        stats['Roman'].matchs += 12;
-        stats['Roman'].ga -= 10;
-        stats['Roman'].buts_contre += 10;
-        stats['Roman'].points += 15;
-      }
     }
 
     return Object.entries(stats)
@@ -1253,21 +1212,6 @@ const App = () => {
       playerPoints[j] = 0;
       playerBonusPoints[j] = 0;
     });
-
-    // Add artificial titles for 2024/2025 season (at the very end)
-    if (selectedLigue === 'general' && selectedSeason === '2024/2025' && sortedMatches.length > 0) {
-      const lastMatchDate = new Date(sortedMatches[sortedMatches.length - 1].dateMatch);
-      championshipBonuses.set('artificial-adrien', {
-        endDate: lastMatchDate,
-        winner: 'Adrien',
-        points: 3
-      });
-      championshipBonuses.set('artificial-paul', {
-        endDate: lastMatchDate,
-        winner: 'Paul',
-        points: 3
-      });
-    }
 
     sortedMatches.forEach((match, index) => {
       // Add points for this match
@@ -2089,19 +2033,7 @@ const App = () => {
 
             {/* Tableau classement */}
             {(selectedLigue !== 'general' || rankingsView === 'table') ? (
-            <div
-              className={`rounded-xl shadow-sm overflow-hidden ${
-                selectedSeason === '2024/2025' && selectedLigue === 'general'
-                  ? 'bg-gradient-to-br from-sky-100 via-white to-sky-50 relative'
-                  : 'bg-white dark:bg-slate-800'
-              }`}
-              style={selectedSeason === '2024/2025' && selectedLigue === 'general' ? {
-                backgroundImage: 'linear-gradient(to bottom right, rgba(224, 242, 254, 0.6), rgba(255, 255, 255, 0.7), rgba(240, 249, 255, 0.6)), url(https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg)',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '650px 650px'
-              } : {}}
-            >
+            <div className="rounded-xl shadow-sm overflow-hidden bg-white dark:bg-slate-800">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm">
                   <thead className="bg-slate-50 dark:bg-slate-700">
@@ -3005,16 +2937,16 @@ const App = () => {
         {activeTab === 'stats-avancees' && (
           <>
             {selectedSeason === 'All-Time' ? (
-              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
                 <p className="text-slate-600">Section en construction...</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {/* Header with common info */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-800">Forme récente</h2>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Forme récente</h2>
                       <p className="text-sm text-slate-600">10 derniers matchs</p>
                     </div>
                     {advancedStats[joueurs[0]] && (
@@ -3033,9 +2965,9 @@ const App = () => {
                     if (!stats) return null;
 
                     return (
-                      <div key={joueur} className="bg-white rounded-xl shadow-sm p-6">
+                      <div key={joueur} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                         {/* Player header */}
-                        <div className="flex items-center gap-4 mb-6 pb-4 border-b">
+                        <div className="flex items-center gap-4 mb-6 pb-4 border-b dark:border-slate-700">
                           <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
                             <img
                               src={playerImages[joueur]}
@@ -3048,7 +2980,7 @@ const App = () => {
                             />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-slate-800">{joueur}</h3>
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">{joueur}</h3>
                           </div>
                         </div>
 
@@ -3123,7 +3055,7 @@ const App = () => {
         {/* ONGLET INFOS */}
         {activeTab === 'infos' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
               <h2 className="text-2xl font-bold text-slate-800 mb-6">📝 Post-its collaboratifs</h2>
 
               {/* Add new post-it form */}
