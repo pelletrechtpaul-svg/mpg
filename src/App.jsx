@@ -300,6 +300,20 @@ const App = () => {
     return map;
   }, [filteredData, ligues]);
 
+  // Championnats filtrés par la saison du formulaire admin (indépendant de la saison globale)
+  const adminChampionnatsByLigue = useMemo(() => {
+    const adminData = adminFormData.saison === 'All-Time'
+      ? matchData
+      : matchData.filter(d => d.saison === adminFormData.saison);
+    const map = {};
+    ligues.forEach(ligue => {
+      map[ligue] = [...new Set(
+        adminData.filter(d => d.ligue === ligue).map(d => d.championnat)
+      )].sort();
+    });
+    return map;
+  }, [matchData, ligues, adminFormData.saison]);
+
   const playerColors = {
     Paul: 'bg-blue-600',
     Adrien: 'bg-green-600',
@@ -3317,7 +3331,7 @@ const App = () => {
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">Championnat</label>
                             <div className="space-y-2">
-                              {championnatsByLigue[adminFormData.ligue]?.map(ch => (
+                              {adminChampionnatsByLigue[adminFormData.ligue]?.map(ch => (
                                 <label key={ch} className="flex items-center">
                                   <input
                                     type="radio"
