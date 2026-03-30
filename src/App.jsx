@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Brush } from 'recharts';
-import { Trophy, Lock, Plus, Trash2, Edit, Medal, Music } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2, Edit, Medal, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -16,6 +16,13 @@ const playerImages = {
   'Paul': '/images/3.png',
   'Tiago': '/images/4.png'
 };
+
+// Playlist — ajoute tes fichiers dans /public/audio/ et référence-les ici
+const PLAYLIST = [
+  { title: 'Theme', src: '/audio/theme.mp3' },
+  // { title: 'Titre 2', src: '/audio/titre2.mp3' },
+  // { title: 'Titre 3', src: '/audio/titre3.mp3' },
+];
 
 // Group matches by championship key (saison-ligue-championnat)
 const groupMatchesByChampionship = (matches) => {
@@ -83,7 +90,11 @@ const App = () => {
 
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioRef] = useState(new Audio('/audio/theme.mp3'));
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const audioRef = React.useRef(null);
+  if (!audioRef.current) {
+    audioRef.current = new Audio(PLAYLIST[0].src);
+  }
 
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
@@ -136,6 +147,38 @@ const App = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Change track: update src, resume playback if already playing
+  useEffect(() => {
+    const audio = audioRef.current;
+    audio.src = PLAYLIST[currentTrack].src;
+    audio.load();
+    if (isPlaying) audio.play();
+  }, [currentTrack]);
+
+  // Auto-advance to next track (with infinite loop) when a song ends
+  useEffect(() => {
+    const audio = audioRef.current;
+    const handleEnded = () => {
+      setCurrentTrack(t => (t + 1) % PLAYLIST.length);
+    };
+    audio.addEventListener('ended', handleEnded);
+    return () => audio.removeEventListener('ended', handleEnded);
+  }, []);
+
+  const playPause = () => {
+    const audio = audioRef.current;
+    if (isPlaying) { audio.pause(); setIsPlaying(false); }
+    else { audio.play(); setIsPlaying(true); }
+  };
+
+  const prevTrack = () => {
+    setCurrentTrack(t => (t - 1 + PLAYLIST.length) % PLAYLIST.length);
+  };
+
+  const nextTrack = () => {
+    setCurrentTrack(t => (t + 1) % PLAYLIST.length);
+  };
 
   // Monitor online/offline status
   useEffect(() => {
@@ -1561,26 +1604,31 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
-        {/* MP3 Player */}
-        <button
-          onClick={() => {
-            if (isPlaying) {
-              audioRef.pause();
-              setIsPlaying(false);
-            } else {
-              audioRef.play();
-              setIsPlaying(true);
-            }
-          }}
-          className={`px-2 py-2 rounded-lg shadow-md transition-all hover:shadow-lg border ${
-            isPlaying
-              ? 'bg-blue-600 text-white border-blue-600 animate-pulse'
-              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'
-          }`}
-          title={isPlaying ? 'Pause' : 'Lecture'}
-        >
-          <Music className="w-4 h-4" />
-        </button>
+        {/* Mini music player */}
+        <div className={`rounded-lg shadow-md border transition-all ${
+          isPlaying
+            ? 'bg-blue-600 border-blue-600 text-white'
+            : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
+        }`}>
+          {/* Track title */}
+          <div className="px-2 pt-1.5 pb-0.5 text-center">
+            <p className={`text-xs font-medium truncate max-w-[90px] ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
+              {PLAYLIST[currentTrack].title}
+            </p>
+          </div>
+          {/* Controls */}
+          <div className="flex items-center justify-center gap-0.5 px-1 pb-1.5">
+            <button onClick={prevTrack} className="p-1 rounded hover:opacity-70 transition-opacity" title="Précédent">
+              <SkipBack className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={playPause} className="p-1 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            </button>
+            <button onClick={nextTrack} className="p-1 rounded hover:opacity-70 transition-opacity" title="Suivant">
+              <SkipForward className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
 
         {/* Dark mode toggle */}
         <button
