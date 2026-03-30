@@ -2322,7 +2322,7 @@ const App = () => {
               <>
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-8 mb-6">
                   <div className="grid grid-cols-3 items-center gap-4 md:gap-6">
-                    <div className="text-left">
+                    <div className="flex flex-col items-center text-center">
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
                         <img
                           src={playerImages[selectedVersusPlayer1]}
@@ -2346,8 +2346,8 @@ const App = () => {
                         {versusStats.nuls} match{versusStats.nuls > 1 ? 's' : ''} nul{versusStats.nuls > 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-purple-500 shadow-lg ml-auto">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-purple-500 shadow-lg">
                         <img
                           src={playerImages[selectedVersusPlayer2]}
                           alt={selectedVersusPlayer2}
