@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Brush } from 'recharts';
 import { Trophy, Lock, Plus, Trash2, Edit, Medal, Music } from 'lucide-react';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
@@ -2040,45 +2040,57 @@ const App = () => {
             ) : (
             /* Graphique d'évolution */
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-0 sm:p-6">
-              <h3 className="text-xl font-bold text-slate-800 mb-4 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
               {historicalEvolution.length > 0 ? (
-                <div className="w-full sm:w-1/2 sm:mx-auto">
-                  <ResponsiveContainer width="100%" height={700}>
-                    <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis
-                        dataKey="date"
-                        label={{ value: 'Date des matchs', position: 'insideBottom', offset: -10 }}
-                        tick={{ fontSize: 12 }}
-                        height={60}
-                      />
-                      <YAxis
-                        label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }}
-                        domain={['dataMin - 5', 'dataMax + 5']}
-                        scale="linear"
-                      />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                      />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={50}
-                        wrapperStyle={{ paddingTop: '20px' }}
-                      />
-                      {joueurs.map((joueur) => (
-                        <Line
-                          key={joueur}
-                          type="monotone"
-                          dataKey={joueur}
-                          stroke={playerColorHex[joueur] || '#6b7280'}
-                          strokeWidth={3}
-                          dot={false}
-                          activeDot={{ r: 6 }}
+                <>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">
+                    Déplacez les poignées de la tirette en bas pour zoomer sur une période
+                  </p>
+                  <div className="w-full sm:w-1/2 sm:mx-auto">
+                    <ResponsiveContainer width="100%" height={480}>
+                      <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <XAxis
+                          dataKey="date"
+                          tick={{ fontSize: 11 }}
+                          height={40}
                         />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                        <YAxis
+                          label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }}
+                          domain={['dataMin - 5', 'dataMax + 5']}
+                          scale="linear"
+                        />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                        />
+                        <Legend
+                          verticalAlign="top"
+                          height={36}
+                        />
+                        <Brush
+                          dataKey="date"
+                          height={30}
+                          stroke="#94a3b8"
+                          fill="#f1f5f9"
+                          startIndex={Math.max(0, historicalEvolution.length - 20)}
+                          endIndex={historicalEvolution.length - 1}
+                          travellerWidth={8}
+                        />
+                        {joueurs.map((joueur) => (
+                          <Line
+                            key={joueur}
+                            type="monotone"
+                            dataKey={joueur}
+                            stroke={playerColorHex[joueur] || '#6b7280'}
+                            strokeWidth={3}
+                            dot={false}
+                            activeDot={{ r: 6 }}
+                          />
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </>
               ) : (
                 <div className="text-center text-slate-600 py-12">
                   <p>Pas assez de données pour afficher l'évolution</p>
