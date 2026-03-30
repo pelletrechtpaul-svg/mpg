@@ -2837,7 +2837,14 @@ const App = () => {
 
                 {/* Régularité */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">📈 Régularité</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4">📈 Régularité</h2>
+
+                  <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-4 py-3 mb-4 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="font-semibold text-slate-600 dark:text-slate-300">Comment ça marche ?</span>{' '}
+                    On calcule l'écart-type des <span className="font-medium">différences de buts</span> (buts marqués − buts encaissés) sur tous les matchs.
+                    Un écart-type <span className="font-medium">faible</span> = des résultats toujours proches de la même valeur → joueur <span className="font-medium">régulier</span>.
+                    Un écart-type <span className="font-medium">élevé</span> = des scores très variables d'un match à l'autre → joueur <span className="font-medium">imprévisible</span>.
+                  </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Plus régulier */}
