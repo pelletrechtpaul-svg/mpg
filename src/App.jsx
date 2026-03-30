@@ -85,11 +85,6 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioRef] = useState(new Audio('/audio/theme.mp3'));
 
-  // Infos/Post-its state
-  const [postIts, setPostIts] = useState([]);
-  const [newPostItText, setNewPostItText] = useState('');
-  const [newPostItAuthor, setNewPostItAuthor] = useState('');
-
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -1221,51 +1216,6 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  // Load post-its from Firestore
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'postits'), (snapshot) => {
-      const postitsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setPostIts(postitsData.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Add post-it
-  const handleAddPostIt = async (e) => {
-    e.preventDefault();
-    if (!newPostItText.trim() || !newPostItAuthor.trim()) {
-      alert('Veuillez remplir tous les champs');
-      return;
-    }
-
-    try {
-      const postItRef = doc(collection(db, 'postits'));
-      await setDoc(postItRef, {
-        id: postItRef.id,
-        text: newPostItText,
-        author: newPostItAuthor,
-        createdAt: Date.now()
-      });
-      setNewPostItText('');
-      setNewPostItAuthor('');
-      alert('Post-it ajouté avec succès !');
-    } catch (error) {
-      console.error('Error adding post-it:', error);
-      alert(`Erreur lors de l'ajout du post-it: ${error.message}\n\nVérifiez les règles Firestore pour la collection 'postits'.`);
-    }
-  };
-
-  // Delete post-it
-  const handleDeletePostIt = async (postItId) => {
-    if (!confirm('Supprimer ce post-it ?')) return;
-
-    try {
-      await deleteDoc(doc(db, 'postits', postItId));
-    } catch (error) {
-      console.error('Error deleting post-it:', error);
-      alert('Erreur lors de la suppression');
-    }
-  };
 
   // Recalculate all metadata based on actual match counts
   const handleRecalculateMetadata = async () => {
@@ -1632,32 +1582,6 @@ const App = () => {
           <Music className="w-4 h-4" />
         </button>
 
-        {/* Mur d'infos button */}
-        <button
-          onClick={() => setActiveTab(activeTab === 'infos' ? 'classements' : 'infos')}
-          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 ${
-            activeTab === 'infos'
-              ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700'
-          }`}
-        >
-          <span className="text-sm sm:text-lg">ℹ️</span>
-          <span className="hidden sm:inline text-xs">Infos</span>
-        </button>
-
-        {/* Admin button */}
-        <button
-          onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
-          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 border-black dark:border-red-400 ${
-            activeTab === 'admin'
-              ? 'bg-red-600 text-white'
-              : 'bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700'
-          }`}
-        >
-          <Lock className={`w-3 h-3 sm:w-4 sm:h-4 ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`} />
-          <span className={`hidden sm:inline text-xs ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`}>Admin</span>
-        </button>
-
         {/* Dark mode toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
@@ -1673,6 +1597,19 @@ const App = () => {
               <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
           )}
+        </button>
+
+        {/* Admin button */}
+        <button
+          onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
+          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 border-black dark:border-red-400 ${
+            activeTab === 'admin'
+              ? 'bg-red-600 text-white'
+              : 'bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700'
+          }`}
+        >
+          <Lock className={`w-3 h-3 sm:w-4 sm:h-4 ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`} />
+          <span className={`hidden sm:inline text-xs ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`}>Admin</span>
         </button>
       </div>
 
@@ -3005,72 +2942,6 @@ const App = () => {
               </div>
             )}
           </>
-        )}
-
-        {/* ONGLET INFOS */}
-        {activeTab === 'infos' && (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-              <h2 className="text-2xl font-bold text-slate-800 mb-6">📝 Post-its collaboratifs</h2>
-
-              {/* Add new post-it form */}
-              <form onSubmit={handleAddPostIt} className="mb-8 bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200 max-w-xl mx-auto">
-                <h3 className="text-lg font-semibold text-slate-800 mb-3">Ajouter un post-it</h3>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    value={newPostItAuthor}
-                    onChange={(e) => setNewPostItAuthor(e.target.value)}
-                    placeholder="Votre nom..."
-                    className="w-full px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-                  <textarea
-                    value={newPostItText}
-                    onChange={(e) => setNewPostItText(e.target.value)}
-                    placeholder="Écrivez votre message..."
-                    rows="3"
-                    className="w-full px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-                  <button
-                    type="submit"
-                    className="px-6 py-2 bg-yellow-400 text-slate-800 rounded-lg font-medium hover:bg-yellow-500 transition-colors"
-                  >
-                    Ajouter
-                  </button>
-                </div>
-              </form>
-
-              {/* Post-its grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {postIts.map((postIt) => (
-                  <div
-                    key={postIt.id}
-                    className="bg-yellow-100 rounded-lg p-4 shadow-md border-l-4 border-yellow-400 relative hover:shadow-lg transition-shadow"
-                  >
-                    <button
-                      onClick={() => handleDeletePostIt(postIt.id)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 flex items-center justify-center text-xs font-bold"
-                    >
-                      ×
-                    </button>
-                    <p className="text-slate-800 mb-3 pr-6 whitespace-pre-wrap break-words">{postIt.text}</p>
-                    <div className="flex items-center justify-between text-xs text-slate-600">
-                      <span className="font-semibold">— {postIt.author}</span>
-                      {postIt.createdAt && (
-                        <span>{new Date(postIt.createdAt).toLocaleDateString('fr-FR')}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {postIts.length === 0 && (
-                  <div className="col-span-full text-center py-12 text-slate-500">
-                    <p className="text-lg">Aucun post-it pour le moment.</p>
-                    <p className="text-sm mt-2">Soyez le premier à en ajouter un ! 📌</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
         )}
 
         {/* ONGLET ADMIN */}
