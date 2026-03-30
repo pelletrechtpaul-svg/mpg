@@ -5,8 +5,6 @@ import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 
-const defaultMatchData = [];
-
 // Helper function to encode keys for Firestore (no slashes allowed in doc IDs)
 const encodeFirestoreKey = (key) => key.replace(/\//g, '_');
 const decodeFirestoreKey = (key) => key.replace(/_/g, '/');
@@ -17,6 +15,39 @@ const playerImages = {
   'Adrien': '/images/2.png',
   'Paul': '/images/3.png',
   'Tiago': '/images/4.png'
+};
+
+// Group matches by championship key (saison-ligue-championnat)
+const groupMatchesByChampionship = (matches) => {
+  const map = {};
+  matches.forEach(match => {
+    const key = `${match.saison}-${match.ligue}-${match.championnat}`;
+    if (!map[key]) map[key] = [];
+    map[key].push(match);
+  });
+  return map;
+};
+
+// Calculate longest streak of a given condition in a list of matches
+const calculateLongestStreak = (playerMatches, conditionFn) => {
+  let current = 0, max = 0, maxEnd = null;
+  playerMatches.forEach((match, idx) => {
+    if (conditionFn(match)) {
+      current++;
+      if (current > max) { max = current; maxEnd = idx; }
+    } else {
+      current = 0;
+    }
+  });
+  return max > 0 ? { length: max, endDate: playerMatches[maxEnd]?.date } : null;
+};
+
+// Hex colors for chart rendering (matches playerColors bg classes)
+const playerColorHex = {
+  Paul: '#2563eb',
+  Adrien: '#16a34a',
+  Tiago: '#9333ea',
+  Roman: '#ea580c',
 };
 
 const App = () => {
@@ -64,10 +95,7 @@ const App = () => {
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddMatchForm, setShowAddMatchForm] = useState(false);
   const [showEditMatchForm, setShowEditMatchForm] = useState(false);
-  const [showEditLigueForm, setShowEditLigueForm] = useState(false);
   const [editingMatch, setEditingMatch] = useState(null);
-  const [editingLigue, setEditingLigue] = useState(null);
-  const [adminSearchQuery, setAdminSearchQuery] = useState('');
 
   // Edit form cascade states
   const [editSelectedSaison, setEditSelectedSaison] = useState('');
@@ -298,66 +326,17 @@ const App = () => {
     return stats;
   };
 
-  // Calculate championship victories
-  const victoiresChampionnat = useMemo(() => {
+  // Calculate championship victories (titres) and medals in a single pass
+  const { victoiresChampionnat, medaillesChampionnat } = useMemo(() => {
     const victoires = {};
-    joueurs.forEach(j => victoires[j] = 0);
-
-    const championnatsMap = {};
-    filteredData.forEach(match => {
-      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
-      if (!championnatsMap[key]) championnatsMap[key] = [];
-      championnatsMap[key].push(match);
-    });
-
-    Object.entries(championnatsMap).forEach(([key, matches]) => {
-      // Check if championship is complete
-      const metadata = ligueMetadata[key];
-      if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
-        return; // Skip incomplete championships
-      }
-
-      // Only count victories for championships with exactly 6 matches (titles)
-      if (metadata.matchsTotal !== 6) {
-        return;
-      }
-
-      const stats = calculatePlayerStats(matches, joueurs);
-      const ranking = Object.entries(stats)
-        .map(([joueur, data]) => ({ joueur, ...data }))
-        .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-
-      if (ranking.length > 0 && ranking[0].points > 0) {
-        victoires[ranking[0].joueur]++;
-      }
-    });
-
-    return victoires;
-  }, [filteredData, joueurs, ligueMetadata]);
-
-  // Calculate medals (for championships with < 6 matches)
-  const medaillesChampionnat = useMemo(() => {
     const medailles = {};
-    joueurs.forEach(j => medailles[j] = 0);
+    joueurs.forEach(j => { victoires[j] = 0; medailles[j] = 0; });
 
-    const championnatsMap = {};
-    filteredData.forEach(match => {
-      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
-      if (!championnatsMap[key]) championnatsMap[key] = [];
-      championnatsMap[key].push(match);
-    });
+    const championnatsMap = groupMatchesByChampionship(filteredData);
 
     Object.entries(championnatsMap).forEach(([key, matches]) => {
-      // Check if championship is complete
       const metadata = ligueMetadata[key];
-      if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
-        return; // Skip incomplete championships
-      }
-
-      // Only for championships with less than 6 matches
-      if (metadata.matchsTotal >= 6) {
-        return;
-      }
+      if (!metadata || metadata.matchsEntered < metadata.matchsTotal) return;
 
       const stats = calculatePlayerStats(matches, joueurs);
       const ranking = Object.entries(stats)
@@ -365,11 +344,15 @@ const App = () => {
         .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
       if (ranking.length > 0 && ranking[0].points > 0) {
-        medailles[ranking[0].joueur]++;
+        if (metadata.matchsTotal >= 6) {
+          victoires[ranking[0].joueur]++;
+        } else {
+          medailles[ranking[0].joueur]++;
+        }
       }
     });
 
-    return medailles;
+    return { victoiresChampionnat: victoires, medaillesChampionnat: medailles };
   }, [filteredData, joueurs, ligueMetadata]);
 
   // Classement général
@@ -873,137 +856,19 @@ const App = () => {
         };
       });
 
-      // Series 8: Longest win streak
-      let currentWins = 0;
-      let maxWins = 0;
-      let maxWinsEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.result === 'W') {
-          currentWins++;
-          if (currentWins > maxWins) {
-            maxWins = currentWins;
-            maxWinsEnd = idx;
-          }
-        } else {
-          currentWins = 0;
-        }
-      });
-      if (maxWins > 0) {
-        records.longestWinStreak[joueur] = {
-          length: maxWins,
-          endDate: playerMatches[maxWinsEnd]?.date
-        };
-      }
+      // Calculate all series using the shared helper
+      const streaks = {
+        longestWinStreak: calculateLongestStreak(playerMatches, m => m.result === 'W'),
+        longestUnbeatenStreak: calculateLongestStreak(playerMatches, m => m.result !== 'L'),
+        longestLossStreak: calculateLongestStreak(playerMatches, m => m.result === 'L'),
+        longestDrawStreak: calculateLongestStreak(playerMatches, m => m.result === 'D'),
+        longestGoalDrought: calculateLongestStreak(playerMatches, m => m.buts === 0),
+        longestCleanSheetStreak: calculateLongestStreak(playerMatches, m => m.butsAdv === 0),
+      };
 
-      // Series 9: Longest unbeaten streak
-      let currentUnbeaten = 0;
-      let maxUnbeaten = 0;
-      let maxUnbeatenEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.result !== 'L') {
-          currentUnbeaten++;
-          if (currentUnbeaten > maxUnbeaten) {
-            maxUnbeaten = currentUnbeaten;
-            maxUnbeatenEnd = idx;
-          }
-        } else {
-          currentUnbeaten = 0;
-        }
+      Object.entries(streaks).forEach(([key, streak]) => {
+        if (streak) records[key][joueur] = streak;
       });
-      if (maxUnbeaten > 0) {
-        records.longestUnbeatenStreak[joueur] = {
-          length: maxUnbeaten,
-          endDate: playerMatches[maxUnbeatenEnd]?.date
-        };
-      }
-
-      // Series 10: Longest loss streak
-      let currentLosses = 0;
-      let maxLosses = 0;
-      let maxLossesEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.result === 'L') {
-          currentLosses++;
-          if (currentLosses > maxLosses) {
-            maxLosses = currentLosses;
-            maxLossesEnd = idx;
-          }
-        } else {
-          currentLosses = 0;
-        }
-      });
-      if (maxLosses > 0) {
-        records.longestLossStreak[joueur] = {
-          length: maxLosses,
-          endDate: playerMatches[maxLossesEnd]?.date
-        };
-      }
-
-      // Series 11: Longest draw streak
-      let currentDraws = 0;
-      let maxDraws = 0;
-      let maxDrawsEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.result === 'D') {
-          currentDraws++;
-          if (currentDraws > maxDraws) {
-            maxDraws = currentDraws;
-            maxDrawsEnd = idx;
-          }
-        } else {
-          currentDraws = 0;
-        }
-      });
-      if (maxDraws > 0) {
-        records.longestDrawStreak[joueur] = {
-          length: maxDraws,
-          endDate: playerMatches[maxDrawsEnd]?.date
-        };
-      }
-
-      // Series 12: Longest goal drought (without scoring)
-      let currentDrought = 0;
-      let maxDrought = 0;
-      let maxDroughtEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.buts === 0) {
-          currentDrought++;
-          if (currentDrought > maxDrought) {
-            maxDrought = currentDrought;
-            maxDroughtEnd = idx;
-          }
-        } else {
-          currentDrought = 0;
-        }
-      });
-      if (maxDrought > 0) {
-        records.longestGoalDrought[joueur] = {
-          length: maxDrought,
-          endDate: playerMatches[maxDroughtEnd]?.date
-        };
-      }
-
-      // Series 13: Longest clean sheet streak (without conceding)
-      let currentCleanSheet = 0;
-      let maxCleanSheet = 0;
-      let maxCleanSheetEnd = null;
-      playerMatches.forEach((match, idx) => {
-        if (match.butsAdv === 0) {
-          currentCleanSheet++;
-          if (currentCleanSheet > maxCleanSheet) {
-            maxCleanSheet = currentCleanSheet;
-            maxCleanSheetEnd = idx;
-          }
-        } else {
-          currentCleanSheet = 0;
-        }
-      });
-      if (maxCleanSheet > 0) {
-        records.longestCleanSheetStreak[joueur] = {
-          length: maxCleanSheet,
-          endDate: playerMatches[maxCleanSheetEnd]?.date
-        };
-      }
 
       // Calculate standard deviation for regularity (16-17)
       if (playerMatches.length > 2) {
@@ -1147,12 +1012,7 @@ const App = () => {
     });
 
     // NEW: Calculate most goals scored/conceded in a single championship (6-match championships only)
-    const championshipsMap = {};
-    seasonMatches.forEach(match => {
-      const key = `${match.saison}-${match.ligue}-${match.championnat}`;
-      if (!championshipsMap[key]) championshipsMap[key] = [];
-      championshipsMap[key].push(match);
-    });
+    const championshipsMap = groupMatchesByChampionship(seasonMatches);
 
     Object.entries(championshipsMap).forEach(([key, matches]) => {
       // Only consider 6-match championships
@@ -1236,12 +1096,7 @@ const App = () => {
     const appliedBonuses = new Set(); // Track which bonuses have been applied
 
     if (selectedLigue === 'general') {
-      const championnatsMap = {};
-      matchesToUse.forEach(match => {
-        const key = `${match.saison}-${match.ligue}-${match.championnat}`;
-        if (!championnatsMap[key]) championnatsMap[key] = [];
-        championnatsMap[key].push(match);
-      });
+      const championnatsMap = groupMatchesByChampionship(matchesToUse);
 
       Object.entries(championnatsMap).forEach(([key, matches]) => {
         const metadata = ligueMetadata[key];
@@ -1313,101 +1168,60 @@ const App = () => {
   }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata, selectedSeason]);
 
   // Historical evolution for buteurs (goals scored)
-  const buteursEvolution = useMemo(() => {
-    // Use all matches for the selected season
-    const seasonMatches = matchData.filter(m => {
-      if (selectedSeason === 'All-Time') return true;
-      return m.saison === selectedSeason;
-    });
+  // Historical evolution for goals scored and conceded (computed in a single pass)
+  const { buteursEvolution, loosersEvolution } = useMemo(() => {
+    const seasonMatches = matchData.filter(m =>
+      selectedSeason === 'All-Time' || m.saison === selectedSeason
+    );
 
-    // Sort matches by date
     const sortedMatches = [...seasonMatches].sort((a, b) =>
       new Date(a.dateMatch) - new Date(b.dateMatch)
     );
 
-    // Calculate cumulative goals over time
-    const evolution = [];
+    const goalsEvolution = [];
+    const concededEvolution = [];
     const playerGoals = {};
-    joueurs.forEach(j => playerGoals[j] = 0);
+    const playerConceded = {};
+    joueurs.forEach(j => { playerGoals[j] = 0; playerConceded[j] = 0; });
 
     sortedMatches.forEach((match, index) => {
-      // Add goals scored in this match
-      const goals = {
+      // Goals scored
+      const scored = {
         [match.joueur1]: match.buts_j1 || 0,
         [match.joueur2]: match.buts_j2 || 0,
         [match.joueur3]: match.buts_j3 || 0,
         [match.joueur4]: match.buts_j4 || 0
       };
-
-      Object.entries(goals).forEach(([joueur, goalsScored]) => {
-        if (joueur && joueur !== 'undefined') {
-          playerGoals[joueur] = (playerGoals[joueur] || 0) + goalsScored;
-        }
-      });
-
-      // Record snapshot every few matches
-      if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
-        const dataPoint = {
-          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
-          matchNumber: index + 1
-        };
-        joueurs.forEach(j => {
-          dataPoint[j] = playerGoals[j] || 0;
-        });
-        evolution.push(dataPoint);
-      }
-    });
-
-    return evolution;
-  }, [matchData, selectedSeason, joueurs]);
-
-  // Historical evolution for loosers (goals conceded)
-  const loosersEvolution = useMemo(() => {
-    // Use all matches for the selected season
-    const seasonMatches = matchData.filter(m => {
-      if (selectedSeason === 'All-Time') return true;
-      return m.saison === selectedSeason;
-    });
-
-    // Sort matches by date
-    const sortedMatches = [...seasonMatches].sort((a, b) =>
-      new Date(a.dateMatch) - new Date(b.dateMatch)
-    );
-
-    // Calculate cumulative goals conceded over time
-    const evolution = [];
-    const playerGoalsConceded = {};
-    joueurs.forEach(j => playerGoalsConceded[j] = 0);
-
-    sortedMatches.forEach((match, index) => {
-      // For each player, add the goals scored by their opponents
-      const goalsConceded = {
+      // Goals conceded
+      const conceded = {
         [match.joueur1]: (match.buts_j2 || 0) + (match.buts_j3 || 0) + (match.buts_j4 || 0),
         [match.joueur2]: (match.buts_j1 || 0) + (match.buts_j3 || 0) + (match.buts_j4 || 0),
         [match.joueur3]: (match.buts_j1 || 0) + (match.buts_j2 || 0) + (match.buts_j4 || 0),
         [match.joueur4]: (match.buts_j1 || 0) + (match.buts_j2 || 0) + (match.buts_j3 || 0)
       };
 
-      Object.entries(goalsConceded).forEach(([joueur, conceded]) => {
-        if (joueur && joueur !== 'undefined') {
-          playerGoalsConceded[joueur] = (playerGoalsConceded[joueur] || 0) + conceded;
-        }
+      Object.entries(scored).forEach(([joueur, g]) => {
+        if (joueur && joueur !== 'undefined') playerGoals[joueur] = (playerGoals[joueur] || 0) + g;
+      });
+      Object.entries(conceded).forEach(([joueur, g]) => {
+        if (joueur && joueur !== 'undefined') playerConceded[joueur] = (playerConceded[joueur] || 0) + g;
       });
 
       // Record snapshot every few matches
       if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
-        const dataPoint = {
-          date: new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
-          matchNumber: index + 1
-        };
+        const date = new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const goalsPt = { date, matchNumber: index + 1 };
+        const concPt = { date, matchNumber: index + 1 };
         joueurs.forEach(j => {
-          dataPoint[j] = playerGoalsConceded[j] || 0;
+          goalsPt[j] = playerGoals[j] || 0;
+          concPt[j] = playerConceded[j] || 0;
         });
-        evolution.push(dataPoint);
+        goalsEvolution.push(goalsPt);
+        concededEvolution.push(concPt);
       }
     });
 
-    return evolution;
+    return { buteursEvolution: goalsEvolution, loosersEvolution: concededEvolution };
   }, [matchData, selectedSeason, joueurs]);
 
   // Monitor auth state
@@ -1552,8 +1366,6 @@ const App = () => {
       await signOut(auth);
       setShowAddMatchForm(false);
       setShowEditMatchForm(false);
-      setShowDeleteMatchForm(false);
-      setShowEditLigueForm(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -2283,10 +2095,7 @@ const App = () => {
                           key={joueur}
                           type="monotone"
                           dataKey={joueur}
-                          stroke={playerColors[joueur] === 'bg-blue-600' ? '#2563eb' :
-                                  playerColors[joueur] === 'bg-green-600' ? '#16a34a' :
-                                  playerColors[joueur] === 'bg-orange-600' ? '#ea580c' :
-                                  playerColors[joueur] === 'bg-purple-600' ? '#9333ea' : '#6b7280'}
+                          stroke={playerColorHex[joueur] || '#6b7280'}
                           strokeWidth={3}
                           dot={false}
                           activeDot={{ r: 6 }}
