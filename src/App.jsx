@@ -796,7 +796,12 @@ const App = () => {
       bestCurrentWinRatio: null,   // Meilleur ratio de victoires actuel (fin de saison)
       bestHeadToHead: null,        // Meilleur versus contre un autre joueur
       mostGoalsInChampionship: null,     // Plus de buts marqués en 1 championnat (6 matches)
-      mostConcededInChampionship: null   // Plus de buts encaissés en 1 championnat (6 matches)
+      mostConcededInChampionship: null,  // Plus de buts encaissés en 1 championnat (6 matches)
+      mostProlificDraw: null,            // Nul le plus prolifique
+      clutchChampion: null,              // Titres gagnés avec 1 seul point d'écart
+      worstStart: null,                  // Pire départ dans un championnat (6 matchs)
+      closeWinsKing: null,               // Le plus de victoires par 1 but d'écart
+      berserkKing: null                  // Le plus de victoires par 5+ buts d'écart
     };
 
     // Record 1: Most goals scored in a single match
@@ -849,7 +854,7 @@ const App = () => {
       }
     });
 
-    // Record 5: Most prolific match (total goals)
+    // Record 5: Most prolific match (total goals) + most prolific draw
     seasonMatches.forEach(match => {
       const totalGoals = match.buts_j1 + match.buts_j2;
       if (!records.mostProlificMatch || totalGoals > records.mostProlificMatch.totalGoals) {
@@ -863,7 +868,37 @@ const App = () => {
           championnat: match.championnat
         };
       }
+      if (match.resultat === 'nul' && (!records.mostProlificDraw || totalGoals > records.mostProlificDraw.totalGoals)) {
+        records.mostProlificDraw = {
+          joueur1: match.joueur1,
+          joueur2: match.joueur2,
+          score: `${match.buts_j1}-${match.buts_j2}`,
+          totalGoals,
+          date: match.dateMatch,
+          ligue: match.ligue,
+          championnat: match.championnat
+        };
+      }
     });
+
+    // Roi des scores serrés (victoire par 1 but) + Berserk (victoire par 5+ buts)
+    const closeWinsCounts = {};
+    const berserkCounts = {};
+    joueurs.forEach(j => { closeWinsCounts[j] = 0; berserkCounts[j] = 0; });
+    seasonMatches.forEach(match => {
+      const margin = Math.abs(match.buts_j1 - match.buts_j2);
+      let winner = null;
+      if (match.resultat === 'victoire_j1') winner = match.joueur1;
+      else if (match.resultat === 'victoire_j2') winner = match.joueur2;
+      if (winner && closeWinsCounts[winner] !== undefined) {
+        if (margin === 1) closeWinsCounts[winner]++;
+        if (margin >= 5) berserkCounts[winner]++;
+      }
+    });
+    const bestClose = Object.entries(closeWinsCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
+    if (bestClose) records.closeWinsKing = { joueur: bestClose[0], count: bestClose[1] };
+    const bestBerserk = Object.entries(berserkCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
+    if (bestBerserk) records.berserkKing = { joueur: bestBerserk[0], count: bestBerserk[1] };
 
     // Sort matches by date for series calculation
     const sortedMatches = [...seasonMatches].sort((a, b) =>
@@ -1099,7 +1134,46 @@ const App = () => {
           };
         }
       });
+
+      // Pire départ (séquence sans victoire en début de championnat)
+      const champSorted = [...matches].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
+      joueurs.forEach(joueur => {
+        const playerChampMatches = champSorted.filter(m => m.joueur1 === joueur || m.joueur2 === joueur);
+        let startStreak = 0;
+        for (const m of playerChampMatches) {
+          const isJ1 = m.joueur1 === joueur;
+          if (m.resultat === (isJ1 ? 'victoire_j1' : 'victoire_j2')) break;
+          startStreak++;
+        }
+        if (startStreak > 0 && (!records.worstStart || startStreak > records.worstStart.streak)) {
+          records.worstStart = {
+            joueur,
+            streak: startStreak,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
+          };
+        }
+      });
     });
+
+    // Clutch champion — tous championnats complétés (pas uniquement 6 matchs)
+    const clutchCounts = {};
+    joueurs.forEach(j => { clutchCounts[j] = 0; });
+    Object.entries(championshipsMap).forEach(([key, matches]) => {
+      const meta = ligueMetadata[key];
+      if (!meta || meta.matchsEntered < meta.matchsTotal) return;
+      const stats = calculatePlayerStats(matches, joueurs);
+      const ranking = Object.entries(stats)
+        .filter(([, s]) => s.matchs > 0)
+        .sort((a, b) => b[1].points - a[1].points || b[1].ga - a[1].ga);
+      if (ranking.length < 2) return;
+      if (ranking[0][1].points - ranking[1][1].points === 1) {
+        clutchCounts[ranking[0][0]]++;
+      }
+    });
+    const bestClutch = Object.entries(clutchCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
+    if (bestClutch) records.clutchChampion = { joueur: bestClutch[0], count: bestClutch[1] };
 
     return records;
   }, [filteredData, joueurs, ligueMetadata]);
@@ -2637,30 +2711,101 @@ const App = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Roi des scores serrés */}
+                    {seasonRecords.closeWinsKing && (
+                      <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border-2 border-teal-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🔪 Roi des scores serrés</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.closeWinsKing.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-teal-700">{seasonRecords.closeWinsKing.count} victoires</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.closeWinsKing.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500">Toutes ses victoires par exactement 1 but d'écart</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Berserk */}
+                    {seasonRecords.berserkKing && (
+                      <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border-2 border-red-300">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">💥 Berserk</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.berserkKing.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-red-700">{seasonRecords.berserkKing.count} victoires</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.berserkKing.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500">Victoires avec 5 buts d'écart ou plus</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Clutch champion */}
+                    {seasonRecords.clutchChampion && (
+                      <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg p-4 border-2 border-violet-300">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Joueur le plus clutch</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.clutchChampion.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-violet-700">{seasonRecords.clutchChampion.count} titre{seasonRecords.clutchChampion.count > 1 ? 's' : ''}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.clutchChampion.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500">Championnats gagnés avec exactement 1 point d'écart</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Record du match */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Record de match</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Records de match</h2>
 
-                  {seasonRecords.mostProlificMatch && (
-                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
-                      <h3 className="text-sm font-semibold text-slate-700 mb-2">🔥 Match le plus prolifique</h3>
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
-                            {' '}({seasonRecords.mostProlificMatch.score})
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
-                          </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {seasonRecords.mostProlificMatch && (
+                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🔥 Match le plus prolifique</h3>
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
+                              {' '}({seasonRecords.mostProlificMatch.score})
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+
+                    {seasonRecords.mostProlificDraw && (
+                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 rounded-lg p-4 border-2 border-slate-300">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🤝 Nul le plus prolifique</h3>
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-2xl font-bold text-slate-700">{seasonRecords.mostProlificDraw.totalGoals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.mostProlificDraw.joueur1}</strong> vs <strong>{seasonRecords.mostProlificDraw.joueur2}</strong>
+                              {' '}({seasonRecords.mostProlificDraw.score})
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(seasonRecords.mostProlificDraw.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificDraw.ligue} {seasonRecords.mostProlificDraw.championnat}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* NEW: Championship Records */}
@@ -2703,6 +2848,30 @@ const App = () => {
                             </p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">
                               {seasonRecords.mostConcededInChampionship.ligue} {seasonRecords.mostConcededInChampionship.championnat} • {seasonRecords.mostConcededInChampionship.saison}
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                              Championnats à 6 matchs uniquement
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Pire départ */}
+                    {seasonRecords.worstStart && (
+                      <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/20 dark:to-slate-900/20 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600 md:col-span-2">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">😬 Pire départ en championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.worstStart.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
+                              {seasonRecords.worstStart.streak} match{seasonRecords.worstStart.streak > 1 ? 's' : ''} sans victoire
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.worstStart.joueur}</strong> en début de championnat
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {seasonRecords.worstStart.ligue} {seasonRecords.worstStart.championnat} • {seasonRecords.worstStart.saison}
                             </p>
                             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                               Championnats à 6 matchs uniquement
