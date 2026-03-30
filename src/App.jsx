@@ -880,9 +880,8 @@ const App = () => {
           date: m.dateMatch,
           buts: isJ1 ? m.buts_j1 : m.buts_j2,
           butsAdv: isJ1 ? m.buts_j2 : m.buts_j1,
-          result: isJ1
-            ? (m.buts_j1 > m.buts_j2 ? 'W' : m.buts_j1 < m.buts_j2 ? 'L' : 'D')
-            : (m.buts_j2 > m.buts_j1 ? 'W' : m.buts_j2 < m.buts_j1 ? 'L' : 'D'),
+          result: m.resultat === (isJ1 ? 'victoire_j1' : 'victoire_j2') ? 'W'
+              : m.resultat === 'nul' ? 'D' : 'L',
           ligue: m.ligue,
           championnat: m.championnat
         };
@@ -1047,8 +1046,9 @@ const App = () => {
     const championshipsMap = groupMatchesByChampionship(seasonMatches);
 
     Object.entries(championshipsMap).forEach(([key, matches]) => {
-      // Only consider 6-match championships
-      if (matches.length !== 6) return;
+      // Only consider completed 6-journée championships
+      const champMeta = ligueMetadata[key];
+      if (!champMeta || champMeta.matchsTotal !== 6 || champMeta.matchsEntered < champMeta.matchsTotal) return;
 
       const championshipStats = {};
       joueurs.forEach(j => {
@@ -1102,7 +1102,7 @@ const App = () => {
     });
 
     return records;
-  }, [filteredData, joueurs]);
+  }, [filteredData, joueurs, ligueMetadata]);
 
   // Historical evolution for graph view
   const historicalEvolution = useMemo(() => {
