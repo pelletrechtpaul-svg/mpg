@@ -19,9 +19,14 @@ const playerImages = {
 
 // Playlist — ajoute tes fichiers dans /public/audio/ et référence-les ici
 const PLAYLIST = [
-  { title: 'Theme', src: '/audio/theme.mp3' },
-  // { title: 'Titre 2', src: '/audio/titre2.mp3' },
-  // { title: 'Titre 3', src: '/audio/titre3.mp3' },
+  { title: "Baby c'est MPG",  src: "/audio/Baby c'est MPG.mp3" },
+  { title: 'Cette fusion',    src: '/audio/Cette fusion.mp3' },
+  { title: 'Communiqué',      src: '/audio/Communiqué.mp3' },
+  { title: 'Déni',            src: '/audio/Déni.mp3' },
+  { title: 'Faut doser',      src: '/audio/Faut doser.mp3' },
+  { title: 'Greenwood',       src: '/audio/Greenwood.mp3' },
+  { title: 'Looser',          src: '/audio/Looser.mp3' },
+  { title: 'Mercato',         src: '/audio/Mercato.mp3' },
 ];
 
 // Group matches by championship key (saison-ligue-championnat)
