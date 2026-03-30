@@ -2510,12 +2510,7 @@ const App = () => {
         {/* ONGLET STATISTIQUES */}
         {activeTab === 'statistiques' && (
           <>
-            {selectedSeason === 'All-Time' ? (
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-                <p className="text-slate-600">Section en construction...</p>
-              </div>
-            ) : (
-              <div className="space-y-8">
+            <div className="space-y-8">
                 {/* Classement des buteurs */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
                   <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des buteurs</h2>
@@ -2607,21 +2602,16 @@ const App = () => {
                     </table>
                   </div>
                 </div>
-              </div>
-            )}
+            </div>
           </>
         )}
 
         {/* ONGLET RECORDS */}
         {activeTab === 'records' && (
           <>
-            {selectedSeason === 'All-Time' || !seasonRecords ? (
+            {!seasonRecords ? (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-                <p className="text-slate-600">
-                  {selectedSeason === 'All-Time'
-                    ? 'Les records ne sont disponibles que pour une saison spécifique'
-                    : 'Aucune donnée disponible pour cette saison'}
-                </p>
+                <p className="text-slate-600">Aucune donnée disponible pour cette saison</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -3071,12 +3061,7 @@ const App = () => {
         {/* ONGLET FORME */}
         {activeTab === 'stats-avancees' && (
           <>
-            {selectedSeason === 'All-Time' ? (
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-                <p className="text-slate-600">Section en construction...</p>
-              </div>
-            ) : (
-              <div className="space-y-6">
+            <div className="space-y-6">
                 {/* Header with common info */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <div className="flex items-center justify-between flex-wrap gap-4">
@@ -3182,8 +3167,7 @@ const App = () => {
                     );
                   })}
                 </div>
-              </div>
-            )}
+            </div>
           </>
         )}
 
