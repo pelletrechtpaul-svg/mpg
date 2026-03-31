@@ -2524,7 +2524,7 @@ const App = () => {
             {/* Liste des matchs */}
             {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
                   Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
                 </h3>
 
@@ -2792,7 +2792,7 @@ const App = () => {
             <div className="space-y-8">
                 {/* Classement des buteurs */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Classement des buteurs</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">Classement des buteurs</h2>
 
                   <table className="w-full">
                     <thead className="bg-slate-50 dark:bg-slate-700">
@@ -2836,7 +2836,7 @@ const App = () => {
 
                 {/* Classement des loosers */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Classement des loosers</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">Classement des loosers</h2>
 
                   <table className="w-full">
                     <thead className="bg-slate-50 dark:bg-slate-700">
@@ -2994,7 +2994,7 @@ const App = () => {
               <div className="space-y-6">
                 {/* Records individuels */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">🏆 Records individuels</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏆 Records individuels</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Record 1: Plus de buts dans un match */}
@@ -3169,7 +3169,7 @@ const App = () => {
 
                 {/* Record du match */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Records de match</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Records de match</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {seasonRecords.mostProlificMatch && (
