@@ -2135,7 +2135,7 @@ const App = () => {
                             <td className="px-0.5 py-2 sm:px-6 sm:py-4 text-center">
                               <div className="flex items-center justify-center gap-0.5 sm:gap-1">
                                 <span className="font-semibold text-yellow-600 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
-                                {(player.victoiresChampionnat || 0) > 0 && (
+                                {selectedLigue === 'general' && (player.victoiresChampionnat || 0) > 0 && (
                                   <button
                                     onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'titres', ligues: player.victoiresLigues || [] })}
                                     className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none"
@@ -2146,7 +2146,7 @@ const App = () => {
                             <td className="px-0 py-2 sm:px-6 sm:py-4 text-center">
                               <div className="flex items-center justify-center gap-0.5 sm:gap-1">
                                 <span className="font-semibold text-slate-500 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
-                                {(player.medaillesChampionnat || 0) > 0 && (
+                                {selectedLigue === 'general' && (player.medaillesChampionnat || 0) > 0 && (
                                   <button
                                     onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'medailles', ligues: player.medaillesLigues || [] })}
                                     className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none"
