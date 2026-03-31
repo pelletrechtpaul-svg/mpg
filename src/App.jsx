@@ -3217,7 +3217,7 @@ const App = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Most goals scored in championship */}
                     {seasonRecords.mostGoalsInChampionship && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Plus de buts marqués en 1 championnat</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInChampionship.joueur]}`}></div>
@@ -3239,7 +3239,7 @@ const App = () => {
 
                     {/* Most goals conceded in championship */}
                     {seasonRecords.mostConcededInChampionship && (
-                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
+                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/40 dark:to-rose-900/40 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥅 Plus de buts encaissés en 1 championnat</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostConcededInChampionship.joueur]}`}></div>
@@ -3261,7 +3261,7 @@ const App = () => {
 
                     {/* Pire départ */}
                     {seasonRecords.worstStart && (
-                      <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/20 dark:to-slate-900/20 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600 md:col-span-2">
+                      <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/40 dark:to-slate-900/40 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600 md:col-span-2">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">😬 Pire départ en championnat</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.worstStart.joueur]}`}></div>
@@ -3408,7 +3408,7 @@ const App = () => {
 
                 {/* Régularité */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-4">📈 Régularité</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">📈 Régularité</h2>
 
                   <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-4 py-3 mb-4 text-xs text-slate-500 dark:text-slate-400">
                     <span className="font-semibold text-slate-600 dark:text-slate-300">Comment ça marche ?</span>{' '}
@@ -3420,13 +3420,13 @@ const App = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Plus régulier */}
                     {seasonRecords.mostRegular && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Joueur le plus régulier</h3>
+                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📊 Joueur le plus régulier</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostRegular.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-purple-700">{seasonRecords.mostRegular.joueur}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{seasonRecords.mostRegular.joueur}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Écart-type: {seasonRecords.mostRegular.stdDev.toFixed(2)} • {seasonRecords.mostRegular.matchs} matchs
                             </p>
                           </div>
@@ -3436,13 +3436,13 @@ const App = () => {
 
                     {/* Plus imprévisible */}
                     {seasonRecords.mostUnpredictable && (
-                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-4 border-2 border-pink-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎲 Joueur le plus imprévisible</h3>
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎲 Joueur le plus imprévisible</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostUnpredictable.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-pink-700">{seasonRecords.mostUnpredictable.joueur}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-2xl font-bold text-pink-700 dark:text-pink-400">{seasonRecords.mostUnpredictable.joueur}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Écart-type: {seasonRecords.mostUnpredictable.stdDev.toFixed(2)} • {seasonRecords.mostUnpredictable.matchs} matchs
                             </p>
                           </div>
