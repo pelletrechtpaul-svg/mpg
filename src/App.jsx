@@ -2514,94 +2514,90 @@ const App = () => {
             <div className="space-y-8">
                 {/* Classement des buteurs */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des buteurs</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Classement des buteurs</h2>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-50 dark:bg-slate-700">
-                        <tr>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Buts inscrits</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Matchs</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Moyenne</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(statsDetaillees)
-                          .map(([joueur, data]) => ({ joueur, ...data }))
-                          .sort((a, b) => b.buts_pour - a.buts_pour)
-                          .map((player, index) => (
-                            <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                              <td className="px-6 py-4">
-                                <span className="font-bold text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
-                                  <span className="font-semibold text-slate-800">{player.joueur}</span>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 text-center">
-                                <span className="text-xl font-bold text-green-600">{player.buts_pour}</span>
-                              </td>
-                              <td className="px-6 py-4 text-center text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                              <td className="px-6 py-4 text-center">
-                                <span className="font-semibold text-blue-600">
-                                  {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <table className="w-full">
+                    <thead className="bg-slate-50 dark:bg-slate-700">
+                      <tr>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm w-8">#</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(statsDetaillees)
+                        .map(([joueur, data]) => ({ joueur, ...data }))
+                        .sort((a, b) => b.buts_pour - a.buts_pour)
+                        .map((player, index) => (
+                          <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm sm:text-base">{player.joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="text-base sm:text-xl font-bold text-green-600">{player.buts_pour}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center text-sm sm:text-base text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="font-semibold text-blue-600 text-sm sm:text-base">
+                                {player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
                 </div>
 
                 {/* Classement des loosers */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6 px-2 sm:px-0">Classement des loosers</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4 px-2 sm:px-0">Classement des loosers</h2>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-50 dark:bg-slate-700">
-                        <tr>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
-                          <th className="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Buts encaissés</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Matchs</th>
-                          <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-200">Moyenne</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(statsDetaillees)
-                          .map(([joueur, data]) => ({ joueur, ...data }))
-                          .sort((a, b) => b.buts_contre - a.buts_contre)
-                          .map((player, index) => (
-                            <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                              <td className="px-6 py-4">
-                                <span className="font-bold text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-3 h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
-                                  <span className="font-semibold text-slate-800">{player.joueur}</span>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 text-center">
-                                <span className="text-xl font-bold text-red-600">{player.buts_contre}</span>
-                              </td>
-                              <td className="px-6 py-4 text-center text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                              <td className="px-6 py-4 text-center">
-                                <span className="font-semibold text-orange-600">
-                                  {player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <table className="w-full">
+                    <thead className="bg-slate-50 dark:bg-slate-700">
+                      <tr>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm w-8">#</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts enc.</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(statsDetaillees)
+                        .map(([joueur, data]) => ({ joueur, ...data }))
+                        .sort((a, b) => b.buts_contre - a.buts_contre)
+                        .map((player, index) => (
+                          <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm sm:text-base">{player.joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="text-base sm:text-xl font-bold text-red-600">{player.buts_contre}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center text-sm sm:text-base text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="font-semibold text-orange-600 text-sm sm:text-base">
+                                {player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
                 </div>
             </div>
           </>
