@@ -25,6 +25,7 @@ const PLAYLIST = [
   { title: 'Déni',            src: '/audio/Déni.mp3' },
   { title: 'Faut doser',      src: '/audio/Faut doser.mp3' },
   { title: 'Greenwood',       src: '/audio/Greenwood.mp3' },
+  { title: 'Jeanette',        src: '/audio/Jeanette.mp3' },
   { title: 'Looser',          src: '/audio/Looser.mp3' },
   { title: 'Mercato',         src: '/audio/Mercato.mp3' },
 ];
