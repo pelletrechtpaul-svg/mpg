@@ -96,6 +96,7 @@ const App = () => {
 
   // Form match tooltip state
   const [activeMatchTooltip, setActiveMatchTooltip] = useState(null); // { joueur, index }
+  const [activeVersusTooltip, setActiveVersusTooltip] = useState(null); // index
 
   // Audio player state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -526,6 +527,78 @@ const App = () => {
     return calculatePlayerStats(matchesToUse, joueurs);
   }, [selectedStatsLigue, filteredData, joueurs]);
 
+  // Clean sheets & pannes offensives stats
+  const cleanSheetsStats = useMemo(() => {
+    const matchesToUse = selectedStatsLigue === 'all'
+      ? filteredData
+      : filteredData.filter(d => d.ligue === selectedStatsLigue);
+    const stats = {};
+    joueurs.forEach(j => { stats[j] = { cleanSheets: 0, pannesOffensives: 0, matchs: 0 }; });
+    matchesToUse.forEach(m => {
+      if (stats[m.joueur1] !== undefined) {
+        stats[m.joueur1].matchs++;
+        if (m.buts_j2 === 0) stats[m.joueur1].cleanSheets++;
+        if (m.buts_j1 === 0) stats[m.joueur1].pannesOffensives++;
+      }
+      if (stats[m.joueur2] !== undefined) {
+        stats[m.joueur2].matchs++;
+        if (m.buts_j1 === 0) stats[m.joueur2].cleanSheets++;
+        if (m.buts_j2 === 0) stats[m.joueur2].pannesOffensives++;
+      }
+    });
+    return Object.entries(stats).map(([joueur, data]) => ({ joueur, ...data }));
+  }, [selectedStatsLigue, filteredData, joueurs]);
+
+  // Score distribution
+  const scoreDistribution = useMemo(() => {
+    const matchesToUse = selectedStatsLigue === 'all'
+      ? filteredData
+      : filteredData.filter(d => d.ligue === selectedStatsLigue);
+    const scoreCounts = {};
+    matchesToUse.forEach(m => {
+      const [hi, lo] = m.buts_j1 >= m.buts_j2 ? [m.buts_j1, m.buts_j2] : [m.buts_j2, m.buts_j1];
+      const key = `${hi}-${lo}`;
+      scoreCounts[key] = (scoreCounts[key] || 0) + 1;
+    });
+    return Object.entries(scoreCounts)
+      .map(([score, count]) => ({ score, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+  }, [selectedStatsLigue, filteredData]);
+
+  // Heure de gloire — best championship per player (for Face à Face tab)
+  const heureDeGloire = useMemo(() => {
+    const result = {};
+    joueurs.forEach(j => {
+      const playerMatches = filteredData.filter(m => m.joueur1 === j || m.joueur2 === j);
+      const champMap = groupMatchesByChampionship(playerMatches);
+      let best = null;
+      Object.entries(champMap).forEach(([key, matches]) => {
+        const meta = ligueMetadata[key];
+        if (!meta || meta.matchsEntered < meta.matchsTotal) return;
+        let pts = 0, matchCount = 0;
+        matches.forEach(m => {
+          if (m.joueur1 === j) { pts += m.points_j1; matchCount++; }
+          else if (m.joueur2 === j) { pts += m.points_j2; matchCount++; }
+        });
+        if (matchCount === 0) return;
+        const avg = pts / matchCount;
+        if (!best || avg > best.avg || (avg === best.avg && pts > best.pts)) {
+          best = {
+            ligue: matches[0].ligue,
+            championnat: matches[0].championnat,
+            saison: matches[0].saison,
+            avg: parseFloat(avg.toFixed(2)),
+            pts,
+            matchCount
+          };
+        }
+      });
+      result[j] = best;
+    });
+    return result;
+  }, [filteredData, joueurs, ligueMetadata]);
+
   // Face à face stats
   const versusStats = useMemo(() => {
     // Filter matches between the two selected players
@@ -578,6 +651,37 @@ const App = () => {
     stats.ga_j2 = stats.buts_j2 - stats.buts_j1;
 
     return stats;
+  }, [filteredData, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue]);
+
+  // Versus match history for thermomètre
+  const versusMatchHistory = useMemo(() => {
+    let matchesToUse = filteredData.filter(m =>
+      (m.joueur1 === selectedVersusPlayer1 && m.joueur2 === selectedVersusPlayer2) ||
+      (m.joueur1 === selectedVersusPlayer2 && m.joueur2 === selectedVersusPlayer1)
+    );
+    if (selectedVersusLigue !== 'all') {
+      matchesToUse = matchesToUse.filter(m => m.ligue === selectedVersusLigue);
+    }
+    return [...matchesToUse]
+      .sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch))
+      .map(m => {
+        const j1IsPlayer1 = m.joueur1 === selectedVersusPlayer1;
+        const butsJ1 = j1IsPlayer1 ? m.buts_j1 : m.buts_j2;
+        const butsJ2 = j1IsPlayer1 ? m.buts_j2 : m.buts_j1;
+        let result;
+        if (butsJ1 > butsJ2) result = 'W';
+        else if (butsJ1 < butsJ2) result = 'L';
+        else result = 'D';
+        return {
+          result,
+          butsJ1,
+          butsJ2,
+          date: new Date(m.dateMatch).toLocaleDateString('fr-FR'),
+          ligue: m.ligue,
+          championnat: m.championnat,
+          saison: m.saison
+        };
+      });
   }, [filteredData, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue]);
 
   // Evolution data
@@ -851,7 +955,8 @@ const App = () => {
       clutchChampion: null,              // Titres gagnés avec 1 seul point d'écart
       worstStart: null,                  // Pire départ dans un championnat (6 matchs)
       closeWinsKing: null,               // Le plus de victoires par 1 but d'écart
-      berserkKing: null                  // Le plus de victoires par 5+ buts d'écart
+      berserkKing: null,                 // Le plus de victoires par 5+ buts d'écart
+      drawSpecialist: null               // Spécialiste des nuls (ratio de nuls le plus élevé)
     };
 
     // Record 1: Most goals scored in a single match
@@ -949,6 +1054,20 @@ const App = () => {
     if (bestClose) records.closeWinsKing = { joueur: bestClose[0], count: bestClose[1] };
     const bestBerserk = Object.entries(berserkCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
     if (bestBerserk) records.berserkKing = { joueur: bestBerserk[0], count: bestBerserk[1] };
+
+    // Draw specialist: player with highest draw ratio (min 10 matches)
+    const drawCounts = {};
+    joueurs.forEach(j => { drawCounts[j] = { draws: 0, total: 0 }; });
+    seasonMatches.forEach(m => {
+      const isDraw = m.buts_j1 === m.buts_j2;
+      if (drawCounts[m.joueur1]) { drawCounts[m.joueur1].total++; if (isDraw) drawCounts[m.joueur1].draws++; }
+      if (drawCounts[m.joueur2]) { drawCounts[m.joueur2].total++; if (isDraw) drawCounts[m.joueur2].draws++; }
+    });
+    const drawSpecialistEntry = Object.entries(drawCounts)
+      .filter(([, s]) => s.total >= 10)
+      .map(([joueur, s]) => ({ joueur, draws: s.draws, total: s.total, ratio: s.draws / s.total }))
+      .sort((a, b) => b.ratio - a.ratio)[0];
+    if (drawSpecialistEntry) records.drawSpecialist = drawSpecialistEntry;
 
     // Sort matches by date for series calculation
     const sortedMatches = [...seasonMatches].sort((a, b) =>
@@ -2523,6 +2642,13 @@ const App = () => {
                         />
                       </div>
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedVersusPlayer1}</h3>
+                      {heureDeGloire[selectedVersusPlayer1] && (
+                        <div className="mt-1">
+                          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">⭐ Heure de gloire</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{heureDeGloire[selectedVersusPlayer1].ligue} {heureDeGloire[selectedVersusPlayer1].championnat}</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">{heureDeGloire[selectedVersusPlayer1].avg} pts/match • {heureDeGloire[selectedVersusPlayer1].saison}</p>
+                        </div>
+                      )}
                     </div>
                     <div className="text-center">
                       <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-700 dark:text-slate-200">
@@ -2547,6 +2673,13 @@ const App = () => {
                         />
                       </div>
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedVersusPlayer2}</h3>
+                      {heureDeGloire[selectedVersusPlayer2] && (
+                        <div className="mt-1">
+                          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">⭐ Heure de gloire</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{heureDeGloire[selectedVersusPlayer2].ligue} {heureDeGloire[selectedVersusPlayer2].championnat}</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">{heureDeGloire[selectedVersusPlayer2].avg} pts/match • {heureDeGloire[selectedVersusPlayer2].saison}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2595,6 +2728,52 @@ const App = () => {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
+
+                {/* Thermomètre — historique des confrontations */}
+                {versusMatchHistory.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-1 text-center">🌡️ Thermomètre</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-4">
+                      Historique chronologique des confrontations (du point de vue de <strong>{selectedVersusPlayer1}</strong>)
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {versusMatchHistory.map((match, idx) => (
+                        <div key={idx} className="relative">
+                          <div
+                            className={`w-10 h-10 rounded flex items-center justify-center font-bold text-white cursor-pointer transition-transform hover:scale-110 text-sm ${
+                              match.result === 'W' ? 'bg-green-500' :
+                              match.result === 'L' ? 'bg-red-500' :
+                              'bg-slate-400'
+                            }`}
+                            onClick={() => setActiveVersusTooltip(activeVersusTooltip === idx ? null : idx)}
+                          >
+                            {match.result}
+                          </div>
+                          <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-1 w-10">
+                            {match.butsJ1}-{match.butsJ2}
+                          </div>
+                          {activeVersusTooltip === idx && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setActiveVersusTooltip(null)} />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-52">
+                                <div className="bg-slate-800 text-white rounded-lg p-3 shadow-lg text-center">
+                                  <p className="text-lg font-bold">{match.butsJ1} - {match.butsJ2}</p>
+                                  <p className="text-xs text-slate-300 mt-1">{match.ligue} {match.championnat}</p>
+                                  <p className="text-xs text-slate-400">{match.saison} • {match.date}</p>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-center gap-4 mt-4 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 inline-block"></span> Victoire {selectedVersusPlayer1}</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400 inline-block"></span> Nul</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500 inline-block"></span> Victoire {selectedVersusPlayer2}</span>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
@@ -2698,6 +2877,108 @@ const App = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Clean sheets */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">🧤 Clean sheets</h2>
+                  <table className="w-full">
+                    <thead className="bg-slate-50 dark:bg-slate-700">
+                      <tr>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm w-8">#</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CS</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...cleanSheetsStats]
+                        .sort((a, b) => b.cleanSheets - a.cleanSheets)
+                        .map((player, index) => (
+                          <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm sm:text-base">{player.joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="text-base sm:text-xl font-bold text-sky-600">{player.cleanSheets}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center text-sm sm:text-base text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="font-semibold text-blue-600 text-sm sm:text-base">
+                                {player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pannes offensives */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">🚫 Pannes offensives</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Matchs sans marquer le moindre but</p>
+                  <table className="w-full">
+                    <thead className="bg-slate-50 dark:bg-slate-700">
+                      <tr>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm w-8">#</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">0 but</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                        <th className="px-2 sm:px-6 py-2 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...cleanSheetsStats]
+                        .sort((a, b) => b.pannesOffensives - a.pannesOffensives)
+                        .map((player, index) => (
+                          <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                                <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm sm:text-base">{player.joueur}</span>
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="text-base sm:text-xl font-bold text-orange-600">{player.pannesOffensives}</span>
+                            </td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center text-sm sm:text-base text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                            <td className="px-2 sm:px-6 py-2 sm:py-4 text-center">
+                              <span className="font-semibold text-red-500 text-sm sm:text-base">
+                                {player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Distribution des scores */}
+                {scoreDistribution.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 px-2 sm:px-0">📊 Distribution des scores</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Top 15 scores les plus fréquents (score normalisé, victoire en premier)</p>
+                    <ResponsiveContainer width="100%" height={320}>
+                      <BarChart data={scoreDistribution} margin={{ top: 5, right: 10, left: -10, bottom: 40 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="score" angle={-45} textAnchor="end" interval={0} tick={{ fontSize: 12 }} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                        <Tooltip formatter={(value) => [value, 'Occurrences']} />
+                        <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
             </div>
           </>
         )}
@@ -2858,6 +3139,27 @@ const App = () => {
                               <strong>{seasonRecords.clutchChampion.joueur}</strong>
                             </p>
                             <p className="text-xs text-slate-500">Championnats gagnés avec exactement 1 point d'écart</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Spécialiste des nuls */}
+                    {seasonRecords.drawSpecialist && (
+                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800 dark:to-gray-800 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Spécialiste des nuls</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.drawSpecialist.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                              {(seasonRecords.drawSpecialist.ratio * 100).toFixed(0)}% de nuls
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.drawSpecialist.joueur}</strong>
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {seasonRecords.drawSpecialist.draws} nuls sur {seasonRecords.drawSpecialist.total} matchs
+                            </p>
                           </div>
                         </div>
                       </div>
