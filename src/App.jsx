@@ -85,6 +85,9 @@ const App = () => {
   // Goals detail popup
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
 
+  // Championship / medal detail popup
+  const [showChampDetail, setShowChampDetail] = useState(null); // { joueur, type: 'titres'|'medailles', ligues: string[] }
+
   // Valise table toggle
   const [selectedValiseTable, setSelectedValiseTable] = useState('stats'); // 'stats' or 'efficaces'
 
@@ -374,10 +377,15 @@ const App = () => {
   };
 
   // Calculate championship victories (titres) and medals in a single pass
-  const { victoiresChampionnat, medaillesChampionnat } = useMemo(() => {
+  const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail } = useMemo(() => {
     const victoires = {};
     const medailles = {};
-    joueurs.forEach(j => { victoires[j] = 0; medailles[j] = 0; });
+    const victoiresLigues = {}; // joueur -> [ligue, ...]
+    const medaillesLigues = {}; // joueur -> [ligue, ...]
+    joueurs.forEach(j => {
+      victoires[j] = 0; medailles[j] = 0;
+      victoiresLigues[j] = []; medaillesLigues[j] = [];
+    });
 
     const championnatsMap = groupMatchesByChampionship(filteredData);
 
@@ -391,15 +399,24 @@ const App = () => {
         .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
       if (ranking.length > 0 && ranking[0].points > 0) {
+        const winner = ranking[0].joueur;
+        const ligue = matches[0].ligue;
         if (metadata.matchsTotal >= 6) {
-          victoires[ranking[0].joueur]++;
+          victoires[winner]++;
+          victoiresLigues[winner].push(ligue);
         } else {
-          medailles[ranking[0].joueur]++;
+          medailles[winner]++;
+          medaillesLigues[winner].push(ligue);
         }
       }
     });
 
-    return { victoiresChampionnat: victoires, medaillesChampionnat: medailles };
+    return {
+      victoiresChampionnat: victoires,
+      medaillesChampionnat: medailles,
+      victoiresDetail: victoiresLigues,
+      medaillesDetail: medaillesLigues,
+    };
   }, [filteredData, joueurs, ligueMetadata]);
 
   // Classement général
@@ -413,12 +430,14 @@ const App = () => {
       stats[joueur].points += medaillesChampionnat[joueur] * 2;
       stats[joueur].victoiresChampionnat = victoiresChampionnat[joueur];
       stats[joueur].medaillesChampionnat = medaillesChampionnat[joueur];
+      stats[joueur].victoiresLigues = victoiresDetail[joueur] || [];
+      stats[joueur].medaillesLigues = medaillesDetail[joueur] || [];
     });
 
     return Object.entries(stats)
       .map(([joueur, data]) => ({ joueur, ...data }))
       .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-  }, [filteredData, joueurs, victoiresChampionnat, medaillesChampionnat, selectedSeason]);
+  }, [filteredData, joueurs, victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, selectedSeason]);
 
   // Classement par ligue
   const classementParLigue = useMemo(() => {
@@ -442,9 +461,11 @@ const App = () => {
 
       const ligueVictoires = {};
       const ligueMedailles = {};
+      const ligueVictoiresLigues = {};
+      const ligueMedaillesLigues = {};
       joueurs.forEach(j => {
-        ligueVictoires[j] = 0;
-        ligueMedailles[j] = 0;
+        ligueVictoires[j] = 0; ligueMedailles[j] = 0;
+        ligueVictoiresLigues[j] = []; ligueMedaillesLigues[j] = [];
       });
 
       Object.entries(championnatsMap).forEach(([champ, matches]) => {
@@ -461,11 +482,14 @@ const App = () => {
           .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
         if (ranking.length > 0 && ranking[0].points > 0) {
+          const winner = ranking[0].joueur;
           // Award titre (3 pts) for 6+ matches, or médaille (2 pts) for < 6 matches
           if (metadata.matchsTotal >= 6) {
-            ligueVictoires[ranking[0].joueur]++;
+            ligueVictoires[winner]++;
+            ligueVictoiresLigues[winner].push(selectedLigue);
           } else {
-            ligueMedailles[ranking[0].joueur]++;
+            ligueMedailles[winner]++;
+            ligueMedaillesLigues[winner].push(selectedLigue);
           }
         }
       });
@@ -477,6 +501,8 @@ const App = () => {
         stats[joueur].points += ligueMedailles[joueur] * 2;
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
         stats[joueur].medaillesChampionnat = ligueMedailles[joueur];
+        stats[joueur].victoiresLigues = ligueVictoiresLigues[joueur];
+        stats[joueur].medaillesLigues = ligueMedaillesLigues[joueur];
       });
     }
 
@@ -2101,10 +2127,26 @@ const App = () => {
                         {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                           <>
                             <td className="px-0.5 py-2 sm:px-6 sm:py-4 text-center">
-                              <span className="font-semibold text-yellow-600 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
+                              <div className="flex items-center justify-center gap-0.5 sm:gap-1">
+                                <span className="font-semibold text-yellow-600 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
+                                {(player.victoiresChampionnat || 0) > 0 && (
+                                  <button
+                                    onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'titres', ligues: player.victoiresLigues || [] })}
+                                    className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none"
+                                  >+</button>
+                                )}
+                              </div>
                             </td>
                             <td className="px-0 py-2 sm:px-6 sm:py-4 text-center">
-                              <span className="font-semibold text-slate-500 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
+                              <div className="flex items-center justify-center gap-0.5 sm:gap-1">
+                                <span className="font-semibold text-slate-500 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
+                                {(player.medaillesChampionnat || 0) > 0 && (
+                                  <button
+                                    onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'medailles', ligues: player.medaillesLigues || [] })}
+                                    className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none"
+                                  >+</button>
+                                )}
+                              </div>
                             </td>
                           </>
                         )}
@@ -2200,6 +2242,35 @@ const App = () => {
                       <span className="text-slate-700 font-medium mb-2">Buts encaissés</span>
                       <span className="text-2xl font-bold text-red-600">{showGoalsDetail.buts_contre}</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Popup détail titres / médailles */}
+            {showChampDetail && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowChampDetail(null)}>
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 max-w-xs w-full mx-4" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                      {showChampDetail.joueur} — {showChampDetail.type === 'titres' ? '🏆 Titres' : '🥈 Médailles'}
+                    </h3>
+                    <button onClick={() => setShowChampDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
+                  </div>
+                  <div className="space-y-1.5">
+                    {Object.entries(
+                      showChampDetail.ligues.reduce((acc, l) => { acc[l] = (acc[l] || 0) + 1; return acc; }, {})
+                    )
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([ligue, count]) => (
+                        <div key={ligue} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                          <span className="text-slate-700 dark:text-slate-200 font-medium">{ligue}</span>
+                          {count > 1 && (
+                            <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>
+                          )}
+                        </div>
+                      ))
+                    }
                   </div>
                 </div>
               </div>
