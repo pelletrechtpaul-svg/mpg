@@ -2264,19 +2264,35 @@ const App = () => {
                     <button onClick={() => setShowChampDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
                   </div>
                   <div className="space-y-1.5">
-                    {Object.entries(
-                      showChampDetail.ligues.reduce((acc, e) => {
-                        acc[e.saison] = (acc[e.saison] || 0) + 1;
-                        return acc;
-                      }, {})
-                    )
-                      .sort((a, b) => b[0].localeCompare(a[0]))
-                      .map(([saison, count]) => (
-                        <div key={saison} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                          <span className="text-slate-700 dark:text-slate-200 font-medium">{saison}</span>
-                          <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>
-                        </div>
-                      ))
+                    {selectedSeason === 'All-Time'
+                      ? /* All-Time : regrouper par saison */
+                        Object.entries(
+                          showChampDetail.ligues.reduce((acc, e) => {
+                            acc[e.saison] = (acc[e.saison] || 0) + 1;
+                            return acc;
+                          }, {})
+                        )
+                          .sort((a, b) => b[0].localeCompare(a[0]))
+                          .map(([saison, count]) => (
+                            <div key={saison} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                              <span className="text-slate-700 dark:text-slate-200 font-medium">{saison}</span>
+                              {count > 1 && <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>}
+                            </div>
+                          ))
+                      : /* Saison spécifique : regrouper par ligue */
+                        Object.entries(
+                          showChampDetail.ligues.reduce((acc, e) => {
+                            acc[e.ligue] = (acc[e.ligue] || 0) + 1;
+                            return acc;
+                          }, {})
+                        )
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([ligue, count]) => (
+                            <div key={ligue} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                              <span className="text-slate-700 dark:text-slate-200 font-medium">{ligue}</span>
+                              {count > 1 && <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>}
+                            </div>
+                          ))
                     }
                   </div>
                 </div>
