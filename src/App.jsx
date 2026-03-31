@@ -1698,15 +1698,15 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
-        {/* Mini music player */}
-        <div className={`rounded-lg shadow-md border transition-all ${
+        {/* Mini music player — largeur fixe */}
+        <div className={`w-28 rounded-lg shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
-          {/* Track title */}
-          <div className="px-2 pt-1.5 pb-0.5 text-center">
-            <p className={`text-xs font-medium truncate max-w-[90px] ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
+          {/* Track title — défilement si trop long */}
+          <div className="px-2 pt-1.5 pb-0.5 overflow-hidden">
+            <p className={`text-xs font-medium whitespace-nowrap ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 10 ? 'animate-marquee' : 'text-center'}`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
@@ -1724,10 +1724,10 @@ const App = () => {
           </div>
         </div>
 
-        {/* Dark mode toggle */}
+        {/* Dark mode toggle — taille fixe */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="px-2 py-2 rounded-lg shadow-md transition-all hover:shadow-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-yellow-400 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+          className="w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all hover:shadow-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-yellow-400 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
           title={darkMode ? 'Mode clair' : 'Mode sombre'}
         >
           {darkMode ? (
@@ -1741,17 +1741,17 @@ const App = () => {
           )}
         </button>
 
-        {/* Admin button */}
+        {/* Admin button — taille fixe identique au bouton mode nuit */}
         <button
           onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
-          className={`px-1.5 py-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg font-medium shadow-sm sm:shadow-md transition-all inline-flex items-center gap-2 border sm:border-2 border-black dark:border-red-400 ${
+          className={`w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all border ${
             activeTab === 'admin'
-              ? 'bg-red-600 text-white'
-              : 'bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700'
+              ? 'bg-red-600 border-red-600 text-white'
+              : 'bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 border-slate-300 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-slate-700'
           }`}
+          title="Admin"
         >
-          <Lock className={`w-3 h-3 sm:w-4 sm:h-4 ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`} />
-          <span className={`hidden sm:inline text-xs ${activeTab === 'admin' ? 'text-white' : 'text-red-600 dark:text-red-400'}`}>Admin</span>
+          <Lock className="w-4 h-4" />
         </button>
       </div>
 
