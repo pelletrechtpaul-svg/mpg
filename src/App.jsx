@@ -1697,29 +1697,29 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
-        {/* Mini music player — largeur fixe */}
-        <div className={`w-28 rounded-lg shadow-md border transition-all ${
+      <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+        {/* Mini music player — largeur fixe réduite */}
+        <div className={`w-[76px] rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
           {/* Track title — défilement si trop long */}
-          <div className="px-2 pt-1.5 pb-0.5 overflow-hidden">
-            <p className={`text-xs font-medium whitespace-nowrap ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 10 ? 'animate-marquee' : 'text-center'}`}>
+          <div className="px-1.5 pt-1 pb-0 overflow-hidden">
+            <p className={`text-[10px] font-medium whitespace-nowrap ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 8 ? 'animate-marquee' : 'text-center'}`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
           {/* Controls */}
-          <div className="flex items-center justify-center gap-0.5 px-1 pb-1.5">
-            <button onClick={prevTrack} className="p-1 rounded hover:opacity-70 transition-opacity" title="Précédent">
-              <SkipBack className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-center gap-0 px-1 pb-1">
+            <button onClick={prevTrack} className="p-0.5 rounded hover:opacity-70 transition-opacity" title="Précédent">
+              <SkipBack className="w-3 h-3" />
             </button>
-            <button onClick={playPause} className="p-1 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <button onClick={playPause} className="p-0.5 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
+              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             </button>
-            <button onClick={nextTrack} className="p-1 rounded hover:opacity-70 transition-opacity" title="Suivant">
-              <SkipForward className="w-3.5 h-3.5" />
+            <button onClick={nextTrack} className="p-0.5 rounded hover:opacity-70 transition-opacity" title="Suivant">
+              <SkipForward className="w-3 h-3" />
             </button>
           </div>
         </div>
