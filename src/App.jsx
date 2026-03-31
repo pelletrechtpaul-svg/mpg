@@ -639,7 +639,8 @@ const App = () => {
       stats[j] = {
         utilisees: 0,
         recues: 0,
-        efficaces: 0
+        efficaces: 0,
+        efficacesRecues: 0
       };
     });
 
@@ -654,6 +655,7 @@ const App = () => {
         const isEfficace = (diff === 0) || (match.resultat === 'victoire_j1' && diff === 1);
         if (isEfficace) {
           stats[match.joueur1].efficaces++;
+          stats[match.joueur2].efficacesRecues++;
         }
       }
 
@@ -666,6 +668,7 @@ const App = () => {
         const isEfficace = (diff === 0) || (match.resultat === 'victoire_j2' && diff === 1);
         if (isEfficace) {
           stats[match.joueur2].efficaces++;
+          stats[match.joueur1].efficacesRecues++;
         }
       }
     });
@@ -2266,19 +2269,19 @@ const App = () => {
                     <div className="p-4 bg-slate-50 dark:bg-slate-700 border-b dark:border-slate-600">
                       <p className="text-xs text-slate-600 dark:text-slate-300">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
                     </div>
-                    <div className="overflow-x-auto">
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Rang</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 w-8">#</th>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Valises efficaces</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-green-700 dark:text-green-400">Efficaces utilisées</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-red-700 dark:text-red-400">Efficaces reçues</th>
                         </tr>
                       </thead>
                       <tbody>
                         {joueurs
-                          .map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces }))
-                          .sort((a, b) => b.efficaces - a.efficaces)
+                          .map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
+                          .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
                           .map((item, index) => (
                             <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
                               <td className="px-2 py-2 sm:px-6 sm:py-4">
@@ -2293,12 +2296,14 @@ const App = () => {
                               <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
                                 <span className="text-base sm:text-xl font-bold text-green-600">{item.efficaces}</span>
                               </td>
+                              <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
+                                <span className="text-base sm:text-xl font-bold text-red-500">{item.efficacesRecues}</span>
+                              </td>
                             </tr>
                           ))}
                       </tbody>
                     </table>
                   </div>
-                </div>
                 )}
               </div>
             )}
