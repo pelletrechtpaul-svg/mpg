@@ -3146,7 +3146,7 @@ const App = () => {
 
                     {/* Spécialiste des nuls */}
                     {seasonRecords.drawSpecialist && (
-                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800 dark:to-gray-800 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
+                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-700 dark:to-slate-600 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-500">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Spécialiste des nuls</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.drawSpecialist.joueur]}`}></div>
