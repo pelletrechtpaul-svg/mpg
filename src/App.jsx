@@ -452,9 +452,10 @@ const App = () => {
     const stats = calculatePlayerStats(matchesToUse, joueurs);
 
     if (selectedChampionnat === 'total') {
+      // Group by saison+championnat to avoid merging same-named championships across seasons
       const championnatsMap = {};
       matchesToUse.forEach(match => {
-        const key = match.championnat;
+        const key = `${match.saison}||${match.championnat}`;
         if (!championnatsMap[key]) championnatsMap[key] = [];
         championnatsMap[key].push(match);
       });
@@ -468,9 +469,11 @@ const App = () => {
         ligueVictoiresLigues[j] = []; ligueMedaillesLigues[j] = [];
       });
 
-      Object.entries(championnatsMap).forEach(([champ, matches]) => {
-        // Check if championship is complete
-        const metadataKey = `${selectedSeason}-${selectedLigue}-${champ}`;
+      Object.entries(championnatsMap).forEach(([key, matches]) => {
+        // Use the match's own saison for the metadata key (handles All-Time correctly)
+        const matchSaison = matches[0].saison;
+        const matchChamp = matches[0].championnat;
+        const metadataKey = `${matchSaison}-${selectedLigue}-${matchChamp}`;
         const metadata = ligueMetadata[metadataKey];
         if (!metadata || metadata.matchsEntered < metadata.matchsTotal) {
           return; // Skip incomplete championships
@@ -483,7 +486,6 @@ const App = () => {
 
         if (ranking.length > 0 && ranking[0].points > 0) {
           const winner = ranking[0].joueur;
-          // Award titre (3 pts) for 6+ matches, or médaille (2 pts) for < 6 matches
           if (metadata.matchsTotal >= 6) {
             ligueVictoires[winner]++;
             ligueVictoiresLigues[winner].push(selectedLigue);
@@ -494,11 +496,14 @@ const App = () => {
         }
       });
 
-      // Save points from matches before adding title/medal bonuses
+      const isAllTime = selectedSeason === 'All-Time';
       Object.keys(stats).forEach(joueur => {
-        stats[joueur].pointsMatch = stats[joueur].points; // Points from match results only
-        stats[joueur].points += ligueVictoires[joueur] * 3;
-        stats[joueur].points += ligueMedailles[joueur] * 2;
+        stats[joueur].pointsMatch = stats[joueur].points;
+        // En All-Time : afficher les titres/médailles mais ne pas ajouter les points bonus
+        if (!isAllTime) {
+          stats[joueur].points += ligueVictoires[joueur] * 3;
+          stats[joueur].points += ligueMedailles[joueur] * 2;
+        }
         stats[joueur].victoiresChampionnat = ligueVictoires[joueur];
         stats[joueur].medaillesChampionnat = ligueMedailles[joueur];
         stats[joueur].victoiresLigues = ligueVictoiresLigues[joueur];
