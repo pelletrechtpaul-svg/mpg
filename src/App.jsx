@@ -400,13 +400,13 @@ const App = () => {
 
       if (ranking.length > 0 && ranking[0].points > 0) {
         const winner = ranking[0].joueur;
-        const ligue = matches[0].ligue;
+        const entry = { ligue: matches[0].ligue, saison: matches[0].saison };
         if (metadata.matchsTotal >= 6) {
           victoires[winner]++;
-          victoiresLigues[winner].push(ligue);
+          victoiresLigues[winner].push(entry);
         } else {
           medailles[winner]++;
-          medaillesLigues[winner].push(ligue);
+          medaillesLigues[winner].push(entry);
         }
       }
     });
@@ -486,12 +486,13 @@ const App = () => {
 
         if (ranking.length > 0 && ranking[0].points > 0) {
           const winner = ranking[0].joueur;
+          const entry = { ligue: selectedLigue, saison: matches[0].saison };
           if (metadata.matchsTotal >= 6) {
             ligueVictoires[winner]++;
-            ligueVictoiresLigues[winner].push(selectedLigue);
+            ligueVictoiresLigues[winner].push(entry);
           } else {
             ligueMedailles[winner]++;
-            ligueMedaillesLigues[winner].push(selectedLigue);
+            ligueMedaillesLigues[winner].push(entry);
           }
         }
       });
@@ -2263,16 +2264,13 @@ const App = () => {
                     <button onClick={() => setShowChampDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
                   </div>
                   <div className="space-y-1.5">
-                    {Object.entries(
-                      showChampDetail.ligues.reduce((acc, l) => { acc[l] = (acc[l] || 0) + 1; return acc; }, {})
-                    )
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([ligue, count]) => (
-                        <div key={ligue} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                          <span className="text-slate-700 dark:text-slate-200 font-medium">{ligue}</span>
-                          {count > 1 && (
-                            <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>
-                          )}
+                    {showChampDetail.ligues
+                      .slice()
+                      .sort((a, b) => (b.saison || '').localeCompare(a.saison || '') || (a.ligue || '').localeCompare(b.ligue || ''))
+                      .map((entry, i) => (
+                        <div key={i} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                          <span className="text-slate-700 dark:text-slate-200 font-medium">{entry.ligue}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">{entry.saison}</span>
                         </div>
                       ))
                     }
