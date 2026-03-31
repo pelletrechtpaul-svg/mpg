@@ -2731,46 +2731,46 @@ const App = () => {
 
                 {/* Thermomètre — historique des confrontations */}
                 {versusMatchHistory.length > 0 && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-6">
                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-1 text-center">🌡️ Thermomètre</h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-4">
-                      Historique chronologique des confrontations (du point de vue de <strong>{selectedVersusPlayer1}</strong>)
+                      {versusMatchHistory.length} confrontations • du point de vue de <strong>{selectedVersusPlayer1}</strong> • taille = intensité du match
                     </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {versusMatchHistory.map((match, idx) => (
-                        <div key={idx} className="relative">
-                          <div
-                            className={`w-10 h-10 rounded flex items-center justify-center font-bold text-white cursor-pointer transition-transform hover:scale-110 text-sm ${
-                              match.result === 'W' ? 'bg-green-500' :
-                              match.result === 'L' ? 'bg-red-500' :
-                              'bg-slate-400'
-                            }`}
-                            onClick={() => setActiveVersusTooltip(activeVersusTooltip === idx ? null : idx)}
-                          >
-                            {match.result}
-                          </div>
-                          <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-1 w-10">
-                            {match.butsJ1}-{match.butsJ2}
-                          </div>
-                          {activeVersusTooltip === idx && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setActiveVersusTooltip(null)} />
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-52">
-                                <div className="bg-slate-800 text-white rounded-lg p-3 shadow-lg text-center">
-                                  <p className="text-lg font-bold">{match.butsJ1} - {match.butsJ2}</p>
-                                  <p className="text-xs text-slate-300 mt-1">{match.ligue} {match.championnat}</p>
-                                  <p className="text-xs text-slate-400">{match.saison} • {match.date}</p>
+                    <div className="flex flex-wrap gap-1.5 justify-center items-center px-2 py-3">
+                      {versusMatchHistory.map((match, idx) => {
+                        const totalGoals = match.butsJ1 + match.butsJ2;
+                        const size = 10 + Math.min(totalGoals, 8) * 2.5;
+                        return (
+                          <div key={idx} className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+                            <div
+                              className={`rounded-full cursor-pointer transition-all duration-150 hover:opacity-70 hover:scale-110 ${
+                                match.result === 'W' ? 'bg-green-500' :
+                                match.result === 'L' ? 'bg-red-500' :
+                                'bg-slate-400'
+                              }`}
+                              style={{ width: size, height: size }}
+                              onClick={() => setActiveVersusTooltip(activeVersusTooltip === idx ? null : idx)}
+                            />
+                            {activeVersusTooltip === idx && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setActiveVersusTooltip(null)} />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-44">
+                                  <div className="bg-slate-800 text-white rounded-lg p-2.5 shadow-lg text-center">
+                                    <p className="text-base font-bold">{match.butsJ1} - {match.butsJ2}</p>
+                                    <p className="text-xs text-slate-300 mt-0.5">{match.ligue} {match.championnat}</p>
+                                    <p className="text-xs text-slate-400">{match.saison} • {match.date}</p>
+                                  </div>
                                 </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      ))}
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                    <div className="flex justify-center gap-4 mt-4 text-xs text-slate-500 dark:text-slate-400">
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 inline-block"></span> Victoire {selectedVersusPlayer1}</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400 inline-block"></span> Nul</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500 inline-block"></span> Victoire {selectedVersusPlayer2}</span>
+                    <div className="flex justify-center gap-4 mt-3 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> {selectedVersusPlayer1}</span>
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> Nul</span>
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> {selectedVersusPlayer2}</span>
                     </div>
                   </div>
                 )}
