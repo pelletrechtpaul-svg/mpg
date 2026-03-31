@@ -2264,13 +2264,17 @@ const App = () => {
                     <button onClick={() => setShowChampDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
                   </div>
                   <div className="space-y-1.5">
-                    {showChampDetail.ligues
-                      .slice()
-                      .sort((a, b) => (b.saison || '').localeCompare(a.saison || '') || (a.ligue || '').localeCompare(b.ligue || ''))
-                      .map((entry, i) => (
-                        <div key={i} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                          <span className="text-slate-700 dark:text-slate-200 font-medium">{entry.ligue}</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">{entry.saison}</span>
+                    {Object.entries(
+                      showChampDetail.ligues.reduce((acc, e) => {
+                        acc[e.saison] = (acc[e.saison] || 0) + 1;
+                        return acc;
+                      }, {})
+                    )
+                      .sort((a, b) => b[0].localeCompare(a[0]))
+                      .map(([saison, count]) => (
+                        <div key={saison} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                          <span className="text-slate-700 dark:text-slate-200 font-medium">{saison}</span>
+                          <span className="text-xs font-bold text-white bg-blue-500 rounded-full px-2 py-0.5">×{count}</span>
                         </div>
                       ))
                     }
