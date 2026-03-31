@@ -2487,7 +2487,7 @@ const App = () => {
                         <tr>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 w-8">#</th>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-green-700 dark:text-green-400">Efficaces utilisées</th>
+                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-green-700 dark:text-green-400">Efficaces infligées</th>
                           <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-red-700 dark:text-red-400">Efficaces reçues</th>
                         </tr>
                       </thead>
