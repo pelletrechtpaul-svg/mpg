@@ -2247,7 +2247,7 @@ const App = () => {
                             <td className="px-2 py-2 sm:px-6 sm:py-4">
                               <div className="flex items-center gap-1.5 sm:gap-3">
                                 <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
-                                <span className="font-semibold text-slate-800">{joueur}</span>
+                                <span className="font-semibold text-slate-800 dark:text-slate-100">{joueur}</span>
                               </div>
                             </td>
                             <td className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600">{valiseStats[joueur].utilisees}</td>
@@ -2287,7 +2287,7 @@ const App = () => {
                               <td className="px-2 py-2 sm:px-6 sm:py-4">
                                 <div className="flex items-center gap-1.5 sm:gap-3">
                                   <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
-                                  <span className="font-semibold text-slate-800">{item.joueur}</span>
+                                  <span className="font-semibold text-slate-800 dark:text-slate-100">{item.joueur}</span>
                                 </div>
                               </td>
                               <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
