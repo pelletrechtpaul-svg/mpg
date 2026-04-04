@@ -2572,6 +2572,7 @@ const App = () => {
                       <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
                           <div className="flex items-center gap-0.5 sm:gap-2">
+                            <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                             {index === 0 && (() => {
                               // Show trophy/medal only if:
                               // 1. Championship is complete (all matches played), OR
@@ -2596,7 +2597,6 @@ const App = () => {
                               }
                               return null;
                             })()}
-                            <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                           </div>
                         </td>
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
