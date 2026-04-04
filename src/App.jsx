@@ -3696,7 +3696,7 @@ const App = () => {
 
                     {seasonRecords.biggestDomination.length > 0 && (
                       <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination</h3>
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination en 1 championnat</h3>
                         <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">+{seasonRecords.biggestDomination[0].gap} pts</p>
                         <div className="space-y-1 mt-1">
                           {seasonRecords.biggestDomination.map((entry, i) => (
