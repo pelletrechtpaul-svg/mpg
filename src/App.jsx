@@ -3699,36 +3699,10 @@ const App = () => {
 
                 {/* SOUS-ONGLET LIGUES */}
                 {activeRecordsSubTab === 'ligues' && (() => {
-                  const ligueData = ligueRecordsMode === 'alltime' ? ligueRecordsAllTime : ligueRecordsSeason;
+                  const ligueData = selectedSeason === 'All-Time' ? ligueRecordsAllTime : ligueRecordsSeason;
                   return (
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">🌍 Stats par ligue</h2>
-                    <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
-                      <button
-                        onClick={() => setLigueRecordsMode('saison')}
-                        disabled={!seasonRecords}
-                        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                          !seasonRecords ? 'opacity-40 cursor-not-allowed text-slate-400' :
-                          ligueRecordsMode === 'saison'
-                            ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
-                        }`}
-                      >
-                        Cette saison
-                      </button>
-                      <button
-                        onClick={() => setLigueRecordsMode('alltime')}
-                        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                          ligueRecordsMode === 'alltime'
-                            ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
-                        }`}
-                      >
-                        All-time
-                      </button>
-                    </div>
-                  </div>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🌍 Stats par ligue</h2>
 
                   {!ligueData ? (
                     <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
