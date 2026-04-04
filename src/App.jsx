@@ -90,6 +90,7 @@ const App = () => {
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
   const [activeRecordsSubTab, setActiveRecordsSubTab] = useState('individuels');
+  const [ligueRecordsMode, setLigueRecordsMode] = useState('alltime'); // 'saison' | 'alltime'
   const [selectedLigue, setSelectedLigue] = useState('general');
   const [selectedChampionnat, setSelectedChampionnat] = useState('total');
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
@@ -1562,40 +1563,30 @@ const App = () => {
     return records;
   }, [filteredData, joueurs, ligueMetadata]);
 
-  // Per-ligue stats (all-time, not season-filtered)
-  const ligueRecords = useMemo(() => {
-    if (!matchData || matchData.length === 0) return null;
-
+  // Helper: compute per-ligue stats from a list of matches
+  const computeLigueStats = (matches, minMatchs = 3) => {
+    if (!matches || matches.length === 0) return null;
     const ligueStats = {};
-    matchData.forEach(match => {
+    matches.forEach(match => {
       const ligue = match.ligue;
       if (!ligue) return;
-      if (!ligueStats[ligue]) {
-        ligueStats[ligue] = { matchs: 0, totalGoals: 0, draws: 0, cleanSheets: 0 };
-      }
+      if (!ligueStats[ligue]) ligueStats[ligue] = { matchs: 0, totalGoals: 0, draws: 0, cleanSheets: 0 };
       const s = ligueStats[ligue];
       s.matchs++;
       s.totalGoals += (match.buts_j1 || 0) + (match.buts_j2 || 0);
       if (match.buts_j1 === match.buts_j2) s.draws++;
       if (match.buts_j1 === 0 || match.buts_j2 === 0) s.cleanSheets++;
     });
-
     const ligues = Object.entries(ligueStats)
-      .filter(([, s]) => s.matchs >= 5)
+      .filter(([, s]) => s.matchs >= minMatchs)
       .map(([ligue, s]) => ({
-        ligue,
-        matchs: s.matchs,
-        avgGoals: s.totalGoals / s.matchs,
-        totalGoals: s.totalGoals,
-        drawRate: s.draws / s.matchs,
-        drawCount: s.draws,
-        cleanSheetRate: s.cleanSheets / s.matchs,
-        cleanSheetCount: s.cleanSheets
+        ligue, matchs: s.matchs,
+        avgGoals: s.totalGoals / s.matchs, totalGoals: s.totalGoals,
+        drawRate: s.draws / s.matchs, drawCount: s.draws,
+        cleanSheetRate: s.cleanSheets / s.matchs, cleanSheetCount: s.cleanSheets
       }))
       .sort((a, b) => b.avgGoals - a.avgGoals);
-
     if (ligues.length === 0) return null;
-
     return {
       ligues,
       mostProlific: ligues[0],
@@ -1603,7 +1594,10 @@ const App = () => {
       mostDraws: [...ligues].sort((a, b) => b.drawRate - a.drawRate)[0],
       mostCleanSheets: [...ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate)[0]
     };
-  }, [matchData]);
+  };
+
+  const ligueRecordsAllTime = useMemo(() => computeLigueStats(matchData, 5), [matchData]);
+  const ligueRecordsSeason = useMemo(() => computeLigueStats(filteredData, 3), [filteredData]);
 
   // Historical evolution for graph view
   const historicalEvolution = useMemo(() => {
@@ -3244,17 +3238,14 @@ const App = () => {
         {/* ONGLET RECORDS */}
         {activeTab === 'records' && (
           <>
-            {!seasonRecords ? (
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-                <p className="text-slate-600">Aucune donnée disponible pour cette saison</p>
-              </div>
-            ) : (
               <div className="space-y-6">
                 {/* Sub-tab navigation */}
                 <div className="flex gap-1 overflow-x-auto pb-1">
                   <button
-                    onClick={() => setActiveRecordsSubTab('individuels')}
+                    onClick={() => { if (seasonRecords) setActiveRecordsSubTab('individuels'); }}
+                    disabled={!seasonRecords}
                     className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                      !seasonRecords ? 'opacity-40 cursor-not-allowed text-slate-400 dark:text-slate-600' :
                       activeRecordsSubTab === 'individuels'
                         ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
@@ -3263,8 +3254,10 @@ const App = () => {
                     👤 Individuels
                   </button>
                   <button
-                    onClick={() => setActiveRecordsSubTab('collectifs')}
+                    onClick={() => { if (seasonRecords) setActiveRecordsSubTab('collectifs'); }}
+                    disabled={!seasonRecords}
                     className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                      !seasonRecords ? 'opacity-40 cursor-not-allowed text-slate-400 dark:text-slate-600' :
                       activeRecordsSubTab === 'collectifs'
                         ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
@@ -3284,8 +3277,18 @@ const App = () => {
                   </button>
                 </div>
 
+                {/* Message si saison non disponible et onglet qui nécessite des données */}
+                {!seasonRecords && activeRecordsSubTab !== 'ligues' && (
+                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
+                    <p className="text-slate-500 dark:text-slate-400">
+                      Les records individuels et collectifs ne sont disponibles que par saison.
+                      Sélectionne une saison ou consulte l'onglet <button onClick={() => setActiveRecordsSubTab('ligues')} className="text-blue-500 underline">Ligues</button>.
+                    </p>
+                  </div>
+                )}
+
                 {/* SOUS-ONGLET INDIVIDUELS */}
-                {activeRecordsSubTab === 'individuels' && (<>
+                {activeRecordsSubTab === 'individuels' && seasonRecords && (<>
                 {/* Records personnels */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏅 Records personnels</h2>
@@ -3577,7 +3580,7 @@ const App = () => {
                 </>)}
 
                 {/* SOUS-ONGLET COLLECTIFS */}
-                {activeRecordsSubTab === 'collectifs' && (
+                {activeRecordsSubTab === 'collectifs' && seasonRecords && (
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement pour les records de championnat</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3692,43 +3695,70 @@ const App = () => {
                 )}
 
                 {/* SOUS-ONGLET LIGUES */}
-                {activeRecordsSubTab === 'ligues' && (
+                {activeRecordsSubTab === 'ligues' && (() => {
+                  const ligueData = ligueRecordsMode === 'alltime' ? ligueRecordsAllTime : ligueRecordsSeason;
+                  return (
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🌍 Stats par ligue</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Toutes saisons confondues</p>
+                  <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">🌍 Stats par ligue</h2>
+                    <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                      <button
+                        onClick={() => setLigueRecordsMode('saison')}
+                        disabled={!seasonRecords}
+                        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                          !seasonRecords ? 'opacity-40 cursor-not-allowed text-slate-400' :
+                          ligueRecordsMode === 'saison'
+                            ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
+                        }`}
+                      >
+                        Cette saison
+                      </button>
+                      <button
+                        onClick={() => setLigueRecordsMode('alltime')}
+                        className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                          ligueRecordsMode === 'alltime'
+                            ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
+                        }`}
+                      >
+                        All-time
+                      </button>
+                    </div>
+                  </div>
 
-                  {!ligueRecords ? (
-                    <p className="text-slate-500 text-sm">Pas assez de données.</p>
+                  {!ligueData ? (
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
                   ) : (
                     <>
                       {/* Cards des extrêmes */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Ligue la plus prolifique</h3>
-                          <p className="text-2xl font-bold text-green-700 dark:text-green-400">{ligueRecords.mostProlific.avgGoals.toFixed(2)} buts/match</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueRecords.mostProlific.ligue}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueRecords.mostProlific.totalGoals} buts sur {ligueRecords.mostProlific.matchs} matchs</p>
+                          <p className="text-2xl font-bold text-green-700 dark:text-green-400">{ligueData.mostProlific.avgGoals.toFixed(2)} buts/match</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostProlific.ligue}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostProlific.totalGoals} buts sur {ligueData.mostProlific.matchs} matchs</p>
                         </div>
 
                         <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥱 Ligue la moins prolifique</h3>
-                          <p className="text-2xl font-bold text-slate-600 dark:text-slate-300">{ligueRecords.leastProlific.avgGoals.toFixed(2)} buts/match</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueRecords.leastProlific.ligue}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueRecords.leastProlific.totalGoals} buts sur {ligueRecords.leastProlific.matchs} matchs</p>
+                          <p className="text-2xl font-bold text-slate-600 dark:text-slate-300">{ligueData.leastProlific.avgGoals.toFixed(2)} buts/match</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.leastProlific.ligue}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.leastProlific.totalGoals} buts sur {ligueData.leastProlific.matchs} matchs</p>
                         </div>
 
                         <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Ligue avec le plus de nuls</h3>
-                          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{(ligueRecords.mostDraws.drawRate * 100).toFixed(1)}%</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueRecords.mostDraws.ligue}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueRecords.mostDraws.drawCount} nuls sur {ligueRecords.mostDraws.matchs} matchs</p>
+                          <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{(ligueData.mostDraws.drawRate * 100).toFixed(1)}%</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostDraws.ligue}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostDraws.drawCount} nuls sur {ligueData.mostDraws.matchs} matchs</p>
                         </div>
 
                         <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/40 dark:to-cyan-900/40 rounded-lg p-4 border-2 border-teal-200 dark:border-teal-700">
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🧤 Ligue avec le plus de clean sheets</h3>
-                          <p className="text-2xl font-bold text-teal-700 dark:text-teal-400">{(ligueRecords.mostCleanSheets.cleanSheetRate * 100).toFixed(1)}%</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueRecords.mostCleanSheets.ligue}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueRecords.mostCleanSheets.cleanSheetCount} matchs avec clean sheet sur {ligueRecords.mostCleanSheets.matchs}</p>
+                          <p className="text-2xl font-bold text-teal-700 dark:text-teal-400">{(ligueData.mostCleanSheets.cleanSheetRate * 100).toFixed(1)}%</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostCleanSheets.ligue}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostCleanSheets.cleanSheetCount} matchs avec clean sheet sur {ligueData.mostCleanSheets.matchs}</p>
                         </div>
                       </div>
 
@@ -3745,7 +3775,7 @@ const App = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {ligueRecords.ligues.map((l, i) => (
+                            {ligueData.ligues.map((l, i) => (
                               <tr key={l.ligue} className={`border-t border-slate-100 dark:border-slate-700 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-slate-700/20'}`}>
                                 <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{l.ligue}</td>
                                 <td className="px-3 py-2 text-center text-slate-600 dark:text-slate-300">{l.matchs}</td>
@@ -3760,10 +3790,11 @@ const App = () => {
                     </>
                   )}
                 </div>
-                )}
+                  );
+                })()}
 
                 {/* SOUS-ONGLET INDIVIDUELS — Séries */}
-                {activeRecordsSubTab === 'individuels' && (<>
+                {activeRecordsSubTab === 'individuels' && seasonRecords && (<>
                 {/* Séries */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
@@ -3930,7 +3961,6 @@ const App = () => {
                 </div>
                 </>)}
               </div>
-            )}
           </>
         )}
 
