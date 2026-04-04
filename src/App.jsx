@@ -4134,23 +4134,25 @@ const App = () => {
                     })()}
 
                     {/* Série sans encaisser */}
-                    {Object.keys(seasonRecords.longestCleanSheetStreak).length > 0 && (
-                      <div className="bg-teal-50 rounded-lg p-4 border border-teal-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
-                        {Object.entries(seasonRecords.longestCleanSheetStreak)
-                          .sort((a, b) => b[1].length - a[1].length)
-                          .slice(0, 1)
-                          .map(([joueur, data]) => (
-                            <div key={joueur} className="flex items-center gap-2">
-                              <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                              <div>
-                                <p className="font-bold text-teal-700 text-xl">{data.length} matchs</p>
+                    {Object.keys(seasonRecords.longestCleanSheetStreak).length > 0 && (() => {
+                      const sorted = Object.entries(seasonRecords.longestCleanSheetStreak).sort((a, b) => b[1].length - a[1].length);
+                      const maxLen = sorted[0][1].length;
+                      const top = sorted.filter(([, d]) => d.length === maxLen);
+                      return (
+                        <div className="bg-teal-50 rounded-lg p-4 border border-teal-200">
+                          <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
+                          <p className="font-bold text-teal-700 text-xl">{maxLen} matchs</p>
+                          <div className="space-y-1 mt-1">
+                            {top.map(([joueur]) => (
+                              <div key={joueur} className="flex items-center gap-2">
+                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
-                            </div>
-                          ))}
-                      </div>
-                    )}
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
