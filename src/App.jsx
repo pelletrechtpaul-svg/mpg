@@ -2445,36 +2445,6 @@ const App = () => {
               >
                 Classements
               </button>
-              <button
-                onClick={() => setActiveTab('versus')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'versus'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
-                }`}
-              >
-                Face à face
-              </button>
-              <button
-                onClick={() => setActiveTab('statistiques')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'statistiques'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
-                }`}
-              >
-                Statistiques
-              </button>
-              <button
-                onClick={() => setActiveTab('records')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'records'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
-                }`}
-              >
-                Records
-              </button>
               {selectedSeason === '2025/2026' && (
                 <button
                   onClick={() => setActiveTab('stats-avancees')}
@@ -2487,6 +2457,36 @@ const App = () => {
                   Forme
                 </button>
               )}
+              <button
+                onClick={() => setActiveTab('statistiques')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'statistiques'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Statistiques
+              </button>
+              <button
+                onClick={() => setActiveTab('versus')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'versus'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Face à face
+              </button>
+              <button
+                onClick={() => setActiveTab('records')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'records'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                Records
+              </button>
             </div>
 
           </div>
