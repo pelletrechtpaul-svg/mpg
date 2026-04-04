@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Brush } from 'recharts';
-import { Trophy, Lock, Plus, Trash2, Edit, Medal, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
+import { Trophy, Lock, Plus, Trash2, Edit, Medal, SkipBack, SkipForward, Play, Pause, Share2 } from 'lucide-react';
+import domtoimage from 'dom-to-image-more';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -16,6 +17,50 @@ const playerImages = {
   'Paul': '/images/3.png',
   'Tiago': '/images/4.png'
 };
+
+// Share card as image via Web Share API (mobile) or download fallback
+const shareCard = async (element, contextText) => {
+  let footer = null;
+  if (contextText) {
+    footer = document.createElement('div');
+    footer.style.cssText = 'padding:6px 16px 12px;font-size:11px;color:#94a3b8;border-top:1px solid rgba(148,163,184,0.3);margin-top:6px;font-family:sans-serif;';
+    footer.textContent = contextText;
+    element.appendChild(footer);
+  }
+  try {
+    const scale = Math.max(window.devicePixelRatio || 1, 2);
+    const dataUrl = await domtoimage.toPng(element, { scale });
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], 'mpg-stats.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'MPG Stats' });
+    } else {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'mpg-stats.png';
+      a.click();
+    }
+  } catch (err) {
+    if (err?.name !== 'AbortError') console.error('Share failed:', err);
+  } finally {
+    if (footer?.parentNode) footer.parentNode.removeChild(footer);
+  }
+};
+
+const ShareBtn = ({ contextText }) => (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      const card = e.currentTarget.closest('[data-card]');
+      if (card) shareCard(card, contextText || null);
+    }}
+    className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 dark:bg-slate-700/80 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all shadow-sm"
+    title="Partager"
+  >
+    <Share2 size={13} />
+  </button>
+);
 
 // Playlist — ajoute tes fichiers dans /public/audio/ et référence-les ici
 const PLAYLIST = [
@@ -2312,6 +2357,8 @@ const App = () => {
     }
   };
 
+  const shareContext = [selectedSeason, selectedLigue && selectedLigue !== 'Toutes' ? selectedLigue : null].filter(Boolean).join(' · ');
+
   // Show loading state
   if (isLoading) {
     return (
@@ -2594,7 +2641,8 @@ const App = () => {
 
             {/* Tableau classement */}
             {(selectedLigue !== 'general' || rankingsView === 'table') ? (
-            <div className="rounded-xl shadow-sm overflow-hidden bg-white dark:bg-slate-800">
+            <div data-card className="relative rounded-xl shadow-sm overflow-hidden bg-white dark:bg-slate-800">
+              <ShareBtn contextText={shareContext} />
               <div className="overflow-x-auto">
                 <table className="w-full text-xs sm:text-sm">
                   <thead className="bg-slate-50 dark:bg-slate-700">
@@ -3060,7 +3108,8 @@ const App = () => {
             {/* Affichage du bilan */}
             {versusStats.matchs > 0 ? (
               <>
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-8 mb-6">
+                <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-8 mb-6">
+                  <ShareBtn contextText={[selectedSeason, selectedVersusLigue && selectedVersusLigue !== 'all' ? selectedVersusLigue : null].filter(Boolean).join(' · ') || null} />
                   <div className="grid grid-cols-3 items-center gap-4 md:gap-6">
                     <div className="flex flex-col items-center text-center">
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mb-3 overflow-hidden border-4 border-blue-500 shadow-lg">
@@ -3138,7 +3187,8 @@ const App = () => {
 
                 {/* Valises en face-à-face */}
                 {(versusStats.valises_j1 > 0 || versusStats.valises_j2 > 0) && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                    <ShareBtn contextText={[selectedSeason, selectedVersusLigue && selectedVersusLigue !== 'all' ? selectedVersusLigue : null].filter(Boolean).join(' · ') || null} />
                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4 text-center">💼 Valises</h3>
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
@@ -3184,7 +3234,8 @@ const App = () => {
           <>
             <div className="space-y-8">
                 {/* Classement des buteurs */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <ShareBtn contextText={shareContext} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">Classement des buteurs</h2>
 
                   <table className="w-full">
@@ -3228,7 +3279,8 @@ const App = () => {
                 </div>
 
                 {/* Classement des loosers */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <ShareBtn contextText={shareContext} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">Classement des loosers</h2>
 
                   <table className="w-full">
@@ -3272,7 +3324,8 @@ const App = () => {
                 </div>
 
                 {/* Clean sheets */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <ShareBtn contextText={shareContext} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">🧤 Clean sheets</h2>
                   <table className="w-full">
                     <thead className="bg-slate-50 dark:bg-slate-700">
@@ -3314,7 +3367,8 @@ const App = () => {
                 </div>
 
                 {/* Pannes offensives */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <ShareBtn contextText={shareContext} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4 px-2 sm:px-0">🚫 Pannes offensives</h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Matchs sans marquer le moindre but</p>
                   <table className="w-full">
@@ -3358,7 +3412,8 @@ const App = () => {
 
                 {/* Distribution des scores */}
                 {scoreDistribution.length > 0 && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                  <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-2 sm:p-6">
+                    <ShareBtn contextText={shareContext} />
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 px-2 sm:px-0">📊 Distribution des scores</h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Top 15 scores les plus fréquents (score normalisé, victoire en premier)</p>
                     <ResponsiveContainer width="100%" height={320}>
@@ -3437,7 +3492,8 @@ const App = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Record 1: Plus de buts dans un match */}
                     {seasonRecords.mostGoalsInMatch.length > 0 && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+                      <div data-card className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Plus de buts marqués dans un match</h3>
                         <p className="text-2xl font-bold text-green-700">{seasonRecords.mostGoalsInMatch[0].buts} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3460,7 +3516,8 @@ const App = () => {
 
                     {/* Record 2: Plus gros écart */}
                     {seasonRecords.biggestWinMargin.length > 0 && (
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
+                      <div data-card className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">💪 Plus grosse victoire</h3>
                         <p className="text-2xl font-bold text-blue-700">+{seasonRecords.biggestWinMargin[0].margin} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3483,7 +3540,8 @@ const App = () => {
 
                     {/* NEW: Meilleur ratio de victoires à un moment T */}
                     {seasonRecords.bestWinRatioPeak.length > 0 && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
+                      <div data-card className="relative bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">📈 Meilleur ratio de victoires atteint</h3>
                         <p className="text-2xl font-bold text-purple-700">{(seasonRecords.bestWinRatioPeak[0].ratio * 100).toFixed(1)}%</p>
                         <div className="space-y-1 mt-1">
@@ -3506,7 +3564,8 @@ const App = () => {
 
                     {/* NEW: Meilleur ratio de victoires actuel */}
                     {seasonRecords.bestCurrentWinRatio.length > 0 && (
-                      <div className="bg-gradient-to-br from-cyan-50 to-sky-50 rounded-lg p-4 border-2 border-cyan-200">
+                      <div data-card className="relative bg-gradient-to-br from-cyan-50 to-sky-50 rounded-lg p-4 border-2 border-cyan-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Meilleur ratio de victoires actuel</h3>
                         <p className="text-2xl font-bold text-cyan-700">{(seasonRecords.bestCurrentWinRatio[0].ratio * 100).toFixed(1)}%</p>
                         <div className="space-y-1 mt-1">
@@ -3531,7 +3590,8 @@ const App = () => {
 
                     {/* Roi des scores serrés */}
                     {seasonRecords.closeWinsKing.length > 0 && (
-                      <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border-2 border-teal-200">
+                      <div data-card className="relative bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border-2 border-teal-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">🔪 Roi des scores serrés</h3>
                         <p className="text-2xl font-bold text-teal-700">{seasonRecords.closeWinsKing[0].count} victoires</p>
                         <div className="space-y-1 mt-1">
@@ -3552,7 +3612,8 @@ const App = () => {
 
                     {/* Berserk */}
                     {seasonRecords.berserkKing.length > 0 && (
-                      <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border-2 border-red-300">
+                      <div data-card className="relative bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border-2 border-red-300">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">💥 Berserk</h3>
                         <p className="text-2xl font-bold text-red-700">{seasonRecords.berserkKing[0].count} victoires</p>
                         <div className="space-y-1 mt-1">
@@ -3573,7 +3634,8 @@ const App = () => {
 
                     {/* Clutch champion */}
                     {seasonRecords.clutchChampion.length > 0 && (
-                      <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg p-4 border-2 border-violet-300">
+                      <div data-card className="relative bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg p-4 border-2 border-violet-300">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Joueur le plus clutch</h3>
                         <p className="text-2xl font-bold text-violet-700">{seasonRecords.clutchChampion[0].count} titre{seasonRecords.clutchChampion[0].count > 1 ? 's' : ''}</p>
                         <div className="space-y-1 mt-1">
@@ -3594,7 +3656,8 @@ const App = () => {
 
                     {/* Spécialiste des nuls */}
                     {seasonRecords.drawSpecialist.length > 0 && (
-                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-700 dark:to-slate-600 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-500">
+                      <div data-card className="relative bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-700 dark:to-slate-600 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-500">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Spécialiste des nuls</h3>
                         <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">
                           {(seasonRecords.drawSpecialist[0].ratio * 100).toFixed(0)}% de nuls
@@ -3626,7 +3689,8 @@ const App = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {seasonRecords.mostGoalsInChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                      <div data-card className="relative bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Plus de buts marqués en 1 championnat</h3>
                         <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInChampionship[0].goals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3644,7 +3708,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.mostConcededInChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/40 dark:to-rose-900/40 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
+                      <div data-card className="relative bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/40 dark:to-rose-900/40 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥅 Plus de buts encaissés en 1 championnat</h3>
                         <p className="text-2xl font-bold text-red-700 dark:text-red-400">{seasonRecords.mostConcededInChampionship[0].goals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3662,7 +3727,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.bestGAChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/40 rounded-lg p-4 border-2 border-emerald-200 dark:border-emerald-700">
+                      <div data-card className="relative bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/40 rounded-lg p-4 border-2 border-emerald-200 dark:border-emerald-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📈 Meilleur goal average en 1 championnat</h3>
                         <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">+{seasonRecords.bestGAChampionship[0].ga}</p>
                         <div className="space-y-1 mt-1">
@@ -3680,7 +3746,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.worstGAChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-rose-200 dark:border-rose-700">
+                      <div data-card className="relative bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-rose-200 dark:border-rose-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📉 Pire goal average en 1 championnat</h3>
                         <p className="text-2xl font-bold text-rose-700 dark:text-rose-400">{seasonRecords.worstGAChampionship[0].ga}</p>
                         <div className="space-y-1 mt-1">
@@ -3698,7 +3765,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.biggestDomination.length > 0 && (
-                      <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
+                      <div data-card className="relative bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination en 1 championnat</h3>
                         <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">+{seasonRecords.biggestDomination[0].gap} pts</p>
                         <div className="space-y-1 mt-1">
@@ -3718,7 +3786,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.remontada.length > 0 && (
-                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/40 dark:to-blue-900/40 rounded-lg p-4 border-2 border-indigo-200 dark:border-indigo-700">
+                      <div data-card className="relative bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/40 dark:to-blue-900/40 rounded-lg p-4 border-2 border-indigo-200 dark:border-indigo-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔄 Remontada</h3>
                         <div className="space-y-1 mt-1">
                           {seasonRecords.remontada.map((entry, i) => (
@@ -3738,7 +3807,8 @@ const App = () => {
                     )}
 
                     {seasonRecords.unbeatenChampion.length > 0 && (
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 col-span-1 md:col-span-2">
+                      <div data-card className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 col-span-1 md:col-span-2">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🛡️ Titre sans défaite</h3>
                         <div className="flex flex-wrap gap-3">
                           {seasonRecords.unbeatenChampion.map((entry, idx) => (
@@ -3766,7 +3836,8 @@ const App = () => {
 
                     {/* Match le plus prolifique */}
                     {seasonRecords.mostProlificMatch.length > 0 && (
-                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                      <div data-card className="relative bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔥 Match le plus prolifique</h3>
                         <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostProlificMatch[0].totalGoals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3787,7 +3858,8 @@ const App = () => {
 
                     {/* Nul le plus prolifique */}
                     {seasonRecords.mostProlificDraw.length > 0 && (
-                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
+                      <div data-card className="relative bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Match nul le plus prolifique</h3>
                         <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.mostProlificDraw[0].totalGoals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3808,7 +3880,8 @@ const App = () => {
 
                     {/* Championnat le plus serré (σ) */}
                     {seasonRecords.tightestChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                      <div data-card className="relative bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Championnat le plus serré</h3>
                         <p className="text-2xl font-bold text-slate-700 dark:text-slate-200 font-mono">σ = {seasonRecords.tightestChampionship[0].sigma}</p>
                         <div className="space-y-1 mt-1">
@@ -3830,7 +3903,8 @@ const App = () => {
 
                     {/* Championnat le plus explosif */}
                     {seasonRecords.mostExplosive.length > 0 && (
-                      <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                      <div data-card className="relative bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💥 Championnat le plus explosif</h3>
                         <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostExplosive[0].totalGoals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3846,7 +3920,8 @@ const App = () => {
 
                     {/* Championnat le moins explosif */}
                     {seasonRecords.leastExplosive.length > 0 && (
-                      <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                      <div data-card className="relative bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥱 Championnat le moins explosif</h3>
                         <p className="text-2xl font-bold text-slate-600 dark:text-slate-300">{seasonRecords.leastExplosive[0].totalGoals} buts</p>
                         <div className="space-y-1 mt-1">
@@ -3862,7 +3937,8 @@ const App = () => {
 
                     {/* Plus de nuls en 1 championnat */}
                     {seasonRecords.mostDrawsChampionship.length > 0 && (
-                      <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
+                      <div data-card className="relative bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Championnat avec le plus de nuls</h3>
                         <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{seasonRecords.mostDrawsChampionship[0].count} nul{seasonRecords.mostDrawsChampionship[0].count > 1 ? 's' : ''}</p>
                         <div className="space-y-1 mt-1">
@@ -3878,7 +3954,8 @@ const App = () => {
 
                     {/* Saison parfaite */}
                     {seasonRecords.perfectSeason.length > 0 && (
-                      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
+                      <div data-card className="relative bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🌟 Saison parfaite (6V/6)</h3>
                         <div className="flex flex-wrap gap-3">
                           {seasonRecords.perfectSeason.map((entry, idx) => (
@@ -3910,35 +3987,40 @@ const App = () => {
                     <>
                       {/* Cards des extrêmes */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                        <div data-card className="relative bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                          <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Ligue la plus prolifique</h3>
                           <p className="text-2xl font-bold text-green-700 dark:text-green-400">{ligueData.mostProlific.avgGoals.toFixed(2)} buts/match</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostProlific.ligue}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostProlific.totalGoals} buts sur {ligueData.mostProlific.matchs} matchs</p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                        <div data-card className="relative bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                          <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥱 Ligue la moins prolifique</h3>
                           <p className="text-2xl font-bold text-slate-600 dark:text-slate-300">{ligueData.leastProlific.avgGoals.toFixed(2)} buts/match</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.leastProlific.ligue}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.leastProlific.totalGoals} buts sur {ligueData.leastProlific.matchs} matchs</p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
+                        <div data-card className="relative bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
+                          <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Ligue avec le plus de nuls</h3>
                           <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{(ligueData.mostDraws.drawRate * 100).toFixed(1)}%</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostDraws.ligue}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostDraws.drawCount} nuls sur {ligueData.mostDraws.matchs} matchs</p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/40 dark:to-cyan-900/40 rounded-lg p-4 border-2 border-teal-200 dark:border-teal-700">
+                        <div data-card className="relative bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/40 dark:to-cyan-900/40 rounded-lg p-4 border-2 border-teal-200 dark:border-teal-700">
+                          <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🧤 Ligue avec le plus de clean sheets</h3>
                           <p className="text-2xl font-bold text-teal-700 dark:text-teal-400">{(ligueData.mostCleanSheets.cleanSheetRate * 100).toFixed(1)}%</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostCleanSheets.ligue}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostCleanSheets.cleanSheetCount} matchs avec clean sheet sur {ligueData.mostCleanSheets.matchs}</p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700">
+                        <div data-card className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700">
+                          <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Ligue la plus serrée</h3>
                           <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{ligueData.tightest.avgMargin.toFixed(2)} buts d'écart/match</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.tightest.ligue}</p>
@@ -3990,7 +4072,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <div data-card className="relative bg-green-50 rounded-lg p-4 border border-green-200">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🏆 Plus longue série de victoires</h3>
                           <p className="font-bold text-green-700 text-xl">{maxLen} victoires</p>
                           <div className="space-y-1 mt-1">
@@ -4014,7 +4097,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div data-card className="relative bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🛡️ Plus longue série sans défaite</h3>
                           <p className="font-bold text-blue-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
@@ -4038,7 +4122,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                        <div data-card className="relative bg-red-50 rounded-lg p-4 border border-red-200">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">💔 Plus longue série de défaites</h3>
                           <p className="font-bold text-red-700 text-xl">{maxLen} défaites</p>
                           <div className="space-y-1 mt-1">
@@ -4062,7 +4147,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                        <div data-card className="relative bg-slate-50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🤝 Plus longue série de nuls</h3>
                           <p className="font-bold text-slate-700 text-xl">{maxLen} nuls</p>
                           <div className="space-y-1 mt-1">
@@ -4086,7 +4172,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <div data-card className="relative bg-amber-50 rounded-lg p-4 border border-amber-200">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🚫 Plus longue disette offensive</h3>
                           <p className="font-bold text-amber-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
@@ -4110,7 +4197,8 @@ const App = () => {
                       const maxLen = sorted[0][1].length;
                       const top = sorted.filter(([, d]) => d.length === maxLen);
                       return (
-                        <div className="bg-teal-50 rounded-lg p-4 border border-teal-200">
+                        <div data-card className="relative bg-teal-50 rounded-lg p-4 border border-teal-200">
+                          <ShareBtn contextText={null} />
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
                           <p className="font-bold text-teal-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
@@ -4130,7 +4218,8 @@ const App = () => {
 
                     {/* Plus longue série en face-à-face */}
                     {seasonRecords.bestH2HStreak.length > 0 && (
-                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                      <div data-card className="relative bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 mb-3">⚔️ Plus longue série en face-à-face</h3>
                         <p className="font-bold text-amber-700 text-xl">{seasonRecords.bestH2HStreak[0].length} victoires</p>
                         <div className="space-y-1 mt-1">
@@ -4161,7 +4250,8 @@ const App = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Plus régulier */}
                     {seasonRecords.mostRegular.length > 0 && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
+                      <div data-card className="relative bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📊 Joueur le plus régulier</h3>
                         <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">σ = {seasonRecords.mostRegular[0].stdDev.toFixed(2)}</p>
                         <div className="space-y-1 mt-1">
@@ -4182,7 +4272,8 @@ const App = () => {
 
                     {/* Plus imprévisible */}
                     {seasonRecords.mostUnpredictable.length > 0 && (
-                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700">
+                      <div data-card className="relative bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700">
+                        <ShareBtn contextText={null} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎲 Joueur le plus imprévisible</h3>
                         <p className="text-2xl font-bold text-pink-700 dark:text-pink-400">σ = {seasonRecords.mostUnpredictable[0].stdDev.toFixed(2)}</p>
                         <div className="space-y-1 mt-1">
@@ -4234,7 +4325,8 @@ const App = () => {
                     if (!stats) return null;
 
                     return (
-                      <div key={joueur} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                      <div key={joueur} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                        <ShareBtn contextText={shareContext} />
                         {/* Player header */}
                         <div className="flex items-center gap-4 mb-6 pb-4 border-b dark:border-slate-700">
                           <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
