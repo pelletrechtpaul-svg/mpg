@@ -2603,16 +2603,10 @@ const App = () => {
                             {/* Flag icon for winners (1st place) */}
                             {index === 0 && (() => {
                               const flagIcons = {
-                                'Adrien': <span className="text-sm sm:text-base ml-1">🇫🇷</span>,
+                                'Paul':   <span className="text-sm sm:text-base ml-1">🇫🇷</span>,
+                                'Adrien': <span className="text-sm sm:text-base ml-1">🇲🇨</span>,
                                 'Roman':  <span className="text-sm sm:text-base ml-1">🇵🇱</span>,
                                 'Tiago':  <span className="text-sm sm:text-base ml-1">🇧🇷</span>,
-                                'Paul': (
-                                  <svg className="w-4 h-5 sm:w-5 sm:h-6 ml-1 rounded-sm" viewBox="0 0 20 12" xmlns="http://www.w3.org/2000/svg">
-                                    {[0,1,2,3,4,5,6,7,8].map(i => (
-                                      <rect key={i} x="0" y={i * (12/9)} width="20" height={12/9} fill={i % 2 === 0 ? 'black' : 'white'} />
-                                    ))}
-                                  </svg>
-                                ),
                               };
                               return flagIcons[player.joueur] || null;
                             })()}
