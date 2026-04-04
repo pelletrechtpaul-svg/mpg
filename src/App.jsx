@@ -30,6 +30,22 @@ const PLAYLIST = [
   { title: 'Mercato',         src: '/audio/Mercato.mp3' },
 ];
 
+// Championnats sans détail de matchs — classement final saisi manuellement
+const MANUAL_CHAMPIONSHIPS = [
+  {
+    saison: '2024/2025',
+    ligue: 'Ligue des Champions',
+    championnat: '#1',
+    matchsTotal: 6,
+    standings: [
+      { joueur: 'Paul',   points: 15, ga: 8,   matchs: 6, victoires: 5, nuls: 0, defaites: 1 },
+      { joueur: 'Roman',  points: 12, ga: 4,   matchs: 6, victoires: 4, nuls: 0, defaites: 2 },
+      { joueur: 'Adrien', points: 7,  ga: -2,  matchs: 6, victoires: 2, nuls: 1, defaites: 3 },
+      { joueur: 'Tiago',  points: 1,  ga: -10, matchs: 6, victoires: 0, nuls: 1, defaites: 5 },
+    ]
+  }
+];
+
 // Group matches by championship key (saison-ligue-championnat)
 const groupMatchesByChampionship = (matches) => {
   const map = {};
@@ -412,17 +428,52 @@ const App = () => {
       }
     });
 
+    // Inject manual championships (no match data available)
+    const filteredSeasons = new Set(filteredData.map(m => m.saison));
+    MANUAL_CHAMPIONSHIPS.forEach(mc => {
+      if (!filteredSeasons.has(mc.saison) && selectedSeason !== 'All-Time') return;
+      const sorted = [...mc.standings].sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+      if (sorted.length === 0) return;
+      const winner = sorted[0].joueur;
+      if (victoires[winner] === undefined) return;
+      const entry = { ligue: mc.ligue, saison: mc.saison };
+      if (mc.matchsTotal >= 6) {
+        victoires[winner]++;
+        victoiresLigues[winner].push(entry);
+      } else {
+        medailles[winner]++;
+        medaillesLigues[winner].push(entry);
+      }
+    });
+
     return {
       victoiresChampionnat: victoires,
       medaillesChampionnat: medailles,
       victoiresDetail: victoiresLigues,
       medaillesDetail: medaillesLigues,
     };
-  }, [filteredData, joueurs, ligueMetadata]);
+  }, [filteredData, joueurs, ligueMetadata, selectedSeason]);
 
   // Classement général
   const classementGeneral = useMemo(() => {
     const stats = calculatePlayerStats(filteredData, joueurs);
+
+    // Inject match points from manual championships (no match data available)
+    const filteredSeasons = new Set(filteredData.map(m => m.saison));
+    MANUAL_CHAMPIONSHIPS.forEach(mc => {
+      if (!filteredSeasons.has(mc.saison) && selectedSeason !== 'All-Time') return;
+      mc.standings.forEach(s => {
+        if (!stats[s.joueur]) return;
+        stats[s.joueur].points   += s.points;
+        stats[s.joueur].matchs   += s.matchs;
+        stats[s.joueur].victoires += s.victoires;
+        stats[s.joueur].nuls     += s.nuls;
+        stats[s.joueur].defaites += s.defaites;
+        stats[s.joueur].ga       += s.ga;
+        stats[s.joueur].buts_pour   = (stats[s.joueur].buts_pour || 0);
+        stats[s.joueur].buts_contre = (stats[s.joueur].buts_contre || 0);
+      });
+    });
 
     // Save points from matches before adding title/medal bonuses
     Object.keys(stats).forEach(joueur => {
