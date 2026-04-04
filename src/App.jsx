@@ -1067,7 +1067,8 @@ const App = () => {
       // New records
       bestWinRatioPeak: [],      // Meilleur ratio de victoires atteint à un moment T
       bestCurrentWinRatio: [],   // Meilleur ratio de victoires actuel (fin de saison)
-      bestHeadToHead: [],        // Meilleur versus contre un autre joueur
+      bestHeadToHead: [],        // Meilleur versus contre un autre joueur (kept for computation, not displayed)
+      bestH2HStreak: [],         // Plus longue série de victoires en face-à-face
       mostGoalsInChampionship: [],     // Plus de buts marqués en 1 championnat (6 matches)
       mostConcededInChampionship: [],  // Plus de buts encaissés en 1 championnat (6 matches)
       mostProlificDraw: [],            // Nul le plus prolifique
@@ -1463,6 +1464,32 @@ const App = () => {
             dominanceScore
           });
         }
+      });
+    });
+
+    // NEW: Longest h2h win streak
+    joueurs.forEach(j1 => {
+      joueurs.forEach(j2 => {
+        if (j1 >= j2) return;
+        const h2hMatches = sortedMatches
+          .filter(m => (m.joueur1 === j1 && m.joueur2 === j2) || (m.joueur1 === j2 && m.joueur2 === j1))
+          .map(m => {
+            const isJ1 = m.joueur1 === j1;
+            const bJ1 = isJ1 ? m.buts_j1 : m.buts_j2;
+            const bJ2 = isJ1 ? m.buts_j2 : m.buts_j1;
+            return { date: m.dateMatch, resultForJ1: bJ1 > bJ2 ? 'W' : bJ1 < bJ2 ? 'L' : 'D' };
+          });
+        if (h2hMatches.length < 3) return;
+        [{ player: j1, winKey: 'W' }, { player: j2, winKey: 'L' }].forEach(({ player, winKey }) => {
+          const opponent = player === j1 ? j2 : j1;
+          const streak = calculateLongestStreak(h2hMatches, m => m.resultForJ1 === winKey);
+          if (!streak) return;
+          if (records.bestH2HStreak.length === 0 || streak.length > records.bestH2HStreak[0].length) {
+            records.bestH2HStreak = [{ joueur: player, adversaire: opponent, length: streak.length, startDate: streak.startDate, endDate: streak.endDate }];
+          } else if (streak.length === records.bestH2HStreak[0].length) {
+            records.bestH2HStreak.push({ joueur: player, adversaire: opponent, length: streak.length, startDate: streak.startDate, endDate: streak.endDate });
+          }
+        });
       });
     });
 
@@ -3489,6 +3516,29 @@ const App = () => {
                                 </p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
                                   Ratio final sur l'ensemble de la saison
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Plus longue série de victoires en face-à-face */}
+                    {seasonRecords.bestH2HStreak.length > 0 && (
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 border-2 border-amber-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-2">⚔️ Plus longue série en face-à-face</h3>
+                        <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestH2HStreak[0].length} victoires</p>
+                        <div className="space-y-1 mt-1">
+                          {seasonRecords.bestH2HStreak.map((entry, i) => (
+                            <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
+                              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
+                              <div>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">
+                                  <strong>{entry.joueur}</strong> vs {entry.adversaire}
+                                </p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500">
+                                  {new Date(entry.startDate).toLocaleDateString('fr-FR')} → {new Date(entry.endDate).toLocaleDateString('fr-FR')}
                                 </p>
                               </div>
                             </div>
