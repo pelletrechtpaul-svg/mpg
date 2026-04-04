@@ -3035,7 +3035,7 @@ const App = () => {
                           src={playerImages[selectedVersusPlayer1]}
                           alt={selectedVersusPlayer1}
                           className="w-full h-full object-cover"
-                          style={{ objectPosition: selectedVersusPlayer1 === 'Paul' ? '50% 15%' : 'center' }}
+                          style={{ objectPosition: selectedVersusPlayer1 === 'Paul' ? '65% 15%' : selectedVersusPlayer1 === 'Roman' ? '50% 20%' : 'center' }}
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.parentElement.classList.add(playerColors[selectedVersusPlayer1] || 'bg-gray-600');
@@ -3067,7 +3067,7 @@ const App = () => {
                           src={playerImages[selectedVersusPlayer2]}
                           alt={selectedVersusPlayer2}
                           className="w-full h-full object-cover"
-                          style={{ objectPosition: selectedVersusPlayer2 === 'Paul' ? '50% 15%' : 'center' }}
+                          style={{ objectPosition: selectedVersusPlayer2 === 'Paul' ? '65% 15%' : selectedVersusPlayer2 === 'Roman' ? '50% 20%' : 'center' }}
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.parentElement.classList.add(playerColors[selectedVersusPlayer2] || 'bg-gray-600');
@@ -3119,9 +3119,7 @@ const App = () => {
                         )}
                         <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-2">{selectedVersusPlayer1}</div>
                       </div>
-                      <div className="flex items-center justify-center">
-                        <span className="text-3xl">💼</span>
-                      </div>
+                      <div></div>
                       <div>
                         <div className="text-3xl font-bold text-purple-600">{versusStats.valises_j2}</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">utilisées</div>
