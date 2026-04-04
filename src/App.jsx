@@ -2897,6 +2897,7 @@ const App = () => {
             )}
 
             {/* Statistiques globales (buteurs, loosers, CS, pannes) */}
+            {selectedLigue === 'general' && (
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
               <div className="flex flex-wrap gap-2">
                 {[
@@ -3032,6 +3033,7 @@ const App = () => {
                 </div>
               )}
             </div>
+            )}
 
             {/* Tableaux de valises (only for general and total) */}
             {valiseStats && (selectedLigue === 'general' || selectedChampionnat === 'total') && (
