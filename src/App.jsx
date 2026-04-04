@@ -2573,30 +2573,27 @@ const App = () => {
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
-                            {index === 0 && (() => {
-                              // Show trophy/medal only if:
-                              // 1. Championship is complete (all matches played), OR
-                              // 2. It's general ranking for 2024/2025 season
-                              const isComplete = selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
-                                const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
-                                const metadata = ligueMetadata[ligueKey];
-                                return metadata && metadata.matchsEntered >= metadata.matchsTotal;
-                              })();
-                              const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
-
-                              if (isComplete || isGeneral20242025) {
-                                // Check if it's a medal (< 6 matches) or trophy (6 matches)
-                                if (isComplete && !isGeneral20242025) {
+                            <span className="w-3 sm:w-5 flex-shrink-0">
+                              {index === 0 && (() => {
+                                const isComplete = selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
                                   const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
                                   const metadata = ligueMetadata[ligueKey];
-                                  if (metadata && metadata.matchsTotal < 6) {
-                                    return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
+                                  return metadata && metadata.matchsEntered >= metadata.matchsTotal;
+                                })();
+                                const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
+                                if (isComplete || isGeneral20242025) {
+                                  if (isComplete && !isGeneral20242025) {
+                                    const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+                                    const metadata = ligueMetadata[ligueKey];
+                                    if (metadata && metadata.matchsTotal < 6) {
+                                      return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
+                                    }
                                   }
+                                  return <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
                                 }
-                                return <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
-                              }
-                              return null;
-                            })()}
+                                return null;
+                              })()}
+                            </span>
                           </div>
                         </td>
                         <td className="px-1 py-2 sm:px-6 sm:py-4">
