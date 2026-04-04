@@ -1597,7 +1597,10 @@ const App = () => {
   };
 
   const ligueRecordsAllTime = useMemo(() => computeLigueStats(matchData, 5), [matchData]);
-  const ligueRecordsSeason = useMemo(() => computeLigueStats(filteredData, 3), [filteredData]);
+  const ligueRecordsSeason = useMemo(() => {
+    if (selectedSeason === 'All-Time') return null;
+    return computeLigueStats(filteredData, 3);
+  }, [filteredData, selectedSeason]);
 
   // Historical evolution for graph view
   const historicalEvolution = useMemo(() => {
