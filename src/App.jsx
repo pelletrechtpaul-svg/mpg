@@ -3498,27 +3498,6 @@ const App = () => {
                     )}
 
                     {/* NEW: Meilleur versus contre un autre joueur */}
-                    {seasonRecords.bestHeadToHead.length > 0 && (
-                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 border-2 border-amber-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">⚔️ Meilleure domination en face-à-face</h3>
-                        <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestHeadToHead[0].wins}V-{seasonRecords.bestHeadToHead[0].draws}N-{seasonRecords.bestHeadToHead[0].losses}D</p>
-                        <div className="space-y-1 mt-1">
-                          {seasonRecords.bestHeadToHead.map((entry, i) => (
-                            <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.dominant]}`}></div>
-                              <div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">
-                                  <strong>{entry.dominant}</strong> vs {entry.dominated}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                  GA: {entry.gaAdvantage > 0 ? '+' : ''}{entry.gaAdvantage} • {(entry.winRatio * 100).toFixed(0)}% victoires
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
                     {/* Roi des scores serrés */}
                     {seasonRecords.closeWinsKing.length > 0 && (
