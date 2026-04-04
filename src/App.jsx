@@ -3524,29 +3524,6 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Plus longue série de victoires en face-à-face */}
-                    {seasonRecords.bestH2HStreak.length > 0 && (
-                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 border-2 border-amber-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">⚔️ Plus longue série en face-à-face</h3>
-                        <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestH2HStreak[0].length} victoires</p>
-                        <div className="space-y-1 mt-1">
-                          {seasonRecords.bestH2HStreak.map((entry, i) => (
-                            <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                              <div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">
-                                  <strong>{entry.joueur}</strong> vs {entry.adversaire}
-                                </p>
-                                <p className="text-xs text-slate-400 dark:text-slate-500">
-                                  {new Date(entry.startDate).toLocaleDateString('fr-FR')} → {new Date(entry.endDate).toLocaleDateString('fr-FR')}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {/* NEW: Meilleur versus contre un autre joueur */}
 
                     {/* Roi des scores serrés */}
@@ -4140,6 +4117,25 @@ const App = () => {
                         </div>
                       );
                     })()}
+
+                    {/* Plus longue série en face-à-face */}
+                    {seasonRecords.bestH2HStreak.length > 0 && (
+                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <h3 className="text-sm font-semibold text-slate-700 mb-3">⚔️ Plus longue série en face-à-face</h3>
+                        <p className="font-bold text-amber-700 text-xl">{seasonRecords.bestH2HStreak[0].length} victoires</p>
+                        <div className="space-y-1 mt-1">
+                          {seasonRecords.bestH2HStreak.map((entry, i) => (
+                            <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
+                              <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
+                              <div>
+                                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> vs {entry.adversaire}</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(entry.startDate).toLocaleDateString('fr-FR')} → {new Date(entry.endDate).toLocaleDateString('fr-FR')}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
