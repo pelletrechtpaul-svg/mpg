@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Brush } from 'recharts';
 import { Trophy, Lock, Plus, Trash2, Edit, Medal, SkipBack, SkipForward, Play, Pause, Share2 } from 'lucide-react';
-import domtoimage from 'dom-to-image-more';
+import html2canvas from 'html2canvas';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -28,18 +28,24 @@ const shareCard = async (element, contextText) => {
     element.appendChild(footer);
   }
   try {
-    const scale = Math.max(window.devicePixelRatio || 1, 2);
-    const dataUrl = await domtoimage.toPng(element, { scale });
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+    });
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     const file = new File([blob], 'mpg-stats.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: 'MPG Stats' });
     } else {
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = dataUrl;
+      a.href = url;
       a.download = 'mpg-stats.png';
       a.click();
+      URL.revokeObjectURL(url);
     }
   } catch (err) {
     if (err?.name !== 'AbortError') console.error('Share failed:', err);
