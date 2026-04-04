@@ -68,7 +68,10 @@ const calculateLongestStreak = (playerMatches, conditionFn) => {
       current = 0;
     }
   });
-  return max > 0 ? { length: max, endDate: playerMatches[maxEnd]?.date } : null;
+  if (max === 0) return null;
+  const startDate = playerMatches[maxEnd - max + 1]?.date;
+  const endDate = playerMatches[maxEnd]?.date;
+  return { length: max, startDate, endDate };
 };
 
 // Hex colors for chart rendering (matches playerColors bg classes)
@@ -3975,10 +3978,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🏆 Plus longue série de victoires</h3>
                           <p className="font-bold text-green-700 text-xl">{maxLen} victoires</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -3996,10 +4002,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🛡️ Plus longue série sans défaite</h3>
                           <p className="font-bold text-blue-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -4017,10 +4026,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">💔 Plus longue série de défaites</h3>
                           <p className="font-bold text-red-700 text-xl">{maxLen} défaites</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -4038,10 +4050,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🤝 Plus longue série de nuls</h3>
                           <p className="font-bold text-slate-700 text-xl">{maxLen} nuls</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -4059,10 +4074,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🚫 Plus longue disette offensive</h3>
                           <p className="font-bold text-amber-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -4080,10 +4098,13 @@ const App = () => {
                           <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
                           <p className="font-bold text-teal-700 text-xl">{maxLen} matchs</p>
                           <div className="space-y-1 mt-1">
-                            {top.map(([joueur]) => (
+                            {top.map(([joueur, data]) => (
                               <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
+                                <div>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
+                                </div>
                               </div>
                             ))}
                           </div>
