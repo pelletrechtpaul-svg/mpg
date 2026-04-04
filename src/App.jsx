@@ -306,20 +306,29 @@ const App = () => {
   }, [filteredData]);
 
   const ligues = useMemo(() => {
-    const uniqueLigues = [...new Set(matchData.map(d => d.ligue))];
-    return uniqueLigues.length > 0 ? uniqueLigues : ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+    const uniqueLigues = new Set(matchData.map(d => d.ligue));
+    MANUAL_CHAMPIONSHIPS.forEach(mc => uniqueLigues.add(mc.ligue));
+    const result = [...uniqueLigues];
+    return result.length > 0 ? result : ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
   }, [matchData]);
 
   const championnatsByLigue = useMemo(() => {
     const map = {};
+    const filteredSeasons = new Set(filteredData.map(m => m.saison));
     ligues.forEach(ligue => {
-      const championnats = [...new Set(
+      const championnats = new Set(
         filteredData.filter(d => d.ligue === ligue).map(d => d.championnat)
-      )].sort();
-      map[ligue] = championnats;
+      );
+      // Inject manual championships for this ligue when the season matches
+      MANUAL_CHAMPIONSHIPS.forEach(mc => {
+        if (mc.ligue === ligue && (selectedSeason === 'All-Time' || filteredSeasons.has(mc.saison))) {
+          championnats.add(mc.championnat);
+        }
+      });
+      map[ligue] = [...championnats].sort();
     });
     return map;
-  }, [filteredData, ligues]);
+  }, [filteredData, ligues, selectedSeason]);
 
   // Championnats filtrés par la saison du formulaire admin (indépendant de la saison globale)
   const adminChampionnatsByLigue = useMemo(() => {
@@ -503,6 +512,25 @@ const App = () => {
 
     const stats = calculatePlayerStats(matchesToUse, joueurs);
 
+    // Inject manual championships matching the current ligue/championnat/season
+    const filteredSeasons = new Set(filteredData.map(m => m.saison));
+    const relevantManual = MANUAL_CHAMPIONSHIPS.filter(mc =>
+      mc.ligue === selectedLigue &&
+      (selectedSeason === 'All-Time' || filteredSeasons.has(mc.saison)) &&
+      (selectedChampionnat === 'total' || mc.championnat === selectedChampionnat)
+    );
+    relevantManual.forEach(mc => {
+      mc.standings.forEach(s => {
+        if (!stats[s.joueur]) return;
+        stats[s.joueur].points    += s.points;
+        stats[s.joueur].matchs    += s.matchs;
+        stats[s.joueur].victoires += s.victoires;
+        stats[s.joueur].nuls      += s.nuls;
+        stats[s.joueur].defaites  += s.defaites;
+        stats[s.joueur].ga        += s.ga;
+      });
+    });
+
     if (selectedChampionnat === 'total') {
       // Group by saison+championnat to avoid merging same-named championships across seasons
       const championnatsMap = {};
@@ -546,6 +574,21 @@ const App = () => {
             ligueMedailles[winner]++;
             ligueMedaillesLigues[winner].push(entry);
           }
+        }
+      });
+
+      // Add titles from manual championships
+      relevantManual.forEach(mc => {
+        const sorted = [...mc.standings].sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+        if (sorted.length === 0 || ligueVictoires[sorted[0].joueur] === undefined) return;
+        const winner = sorted[0].joueur;
+        const entry = { ligue: mc.ligue, saison: mc.saison };
+        if (mc.matchsTotal >= 6) {
+          ligueVictoires[winner]++;
+          ligueVictoiresLigues[winner].push(entry);
+        } else {
+          ligueMedailles[winner]++;
+          ligueMedaillesLigues[winner].push(entry);
         }
       });
 
