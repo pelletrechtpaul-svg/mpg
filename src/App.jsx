@@ -60,6 +60,7 @@ const App = () => {
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
+  const [activeRecordsSubTab, setActiveRecordsSubTab] = useState('individuels');
   const [selectedLigue, setSelectedLigue] = useState('general');
   const [selectedChampionnat, setSelectedChampionnat] = useState('total');
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
@@ -753,7 +754,15 @@ const App = () => {
       bestCurrentWinRatio: null,   // Meilleur ratio de victoires actuel (fin de saison)
       bestHeadToHead: null,        // Meilleur versus contre un autre joueur
       mostGoalsInChampionship: null,     // Plus de buts marqués en 1 championnat (6 matches)
-      mostConcededInChampionship: null   // Plus de buts encaissés en 1 championnat (6 matches)
+      mostConcededInChampionship: null,  // Plus de buts encaissés en 1 championnat (6 matches)
+      perfectSeason: [],                 // 6V en 6 matchs
+      unbeatenChampion: [],              // Titre sans défaite
+      bestGAChampionship: null,          // Meilleur GA sur un championnat
+      worstGAChampionship: null,         // Pire GA sur un championnat
+      tightestChampionship: null,        // Plus petit écart 1er/dernier (en points)
+      mostExplosive: null,               // Plus grand total de buts sur un championnat
+      biggestDomination: null,           // Plus grand écart 1er/2ème (en points)
+      remontada: null                    // Dernier à mi-parcours → champion
     };
 
     // Record 1: Most goals scored in a single match
@@ -1056,6 +1065,133 @@ const App = () => {
           };
         }
       });
+
+      // Compute full championship ranking using calculatePlayerStats
+      const champStats = calculatePlayerStats(matches, joueurs);
+      const ranking = Object.entries(champStats)
+        .map(([joueur, data]) => ({ joueur, ...data }))
+        .filter(p => p.matchs > 0)
+        .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+      if (ranking.length < 2) return;
+
+      const champion = ranking[0];
+      const last = ranking[ranking.length - 1];
+      // perfectSeason: 6V en 6 matchs
+      if (champion.victoires === 6) {
+        records.perfectSeason.push({
+          joueur: champion.joueur,
+          championnat: matches[0].championnat,
+          ligue: matches[0].ligue,
+          saison: matches[0].saison
+        });
+      }
+
+      // unbeatenChampion: titre sans défaite
+      if (champion.defaites === 0) {
+        records.unbeatenChampion.push({
+          joueur: champion.joueur,
+          victoires: champion.victoires,
+          nuls: champion.nuls,
+          championnat: matches[0].championnat,
+          ligue: matches[0].ligue,
+          saison: matches[0].saison
+        });
+      }
+
+      // bestGAChampionship / worstGAChampionship: per player
+      ranking.forEach(p => {
+        if (!records.bestGAChampionship || p.ga > records.bestGAChampionship.ga) {
+          records.bestGAChampionship = {
+            joueur: p.joueur,
+            ga: p.ga,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
+          };
+        }
+        if (!records.worstGAChampionship || p.ga < records.worstGAChampionship.ga) {
+          records.worstGAChampionship = {
+            joueur: p.joueur,
+            ga: p.ga,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
+          };
+        }
+      });
+
+      // tightestChampionship: smallest gap between 1st and last (points)
+      const gapLastFirst = champion.points - last.points;
+      if (!records.tightestChampionship || gapLastFirst < records.tightestChampionship.gap) {
+        records.tightestChampionship = {
+          gap: gapLastFirst,
+          champion: champion.joueur,
+          last: last.joueur,
+          pointsChampion: champion.points,
+          pointsLast: last.points,
+          championnat: matches[0].championnat,
+          ligue: matches[0].ligue,
+          saison: matches[0].saison
+        };
+      }
+
+      // mostExplosive: highest total goals in a championship
+      const totalGoals = matches.reduce((sum, m) => sum + (m.buts_j1 || 0) + (m.buts_j2 || 0), 0);
+      if (!records.mostExplosive || totalGoals > records.mostExplosive.totalGoals) {
+        records.mostExplosive = {
+          totalGoals,
+          avgGoals: totalGoals / matches.length,
+          championnat: matches[0].championnat,
+          ligue: matches[0].ligue,
+          saison: matches[0].saison
+        };
+      }
+
+      // biggestDomination: biggest gap between 1st and 2nd (points)
+      if (ranking.length >= 2) {
+        const domGap = champion.points - ranking[1].points;
+        if (!records.biggestDomination || domGap > records.biggestDomination.gap) {
+          records.biggestDomination = {
+            gap: domGap,
+            champion: champion.joueur,
+            second: ranking[1].joueur,
+            pointsChampion: champion.points,
+            pointsSecond: ranking[1].points,
+            championnat: matches[0].championnat,
+            ligue: matches[0].ligue,
+            saison: matches[0].saison
+          };
+        }
+      }
+
+      // remontada: last at halfway → becomes champion
+      const sortedChampMatches = [...matches].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
+      const halfMatches = sortedChampMatches.slice(0, Math.floor(matches.length / 2));
+      if (halfMatches.length > 0) {
+        const halfStats = calculatePlayerStats(halfMatches, joueurs);
+        const halfRanking = Object.entries(halfStats)
+          .map(([joueur, data]) => ({ joueur, ...data }))
+          .filter(p => p.matchs > 0)
+          .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
+
+        if (halfRanking.length >= 2) {
+          const halfLast = halfRanking[halfRanking.length - 1];
+          if (halfLast.joueur === champion.joueur) {
+            if (!records.remontada || halfLast.points < records.remontada.halfPoints) {
+              records.remontada = {
+                joueur: champion.joueur,
+                halfPoints: halfLast.points,
+                halfRank: halfRanking.length,
+                finalPoints: champion.points,
+                championnat: matches[0].championnat,
+                ligue: matches[0].ligue,
+                saison: matches[0].saison
+              };
+            }
+          }
+        }
+      }
     });
 
     return records;
@@ -2535,24 +2671,50 @@ const App = () => {
               </div>
             ) : (
               <div className="space-y-6">
+                {/* Sub-tab navigation */}
+                <div className="flex gap-1 overflow-x-auto pb-1">
+                  <button
+                    onClick={() => setActiveRecordsSubTab('individuels')}
+                    className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                      activeRecordsSubTab === 'individuels'
+                        ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                    }`}
+                  >
+                    👤 Individuels
+                  </button>
+                  <button
+                    onClick={() => setActiveRecordsSubTab('collectifs')}
+                    className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                      activeRecordsSubTab === 'collectifs'
+                        ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                    }`}
+                  >
+                    🏆 Collectifs
+                  </button>
+                </div>
+
+                {/* SOUS-ONGLET INDIVIDUELS */}
+                {activeRecordsSubTab === 'individuels' && (<>
                 {/* Records individuels */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">🏆 Records individuels</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏆 Records individuels</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Record 1: Plus de buts dans un match */}
                     {seasonRecords.mostGoalsInMatch && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Plus de buts marqués dans un match</h3>
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Plus de buts marqués dans un match</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInMatch.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-green-700">{seasonRecords.mostGoalsInMatch.buts} buts</p>
+                            <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInMatch.buts} buts</p>
                             <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.mostGoalsInMatch.joueur}</strong> contre {seasonRecords.mostGoalsInMatch.adversaire}
                               ({seasonRecords.mostGoalsInMatch.buts}-{seasonRecords.mostGoalsInMatch.butsAdv})
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               {new Date(seasonRecords.mostGoalsInMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostGoalsInMatch.ligue} {seasonRecords.mostGoalsInMatch.championnat}
                             </p>
                           </div>
@@ -2562,16 +2724,16 @@ const App = () => {
 
                     {/* Record 2: Plus gros écart */}
                     {seasonRecords.biggestWinMargin && (
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">💪 Plus grosse victoire</h3>
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💪 Plus grosse victoire</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.biggestWinMargin.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-blue-700">+{seasonRecords.biggestWinMargin.margin} buts</p>
+                            <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">+{seasonRecords.biggestWinMargin.margin} buts</p>
                             <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.biggestWinMargin.joueur}</strong> {seasonRecords.biggestWinMargin.score} contre {seasonRecords.biggestWinMargin.adversaire}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               {new Date(seasonRecords.biggestWinMargin.date).toLocaleDateString('fr-FR')} • {seasonRecords.biggestWinMargin.ligue} {seasonRecords.biggestWinMargin.championnat}
                             </p>
                           </div>
@@ -2579,18 +2741,18 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* NEW: Meilleur ratio de victoires à un moment T */}
+                    {/* Meilleur ratio de victoires à un moment T */}
                     {seasonRecords.bestWinRatioPeak && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📈 Meilleur ratio de victoires atteint</h3>
+                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/40 dark:to-violet-900/40 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📈 Meilleur ratio de victoires atteint</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestWinRatioPeak.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-purple-700">{(seasonRecords.bestWinRatioPeak.ratio * 100).toFixed(1)}%</p>
+                            <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{(seasonRecords.bestWinRatioPeak.ratio * 100).toFixed(1)}%</p>
                             <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestWinRatioPeak.joueur}</strong> ({seasonRecords.bestWinRatioPeak.wins}V sur {seasonRecords.bestWinRatioPeak.totalMatches} matchs)
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Pic atteint le {new Date(seasonRecords.bestWinRatioPeak.date).toLocaleDateString('fr-FR')} • min 30 matchs
                             </p>
                           </div>
@@ -2598,18 +2760,18 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* NEW: Meilleur ratio de victoires actuel */}
+                    {/* Meilleur ratio de victoires actuel */}
                     {seasonRecords.bestCurrentWinRatio && (
-                      <div className="bg-gradient-to-br from-cyan-50 to-sky-50 rounded-lg p-4 border-2 border-cyan-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Meilleur ratio de victoires actuel</h3>
+                      <div className="bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/40 dark:to-sky-900/40 rounded-lg p-4 border-2 border-cyan-200 dark:border-cyan-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📊 Meilleur ratio de victoires actuel</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestCurrentWinRatio.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-cyan-700">{(seasonRecords.bestCurrentWinRatio.ratio * 100).toFixed(1)}%</p>
+                            <p className="text-2xl font-bold text-cyan-700 dark:text-cyan-400">{(seasonRecords.bestCurrentWinRatio.ratio * 100).toFixed(1)}%</p>
                             <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestCurrentWinRatio.joueur}</strong> ({seasonRecords.bestCurrentWinRatio.wins}V sur {seasonRecords.bestCurrentWinRatio.totalMatches} matchs)
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Ratio final sur l'ensemble de la saison
                             </p>
                           </div>
@@ -2617,93 +2779,19 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* NEW: Meilleur versus contre un autre joueur */}
+                    {/* Meilleur versus contre un autre joueur */}
                     {seasonRecords.bestHeadToHead && (
-                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-4 border-2 border-amber-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">⚔️ Meilleure domination en face-à-face</h3>
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/40 dark:to-yellow-900/40 rounded-lg p-4 border-2 border-amber-200 dark:border-amber-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚔️ Meilleure domination en face-à-face</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestHeadToHead.dominant]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-amber-700">{seasonRecords.bestHeadToHead.wins}V-{seasonRecords.bestHeadToHead.draws}N-{seasonRecords.bestHeadToHead.losses}D</p>
+                            <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">{seasonRecords.bestHeadToHead.wins}V-{seasonRecords.bestHeadToHead.draws}N-{seasonRecords.bestHeadToHead.losses}D</p>
                             <p className="text-sm text-slate-600 dark:text-slate-300">
                               <strong>{seasonRecords.bestHeadToHead.dominant}</strong> vs {seasonRecords.bestHeadToHead.dominated}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               GA: {seasonRecords.bestHeadToHead.gaAdvantage > 0 ? '+' : ''}{seasonRecords.bestHeadToHead.gaAdvantage} • {(seasonRecords.bestHeadToHead.winRatio * 100).toFixed(0)}% victoires
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Record du match */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">⚽ Record de match</h2>
-
-                  {seasonRecords.mostProlificMatch && (
-                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
-                      <h3 className="text-sm font-semibold text-slate-700 mb-2">🔥 Match le plus prolifique</h3>
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
-                            {' '}({seasonRecords.mostProlificMatch.score})
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* NEW: Championship Records */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏆 Records de championnat</h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Most goals scored in championship */}
-                    {seasonRecords.mostGoalsInChampionship && (
-                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Plus de buts marqués en 1 championnat</h3>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInChampionship.joueur]}`}></div>
-                          <div>
-                            <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInChampionship.goals} buts</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
-                              <strong>{seasonRecords.mostGoalsInChampionship.joueur}</strong>
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {seasonRecords.mostGoalsInChampionship.ligue} {seasonRecords.mostGoalsInChampionship.championnat} • {seasonRecords.mostGoalsInChampionship.saison}
-                            </p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                              Championnats à 6 matchs uniquement
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Most goals conceded in championship */}
-                    {seasonRecords.mostConcededInChampionship && (
-                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥅 Plus de buts encaissés en 1 championnat</h3>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostConcededInChampionship.joueur]}`}></div>
-                          <div>
-                            <p className="text-2xl font-bold text-red-700 dark:text-red-400">{seasonRecords.mostConcededInChampionship.goals} buts</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
-                              <strong>{seasonRecords.mostConcededInChampionship.joueur}</strong>
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {seasonRecords.mostConcededInChampionship.ligue} {seasonRecords.mostConcededInChampionship.championnat} • {seasonRecords.mostConcededInChampionship.saison}
-                            </p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                              Championnats à 6 matchs uniquement
                             </p>
                           </div>
                         </div>
@@ -2717,10 +2805,9 @@ const App = () => {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Série de victoires */}
                     {Object.keys(seasonRecords.longestWinStreak).length > 0 && (
-                      <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🏆 Plus longue série de victoires</h3>
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🏆 Plus longue série de victoires</h3>
                         {Object.entries(seasonRecords.longestWinStreak)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2728,7 +2815,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-green-700 text-xl">{data.length} victoires</p>
+                                <p className="font-bold text-green-700 dark:text-green-400 text-xl">{data.length} victoires</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2736,10 +2823,9 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Série sans défaite */}
                     {Object.keys(seasonRecords.longestUnbeatenStreak).length > 0 && (
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🛡️ Plus longue série sans défaite</h3>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🛡️ Plus longue série sans défaite</h3>
                         {Object.entries(seasonRecords.longestUnbeatenStreak)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2747,7 +2833,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-blue-700 text-xl">{data.length} matchs</p>
+                                <p className="font-bold text-blue-700 dark:text-blue-400 text-xl">{data.length} matchs</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2755,10 +2841,9 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Série de défaites */}
                     {Object.keys(seasonRecords.longestLossStreak).length > 0 && (
-                      <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">💔 Plus longue série de défaites</h3>
+                      <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">💔 Plus longue série de défaites</h3>
                         {Object.entries(seasonRecords.longestLossStreak)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2766,7 +2851,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-red-700 text-xl">{data.length} défaites</p>
+                                <p className="font-bold text-red-700 dark:text-red-400 text-xl">{data.length} défaites</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2774,10 +2859,9 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Série de nuls */}
                     {Object.keys(seasonRecords.longestDrawStreak).length > 0 && (
-                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🤝 Plus longue série de nuls</h3>
+                      <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🤝 Plus longue série de nuls</h3>
                         {Object.entries(seasonRecords.longestDrawStreak)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2785,7 +2869,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-slate-700 text-xl">{data.length} nuls</p>
+                                <p className="font-bold text-slate-700 dark:text-slate-200 text-xl">{data.length} nuls</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2793,10 +2877,9 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Série sans marquer */}
                     {Object.keys(seasonRecords.longestGoalDrought).length > 0 && (
-                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🚫 Plus longue disette offensive</h3>
+                      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🚫 Plus longue disette offensive</h3>
                         {Object.entries(seasonRecords.longestGoalDrought)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2804,7 +2887,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-amber-700 text-xl">{data.length} matchs</p>
+                                <p className="font-bold text-amber-700 dark:text-amber-400 text-xl">{data.length} matchs</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2812,10 +2895,9 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Série sans encaisser */}
                     {Object.keys(seasonRecords.longestCleanSheetStreak).length > 0 && (
-                      <div className="bg-teal-50 rounded-lg p-4 border border-teal-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-3">🧤 Plus longue série sans encaisser</h3>
+                      <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4 border border-teal-200 dark:border-teal-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🧤 Plus longue série sans encaisser</h3>
                         {Object.entries(seasonRecords.longestCleanSheetStreak)
                           .sort((a, b) => b[1].length - a[1].length)
                           .slice(0, 1)
@@ -2823,7 +2905,7 @@ const App = () => {
                             <div key={joueur} className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${playerColors[joueur]}`}></div>
                               <div>
-                                <p className="font-bold text-teal-700 text-xl">{data.length} matchs</p>
+                                <p className="font-bold text-teal-700 dark:text-teal-400 text-xl">{data.length} matchs</p>
                                 <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
                               </div>
                             </div>
@@ -2835,18 +2917,17 @@ const App = () => {
 
                 {/* Régularité */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-6">📈 Régularité</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📈 Régularité</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Plus régulier */}
                     {seasonRecords.mostRegular && (
-                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Joueur le plus régulier</h3>
+                      <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/40 dark:to-violet-900/40 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📊 Joueur le plus régulier</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostRegular.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-purple-700">{seasonRecords.mostRegular.joueur}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{seasonRecords.mostRegular.joueur}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Écart-type: {seasonRecords.mostRegular.stdDev.toFixed(2)} • {seasonRecords.mostRegular.matchs} matchs
                             </p>
                           </div>
@@ -2854,15 +2935,14 @@ const App = () => {
                       </div>
                     )}
 
-                    {/* Plus imprévisible */}
                     {seasonRecords.mostUnpredictable && (
-                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg p-4 border-2 border-pink-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🎲 Joueur le plus imprévisible</h3>
+                      <div className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/40 dark:to-rose-900/40 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎲 Joueur le plus imprévisible</h3>
                         <div className="flex items-center gap-3">
                           <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostUnpredictable.joueur]}`}></div>
                           <div>
-                            <p className="text-2xl font-bold text-pink-700">{seasonRecords.mostUnpredictable.joueur}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-2xl font-bold text-pink-700 dark:text-pink-400">{seasonRecords.mostUnpredictable.joueur}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               Écart-type: {seasonRecords.mostUnpredictable.stdDev.toFixed(2)} • {seasonRecords.mostUnpredictable.matchs} matchs
                             </p>
                           </div>
@@ -2871,6 +2951,197 @@ const App = () => {
                     )}
                   </div>
                 </div>
+                </>)}
+
+                {/* SOUS-ONGLET COLLECTIFS */}
+                {activeRecordsSubTab === 'collectifs' && (<>
+                {/* Record du match */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Record de match</h2>
+
+                  {seasonRecords.mostProlificMatch && (
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔥 Match le plus prolifique</h3>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
+                            {' '}({seasonRecords.mostProlificMatch.score})
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Records de championnat */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Plus de buts marqués */}
+                    {seasonRecords.mostGoalsInChampionship && (
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg p-4 border-2 border-green-200 dark:border-green-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">⚽ Plus de buts marqués en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostGoalsInChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInChampionship.goals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{seasonRecords.mostGoalsInChampionship.joueur}</strong></p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.mostGoalsInChampionship.ligue} {seasonRecords.mostGoalsInChampionship.championnat} • {seasonRecords.mostGoalsInChampionship.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Plus de buts encaissés */}
+                    {seasonRecords.mostConcededInChampionship && (
+                      <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/40 dark:to-rose-900/40 rounded-lg p-4 border-2 border-red-200 dark:border-red-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥅 Plus de buts encaissés en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.mostConcededInChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-red-700 dark:text-red-400">{seasonRecords.mostConcededInChampionship.goals} buts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{seasonRecords.mostConcededInChampionship.joueur}</strong></p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.mostConcededInChampionship.ligue} {seasonRecords.mostConcededInChampionship.championnat} • {seasonRecords.mostConcededInChampionship.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Meilleur GA */}
+                    {seasonRecords.bestGAChampionship && (
+                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/40 rounded-lg p-4 border-2 border-emerald-200 dark:border-emerald-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📈 Meilleur goal average en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.bestGAChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">+{seasonRecords.bestGAChampionship.ga}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{seasonRecords.bestGAChampionship.joueur}</strong></p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.bestGAChampionship.ligue} {seasonRecords.bestGAChampionship.championnat} • {seasonRecords.bestGAChampionship.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Pire GA */}
+                    {seasonRecords.worstGAChampionship && (
+                      <div className="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-rose-200 dark:border-rose-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📉 Pire goal average en 1 championnat</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.worstGAChampionship.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-rose-700 dark:text-rose-400">{seasonRecords.worstGAChampionship.ga}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{seasonRecords.worstGAChampionship.joueur}</strong></p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.worstGAChampionship.ligue} {seasonRecords.worstGAChampionship.championnat} • {seasonRecords.worstGAChampionship.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Championnat le plus serré */}
+                    {seasonRecords.tightestChampionship && (
+                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Championnat le plus serré</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.tightestChampionship.gap} pt{seasonRecords.tightestChampionship.gap > 1 ? 's' : ''} d'écart</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            1er: <strong>{seasonRecords.tightestChampionship.champion}</strong> ({seasonRecords.tightestChampionship.pointsChampion} pts) — Dernier: <strong>{seasonRecords.tightestChampionship.last}</strong> ({seasonRecords.tightestChampionship.pointsLast} pts)
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.tightestChampionship.ligue} {seasonRecords.tightestChampionship.championnat} • {seasonRecords.tightestChampionship.saison}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Championnat le plus explosif */}
+                    {seasonRecords.mostExplosive && (
+                      <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💥 Championnat le plus explosif</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostExplosive.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">{seasonRecords.mostExplosive.avgGoals.toFixed(1)} buts/match en moyenne</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.mostExplosive.ligue} {seasonRecords.mostExplosive.championnat} • {seasonRecords.mostExplosive.saison}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Plus grande domination */}
+                    {seasonRecords.biggestDomination && (
+                      <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.biggestDomination.champion]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">+{seasonRecords.biggestDomination.gap} pts</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              <strong>{seasonRecords.biggestDomination.champion}</strong> ({seasonRecords.biggestDomination.pointsChampion} pts) devant <strong>{seasonRecords.biggestDomination.second}</strong> ({seasonRecords.biggestDomination.pointsSecond} pts)
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.biggestDomination.ligue} {seasonRecords.biggestDomination.championnat} • {seasonRecords.biggestDomination.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Remontada */}
+                    {seasonRecords.remontada && (
+                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/40 dark:to-blue-900/40 rounded-lg p-4 border-2 border-indigo-200 dark:border-indigo-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔄 Remontada</h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${playerColors[seasonRecords.remontada.joueur]}`}></div>
+                          <div>
+                            <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-400">{seasonRecords.remontada.joueur}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                              Dernier à mi-parcours ({seasonRecords.remontada.halfPoints} pts) → Champion ({seasonRecords.remontada.finalPoints} pts)
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.remontada.ligue} {seasonRecords.remontada.championnat} • {seasonRecords.remontada.saison}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Saison parfaite (6V/6) */}
+                    {seasonRecords.perfectSeason.length > 0 && (
+                      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🌟 Saison parfaite (6V/6)</h3>
+                        <div className="flex flex-wrap gap-3">
+                          {seasonRecords.perfectSeason.map((entry, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
+                              <div>
+                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Titre invaincu */}
+                    {seasonRecords.unbeatenChampion.length > 0 && (
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 col-span-1 md:col-span-2">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🛡️ Titre sans défaite</h3>
+                        <div className="flex flex-wrap gap-3">
+                          {seasonRecords.unbeatenChampion.map((entry, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
+                              <div>
+                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur} — {entry.victoires}V {entry.nuls}N 0D</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                </>)}
               </div>
             )}
           </>
