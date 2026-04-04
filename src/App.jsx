@@ -3860,7 +3860,7 @@ const App = () => {
                     {/* Plus de nuls en 1 championnat */}
                     {seasonRecords.mostDrawsChampionship.length > 0 && (
                       <div className="bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Championnat le plus nul</h3>
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Championnat avec le plus de nuls</h3>
                         <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{seasonRecords.mostDrawsChampionship[0].count} nul{seasonRecords.mostDrawsChampionship[0].count > 1 ? 's' : ''}</p>
                         <div className="space-y-1 mt-1">
                           {seasonRecords.mostDrawsChampionship.map((entry, i) => (
