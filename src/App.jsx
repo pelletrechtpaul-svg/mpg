@@ -3785,7 +3785,7 @@ const App = () => {
                     {/* Nul le plus prolifique */}
                     {seasonRecords.mostProlificDraw.length > 0 && (
                       <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Nul le plus prolifique</h3>
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Match nul le plus prolifique</h3>
                         <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.mostProlificDraw[0].totalGoals} buts</p>
                         <div className="space-y-1 mt-1">
                           {seasonRecords.mostProlificDraw.map((entry, i) => (
