@@ -2896,9 +2896,9 @@ const App = () => {
               </div>
             )}
 
-            {/* Statistiques globales (buteurs, loosers, CS, pannes) */}
+            {/* Statistiques globales + Valises (general only) */}
             {selectedLigue === 'general' && (
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 space-y-4">
               <div className="flex flex-wrap gap-2">
                 {[
                   { key: 'buteurs',     label: '⚽ Buteurs' },
@@ -3032,80 +3032,48 @@ const App = () => {
                   </table>
                 </div>
               )}
-            </div>
-            )}
 
-            {/* Tableaux de valises (only for general and total) */}
-            {valiseStats && (selectedLigue === 'general' || selectedChampionnat === 'total') && (
-              <div className="mt-6">
-                {/* Toggle buttons */}
-                <div className="flex gap-2 mb-4">
-                  <button
-                    onClick={() => setSelectedValiseTable('stats')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      selectedValiseTable === 'stats'
-                        ? 'bg-slate-700 text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
-                    }`}
-                  >
-                    Valises 💼
-                  </button>
-                  <button
-                    onClick={() => setSelectedValiseTable('efficaces')}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      selectedValiseTable === 'efficaces'
-                        ? 'bg-slate-700 text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
-                    }`}
-                  >
-                    Valises efficaces 🎯
-                  </button>
-                </div>
-
-                {/* Tableau utilisées/reçues */}
-                {selectedValiseTable === 'stats' && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+              {/* Valises — deux cards côte à côte */}
+              {valiseStats && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Card Valises */}
+                  <div data-card className="relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+                    <ShareBtn contextText={shareContext} />
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Utilisées</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
+                          <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">💼 Utilisées</th>
+                          <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
                         </tr>
                       </thead>
                       <tbody>
                         {joueurs.map(joueur => (
                           <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                            <td className="px-2 py-2 sm:px-6 sm:py-4">
-                              <div className="flex items-center gap-1.5 sm:gap-3">
-                                <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-1.5">
+                                <div className={`w-2 h-2 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div>
                                 <span className="font-semibold text-slate-800 dark:text-slate-100">{joueur}</span>
                               </div>
                             </td>
-                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600">{valiseStats[joueur].utilisees}</td>
-                            <td className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-600">{valiseStats[joueur].recues}</td>
+                            <td className="px-3 py-2 text-center font-bold text-blue-600">{valiseStats[joueur].utilisees}</td>
+                            <td className="px-3 py-2 text-center font-bold text-red-600">{valiseStats[joueur].recues}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                </div>
-                )}
 
-                {/* Classement valises efficaces */}
-                {selectedValiseTable === 'efficaces' && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 border-b dark:border-slate-600">
-                      <p className="text-xs text-slate-600 dark:text-slate-300">Une valise est efficace si elle a été décisive pour obtenir un nul ou une victoire avec 1 but d'écart</p>
-                    </div>
+                  {/* Card Valises efficaces */}
+                  <div data-card className="relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+                    <ShareBtn contextText={shareContext} />
                     <table className="w-full text-xs sm:text-sm">
                       <thead className="bg-slate-50 dark:bg-slate-700">
                         <tr>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 w-8">#</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-green-700 dark:text-green-400">Efficaces infligées</th>
-                          <th className="px-2 py-2 sm:px-6 sm:py-3 text-center font-semibold text-red-700 dark:text-red-400">Efficaces reçues</th>
+                          <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 w-6">#</th>
+                          <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                          <th className="px-3 py-2 text-center font-semibold text-green-700 dark:text-green-400">🎯 Infligées</th>
+                          <th className="px-3 py-2 text-center font-semibold text-red-700 dark:text-red-400">Reçues</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -3114,28 +3082,23 @@ const App = () => {
                           .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
                           .map((item, index) => (
                             <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                              <td className="px-2 py-2 sm:px-6 sm:py-4">
-                                <span className="font-bold text-base sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
-                              </td>
-                              <td className="px-2 py-2 sm:px-6 sm:py-4">
-                                <div className="flex items-center gap-1.5 sm:gap-3">
-                                  <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
+                              <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
+                              <td className="px-3 py-2">
+                                <div className="flex items-center gap-1.5">
+                                  <div className={`w-2 h-2 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div>
                                   <span className="font-semibold text-slate-800 dark:text-slate-100">{item.joueur}</span>
                                 </div>
                               </td>
-                              <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
-                                <span className="text-base sm:text-xl font-bold text-green-600">{item.efficaces}</span>
-                              </td>
-                              <td className="px-2 py-2 sm:px-6 sm:py-4 text-center">
-                                <span className="text-base sm:text-xl font-bold text-red-500">{item.efficacesRecues}</span>
-                              </td>
+                              <td className="px-3 py-2 text-center font-bold text-green-600">{item.efficaces}</td>
+                              <td className="px-3 py-2 text-center font-bold text-red-500">{item.efficacesRecues}</td>
                             </tr>
                           ))}
                       </tbody>
                     </table>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
             )}
 
             {/* Liste des matchs */}
