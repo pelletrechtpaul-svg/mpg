@@ -3211,9 +3211,9 @@ const App = () => {
 
                 {/* SOUS-ONGLET INDIVIDUELS */}
                 {activeRecordsSubTab === 'individuels' && (<>
-                {/* Records individuels */}
+                {/* Records personnels */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏆 Records individuels</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏅 Records personnels</h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Record 1: Plus de buts dans un match */}
@@ -3386,56 +3386,9 @@ const App = () => {
                   </div>
                 </div>
 
-                {/* Record du match */}
+                {/* Records en championnat — section individuelle */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Records de match</h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {seasonRecords.mostProlificMatch && (
-                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-4 border-2 border-orange-200">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🔥 Match le plus prolifique</h3>
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <p className="text-2xl font-bold text-orange-700">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
-                              <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
-                              {' '}({seasonRecords.mostProlificMatch.score})
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {seasonRecords.mostProlificDraw && (
-                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 rounded-lg p-4 border-2 border-slate-300">
-                        <h3 className="text-sm font-semibold text-slate-700 mb-2">🤝 Nul le plus prolifique</h3>
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <p className="text-2xl font-bold text-slate-700">{seasonRecords.mostProlificDraw.totalGoals} buts</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
-                              <strong>{seasonRecords.mostProlificDraw.joueur1}</strong> vs <strong>{seasonRecords.mostProlificDraw.joueur2}</strong>
-                              {' '}({seasonRecords.mostProlificDraw.score})
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              {new Date(seasonRecords.mostProlificDraw.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificDraw.ligue} {seasonRecords.mostProlificDraw.championnat}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                </>)}
-
-                {/* SOUS-ONGLET COLLECTIFS */}
-                {activeRecordsSubTab === 'collectifs' && (<>
-                {/* Records de championnat */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records en championnat</h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3495,30 +3448,6 @@ const App = () => {
                       </div>
                     )}
 
-                    {seasonRecords.tightestChampionship && (
-                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Championnat le plus serré</h3>
-                        <div>
-                          <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.tightestChampionship.gap} pt{seasonRecords.tightestChampionship.gap > 1 ? 's' : ''} d'écart</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">
-                            1er: <strong>{seasonRecords.tightestChampionship.champion}</strong> ({seasonRecords.tightestChampionship.pointsChampion} pts) — Dernier: <strong>{seasonRecords.tightestChampionship.last}</strong> ({seasonRecords.tightestChampionship.pointsLast} pts)
-                          </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.tightestChampionship.ligue} {seasonRecords.tightestChampionship.championnat} • {seasonRecords.tightestChampionship.saison}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {seasonRecords.mostExplosive && (
-                      <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💥 Championnat le plus explosif</h3>
-                        <div>
-                          <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostExplosive.totalGoals} buts</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">{seasonRecords.mostExplosive.avgGoals.toFixed(1)} buts/match en moyenne</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.mostExplosive.ligue} {seasonRecords.mostExplosive.championnat} • {seasonRecords.mostExplosive.saison}</p>
-                        </div>
-                      </div>
-                    )}
-
                     {seasonRecords.biggestDomination && (
                       <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination</h3>
@@ -3551,23 +3480,6 @@ const App = () => {
                       </div>
                     )}
 
-                    {seasonRecords.perfectSeason.length > 0 && (
-                      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🌟 Saison parfaite (6V/6)</h3>
-                        <div className="flex flex-wrap gap-3">
-                          {seasonRecords.perfectSeason.map((entry, idx) => (
-                            <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
-                              <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
-                              <div>
-                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {seasonRecords.unbeatenChampion.length > 0 && (
                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 col-span-1 md:col-span-2">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🛡️ Titre sans défaite</h3>
@@ -3577,6 +3489,98 @@ const App = () => {
                               <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
                               <div>
                                 <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur} — {entry.victoires}V {entry.nuls}N 0D</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                </>)}
+
+                {/* SOUS-ONGLET COLLECTIFS */}
+                {activeRecordsSubTab === 'collectifs' && (<>
+                {/* Records de match */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Records de match</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {seasonRecords.mostProlificMatch && (
+                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔥 Match le plus prolifique</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostProlificMatch.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            <strong>{seasonRecords.mostProlificMatch.joueur1}</strong> vs <strong>{seasonRecords.mostProlificMatch.joueur2}</strong>
+                            {' '}({seasonRecords.mostProlificMatch.score})
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {new Date(seasonRecords.mostProlificMatch.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificMatch.ligue} {seasonRecords.mostProlificMatch.championnat}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {seasonRecords.mostProlificDraw && (
+                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Nul le plus prolifique</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.mostProlificDraw.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            <strong>{seasonRecords.mostProlificDraw.joueur1}</strong> vs <strong>{seasonRecords.mostProlificDraw.joueur2}</strong>
+                            {' '}({seasonRecords.mostProlificDraw.score})
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {new Date(seasonRecords.mostProlificDraw.date).toLocaleDateString('fr-FR')} • {seasonRecords.mostProlificDraw.ligue} {seasonRecords.mostProlificDraw.championnat}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Records de championnat — collectifs */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {seasonRecords.tightestChampionship && (
+                      <div className="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Championnat le plus serré</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.tightestChampionship.gap} pt{seasonRecords.tightestChampionship.gap > 1 ? 's' : ''} d'écart</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            1er: <strong>{seasonRecords.tightestChampionship.champion}</strong> ({seasonRecords.tightestChampionship.pointsChampion} pts) — Dernier: <strong>{seasonRecords.tightestChampionship.last}</strong> ({seasonRecords.tightestChampionship.pointsLast} pts)
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.tightestChampionship.ligue} {seasonRecords.tightestChampionship.championnat} • {seasonRecords.tightestChampionship.saison}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {seasonRecords.mostExplosive && (
+                      <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💥 Championnat le plus explosif</h3>
+                        <div>
+                          <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostExplosive.totalGoals} buts</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">{seasonRecords.mostExplosive.avgGoals.toFixed(1)} buts/match en moyenne</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{seasonRecords.mostExplosive.ligue} {seasonRecords.mostExplosive.championnat} • {seasonRecords.mostExplosive.saison}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {seasonRecords.perfectSeason.length > 0 && (
+                      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🌟 Saison parfaite (6V/6)</h3>
+                        <div className="flex flex-wrap gap-3">
+                          {seasonRecords.perfectSeason.map((entry, idx) => (
+                            <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
+                              <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
+                              <div>
+                                <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur}</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
                               </div>
                             </div>
@@ -3715,11 +3719,9 @@ const App = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">📈 Régularité</h2>
 
-                  <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-4 py-3 mb-4 text-xs text-slate-500 dark:text-slate-400">
-                    <span className="font-semibold text-slate-600 dark:text-slate-300">Comment ça marche ?</span>{' '}
-                    On calcule l'écart-type des <span className="font-medium">différences de buts</span> (buts marqués − buts encaissés) sur tous les matchs.
-                    Un écart-type <span className="font-medium">faible</span> = des résultats toujours proches de la même valeur → joueur <span className="font-medium">régulier</span>.
-                    Un écart-type <span className="font-medium">élevé</span> = des scores très variables d'un match à l'autre → joueur <span className="font-medium">imprévisible</span>.
+                  <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-4 py-3 mb-4 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                    σ(buts marqués − buts encaissés){' '}
+                    <span className="font-sans not-italic text-slate-400 dark:text-slate-500">— plus σ est faible, plus les scores sont stables d'un match à l'autre</span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
