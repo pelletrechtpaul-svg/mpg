@@ -1021,13 +1021,13 @@ const App = () => {
 
     const records = {
       // 1. Le plus grand nombre de buts inscrits dans un match
-      mostGoalsInMatch: null,
+      mostGoalsInMatch: [],
 
       // 2. Le plus gros écart de buts dans une victoire
-      biggestWinMargin: null,
+      biggestWinMargin: [],
 
       // 5. Le match le plus prolifique
-      mostProlificMatch: null,
+      mostProlificMatch: [],
 
       // Series records (8-13)
       longestWinStreak: {},
@@ -1038,30 +1038,30 @@ const App = () => {
       longestCleanSheetStreak: {},
 
       // 16-17. Regularity
-      mostRegular: null,
-      mostUnpredictable: null,
+      mostRegular: [],
+      mostUnpredictable: [],
 
       // New records
-      bestWinRatioPeak: null,      // Meilleur ratio de victoires atteint à un moment T
-      bestCurrentWinRatio: null,   // Meilleur ratio de victoires actuel (fin de saison)
-      bestHeadToHead: null,        // Meilleur versus contre un autre joueur
-      mostGoalsInChampionship: null,     // Plus de buts marqués en 1 championnat (6 matches)
-      mostConcededInChampionship: null,  // Plus de buts encaissés en 1 championnat (6 matches)
-      mostProlificDraw: null,            // Nul le plus prolifique
-      clutchChampion: null,              // Titres gagnés avec 1 seul point d'écart
-      closeWinsKing: null,               // Le plus de victoires par 1 but d'écart
-      berserkKing: null,                 // Le plus de victoires par 5+ buts d'écart
-      drawSpecialist: null,              // Spécialiste des nuls (ratio de nuls le plus élevé)
+      bestWinRatioPeak: [],      // Meilleur ratio de victoires atteint à un moment T
+      bestCurrentWinRatio: [],   // Meilleur ratio de victoires actuel (fin de saison)
+      bestHeadToHead: [],        // Meilleur versus contre un autre joueur
+      mostGoalsInChampionship: [],     // Plus de buts marqués en 1 championnat (6 matches)
+      mostConcededInChampionship: [],  // Plus de buts encaissés en 1 championnat (6 matches)
+      mostProlificDraw: [],            // Nul le plus prolifique
+      clutchChampion: [],              // Titres gagnés avec 1 seul point d'écart
+      closeWinsKing: [],               // Le plus de victoires par 1 but d'écart
+      berserkKing: [],                 // Le plus de victoires par 5+ buts d'écart
+      drawSpecialist: [],              // Spécialiste des nuls (ratio de nuls le plus élevé)
       perfectSeason: [],                 // 6V en 6 matchs
       unbeatenChampion: [],              // Titre sans défaite
-      bestGAChampionship: null,          // Meilleur GA sur un championnat
-      worstGAChampionship: null,         // Pire GA sur un championnat
-      tightestChampionship: null,        // Championnat le plus équitable (σ points le plus faible)
-      mostExplosive: null,               // Plus grand total de buts sur un championnat
-      leastExplosive: null,              // Moins grand total de buts sur un championnat
-      mostDrawsChampionship: null,       // Plus grand nombre de nuls en 1 championnat
-      biggestDomination: null,           // Plus grand écart 1er/2ème (en points)
-      remontada: null                    // Dernier à mi-parcours → champion
+      bestGAChampionship: [],          // Meilleur GA sur un championnat
+      worstGAChampionship: [],         // Pire GA sur un championnat
+      tightestChampionship: [],        // Championnat le plus équitable (σ points le plus faible)
+      mostExplosive: [],               // Plus grand total de buts sur un championnat
+      leastExplosive: [],              // Moins grand total de buts sur un championnat
+      mostDrawsChampionship: [],       // Plus grand nombre de nuls en 1 championnat
+      biggestDomination: [],           // Plus grand écart 1er/2ème (en points)
+      remontada: []                    // Dernier à mi-parcours → champion
     };
 
     // Record 1: Most goals scored in a single match
@@ -1070,8 +1070,8 @@ const App = () => {
         { joueur: match.joueur1, buts: match.buts_j1, adversaire: match.joueur2, butsAdv: match.buts_j2 },
         { joueur: match.joueur2, buts: match.buts_j2, adversaire: match.joueur1, butsAdv: match.buts_j1 }
       ].forEach(perf => {
-        if (!records.mostGoalsInMatch || perf.buts > records.mostGoalsInMatch.buts) {
-          records.mostGoalsInMatch = {
+        if (records.mostGoalsInMatch.length === 0 || perf.buts > records.mostGoalsInMatch[0].buts) {
+          records.mostGoalsInMatch = [{
             joueur: perf.joueur,
             buts: perf.buts,
             adversaire: perf.adversaire,
@@ -1079,7 +1079,17 @@ const App = () => {
             date: match.dateMatch,
             ligue: match.ligue,
             championnat: match.championnat
-          };
+          }];
+        } else if (perf.buts === records.mostGoalsInMatch[0].buts) {
+          records.mostGoalsInMatch.push({
+            joueur: perf.joueur,
+            buts: perf.buts,
+            adversaire: perf.adversaire,
+            butsAdv: perf.butsAdv,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          });
         }
       });
     });
@@ -1089,36 +1099,60 @@ const App = () => {
       const diff1 = match.buts_j1 - match.buts_j2;
       const diff2 = match.buts_j2 - match.buts_j1;
 
-      if (diff1 > 0 && (!records.biggestWinMargin || diff1 > records.biggestWinMargin.margin)) {
-        records.biggestWinMargin = {
-          joueur: match.joueur1,
-          adversaire: match.joueur2,
-          score: `${match.buts_j1}-${match.buts_j2}`,
-          margin: diff1,
-          date: match.dateMatch,
-          ligue: match.ligue,
-          championnat: match.championnat
-        };
+      if (diff1 > 0) {
+        if (records.biggestWinMargin.length === 0 || diff1 > records.biggestWinMargin[0].margin) {
+          records.biggestWinMargin = [{
+            joueur: match.joueur1,
+            adversaire: match.joueur2,
+            score: `${match.buts_j1}-${match.buts_j2}`,
+            margin: diff1,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          }];
+        } else if (diff1 === records.biggestWinMargin[0].margin) {
+          records.biggestWinMargin.push({
+            joueur: match.joueur1,
+            adversaire: match.joueur2,
+            score: `${match.buts_j1}-${match.buts_j2}`,
+            margin: diff1,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          });
+        }
       }
 
-      if (diff2 > 0 && (!records.biggestWinMargin || diff2 > records.biggestWinMargin.margin)) {
-        records.biggestWinMargin = {
-          joueur: match.joueur2,
-          adversaire: match.joueur1,
-          score: `${match.buts_j2}-${match.buts_j1}`,
-          margin: diff2,
-          date: match.dateMatch,
-          ligue: match.ligue,
-          championnat: match.championnat
-        };
+      if (diff2 > 0) {
+        if (records.biggestWinMargin.length === 0 || diff2 > records.biggestWinMargin[0].margin) {
+          records.biggestWinMargin = [{
+            joueur: match.joueur2,
+            adversaire: match.joueur1,
+            score: `${match.buts_j2}-${match.buts_j1}`,
+            margin: diff2,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          }];
+        } else if (diff2 === records.biggestWinMargin[0].margin) {
+          records.biggestWinMargin.push({
+            joueur: match.joueur2,
+            adversaire: match.joueur1,
+            score: `${match.buts_j2}-${match.buts_j1}`,
+            margin: diff2,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          });
+        }
       }
     });
 
     // Record 5: Most prolific match (total goals) + most prolific draw
     seasonMatches.forEach(match => {
       const totalGoals = match.buts_j1 + match.buts_j2;
-      if (!records.mostProlificMatch || totalGoals > records.mostProlificMatch.totalGoals) {
-        records.mostProlificMatch = {
+      if (records.mostProlificMatch.length === 0 || totalGoals > records.mostProlificMatch[0].totalGoals) {
+        records.mostProlificMatch = [{
           joueur1: match.joueur1,
           joueur2: match.joueur2,
           score: `${match.buts_j1}-${match.buts_j2}`,
@@ -1126,18 +1160,40 @@ const App = () => {
           date: match.dateMatch,
           ligue: match.ligue,
           championnat: match.championnat
-        };
+        }];
+      } else if (totalGoals === records.mostProlificMatch[0].totalGoals) {
+        records.mostProlificMatch.push({
+          joueur1: match.joueur1,
+          joueur2: match.joueur2,
+          score: `${match.buts_j1}-${match.buts_j2}`,
+          totalGoals,
+          date: match.dateMatch,
+          ligue: match.ligue,
+          championnat: match.championnat
+        });
       }
-      if (match.resultat === 'nul' && (!records.mostProlificDraw || totalGoals > records.mostProlificDraw.totalGoals)) {
-        records.mostProlificDraw = {
-          joueur1: match.joueur1,
-          joueur2: match.joueur2,
-          score: `${match.buts_j1}-${match.buts_j2}`,
-          totalGoals,
-          date: match.dateMatch,
-          ligue: match.ligue,
-          championnat: match.championnat
-        };
+      if (match.resultat === 'nul') {
+        if (records.mostProlificDraw.length === 0 || totalGoals > records.mostProlificDraw[0].totalGoals) {
+          records.mostProlificDraw = [{
+            joueur1: match.joueur1,
+            joueur2: match.joueur2,
+            score: `${match.buts_j1}-${match.buts_j2}`,
+            totalGoals,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          }];
+        } else if (totalGoals === records.mostProlificDraw[0].totalGoals) {
+          records.mostProlificDraw.push({
+            joueur1: match.joueur1,
+            joueur2: match.joueur2,
+            score: `${match.buts_j1}-${match.buts_j2}`,
+            totalGoals,
+            date: match.dateMatch,
+            ligue: match.ligue,
+            championnat: match.championnat
+          });
+        }
       }
     });
 
@@ -1155,10 +1211,10 @@ const App = () => {
         if (margin >= 5) berserkCounts[winner]++;
       }
     });
-    const bestClose = Object.entries(closeWinsCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
-    if (bestClose) records.closeWinsKing = { joueur: bestClose[0], count: bestClose[1] };
-    const bestBerserk = Object.entries(berserkCounts).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
-    if (bestBerserk) records.berserkKing = { joueur: bestBerserk[0], count: bestBerserk[1] };
+    const maxClose = Math.max(...Object.values(closeWinsCounts).filter(v => v > 0), 0);
+    if (maxClose > 0) records.closeWinsKing = Object.entries(closeWinsCounts).filter(([, v]) => v === maxClose).map(([joueur]) => ({ joueur, count: maxClose }));
+    const maxBerserk = Math.max(...Object.values(berserkCounts).filter(v => v > 0), 0);
+    if (maxBerserk > 0) records.berserkKing = Object.entries(berserkCounts).filter(([, v]) => v === maxBerserk).map(([joueur]) => ({ joueur, count: maxBerserk }));
 
     // Draw specialist: player with highest draw ratio (min 10 matches)
     const drawCounts = {};
@@ -1168,11 +1224,14 @@ const App = () => {
       if (drawCounts[m.joueur1]) { drawCounts[m.joueur1].total++; if (isDraw) drawCounts[m.joueur1].draws++; }
       if (drawCounts[m.joueur2]) { drawCounts[m.joueur2].total++; if (isDraw) drawCounts[m.joueur2].draws++; }
     });
-    const drawSpecialistEntry = Object.entries(drawCounts)
+    const drawSpecialistCandidates = Object.entries(drawCounts)
       .filter(([, s]) => s.total >= 10)
       .map(([joueur, s]) => ({ joueur, draws: s.draws, total: s.total, ratio: s.draws / s.total }))
-      .sort((a, b) => b.ratio - a.ratio)[0];
-    if (drawSpecialistEntry) records.drawSpecialist = drawSpecialistEntry;
+      .sort((a, b) => b.ratio - a.ratio);
+    if (drawSpecialistCandidates.length > 0) {
+      const maxRatio = drawSpecialistCandidates[0].ratio;
+      records.drawSpecialist = drawSpecialistCandidates.filter(e => e.ratio === maxRatio);
+    }
 
     // Sort matches by date for series calculation
     const sortedMatches = [...seasonMatches].sort((a, b) =>
@@ -1218,12 +1277,16 @@ const App = () => {
         const variance = squaredDiffs.reduce((a, b) => a + b, 0) / goalDiffs.length;
         const stdDev = Math.sqrt(variance);
 
-        if (!records.mostRegular || stdDev < records.mostRegular.stdDev) {
-          records.mostRegular = { joueur, stdDev, matchs: playerMatches.length };
+        if (records.mostRegular.length === 0 || stdDev < records.mostRegular[0].stdDev) {
+          records.mostRegular = [{ joueur, stdDev, matchs: playerMatches.length }];
+        } else if (stdDev === records.mostRegular[0].stdDev) {
+          records.mostRegular.push({ joueur, stdDev, matchs: playerMatches.length });
         }
 
-        if (!records.mostUnpredictable || stdDev > records.mostUnpredictable.stdDev) {
-          records.mostUnpredictable = { joueur, stdDev, matchs: playerMatches.length };
+        if (records.mostUnpredictable.length === 0 || stdDev > records.mostUnpredictable[0].stdDev) {
+          records.mostUnpredictable = [{ joueur, stdDev, matchs: playerMatches.length }];
+        } else if (stdDev === records.mostUnpredictable[0].stdDev) {
+          records.mostUnpredictable.push({ joueur, stdDev, matchs: playerMatches.length });
         }
       }
 
@@ -1252,14 +1315,24 @@ const App = () => {
           }
         });
 
-        if (bestRatio > 0 && (!records.bestWinRatioPeak || bestRatio > records.bestWinRatioPeak.ratio)) {
-          records.bestWinRatioPeak = {
-            joueur,
-            ratio: bestRatio,
-            wins: bestRatioWins,
-            totalMatches: bestRatioMatches,
-            date: bestRatioDate
-          };
+        if (bestRatio > 0) {
+          if (records.bestWinRatioPeak.length === 0 || bestRatio > records.bestWinRatioPeak[0].ratio) {
+            records.bestWinRatioPeak = [{
+              joueur,
+              ratio: bestRatio,
+              wins: bestRatioWins,
+              totalMatches: bestRatioMatches,
+              date: bestRatioDate
+            }];
+          } else if (bestRatio === records.bestWinRatioPeak[0].ratio) {
+            records.bestWinRatioPeak.push({
+              joueur,
+              ratio: bestRatio,
+              wins: bestRatioWins,
+              totalMatches: bestRatioMatches,
+              date: bestRatioDate
+            });
+          }
         }
       }
 
@@ -1268,13 +1341,20 @@ const App = () => {
         const totalWins = playerMatches.filter(m => m.result === 'W').length;
         const currentRatio = totalWins / playerMatches.length;
 
-        if (!records.bestCurrentWinRatio || currentRatio > records.bestCurrentWinRatio.ratio) {
-          records.bestCurrentWinRatio = {
+        if (records.bestCurrentWinRatio.length === 0 || currentRatio > records.bestCurrentWinRatio[0].ratio) {
+          records.bestCurrentWinRatio = [{
             joueur,
             ratio: currentRatio,
             wins: totalWins,
             totalMatches: playerMatches.length
-          };
+          }];
+        } else if (currentRatio === records.bestCurrentWinRatio[0].ratio) {
+          records.bestCurrentWinRatio.push({
+            joueur,
+            ratio: currentRatio,
+            wins: totalWins,
+            totalMatches: playerMatches.length
+          });
         }
       }
     });
