@@ -1788,10 +1788,11 @@ const App = () => {
     matches.forEach(match => {
       const ligue = match.ligue;
       if (!ligue) return;
-      if (!ligueStats[ligue]) ligueStats[ligue] = { matchs: 0, totalGoals: 0, draws: 0, cleanSheets: 0 };
+      if (!ligueStats[ligue]) ligueStats[ligue] = { matchs: 0, totalGoals: 0, draws: 0, cleanSheets: 0, totalMargin: 0 };
       const s = ligueStats[ligue];
       s.matchs++;
       s.totalGoals += (match.buts_j1 || 0) + (match.buts_j2 || 0);
+      s.totalMargin += Math.abs((match.buts_j1 || 0) - (match.buts_j2 || 0));
       if (match.buts_j1 === match.buts_j2) s.draws++;
       if (match.buts_j1 === 0 || match.buts_j2 === 0) s.cleanSheets++;
     });
@@ -1801,7 +1802,8 @@ const App = () => {
         ligue, matchs: s.matchs,
         avgGoals: s.totalGoals / s.matchs, totalGoals: s.totalGoals,
         drawRate: s.draws / s.matchs, drawCount: s.draws,
-        cleanSheetRate: s.cleanSheets / s.matchs, cleanSheetCount: s.cleanSheets
+        cleanSheetRate: s.cleanSheets / s.matchs, cleanSheetCount: s.cleanSheets,
+        avgMargin: s.totalMargin / s.matchs
       }))
       .sort((a, b) => b.avgGoals - a.avgGoals);
     if (ligues.length === 0) return null;
@@ -1810,7 +1812,8 @@ const App = () => {
       mostProlific: ligues[0],
       leastProlific: ligues[ligues.length - 1],
       mostDraws: [...ligues].sort((a, b) => b.drawRate - a.drawRate)[0],
-      mostCleanSheets: [...ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate)[0]
+      mostCleanSheets: [...ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate)[0],
+      tightest: [...ligues].sort((a, b) => a.avgMargin - b.avgMargin)[0]
     };
   };
 
@@ -3933,6 +3936,13 @@ const App = () => {
                           <p className="text-2xl font-bold text-teal-700 dark:text-teal-400">{(ligueData.mostCleanSheets.cleanSheetRate * 100).toFixed(1)}%</p>
                           <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.mostCleanSheets.ligue}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.mostCleanSheets.cleanSheetCount} matchs avec clean sheet sur {ligueData.mostCleanSheets.matchs}</p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700">
+                          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Ligue la plus serrée</h3>
+                          <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{ligueData.tightest.avgMargin.toFixed(2)} buts d'écart/match</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{ligueData.tightest.ligue}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{ligueData.tightest.matchs} matchs</p>
                         </div>
                       </div>
 
