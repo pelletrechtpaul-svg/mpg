@@ -2534,6 +2534,18 @@ const App = () => {
               >
                 Records
               </button>
+              {isAdminAuthenticated && (
+                <button
+                  onClick={() => setActiveTab('mercato')}
+                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                    activeTab === 'mercato'
+                      ? 'bg-amber-500 text-white shadow-lg'
+                      : 'bg-white text-amber-600 hover:bg-amber-50 dark:bg-slate-800 dark:text-amber-400'
+                  }`}
+                >
+                  Mercato
+                </button>
+              )}
             </div>
 
           </div>
@@ -4178,6 +4190,15 @@ const App = () => {
                 </>)}
               </div>
           </>
+        )}
+
+        {/* ONGLET MERCATO */}
+        {activeTab === 'mercato' && isAdminAuthenticated && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
+            <div className="text-4xl mb-4">🏷️</div>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Mercato</h2>
+            <p className="text-slate-500 dark:text-slate-400">Les stats mercato arrivent bientôt.</p>
+          </div>
         )}
 
         {/* ONGLET FORME */}
