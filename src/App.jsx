@@ -3273,13 +3273,9 @@ const App = () => {
                       <div className="text-sm text-slate-600 mt-2">Buts {selectedVersusPlayer2}</div>
                     </div>
                   </div>
-                </div>
 
-                {/* Valises en face-à-face */}
-                {(versusStats.valises_j1 > 0 || versusStats.valises_j2 > 0) && (
-                  <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-                    <ShareBtn contextText={[selectedSeason, selectedVersusLigue && selectedVersusLigue !== 'all' ? selectedVersusLigue : null].filter(Boolean).join(' · ') || null} />
-                    <div className="grid grid-cols-3 gap-4 text-center items-center">
+                  {(versusStats.valises_j1 > 0 || versusStats.valises_j2 > 0) && (
+                    <div className="grid grid-cols-3 gap-4 text-center items-center mt-6 pt-6 border-t dark:border-slate-700">
                       <div>
                         <div className="text-3xl font-bold text-blue-600">{versusStats.valises_j1}</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">utilisées</div>
@@ -3289,7 +3285,6 @@ const App = () => {
                             <span className="text-slate-400 font-normal"> ({Math.round(versusStats.valises_j1_efficaces / versusStats.valises_j1 * 100)}%)</span>
                           </div>
                         )}
-                        <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-2">{selectedVersusPlayer1}</div>
                       </div>
                       <div className="text-lg font-semibold text-slate-800 dark:text-slate-100">💼 Valises</div>
                       <div>
@@ -3301,11 +3296,10 @@ const App = () => {
                             <span className="text-slate-400 font-normal"> ({Math.round(versusStats.valises_j2_efficaces / versusStats.valises_j2 * 100)}%)</span>
                           </div>
                         )}
-                        <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-2">{selectedVersusPlayer2}</div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </>
             ) : (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
