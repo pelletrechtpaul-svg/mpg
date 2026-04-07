@@ -18,6 +18,12 @@ async function importMercato(data) {
 }
 
 const DATA = [
+  // --- Liga #5, Tour 4 ---
+  { joueur: "Guruzeta", prenom: "Gorka",   club: "Athletic", poste: "A",  prix: 10, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Espagnol", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
+  { joueur: "Laporte",  prenom: "Aymeric", club: "Athletic", poste: "DC", prix:  4, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Espagnol", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
+];
+
+const DATA_UNUSED_LIGA_T3 = [
   // --- Liga #5, Tour 3 ---
   { joueur: "Sørloth",        prenom: "Alexander", club: "Atlético",      poste: "A",  prix: 74, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Norvégien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
   { joueur: "Hernández",      prenom: "Marcos",    club: "Betis",         poste: "MO", prix: 19, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 14 }],nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
