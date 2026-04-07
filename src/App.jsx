@@ -463,10 +463,10 @@ const App = () => {
         if (!liguesMap[e.ligue]) liguesMap[e.ligue] = [];
         liguesMap[e.ligue].push(e.prix);
       });
-      let liguePref = null, ligueMaxMed = 0;
+      let liguePref = null, ligueMaxMoy = 0;
       Object.entries(liguesMap).forEach(([ligue, prices]) => {
-        const m = medianFn(prices);
-        if (m > ligueMaxMed) { ligueMaxMed = m; liguePref = ligue; }
+        const m = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
+        if (m > ligueMaxMoy) { ligueMaxMoy = m; liguePref = ligue; }
       });
 
       // Preferred nationality (excluding league's home nationality)
@@ -490,7 +490,7 @@ const App = () => {
       });
       const postePref = Object.entries(postesMap).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 
-      perPlayer[j] = { mediane, liguePref, ligueMaxMed, natPref, natMax, postePref, count: entries.length };
+      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, postePref, count: entries.length };
     });
 
     // Poste le plus valorisé
@@ -4415,7 +4415,7 @@ const App = () => {
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ligue préférée</div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.liguePref}</div>
-                              <div className="text-xs text-slate-500 dark:text-slate-400">médiane {s.ligueMaxMed}m</div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400">moyenne {s.ligueMaxMoy}m</div>
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Nationalité préférée</div>
