@@ -492,8 +492,8 @@ const App = () => {
       let postePref = null, postePrefMoy = null;
       Object.entries(postesMap).forEach(([poste, prices]) => {
         if (prices.length === 0) return;
-        const moy = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
-        if (postePrefMoy === null || moy > postePrefMoy) { postePref = poste; postePrefMoy = moy; }
+        const med = medianFn(prices);
+        if (postePrefMoy === null || med > postePrefMoy) { postePref = poste; postePrefMoy = med; }
       });
 
       perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, natDistinctes, postePref, postePrefMoy, count: entries.length };
@@ -4431,7 +4431,7 @@ const App = () => {
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.postePref ? POSTE_LABEL[s.postePref] : '—'}</div>
-                              {s.postePrefMoy && <div className="text-xs text-slate-500 dark:text-slate-400">moyenne {s.postePrefMoy}m</div>}
+                              {s.postePrefMoy && <div className="text-xs text-slate-500 dark:text-slate-400">médiane {s.postePrefMoy}m</div>}
                             </div>
                           </div>
                         </div>
