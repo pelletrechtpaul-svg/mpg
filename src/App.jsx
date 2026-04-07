@@ -363,7 +363,10 @@ const App = () => {
         });
 
         const unsubscribeMercato = onSnapshot(collection(db, 'mercato'), (snapshot) => {
-          const entries = snapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id }));
+          const entries = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return { ...d, firestoreId: doc.id, acheteur: d.acheteur ? d.acheteur.charAt(0).toUpperCase() + d.acheteur.slice(1) : d.acheteur };
+          });
           setMercatoData(entries);
         });
 
