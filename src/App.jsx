@@ -4496,7 +4496,7 @@ const App = () => {
                             <div key={e.firestoreId} className="flex items-center gap-2">
                               <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
                               <div className="flex-1 min-w-0">
-                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.prenom} {e.joueur}</div>
+                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.joueur.toLowerCase().startsWith(e.prenom.toLowerCase()) ? e.joueur : `${e.prenom} ${e.joueur}`}</div>
                                 <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.ligue}</div>
                               </div>
                               <div className="text-right flex-shrink-0">
@@ -4524,7 +4524,7 @@ const App = () => {
                             <div key={e.firestoreId} className="flex items-center gap-2">
                               <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
                               <div className="flex-1 min-w-0">
-                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.prenom} {e.joueur}</div>
+                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.joueur.toLowerCase().startsWith(e.prenom.toLowerCase()) ? e.joueur : `${e.prenom} ${e.joueur}`}</div>
                                 <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.nbEncheres} enchère{e.nbEncheres > 1 ? 's' : ''}</div>
                               </div>
                               <div className="text-right flex-shrink-0">
