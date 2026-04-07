@@ -554,10 +554,11 @@ const App = () => {
     const [roiEncheresWinner, roiEncheresVal] = Object.entries(enchereWins).sort((a, b) => b[1] - a[1])[0];
 
     // Roi des postes (share of total spending on each position)
+    // Denominator uses only entries with a valid poste group so A+M+D+G = 100%
     const roiPoste = (posteGroupe) => {
       const shares = {};
       JOUEURS_MERCATO.forEach(j => {
-        const entries = mercatoData.filter(e => e.acheteur === j);
+        const entries = mercatoData.filter(e => e.acheteur === j && getPosteGroupe(e.poste) !== null);
         const total = entries.reduce((s, e) => s + e.prix, 0);
         const onPoste = entries.filter(e => getPosteGroupe(e.poste) === posteGroupe).reduce((s, e) => s + e.prix, 0);
         shares[j] = total > 0 ? +(onPoste / total * 100).toFixed(1) : 0;
