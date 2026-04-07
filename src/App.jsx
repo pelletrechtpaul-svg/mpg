@@ -4545,7 +4545,7 @@ const App = () => {
                                 <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
                                   <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxWins > 0 ? (wins / maxWins) * 100 : 0}%` }}></div>
                                 </div>
-                                <span className="text-sm text-slate-800 dark:text-slate-100 w-12 text-right">{wins} vic{isWinner ? ' 👑' : ''}</span>
+                                <span className="text-sm text-slate-800 dark:text-slate-100 w-12 text-right">{wins}{isWinner ? ' 👑' : ''}</span>
                               </div>
                             );
                           })}
