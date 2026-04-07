@@ -4579,8 +4579,8 @@ const App = () => {
 
                   {/* ── ROIS DES TOURS ── */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                    {[{ label: 'Roi du tour 1', desc: 'Recrute le plus en moyenne au tour 1', data: mercatoStats.roiTour1 },
-                      { label: 'Roi du tour 3', desc: 'Recrute le plus en moyenne au tour 3', data: mercatoStats.roiTour3 }].map(({ label, desc, data }) => (
+                    {[{ label: 'Roi du tour 1', desc: 'Recrute le plus de joueurs en moyenne au tour 1', data: mercatoStats.roiTour1 },
+                      { label: 'Roi du tour 3', desc: 'Recrute le plus de joueurs en moyenne au tour 3', data: mercatoStats.roiTour3 }].map(({ label, desc, data }) => (
                       <div key={label} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{desc}</p>
@@ -4599,7 +4599,7 @@ const App = () => {
                                     <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
                                       <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxAvg > 0 ? (avg / maxAvg) * 100 : 0}%` }}></div>
                                     </div>
-                                    <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{avg} moy{isWinner ? ' 👑' : ''}</span>
+                                    <span className="text-sm text-slate-800 dark:text-slate-100 w-24 text-right">{avg} joueur{avg !== 1 ? 's' : ''}{isWinner ? ' 👑' : ''}</span>
                                   </div>
                                 );
                               })}
