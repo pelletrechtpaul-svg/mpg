@@ -457,16 +457,15 @@ const App = () => {
 
       const mediane = medianFn(entries.map(e => e.prix));
 
-      // Best league by median bid
+      // Ligue où il se lâche = ligue avec le plus d'enchères > 50m
       const liguesMap = {};
       entries.forEach(e => {
-        if (!liguesMap[e.ligue]) liguesMap[e.ligue] = [];
-        liguesMap[e.ligue].push(e.prix);
+        if (!liguesMap[e.ligue]) liguesMap[e.ligue] = 0;
+        if (e.prix > 50) liguesMap[e.ligue]++;
       });
-      let liguePref = null, ligueMaxMoy = 0;
-      Object.entries(liguesMap).forEach(([ligue, prices]) => {
-        const m = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
-        if (m > ligueMaxMoy) { ligueMaxMoy = m; liguePref = ligue; }
+      let ligueFolie = null, ligueFolieCount = 0;
+      Object.entries(liguesMap).forEach(([ligue, count]) => {
+        if (count > ligueFolieCount) { ligueFolieCount = count; ligueFolie = ligue; }
       });
 
       // Preferred nationality (excluding league's home nationality)
@@ -483,20 +482,16 @@ const App = () => {
       });
       const natDistinctes = Object.keys(natsMap).length;
 
-      // Preferred position (A/M/D, no G) — determined by highest average bid per position
+      // Preferred position (A/M/D, no G) — determined by most players recruited
       const postesMap = { A: [], M: [], D: [] };
       entries.forEach(e => {
         const g = getPosteGroupe(e.poste);
         if (g && g !== 'G') postesMap[g].push(e.prix);
       });
-      let postePref = null, postePrefMoy = null;
-      Object.entries(postesMap).forEach(([poste, prices]) => {
-        if (prices.length === 0) return;
-        const med = medianFn(prices);
-        if (postePrefMoy === null || med > postePrefMoy) { postePref = poste; postePrefMoy = med; }
-      });
+      const postePref = Object.entries(postesMap).sort((a, b) => b[1].length - a[1].length)[0]?.[0] || null;
+      const postePrefCount = postePref ? postesMap[postePref].length : null;
 
-      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, natDistinctes, postePref, postePrefMoy, count: entries.length };
+      perPlayer[j] = { mediane, ligueFolie, ligueFolieCount, natPref, natMax, natDistinctes, postePref, postePrefCount, count: entries.length };
     });
 
     // Poste le plus valorisé
@@ -549,6 +544,25 @@ const App = () => {
       return { winner, val, averages };
     };
 
+    // Recrutement moyen par championnat (tous tours confondus)
+    const recrutementMoyen = (() => {
+      const champMap = {};
+      mercatoData.forEach(e => {
+        const key = `${e.saison}_${e.ligue}_${e.championnat}`;
+        if (!champMap[key]) { champMap[key] = {}; JOUEURS_MERCATO.forEach(j => { champMap[key][j] = 0; }); }
+        if (e.acheteur) champMap[key][e.acheteur] = (champMap[key][e.acheteur] || 0) + 1;
+      });
+      const keys = Object.keys(champMap);
+      if (keys.length === 0) return null;
+      const totals = {};
+      JOUEURS_MERCATO.forEach(j => { totals[j] = 0; });
+      keys.forEach(k => JOUEURS_MERCATO.forEach(j => { totals[j] += champMap[k][j] || 0; }));
+      const averages = {};
+      JOUEURS_MERCATO.forEach(j => { averages[j] = +(totals[j] / keys.length).toFixed(1); });
+      const [winner, val] = Object.entries(averages).sort((a, b) => b[1] - a[1])[0];
+      return { winner, val, averages };
+    })();
+
     // Roi des enchères (wins where ≥1 others bid)
     const enchereWins = {};
     JOUEURS_MERCATO.forEach(j => { enchereWins[j] = 0; });
@@ -586,7 +600,7 @@ const App = () => {
       podiumDispute,
       ligueTop,
       roiTour1: roiTour(1),
-      roiTour3: roiTour(3),
+      recrutementMoyen,
       roiEncheres: { winner: roiEncheresWinner, val: roiEncheresVal, wins: enchereWins },
       roiAttaquants: roiPoste('A'),
       roiMilieux: roiPoste('M'),
@@ -4420,9 +4434,9 @@ const App = () => {
                               <span className={`font-bold text-lg ${colorText}`}>{s.mediane}m</span>
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
-                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ligue préférée</div>
-                              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.liguePref}</div>
-                              <div className="text-xs text-slate-500 dark:text-slate-400">moyenne {s.ligueMaxMoy}m</div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ligue où il se lâche</div>
+                              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.ligueFolie || '—'}</div>
+                              {s.ligueFolieCount > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.ligueFolieCount} enchère{s.ligueFolieCount > 1 ? 's' : ''} &gt; 50m</div>}
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400">Nationalité préférée</div>
@@ -4433,7 +4447,7 @@ const App = () => {
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.postePref ? POSTE_LABEL[s.postePref] : '—'}</div>
-                              {s.postePrefMoy && <div className="text-xs text-slate-500 dark:text-slate-400">médiane {s.postePrefMoy}m</div>}
+                              {s.postePrefCount && <div className="text-xs text-slate-500 dark:text-slate-400">{s.postePrefCount} joueur{s.postePrefCount > 1 ? 's' : ''} recrutés</div>}
                             </div>
                           </div>
                         </div>
@@ -4568,10 +4582,10 @@ const App = () => {
 
                   </div>
 
-                  {/* ── ROIS DES TOURS ── */}
+                  {/* ── ROI DU TOUR 1 + RECRUTEMENT MOYEN ── */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     {[{ label: 'Roi du tour 1', desc: 'Recrute le plus de joueurs en moyenne au tour 1', data: mercatoStats.roiTour1 },
-                      { label: 'Roi du tour 3', desc: 'Recrute le plus de joueurs en moyenne au tour 3', data: mercatoStats.roiTour3 }].map(({ label, desc, data }) => (
+                      { label: 'Recrutement moyen', desc: 'Nb moyen de joueurs recrutés par championnat', data: mercatoStats.recrutementMoyen }].map(({ label, desc, data }) => (
                       <div key={label} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                         <ShareBtn contextText={`${label} — Mercato MPG`} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
