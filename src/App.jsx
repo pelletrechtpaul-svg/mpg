@@ -483,16 +483,18 @@ const App = () => {
       });
       const natDistinctes = Object.keys(natsMap).length;
 
-      // Preferred position (A/M/D, no G)
+      // Preferred position (A/M/D, no G) — determined by highest average bid per position
       const postesMap = { A: [], M: [], D: [] };
       entries.forEach(e => {
         const g = getPosteGroupe(e.poste);
         if (g && g !== 'G') postesMap[g].push(e.prix);
       });
-      const postePref = Object.entries(postesMap).sort((a, b) => b[1].length - a[1].length)[0]?.[0] || null;
-      const postePrefMoy = postePref && postesMap[postePref].length > 0
-        ? Math.round(postesMap[postePref].reduce((s, p) => s + p, 0) / postesMap[postePref].length)
-        : null;
+      let postePref = null, postePrefMoy = null;
+      Object.entries(postesMap).forEach(([poste, prices]) => {
+        if (prices.length === 0) return;
+        const moy = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
+        if (postePrefMoy === null || moy > postePrefMoy) { postePref = poste; postePrefMoy = moy; }
+      });
 
       perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, natDistinctes, postePref, postePrefMoy, count: entries.length };
     });
