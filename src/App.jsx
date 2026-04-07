@@ -10,6 +10,34 @@ import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebas
 const encodeFirestoreKey = (key) => key.replace(/\//g, '_');
 const decodeFirestoreKey = (key) => key.replace(/_/g, '/');
 
+// Mercato helpers
+const JOUEURS_MERCATO = ['Roman', 'Paul', 'Adrien', 'Tiago'];
+
+const LIGUE_NAT_EXCLUE = {
+  'Ligue 1': 'Français',
+  'Liga': 'Espagnol',
+  'Serie A': 'Italien',
+  'Premier League': 'Anglais',
+  'Bundesliga': 'Allemand',
+};
+
+const getPosteGroupe = (poste) => {
+  if (poste === 'A') return 'A';
+  if (['MD', 'MO', 'MC', 'M'].includes(poste)) return 'M';
+  if (['DC', 'DL', 'DG', 'DD', 'D'].includes(poste)) return 'D';
+  if (poste === 'G') return 'G';
+  return null;
+};
+
+const medianFn = (arr) => {
+  if (!arr || arr.length === 0) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+};
+
+const POSTE_LABEL = { A: 'Attaquants', M: 'Milieux', D: 'Défenseurs', G: 'Gardiens' };
+
 // Player images mapping
 const playerImages = {
   'Roman': '/images/1.png',
@@ -136,6 +164,7 @@ const playerColorHex = {
 const App = () => {
   // State - now synced with Firestore
   const [matchData, setMatchData] = useState([]);
+  const [mercatoData, setMercatoData] = useState([]);
   const [ligueMetadata, setLigueMetadata] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -333,10 +362,16 @@ const App = () => {
           setLastSyncTime(new Date());
         });
 
+        const unsubscribeMercato = onSnapshot(collection(db, 'mercato'), (snapshot) => {
+          const entries = snapshot.docs.map(doc => ({ ...doc.data(), firestoreId: doc.id }));
+          setMercatoData(entries);
+        });
+
         // Cleanup listeners on unmount
         return () => {
           unsubscribeMatches();
           unsubscribeMetadata();
+          unsubscribeMercato();
         };
       } catch (error) {
         console.error('Error syncing with Firestore:', error);
@@ -407,6 +442,149 @@ const App = () => {
     Tiago: 'bg-purple-600',
     Roman: 'bg-orange-600',
   };
+
+  const mercatoStats = useMemo(() => {
+    if (mercatoData.length === 0) return null;
+
+    // Per-player stats
+    const perPlayer = {};
+    JOUEURS_MERCATO.forEach(j => {
+      const entries = mercatoData.filter(e => e.acheteur === j);
+      if (entries.length === 0) { perPlayer[j] = null; return; }
+
+      const mediane = medianFn(entries.map(e => e.prix));
+
+      // Best league by median bid
+      const liguesMap = {};
+      entries.forEach(e => {
+        if (!liguesMap[e.ligue]) liguesMap[e.ligue] = [];
+        liguesMap[e.ligue].push(e.prix);
+      });
+      let liguePref = null, ligueMaxMed = 0;
+      Object.entries(liguesMap).forEach(([ligue, prices]) => {
+        const m = medianFn(prices);
+        if (m > ligueMaxMed) { ligueMaxMed = m; liguePref = ligue; }
+      });
+
+      // Preferred nationality (excluding league's home nationality)
+      const natsMap = {};
+      entries.forEach(e => {
+        const excluded = LIGUE_NAT_EXCLUE[e.ligue];
+        if (e.nationalite && e.nationalite !== excluded) {
+          natsMap[e.nationalite] = (natsMap[e.nationalite] || 0) + 1;
+        }
+      });
+      let natPref = null, natMax = 0;
+      Object.entries(natsMap).forEach(([nat, count]) => {
+        if (count > natMax) { natMax = count; natPref = nat; }
+      });
+
+      // Preferred position (A/M/D, no G)
+      const postesMap = { A: 0, M: 0, D: 0 };
+      entries.forEach(e => {
+        const g = getPosteGroupe(e.poste);
+        if (g && g !== 'G') postesMap[g]++;
+      });
+      const postePref = Object.entries(postesMap).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+
+      perPlayer[j] = { mediane, liguePref, ligueMaxMed, natPref, natMax, postePref, count: entries.length };
+    });
+
+    // Poste le plus valorisé
+    const posteValeur = { A: 0, M: 0, D: 0 };
+    mercatoData.forEach(e => {
+      const g = getPosteGroupe(e.poste);
+      if (g && g !== 'G') posteValeur[g] += e.prix;
+    });
+
+    // Podium plus cher
+    const podiumCher = [...mercatoData].sort((a, b) => b.prix - a.prix).slice(0, 3);
+
+    // Podium plus disputé (sum of all bids)
+    const podiumDispute = [...mercatoData]
+      .map(e => ({
+        ...e,
+        totalMise: e.prix + (e.encheres_perdues || []).reduce((s, ep) => s + ep.prix, 0),
+        nbEncheres: 1 + (e.encheres_perdues || []).length,
+      }))
+      .sort((a, b) => b.totalMise - a.totalMise)
+      .slice(0, 3);
+
+    // Ligue avec enchère médiane la plus élevée
+    const ligueMedianes = {};
+    mercatoData.forEach(e => {
+      if (!ligueMedianes[e.ligue]) ligueMedianes[e.ligue] = [];
+      ligueMedianes[e.ligue].push(e.prix);
+    });
+    const ligueTop = Object.entries(ligueMedianes)
+      .map(([ligue, prices]) => ({ ligue, mediane: medianFn(prices), count: prices.length }))
+      .sort((a, b) => b.mediane - a.mediane)[0] || null;
+
+    // Roi du tour X: average recruits per championship at that tour
+    const roiTour = (tourNum) => {
+      const champMap = {};
+      mercatoData.forEach(e => {
+        if (e.tour !== tourNum) return;
+        const key = `${e.saison}_${e.ligue}_${e.championnat}`;
+        if (!champMap[key]) { champMap[key] = {}; JOUEURS_MERCATO.forEach(j => { champMap[key][j] = 0; }); }
+        champMap[key][e.acheteur] = (champMap[key][e.acheteur] || 0) + 1;
+      });
+      const keys = Object.keys(champMap);
+      if (keys.length === 0) return null;
+      const totals = {};
+      JOUEURS_MERCATO.forEach(j => { totals[j] = 0; });
+      keys.forEach(k => JOUEURS_MERCATO.forEach(j => { totals[j] += champMap[k][j] || 0; }));
+      const averages = {};
+      JOUEURS_MERCATO.forEach(j => { averages[j] = +(totals[j] / keys.length).toFixed(2); });
+      const [winner, val] = Object.entries(averages).sort((a, b) => b[1] - a[1])[0];
+      return { winner, val, averages };
+    };
+
+    // Roi des enchères (wins where ≥1 others bid)
+    const enchereWins = {};
+    JOUEURS_MERCATO.forEach(j => { enchereWins[j] = 0; });
+    mercatoData.forEach(e => {
+      if ((e.encheres_perdues || []).length >= 1 && e.acheteur) {
+        enchereWins[e.acheteur] = (enchereWins[e.acheteur] || 0) + 1;
+      }
+    });
+    const [roiEncheresWinner, roiEncheresVal] = Object.entries(enchereWins).sort((a, b) => b[1] - a[1])[0];
+
+    // Roi des postes (share of total spending on each position)
+    const roiPoste = (posteGroupe) => {
+      const shares = {};
+      JOUEURS_MERCATO.forEach(j => {
+        const entries = mercatoData.filter(e => e.acheteur === j);
+        const total = entries.reduce((s, e) => s + e.prix, 0);
+        const onPoste = entries.filter(e => getPosteGroupe(e.poste) === posteGroupe).reduce((s, e) => s + e.prix, 0);
+        shares[j] = total > 0 ? +(onPoste / total * 100).toFixed(1) : 0;
+      });
+      const [winner, val] = Object.entries(shares).sort((a, b) => b[1] - a[1])[0];
+      return { winner, val, shares };
+    };
+
+    // Medianes par joueur pour la carte globale
+    const medianeParJoueur = {};
+    JOUEURS_MERCATO.forEach(j => {
+      medianeParJoueur[j] = medianFn(mercatoData.filter(e => e.acheteur === j).map(e => e.prix));
+    });
+
+    return {
+      perPlayer,
+      posteValeur,
+      podiumCher,
+      podiumDispute,
+      ligueTop,
+      roiTour1: roiTour(1),
+      roiTour3: roiTour(3),
+      roiEncheres: { winner: roiEncheresWinner, val: roiEncheresVal, wins: enchereWins },
+      roiAttaquants: roiPoste('A'),
+      roiMilieux: roiPoste('M'),
+      roiDefenseurs: roiPoste('D'),
+      roiGardiens: roiPoste('G'),
+      medianeParJoueur,
+    };
+  }, [mercatoData]);
 
   // Calculate player stats from matches
   const calculatePlayerStats = (matches, joueursList) => {
@@ -4194,10 +4372,282 @@ const App = () => {
 
         {/* ONGLET MERCATO */}
         {activeTab === 'mercato' && isAdminAuthenticated && (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
-            <div className="text-4xl mb-4">🏷️</div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Mercato</h2>
-            <p className="text-slate-500 dark:text-slate-400">Les stats mercato arrivent bientôt.</p>
+          <div className="space-y-6">
+            {!mercatoStats ? (
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
+                <p className="text-slate-500 dark:text-slate-400">Chargement des données mercato...</p>
+              </div>
+            ) : (
+              <>
+                {/* ── CARDS PAR JOUEUR ── */}
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Par joueur</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {JOUEURS_MERCATO.map(joueur => {
+                      const s = mercatoStats.perPlayer[joueur];
+                      if (!s) return null;
+                      const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                      const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' }[joueur];
+                      const colorBorder = { Paul: 'border-blue-300 dark:border-blue-700', Adrien: 'border-green-300 dark:border-green-700', Tiago: 'border-purple-300 dark:border-purple-700', Roman: 'border-orange-300 dark:border-orange-700' }[joueur];
+                      return (
+                        <div key={joueur} className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5 border-t-4 ${colorBorder.replace('border-', 'border-t-').split(' ')[0]}`}>
+                          {/* Header */}
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className={`w-10 h-10 rounded-full overflow-hidden border-2 ${colorBorder.split(' ')[0]} flex-shrink-0`}>
+                              <img src={playerImages[joueur]} alt={joueur}
+                                className="w-full h-full object-cover"
+                                onError={e => { e.target.style.display='none'; e.target.parentNode.classList.add(colorBg); }}
+                              />
+                            </div>
+                            <div>
+                              <div className={`font-bold text-lg ${colorText}`}>{joueur}</div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400">{s.count} joueurs achetés</div>
+                            </div>
+                          </div>
+                          {/* Stats */}
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-baseline">
+                              <span className="text-sm text-slate-500 dark:text-slate-400">Enchère médiane</span>
+                              <span className={`font-bold text-lg ${colorText}`}>{s.mediane}m</span>
+                            </div>
+                            <div className="border-t dark:border-slate-700 pt-3">
+                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ligue préférée</div>
+                              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.liguePref}</div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400">médiane {s.ligueMaxMed}m</div>
+                            </div>
+                            <div className="border-t dark:border-slate-700 pt-3">
+                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Nationalité préférée</div>
+                              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.natPref || '—'}</div>
+                              {s.natMax > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.natMax} joueur{s.natMax > 1 ? 's' : ''}</div>}
+                            </div>
+                            <div className="border-t dark:border-slate-700 pt-3">
+                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
+                              <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.postePref ? POSTE_LABEL[s.postePref] : '—'}</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── STATS GLOBALES ── */}
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Stats globales</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                    {/* Enchères médianes */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Enchères médianes</h3>
+                      <div className="space-y-2">
+                        {Object.entries(mercatoStats.medianeParJoueur)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([joueur, med], i) => {
+                            const maxMed = Math.max(...Object.values(mercatoStats.medianeParJoueur));
+                            const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                            return (
+                              <div key={joueur} className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                                <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                  <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxMed > 0 ? (med / maxMed) * 100 : 0}%` }}></div>
+                                </div>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-10 text-right">{med}m</span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+
+                    {/* Poste le plus valorisé */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Poste le plus valorisé</h3>
+                      <div className="space-y-2">
+                        {Object.entries(mercatoStats.posteValeur)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([poste, total], i) => {
+                            const maxVal = Math.max(...Object.values(mercatoStats.posteValeur));
+                            const colors = ['bg-blue-600', 'bg-slate-400', 'bg-slate-300'];
+                            const pct = maxVal > 0 ? (total / maxVal) * 100 : 0;
+                            return (
+                              <div key={poste} className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-slate-600 dark:text-slate-300 w-20">{POSTE_LABEL[poste]}</span>
+                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                  <div className={`${colors[i]} h-2 rounded-full`} style={{ width: `${pct}%` }}></div>
+                                </div>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-14 text-right">{total}m</span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+
+                    {/* Ligue avec enchère médiane la plus élevée */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Ligue la plus chère</h3>
+                      {mercatoStats.ligueTop && (
+                        <div className="text-center py-2">
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{mercatoStats.ligueTop.ligue}</div>
+                          <div className="text-lg font-semibold text-slate-800 dark:text-slate-100 mt-1">médiane {mercatoStats.ligueTop.mediane}m</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{mercatoStats.ligueTop.count} joueurs au total</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Podium achetés le plus cher */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Joueurs achetés le plus cher</h3>
+                      <div className="space-y-3">
+                        {mercatoStats.podiumCher.map((e, i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          const acheteurColor = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[e.acheteur];
+                          return (
+                            <div key={e.firestoreId} className="flex items-center gap-2">
+                              <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.prenom} {e.joueur}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.ligue}</div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="font-bold text-slate-800 dark:text-slate-100">{e.prix}m</div>
+                                <div className="flex items-center gap-1 justify-end">
+                                  <div className={`w-2 h-2 rounded-full ${acheteurColor}`}></div>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400">{e.acheteur}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Podium joueurs les plus disputés */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Joueurs les plus disputés</h3>
+                      <div className="space-y-3">
+                        {mercatoStats.podiumDispute.map((e, i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          const acheteurColor = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[e.acheteur];
+                          return (
+                            <div key={e.firestoreId} className="flex items-center gap-2">
+                              <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.prenom} {e.joueur}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.nbEncheres} enchère{e.nbEncheres > 1 ? 's' : ''}</div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="font-bold text-blue-600 dark:text-blue-400">{e.totalMise}m</div>
+                                <div className="flex items-center gap-1 justify-end">
+                                  <div className={`w-2 h-2 rounded-full ${acheteurColor}`}></div>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400">{e.acheteur}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Roi des enchères */}
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Roi des enchères</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Gagne le plus d'enchères disputées</p>
+                      <div className="space-y-2">
+                        {Object.entries(mercatoStats.roiEncheres.wins)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([joueur, wins], i) => {
+                            const maxWins = Math.max(...Object.values(mercatoStats.roiEncheres.wins));
+                            const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                            const isWinner = i === 0;
+                            return (
+                              <div key={joueur} className={`flex items-center gap-2 ${isWinner ? 'font-semibold' : ''}`}>
+                                <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                                <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                  <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxWins > 0 ? (wins / maxWins) * 100 : 0}%` }}></div>
+                                </div>
+                                <span className="text-sm text-slate-800 dark:text-slate-100 w-12 text-right">{wins} vic{isWinner ? ' 👑' : ''}</span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* ── ROIS DES TOURS ── */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    {[{ label: 'Roi du tour 1', desc: 'Recrute le plus en moyenne au tour 1', data: mercatoStats.roiTour1 },
+                      { label: 'Roi du tour 3', desc: 'Recrute le plus en moyenne au tour 3', data: mercatoStats.roiTour3 }].map(({ label, desc, data }) => (
+                      <div key={label} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{desc}</p>
+                        {data ? (
+                          <div className="space-y-2">
+                            {Object.entries(data.averages)
+                              .sort((a, b) => b[1] - a[1])
+                              .map(([joueur, avg], i) => {
+                                const maxAvg = Math.max(...Object.values(data.averages));
+                                const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                                const isWinner = i === 0;
+                                return (
+                                  <div key={joueur} className="flex items-center gap-2">
+                                    <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                                    <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                                    <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                      <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxAvg > 0 ? (avg / maxAvg) * 100 : 0}%` }}></div>
+                                    </div>
+                                    <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{avg} moy{isWinner ? ' 👑' : ''}</span>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        ) : <p className="text-xs text-slate-500 dark:text-slate-400">Pas assez de données</p>}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ── ROIS DES POSTES ── */}
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Rois des postes</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {[
+                        { label: 'Roi des attaquants', data: mercatoStats.roiAttaquants, poste: 'A' },
+                        { label: 'Roi des milieux', data: mercatoStats.roiMilieux, poste: 'M' },
+                        { label: 'Roi des défenseurs', data: mercatoStats.roiDefenseurs, poste: 'D' },
+                        { label: 'Roi des gardiens', data: mercatoStats.roiGardiens, poste: 'G' },
+                      ].map(({ label, data, poste }) => (
+                        <div key={poste} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">% du budget sur les {POSTE_LABEL[poste].toLowerCase()}</p>
+                          {data ? (
+                            <div className="space-y-2">
+                              {Object.entries(data.shares)
+                                .sort((a, b) => b[1] - a[1])
+                                .map(([joueur, pct], i) => {
+                                  const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                                  const isWinner = i === 0;
+                                  return (
+                                    <div key={joueur} className="flex items-center gap-2">
+                                      <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                                      <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                                      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                        <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${pct}%` }}></div>
+                                      </div>
+                                      <span className="text-sm text-slate-800 dark:text-slate-100 w-14 text-right">{pct}%{isWinner ? ' 👑' : ''}</span>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          ) : <p className="text-xs text-slate-500 dark:text-slate-400">—</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            )}
           </div>
         )}
 
