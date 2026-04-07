@@ -29,7 +29,8 @@ const DATA = [
   { joueur: "Baena",           prenom: "Álex",      club: "Atlético",    poste: "MO", prix:  15, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                           nationalite: "Espagnol",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
   { joueur: "Ounahi",          prenom: "Azzedine",  club: "Girona",      poste: "MD", prix:   8, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                                                           nationalite: "Marocain",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
   { joueur: "Berchiche",       prenom: "Yuri",      club: "Athletic",    poste: "DL", prix:   8, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                                                           nationalite: "Espagnol",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Szczesny",        prenom: "Wojciech",  club: "Barcelona",   poste: "G",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                           nationalite: "Polonais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
+  { joueur: "Szczesny",        prenom: "Wojciech",  club: "Barcelona",   poste: "G",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Polonais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
+  { joueur: "Núñez",           prenom: "Unai",      club: "Valencia",    poste: "DC", prix:   7, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [], nationalite: "Espagnol",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
 ];
 
 const DATA_UNUSED_LIGA_T1_SUITE = [
