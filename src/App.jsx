@@ -4398,7 +4398,8 @@ const App = () => {
                       const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' }[joueur];
                       const colorBorder = { Paul: 'border-blue-300 dark:border-blue-700', Adrien: 'border-green-300 dark:border-green-700', Tiago: 'border-purple-300 dark:border-purple-700', Roman: 'border-orange-300 dark:border-orange-700' }[joueur];
                       return (
-                        <div key={joueur} className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5 border-t-4 ${colorBorder.replace('border-', 'border-t-').split(' ')[0]}`}>
+                        <div key={joueur} data-card className={`relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5 border-t-4 ${colorBorder.replace('border-', 'border-t-').split(' ')[0]}`}>
+                          <ShareBtn contextText={`Mercato ${joueur} — MPG`} />
                           {/* Header */}
                           <div className="flex items-center gap-3 mb-4">
                             <div className={`w-10 h-10 rounded-full overflow-hidden border-2 ${colorBorder.split(' ')[0]} flex-shrink-0`}>
@@ -4447,7 +4448,8 @@ const App = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
                     {/* Poste le plus valorisé */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Poste le plus valorisé — Mercato MPG" />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Poste le plus valorisé</h3>
                       <div className="space-y-2">
                         {Object.entries(mercatoStats.posteValeur)
@@ -4470,7 +4472,8 @@ const App = () => {
                     </div>
 
                     {/* Ligue avec enchère médiane la plus élevée */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Ligue la plus chère — Mercato MPG" />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Ligue la plus chère</h3>
                       {mercatoStats.ligueTop && (
                         <div className="text-center py-2">
@@ -4482,7 +4485,8 @@ const App = () => {
                     </div>
 
                     {/* Podium achetés le plus cher */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Joueurs achetés le plus cher — Mercato MPG" />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Joueurs achetés le plus cher</h3>
                       <div className="space-y-3">
                         {mercatoStats.podiumCher.map((e, i) => {
@@ -4509,7 +4513,8 @@ const App = () => {
                     </div>
 
                     {/* Podium joueurs les plus disputés */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Joueurs les plus disputés — Mercato MPG" />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Joueurs les plus disputés</h3>
                       <div className="space-y-3">
                         {mercatoStats.podiumDispute.map((e, i) => {
@@ -4536,7 +4541,8 @@ const App = () => {
                     </div>
 
                     {/* Roi des enchères */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Roi des enchères — Mercato MPG" />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Roi des enchères</h3>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Gagne le plus d'enchères disputées</p>
                       <div className="space-y-2">
@@ -4566,7 +4572,8 @@ const App = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     {[{ label: 'Roi du tour 1', desc: 'Recrute le plus de joueurs en moyenne au tour 1', data: mercatoStats.roiTour1 },
                       { label: 'Roi du tour 3', desc: 'Recrute le plus de joueurs en moyenne au tour 3', data: mercatoStats.roiTour3 }].map(({ label, desc, data }) => (
-                      <div key={label} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <div key={label} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                        <ShareBtn contextText={`${label} — Mercato MPG`} />
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{desc}</p>
                         {data ? (
@@ -4604,7 +4611,8 @@ const App = () => {
                         { label: 'Roi des défenseurs', data: mercatoStats.roiDefenseurs, poste: 'D' },
                         { label: 'Roi des gardiens', data: mercatoStats.roiGardiens, poste: 'G' },
                       ].map(({ label, data, poste }) => (
-                        <div key={poste} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                        <div key={poste} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                          <ShareBtn contextText={`${label} — Mercato MPG`} />
                           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">% du budget sur les {POSTE_LABEL[poste].toLowerCase()}</p>
                           {data ? (
