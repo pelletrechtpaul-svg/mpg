@@ -18,6 +18,25 @@ async function importMercato(data) {
 }
 
 const DATA = [
+  // --- Liga #5, Tour 4 ---
+  { joueur: "Guruzeta", prenom: "Gorka",   club: "Athletic", poste: "A",  prix: 10, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Espagnol", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
+  { joueur: "Laporte",  prenom: "Aymeric", club: "Athletic", poste: "DC", prix:  4, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Français", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
+];
+
+const DATA_UNUSED_LIGA_T3 = [
+  // --- Liga #5, Tour 3 ---
+  { joueur: "Sørloth",       prenom: "Alexander", club: "Atlético",      poste: "A",  prix: 74, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Norvégien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Hernández",     prenom: "Cucho",     club: "Betis",         poste: "A",  prix: 19, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 14 }], nationalite: "Colombien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Méndez",        prenom: "Brais",     club: "Real Sociedad", poste: "MD", prix: 18, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Valverde",      prenom: "Federico",  club: "Real Madrid",   poste: "MD", prix: 17, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Uruguayen",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Vanat",         prenom: "Vladyslav", club: "Girona",        poste: "A",  prix: 16, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Ukrainien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Pape Gueye",    prenom: "Pape",      club: "Villarreal",    poste: "MD", prix: 14, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Sénégalais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Almada",        prenom: "Thiago",    club: "Atlético",      poste: "MO", prix: 13, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Argentin",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Buchanan",      prenom: "Tajon",     club: "Villarreal",    poste: "MO", prix: 10, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Canadien",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+  { joueur: "Gonzalo García",prenom: "Gonzalo",   club: "Real Madrid",   poste: "A",  prix:  9, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
+];
+
+const DATA_UNUSED_LIGA_T2 = [
   // --- Liga #5, Tour 2 ---
   { joueur: "Vinícius Júnior", prenom: "Vinícius",   club: "Real Madrid",  poste: "A",  prix: 131, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 99 }, { equipe: "Manzanas", prix: 93 }], nationalite: "Brésilien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
   { joueur: "Lewandowski",     prenom: "Robert",     club: "Barcelona",    poste: "A",  prix:  52, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                              nationalite: "Polonais",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
