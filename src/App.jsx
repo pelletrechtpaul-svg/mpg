@@ -601,6 +601,61 @@ const App = () => {
       ligueTop,
       roiTour1: roiTour(1),
       recrutementMoyen,
+
+      // Roi des bonnes affaires: wins à 1m
+      roiBonnesAffaires: (() => {
+        const counts = {};
+        JOUEURS_MERCATO.forEach(j => { counts[j] = 0; });
+        mercatoData.forEach(e => { if (e.prix === 1 && e.acheteur) counts[e.acheteur]++; });
+        const [winner] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+        return { winner, counts };
+      })(),
+
+      // Chasseur solitaire: achats sans aucun concurrent
+      chasseurSolitaire: (() => {
+        const counts = {};
+        JOUEURS_MERCATO.forEach(j => { counts[j] = 0; });
+        mercatoData.forEach(e => { if ((e.encheres_perdues || []).length === 0 && e.acheteur) counts[e.acheteur]++; });
+        const [winner] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+        return { winner, counts };
+      })(),
+
+      // Podium enchères perdues les plus chères
+      podiumEncheresPerduees: (() => {
+        const perdues = [];
+        mercatoData.forEach(e => {
+          (e.encheres_perdues || []).forEach(ep => {
+            // find which player bid ep.prix on this entry (by matching equipe)
+            // We store equipe_acheteur on the winner; ep.equipe is the loser's team
+            perdues.push({ joueur: e.joueur, prenom: e.prenom, club: e.club, ligue: e.ligue, prixPerdu: ep.prix, equipePerdue: ep.equipe, acheteur: e.acheteur, prixGagnant: e.prix });
+          });
+        });
+        return perdues.sort((a, b) => b.prixPerdu - a.prixPerdu).slice(0, 3);
+      })(),
+
+      // Nationalité la plus disputée (le plus d'enchères concurrentes par nationalité)
+      natPlusDisputee: (() => {
+        const nats = {};
+        mercatoData.forEach(e => {
+          if (!e.nationalite || (e.encheres_perdues || []).length === 0) return;
+          nats[e.nationalite] = (nats[e.nationalite] || 0) + 1;
+        });
+        return Object.entries(nats).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      })(),
+
+      // Enchères par tour (moyenne de prix par tour, tous joueurs confondus)
+      encheresParTour: (() => {
+        const tourData = {};
+        mercatoData.forEach(e => {
+          if (!tourData[e.tour]) tourData[e.tour] = [];
+          tourData[e.tour].push(e.prix);
+        });
+        return [1,2,3,4].map(t => ({
+          tour: `Tour ${t}`,
+          mediane: medianFn(tourData[t] || []),
+          count: (tourData[t] || []).length,
+        }));
+      })(),
       roiEncheres: { winner: roiEncheresWinner, val: roiEncheresVal, wins: enchereWins },
       roiAttaquants: roiPoste('A'),
       roiMilieux: roiPoste('M'),
@@ -4652,6 +4707,121 @@ const App = () => {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* ── STATS SUPPLÉMENTAIRES ── */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+
+                    {/* Roi des bonnes affaires */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Roi des bonnes affaires — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Roi des bonnes affaires</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Recrute le plus de joueurs à 1m</p>
+                      <div className="space-y-2">
+                        {Object.entries(mercatoStats.roiBonnesAffaires.counts).sort((a, b) => b[1] - a[1]).map(([joueur, count], i) => {
+                          const maxC = Math.max(...Object.values(mercatoStats.roiBonnesAffaires.counts));
+                          const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                          return (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                              <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                              <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxC > 0 ? (count / maxC) * 100 : 0}%` }}></div>
+                              </div>
+                              <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{count}{i === 0 ? ' 👑' : ''}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Chasseur solitaire */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Chasseur solitaire — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Chasseur solitaire</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Recrute le plus sans aucune concurrence</p>
+                      <div className="space-y-2">
+                        {Object.entries(mercatoStats.chasseurSolitaire.counts).sort((a, b) => b[1] - a[1]).map(([joueur, count], i) => {
+                          const maxC = Math.max(...Object.values(mercatoStats.chasseurSolitaire.counts));
+                          const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                          return (
+                            <div key={joueur} className="flex items-center gap-2">
+                              <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                              <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                              <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxC > 0 ? (count / maxC) * 100 : 0}%` }}></div>
+                              </div>
+                              <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{count}{i === 0 ? ' 👑' : ''}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Nationalité la plus disputée */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Nationalité la plus disputée — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Nationalité la plus disputée</h3>
+                      <div className="space-y-3">
+                        {mercatoStats.natPlusDisputee.map(([nat, count], i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          const maxC = mercatoStats.natPlusDisputee[0]?.[1] || 1;
+                          return (
+                            <div key={nat} className="flex items-center gap-2">
+                              <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                              <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex-1">{nat}</span>
+                              <div className="w-16 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(count / maxC) * 100}%` }}></div>
+                              </div>
+                              <span className="text-sm text-slate-600 dark:text-slate-300 w-8 text-right">{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Podium enchères perdues */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Enchères perdues les plus chères — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Enchères perdues les plus chères</h3>
+                      <div className="space-y-3">
+                        {mercatoStats.podiumEncheresPerduees.map((ep, i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          const acheteurColor = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[ep.acheteur];
+                          return (
+                            <div key={i} className="flex items-center gap-2">
+                              <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{ep.prenom && !ep.joueur.toLowerCase().startsWith(ep.prenom.toLowerCase()) ? `${ep.prenom} ` : ''}{ep.joueur}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{ep.equipePerdue} · perdu face à <span className="inline-flex items-center gap-1"><span className={`inline-block w-2 h-2 rounded-full ${acheteurColor}`}></span>{ep.acheteur} ({ep.prixGagnant}m)</span></div>
+                              </div>
+                              <div className="font-bold text-red-500 flex-shrink-0">{ep.prixPerdu}m</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Enchères médianes par tour */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Enchères médianes par tour — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Enchère médiane par tour</h3>
+                      <div className="space-y-2">
+                        {mercatoStats.encheresParTour.filter(t => t.count > 0).map(t => {
+                          const maxMed = Math.max(...mercatoStats.encheresParTour.filter(x => x.count > 0).map(x => x.mediane));
+                          return (
+                            <div key={t.tour} className="flex items-center gap-2">
+                              <span className="text-sm text-slate-600 dark:text-slate-300 w-14">{t.tour}</span>
+                              <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${maxMed > 0 ? (t.mediane / maxMed) * 100 : 0}%` }}></div>
+                              </div>
+                              <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-10 text-right">{t.mediane}m</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
                   </div>
 
                 </div>
