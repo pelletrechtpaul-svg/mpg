@@ -4802,25 +4802,6 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* Enchères médianes par tour */}
-                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
-                      <ShareBtn contextText="Enchères médianes par tour — Mercato MPG" />
-                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Enchère médiane par tour</h3>
-                      <div className="space-y-2">
-                        {mercatoStats.encheresParTour.filter(t => t.count > 0).map(t => {
-                          const maxMed = Math.max(...mercatoStats.encheresParTour.filter(x => x.count > 0).map(x => x.mediane));
-                          return (
-                            <div key={t.tour} className="flex items-center gap-2">
-                              <span className="text-sm text-slate-600 dark:text-slate-300 w-14">{t.tour}</span>
-                              <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                                <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${maxMed > 0 ? (t.mediane / maxMed) * 100 : 0}%` }}></div>
-                              </div>
-                              <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-10 text-right">{t.mediane}m</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
 
                   </div>
 
