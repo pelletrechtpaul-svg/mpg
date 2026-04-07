@@ -4424,9 +4424,9 @@ const App = () => {
                               <div className="text-xs text-slate-500 dark:text-slate-400">moyenne {s.ligueMaxMoy}m</div>
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
-                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Nationalité préférée</div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Nationalité préférée <span className="text-slate-400 dark:text-slate-500">(parmi {s.natDistinctes} nationalité{s.natDistinctes > 1 ? 's' : ''} recrutées)</span></div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.natPref || '—'}</div>
-                              {s.natMax > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.natMax} joueur{s.natMax > 1 ? 's' : ''} · {s.natDistinctes} nationalité{s.natDistinctes > 1 ? 's' : ''}</div>}
+                              {s.natMax > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.natMax} joueur{s.natMax > 1 ? 's' : ''}</div>}
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
