@@ -481,6 +481,7 @@ const App = () => {
       Object.entries(natsMap).forEach(([nat, count]) => {
         if (count > natMax) { natMax = count; natPref = nat; }
       });
+      const natDistinctes = Object.keys(natsMap).length;
 
       // Preferred position (A/M/D, no G)
       const postesMap = { A: [], M: [], D: [] };
@@ -493,7 +494,7 @@ const App = () => {
         ? Math.round(postesMap[postePref].reduce((s, p) => s + p, 0) / postesMap[postePref].length)
         : null;
 
-      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, postePref, postePrefMoy, count: entries.length };
+      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, natDistinctes, postePref, postePrefMoy, count: entries.length };
     });
 
     // Poste le plus valorisé
@@ -4423,7 +4424,7 @@ const App = () => {
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Nationalité préférée</div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.natPref || '—'}</div>
-                              {s.natMax > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.natMax} joueur{s.natMax > 1 ? 's' : ''}</div>}
+                              {s.natMax > 0 && <div className="text-xs text-slate-500 dark:text-slate-400">{s.natMax} joueur{s.natMax > 1 ? 's' : ''} · {s.natDistinctes} nationalité{s.natDistinctes > 1 ? 's' : ''}</div>}
                             </div>
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
