@@ -4438,29 +4438,6 @@ const App = () => {
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Stats globales</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                    {/* Enchères médianes */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
-                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Enchères médianes</h3>
-                      <div className="space-y-2">
-                        {Object.entries(mercatoStats.medianeParJoueur)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([joueur, med], i) => {
-                            const maxMed = Math.max(...Object.values(mercatoStats.medianeParJoueur));
-                            const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
-                            return (
-                              <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
-                                <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
-                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                                  <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxMed > 0 ? (med / maxMed) * 100 : 0}%` }}></div>
-                                </div>
-                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-10 text-right">{med}m</span>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </div>
-
                     {/* Poste le plus valorisé */}
                     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Poste le plus valorisé</h3>
