@@ -483,14 +483,17 @@ const App = () => {
       });
 
       // Preferred position (A/M/D, no G)
-      const postesMap = { A: 0, M: 0, D: 0 };
+      const postesMap = { A: [], M: [], D: [] };
       entries.forEach(e => {
         const g = getPosteGroupe(e.poste);
-        if (g && g !== 'G') postesMap[g]++;
+        if (g && g !== 'G') postesMap[g].push(e.prix);
       });
-      const postePref = Object.entries(postesMap).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+      const postePref = Object.entries(postesMap).sort((a, b) => b[1].length - a[1].length)[0]?.[0] || null;
+      const postePrefMoy = postePref && postesMap[postePref].length > 0
+        ? Math.round(postesMap[postePref].reduce((s, p) => s + p, 0) / postesMap[postePref].length)
+        : null;
 
-      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, postePref, count: entries.length };
+      perPlayer[j] = { mediane, liguePref, ligueMaxMoy, natPref, natMax, postePref, postePrefMoy, count: entries.length };
     });
 
     // Poste le plus valorisé
@@ -4425,6 +4428,7 @@ const App = () => {
                             <div className="border-t dark:border-slate-700 pt-3">
                               <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Poste préféré</div>
                               <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{s.postePref ? POSTE_LABEL[s.postePref] : '—'}</div>
+                              {s.postePrefMoy && <div className="text-xs text-slate-500 dark:text-slate-400">moyenne {s.postePrefMoy}m</div>}
                             </div>
                           </div>
                         </div>
