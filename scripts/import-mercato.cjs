@@ -18,6 +18,21 @@ async function importMercato(data) {
 }
 
 const DATA = [
+  // --- Premier League #7, Tour 3 ---
+  { joueur: "Gakpo",         prenom: "Cody",     club: "Liverpool",         poste: "A",  prix: 80, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [{ equipe: "Kiwis", prix: 64 }], nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  { joueur: "Rice",          prenom: "Declan",   club: "Arsenal",           poste: "MD", prix: 26, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  { joueur: "Woltemade",     prenom: "Nick",     club: "Newcastle",         poste: "A",  prix: 23, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                              nationalite: "Allemand",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  { joueur: "Guéhi",         prenom: "Marc",     club: "Crystal Palace",    poste: "DC", prix: 17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  { joueur: "Marmoush",      prenom: "Omar",     club: "Manchester City",   poste: "MO", prix:  8, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                              nationalite: "Égyptien",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  { joueur: "Isak",          prenom: "Alexander",club: "Newcastle",         poste: "A",  prix:  1, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Suédois",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
+  // --- Premier League #7, Tour 4 ---
+  { joueur: "Watkins",       prenom: "Ollie",    club: "Aston Villa",       poste: "A",  prix: 19, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
+  { joueur: "Zubimendi",     prenom: "Martín",   club: "Arsenal",           poste: "MD", prix: 17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
+  { joueur: "Welbeck",       prenom: "Danny",    club: "Brighton",          poste: "A",  prix: 16, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
+  { joueur: "Tielemans",     prenom: "Youri",    club: "Aston Villa",       poste: "MD", prix: 12, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Belge",       saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
+];
+
+const DATA_UNUSED_PL_T2 = [
   // --- Premier League #7, Tour 2 ---
   { joueur: "Igor Thiago",   prenom: "Igor",      club: "Brentford",         poste: "A",  prix: 123, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [{ equipe: "Tout en Miam", prix: 103 }],       nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
   { joueur: "Mbeumo",        prenom: "Bryan",     club: "Manchester United", poste: "MO", prix:  83, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [{ equipe: "Kiwis", prix: 69 }],               nationalite: "Camerounais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
