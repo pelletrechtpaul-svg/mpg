@@ -2712,8 +2712,7 @@ const App = () => {
               >
                 Records
               </button>
-              {isAdminAuthenticated && (
-                <button
+              <button
                   onClick={() => setActiveTab('mercato')}
                   className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                     activeTab === 'mercato'
@@ -2723,7 +2722,6 @@ const App = () => {
                 >
                   Mercato
                 </button>
-              )}
             </div>
 
           </div>
@@ -4371,7 +4369,7 @@ const App = () => {
         )}
 
         {/* ONGLET MERCATO */}
-        {activeTab === 'mercato' && isAdminAuthenticated && (
+        {activeTab === 'mercato' && (
           <div className="space-y-6">
             {!mercatoStats ? (
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 text-center">
