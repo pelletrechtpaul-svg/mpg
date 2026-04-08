@@ -2648,8 +2648,8 @@ const App = () => {
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
           {/* Track title — défilement si trop long */}
-          <div className="px-1.5 pt-1 pb-0 overflow-hidden">
-            <p className={`text-[10px] font-medium whitespace-nowrap ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 8 ? 'animate-marquee' : 'text-center'}`}>
+          <div className="px-1.5 pt-1 pb-0 overflow-hidden h-4">
+            <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 8 ? 'animate-marquee' : 'text-center'}`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
