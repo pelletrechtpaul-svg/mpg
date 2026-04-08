@@ -646,6 +646,27 @@ const App = () => {
         return Object.entries(nats).sort((a, b) => b[1] - a[1]).slice(0, 3);
       })(),
 
+      // Surenchérisseur — spread moyen entre prix gagné et 2e mise (enchères disputées)
+      surencherisseur: (() => {
+        const spreads = {};
+        const counts = {};
+        JOUEURS_MERCATO.forEach(j => { spreads[j] = 0; counts[j] = 0; });
+        mercatoData.forEach(e => {
+          if (!e.acheteur || !(e.encheres_perdues || []).length) return;
+          const maxLost = Math.max(...e.encheres_perdues.map(ep => ep.prix));
+          const spread = e.prix - maxLost;
+          if (spread >= 0) {
+            spreads[e.acheteur] += spread;
+            counts[e.acheteur]++;
+          }
+        });
+        const avgSpreads = {};
+        JOUEURS_MERCATO.forEach(j => {
+          avgSpreads[j] = counts[j] > 0 ? +(spreads[j] / counts[j]).toFixed(1) : 0;
+        });
+        return { avgSpreads, counts };
+      })(),
+
       // Enchères par tour (moyenne de prix par tour, tous joueurs confondus)
       encheresParTour: (() => {
         const tourData = {};
@@ -4714,6 +4735,30 @@ const App = () => {
                                   <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxC > 0 ? (count / maxC) * 100 : 0}%` }}></div>
                                 </div>
                                 <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{count}{i === 0 ? ' 👑' : ''}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Surenchérisseur */}
+                      <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                        <ShareBtn contextText="Surenchérisseur — Mercato MPG" />
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Surenchérisseur</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Écart moyen entre sa mise gagnante et la 2e enchère</p>
+                        <div className="space-y-2">
+                          {Object.entries(mercatoStats.surencherisseur.avgSpreads).sort((a, b) => b[1] - a[1]).map(([joueur, avg], i) => {
+                            const maxAvg = Math.max(...Object.values(mercatoStats.surencherisseur.avgSpreads));
+                            const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                            const n = mercatoStats.surencherisseur.counts[joueur];
+                            return (
+                              <div key={joueur} className="flex items-center gap-2">
+                                <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
+                                <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                  <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxAvg > 0 ? (avg / maxAvg) * 100 : 0}%` }}></div>
+                                </div>
+                                <span className="text-sm text-slate-800 dark:text-slate-100 w-20 text-right">+{avg}m{i === 0 ? ' 👑' : ''}</span>
                               </div>
                             );
                           })}
