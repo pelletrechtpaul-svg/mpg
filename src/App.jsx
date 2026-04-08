@@ -630,7 +630,7 @@ const App = () => {
           (e.encheres_perdues || []).forEach(ep => {
             // find which player bid ep.prix on this entry (by matching equipe)
             // We store equipe_acheteur on the winner; ep.equipe is the loser's team
-            perdues.push({ joueur: e.joueur, prenom: e.prenom, club: e.club, ligue: e.ligue, prixPerdu: ep.prix, equipePerdue: ep.equipe, acheteur: e.acheteur, prixGagnant: e.prix });
+            perdues.push({ joueur: e.joueur, prenom: e.prenom, club: e.club, ligue: e.ligue, championnat: e.championnat, prixPerdu: ep.prix, equipePerdue: ep.equipe, acheteur: e.acheteur, prixGagnant: e.prix });
           });
         });
         return perdues.sort((a, b) => b.prixPerdu - a.prixPerdu).slice(0, 3);
@@ -665,6 +665,32 @@ const App = () => {
           avgSpreads[j] = counts[j] > 0 ? +(spreads[j] / counts[j]).toFixed(1) : 0;
         });
         return { avgSpreads, counts };
+      })(),
+
+      // Rivalités — paires de joueurs qui s'affrontent le plus souvent
+      rivalites: (() => {
+        // Build equipe → acheteur mapping per championship
+        const equipeMap = {};
+        mercatoData.forEach(e => {
+          if (e.equipe_acheteur && e.acheteur) {
+            const key = `${e.saison}_${e.ligue}_${e.championnat}`;
+            if (!equipeMap[key]) equipeMap[key] = {};
+            equipeMap[key][e.equipe_acheteur] = e.acheteur;
+          }
+        });
+        // Count clashes per pair
+        const pairCounts = {};
+        mercatoData.forEach(e => {
+          if (!e.acheteur || !(e.encheres_perdues || []).length) return;
+          const champMap = equipeMap[`${e.saison}_${e.ligue}_${e.championnat}`] || {};
+          e.encheres_perdues.forEach(ep => {
+            const loser = champMap[ep.equipe];
+            if (!loser || loser === e.acheteur) return;
+            const pair = [e.acheteur, loser].sort().join(' vs ');
+            pairCounts[pair] = (pairCounts[pair] || 0) + 1;
+          });
+        });
+        return Object.entries(pairCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
       })(),
 
       // Enchères par tour (moyenne de prix par tour, tous joueurs confondus)
@@ -4591,6 +4617,33 @@ const App = () => {
                         </div>
                       </div>
                     </div>
+                    {/* Rivalités */}
+                    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                      <ShareBtn contextText="Rivalités — Mercato MPG" />
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Rivalités</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Paires qui s'affrontent le plus souvent aux enchères</p>
+                      <div className="space-y-3">
+                        {mercatoStats.rivalites.map(([pair, count], i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          const [j1, j2] = pair.split(' vs ');
+                          const colorBg1 = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[j1];
+                          const colorBg2 = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[j2];
+                          return (
+                            <div key={pair} className="flex items-center gap-2">
+                              <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                              <div className="flex items-center gap-1.5 flex-1">
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colorBg1}`}></span>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">{j1}</span>
+                                <span className="text-xs text-slate-400 dark:text-slate-500">vs</span>
+                                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colorBg2}`}></span>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">{j2}</span>
+                              </div>
+                              <span className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0">{count} duel{count > 1 ? 's' : ''}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                     {/* Rois des postes */}
                     <div>
                       <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Rois des postes</h3>
@@ -4646,7 +4699,7 @@ const App = () => {
                               <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
                               <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.joueur.toLowerCase().startsWith(e.prenom.toLowerCase()) ? e.joueur : `${e.prenom} ${e.joueur}`}</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.ligue}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.ligue} · champ. {e.championnat}</div>
                               </div>
                               <div className="text-right flex-shrink-0">
                                 <div className="font-bold text-slate-800 dark:text-slate-100">{e.prix}m</div>
@@ -4674,7 +4727,7 @@ const App = () => {
                               <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
                               <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{e.joueur.toLowerCase().startsWith(e.prenom.toLowerCase()) ? e.joueur : `${e.prenom} ${e.joueur}`}</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.club} · {e.nbEncheres} enchère{e.nbEncheres > 1 ? 's' : ''}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{e.ligue} · champ. {e.championnat} · {e.nbEncheres} enchère{e.nbEncheres > 1 ? 's' : ''}</div>
                               </div>
                               <div className="text-right flex-shrink-0">
                                 <div className="font-bold text-blue-600 dark:text-blue-400">{e.totalMise}m</div>
@@ -4702,7 +4755,7 @@ const App = () => {
                               <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
                               <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{ep.prenom && !ep.joueur.toLowerCase().startsWith(ep.prenom.toLowerCase()) ? `${ep.prenom} ` : ''}{ep.joueur}</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">{ep.equipePerdue} · perdu face à <span className="inline-flex items-center gap-1"><span className={`inline-block w-2 h-2 rounded-full ${acheteurColor}`}></span>{ep.acheteur} ({ep.prixGagnant}m)</span></div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{ep.ligue} · champ. {ep.championnat} · perdu face à <span className="inline-flex items-center gap-1"><span className={`inline-block w-2 h-2 rounded-full ${acheteurColor}`}></span>{ep.acheteur} ({ep.prixGagnant}m)</span></div>
                               </div>
                               <div className="font-bold text-red-500 flex-shrink-0">{ep.prixPerdu}m</div>
                             </div>
