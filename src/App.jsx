@@ -496,11 +496,12 @@ const App = () => {
       perPlayer[j] = { mediane, ligueFolie, ligueFolieCount, natPref, natMax, natDistinctes, postePref, postePrefCount, count: entries.length };
     });
 
-    // Poste le plus valorisé
+    // Poste le plus valorisé — nb d'enchères > 15m (hors G)
+    const SEUIL_POSTE = 30;
     const posteValeur = { A: 0, M: 0, D: 0 };
     mercatoData.forEach(e => {
       const g = getPosteGroupe(e.poste);
-      if (g && g !== 'G') posteValeur[g] += e.prix;
+      if (g && g !== 'G' && e.prix >= SEUIL_POSTE) posteValeur[g]++;
     });
 
     // Podium plus cher
@@ -522,9 +523,9 @@ const App = () => {
       if (!ligueMedianes[e.ligue]) ligueMedianes[e.ligue] = [];
       ligueMedianes[e.ligue].push(e.prix);
     });
-    const ligueTop = Object.entries(ligueMedianes)
+    const ligueRanking = Object.entries(ligueMedianes)
       .map(([ligue, prices]) => ({ ligue, mediane: medianFn(prices), count: prices.length }))
-      .sort((a, b) => b.mediane - a.mediane)[0] || null;
+      .sort((a, b) => b.mediane - a.mediane);
 
     // Roi du tour X: average recruits per championship at that tour
     const roiTour = (tourNum) => {
@@ -600,7 +601,7 @@ const App = () => {
       posteValeur,
       podiumCher,
       podiumDispute,
-      ligueTop,
+      ligueRanking,
       roiTour1: roiTour(1),
       recrutementMoyen,
 
@@ -4519,7 +4520,7 @@ const App = () => {
                   {/* VUE D'ENSEMBLE */}
                   <div>
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Vue d'ensemble</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                       {[{ label: 'Recrutement moyen', desc: 'Nb moyen de joueurs recrutés par championnat', data: mercatoStats.recrutementMoyen },
                         { label: 'Roi du tour 1', desc: 'Recrute le plus de joueurs en moyenne au tour 1', data: mercatoStats.roiTour1 }].map(({ label, desc, data }) => (
                         <div key={label} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
@@ -4546,8 +4547,6 @@ const App = () => {
                           ) : <p className="text-xs text-slate-500 dark:text-slate-400">Pas assez de données</p>}
                         </div>
                       ))}
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       {/* Roi des enchères */}
                       <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                         <ShareBtn contextText="Roi des enchères — Mercato MPG" />
@@ -4570,8 +4569,6 @@ const App = () => {
                           })}
                         </div>
                       </div>
-                      {/* Placeholder for grid balance — invisible */}
-                      <div></div>
                     </div>
                     {/* Rois des postes */}
                     <div>
@@ -4723,23 +4720,53 @@ const App = () => {
                         </div>
                       </div>
 
-                      {/* Roi des bonnes affaires */}
+                    </div>
+                  </div>
+
+                  {/* ANALYSE DES LIGUES */}
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Analyse des ligues</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                      {/* Ranking des ligues */}
                       <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
-                        <ShareBtn contextText="Roi des bonnes affaires — Mercato MPG" />
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Roi des bonnes affaires</h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Recrute le plus de joueurs à 1m</p>
+                        <ShareBtn contextText="Ligues les plus chères — Mercato MPG" />
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Ligues les plus chères</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Enchère médiane par ligue</p>
                         <div className="space-y-2">
-                          {Object.entries(mercatoStats.roiBonnesAffaires.counts).sort((a, b) => b[1] - a[1]).map(([joueur, count], i) => {
-                            const maxC = Math.max(...Object.values(mercatoStats.roiBonnesAffaires.counts));
-                            const colorBg = { Paul: 'bg-blue-600', Adrien: 'bg-green-600', Tiago: 'bg-purple-600', Roman: 'bg-orange-600' }[joueur];
+                          {mercatoStats.ligueRanking.map(({ ligue, mediane, count }, i) => {
+                            const maxMed = mercatoStats.ligueRanking[0]?.mediane || 1;
+                            const medals = ['🥇', '🥈', '🥉'];
                             return (
-                              <div key={joueur} className="flex items-center gap-2">
-                                <div className={`w-2.5 h-2.5 rounded-full ${colorBg} flex-shrink-0`}></div>
-                                <span className="text-sm text-slate-600 dark:text-slate-300 w-16">{joueur}</span>
+                              <div key={ligue} className="flex items-center gap-2">
+                                <span className="text-sm w-5 flex-shrink-0">{medals[i] || ''}</span>
+                                <span className="text-sm text-slate-600 dark:text-slate-300 w-28 truncate">{ligue}</span>
                                 <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                                  <div className={`${colorBg} h-2 rounded-full`} style={{ width: `${maxC > 0 ? (count / maxC) * 100 : 0}%` }}></div>
+                                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(mediane / maxMed) * 100}%` }}></div>
                                 </div>
-                                <span className="text-sm text-slate-800 dark:text-slate-100 w-16 text-right">{count}{i === 0 ? ' 👑' : ''}</span>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-12 text-right">{mediane}m</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Poste le plus valorisé */}
+                      <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                        <ShareBtn contextText="Poste le plus valorisé — Mercato MPG" />
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Poste le plus valorisé</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Nb d'enchères sérieuses (&gt;30m) par poste</p>
+                        <div className="space-y-2">
+                          {Object.entries(mercatoStats.posteValeur).sort((a, b) => b[1] - a[1]).map(([poste, count], i) => {
+                            const maxVal = Math.max(...Object.values(mercatoStats.posteValeur));
+                            const colors = ['bg-blue-600', 'bg-slate-400', 'bg-slate-300'];
+                            return (
+                              <div key={poste} className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-slate-600 dark:text-slate-300 w-20">{POSTE_LABEL[poste]}</span>
+                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                  <div className={`${colors[i]} h-2 rounded-full`} style={{ width: `${maxVal > 0 ? (count / maxVal) * 100 : 0}%` }}></div>
+                                </div>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-10 text-right">{count}</span>
                               </div>
                             );
                           })}
@@ -4749,61 +4776,20 @@ const App = () => {
                       {/* Nationalité la plus disputée */}
                       <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                         <ShareBtn contextText="Nationalité la plus disputée — Mercato MPG" />
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Nationalité la plus disputée</h3>
-                        <div className="space-y-3">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Nationalité la plus disputée</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Nationalités avec le plus d'enchères concurrentes</p>
+                        <div className="space-y-2">
                           {mercatoStats.natPlusDisputee.map(([nat, count], i) => {
                             const medals = ['🥇', '🥈', '🥉'];
                             const maxC = mercatoStats.natPlusDisputee[0]?.[1] || 1;
                             return (
                               <div key={nat} className="flex items-center gap-2">
-                                <span className="text-lg w-6 flex-shrink-0">{medals[i]}</span>
+                                <span className="text-sm w-5 flex-shrink-0">{medals[i]}</span>
                                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex-1">{nat}</span>
                                 <div className="w-16 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
                                   <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(count / maxC) * 100}%` }}></div>
                                 </div>
                                 <span className="text-sm text-slate-600 dark:text-slate-300 w-8 text-right">{count}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-
-                  {/* ANALYSE DES LIGUES */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Analyse des ligues</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                      {/* Ligue la plus chère */}
-                      <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
-                        <ShareBtn contextText="Ligue la plus chère — Mercato MPG" />
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Ligue la plus chère</h3>
-                        {mercatoStats.ligueTop && (
-                          <div className="text-center py-2">
-                            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{mercatoStats.ligueTop.ligue}</div>
-                            <div className="text-lg font-semibold text-slate-800 dark:text-slate-100 mt-1">médiane {mercatoStats.ligueTop.mediane}m</div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{mercatoStats.ligueTop.count} joueurs au total</div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Poste le plus valorisé */}
-                      <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
-                        <ShareBtn contextText="Poste le plus valorisé — Mercato MPG" />
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Poste le plus valorisé</h3>
-                        <div className="space-y-2">
-                          {Object.entries(mercatoStats.posteValeur).sort((a, b) => b[1] - a[1]).map(([poste, total], i) => {
-                            const maxVal = Math.max(...Object.values(mercatoStats.posteValeur));
-                            const colors = ['bg-blue-600', 'bg-slate-400', 'bg-slate-300'];
-                            return (
-                              <div key={poste} className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-slate-600 dark:text-slate-300 w-20">{POSTE_LABEL[poste]}</span>
-                                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                                  <div className={`${colors[i]} h-2 rounded-full`} style={{ width: `${maxVal > 0 ? (total / maxVal) * 100 : 0}%` }}></div>
-                                </div>
-                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 w-14 text-right">{total}m</span>
                               </div>
                             );
                           })}
