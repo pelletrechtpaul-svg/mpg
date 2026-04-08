@@ -2654,15 +2654,15 @@ const App = () => {
             </p>
           </div>
           {/* Controls */}
-          <div className="flex items-center justify-center gap-0 px-1 pb-1">
-            <button onClick={prevTrack} className="p-0.5 rounded hover:opacity-70 transition-opacity" title="Précédent">
-              <SkipBack className="w-3 h-3" />
+          <div className="flex items-center justify-center gap-2 px-2 pb-1.5">
+            <button onClick={prevTrack} className="p-1.5 rounded hover:opacity-70 transition-opacity" title="Précédent">
+              <SkipBack className="w-4 h-4" />
             </button>
-            <button onClick={playPause} className="p-0.5 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            <button onClick={playPause} className="p-1.5 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </button>
-            <button onClick={nextTrack} className="p-0.5 rounded hover:opacity-70 transition-opacity" title="Suivant">
-              <SkipForward className="w-3 h-3" />
+            <button onClick={nextTrack} className="p-1.5 rounded hover:opacity-70 transition-opacity" title="Suivant">
+              <SkipForward className="w-4 h-4" />
             </button>
           </div>
         </div>
