@@ -107,6 +107,8 @@ const PLAYLIST = [
   { title: 'Jeanette',        src: '/audio/Jeanette.mp3' },
   { title: 'Looser',          src: '/audio/Looser.mp3' },
   { title: 'Mercato',         src: '/audio/Mercato.mp3' },
+  { title: "J'm'en vais d'ici", src: "/audio/J'm'en vais d'ici.mp3" },
+  { title: 'Merci',           src: '/audio/Merci .mp3' },
 ];
 
 // Championnats sans détail de matchs — classement final saisi manuellement
