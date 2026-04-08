@@ -2642,7 +2642,7 @@ const App = () => {
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
         {/* Mini music player — largeur fixe réduite */}
-        <div className={`w-[76px] rounded-md shadow-md border transition-all ${
+        <div className={`w-[152px] rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
