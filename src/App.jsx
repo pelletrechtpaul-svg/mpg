@@ -2721,14 +2721,14 @@ const App = () => {
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
         {/* Mini music player — largeur fixe réduite */}
-        <div className={`w-[152px] rounded-md shadow-md border transition-all ${
+        <div className={`w-[220px] rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
           {/* Track title — défilement si trop long */}
           <div className="px-1.5 pt-1 pb-0 overflow-hidden h-4">
-            <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 8 ? 'animate-marquee' : 'text-center'}`}>
+            <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 28 ? 'animate-marquee' : 'text-center'}`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>

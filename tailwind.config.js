@@ -6,7 +6,17 @@ export default {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        marquee: {
+          '0%, 15%':   { transform: 'translateX(0px)' },
+          '85%, 100%': { transform: 'translateX(-120px)' },
+        },
+      },
+      animation: {
+        marquee: 'marquee 4s ease-in-out infinite alternate',
+      },
+    },
   },
   plugins: [],
 }
