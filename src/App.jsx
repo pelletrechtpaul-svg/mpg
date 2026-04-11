@@ -109,6 +109,7 @@ const PLAYLIST = [
   { title: 'Mercato',         src: '/audio/Mercato.mp3' },
   { title: "J'm'en vais d'ici", src: "/audio/J'm'en vais d'ici.mp3" },
   { title: 'Merci',           src: '/audio/Merci .mp3' },
+  { title: "Sur la route d'Auxerre", src: "/audio/Sur la route d'Auxerre .mp3" },
 ];
 
 // Championnats sans détail de matchs — classement final saisi manuellement
@@ -470,13 +471,10 @@ const App = () => {
         if (count > ligueFolieCount) { ligueFolieCount = count; ligueFolie = ligue; }
       });
 
-      // Preferred nationality (excluding league's home nationality)
+      // Preferred nationality
       const natsMap = {};
       entries.forEach(e => {
-        const excluded = LIGUE_NAT_EXCLUE[e.ligue];
-        if (e.nationalite && e.nationalite !== excluded) {
-          natsMap[e.nationalite] = (natsMap[e.nationalite] || 0) + 1;
-        }
+        if (e.nationalite) natsMap[e.nationalite] = (natsMap[e.nationalite] || 0) + 1;
       });
       let natPref = null, natMax = 0;
       Object.entries(natsMap).forEach(([nat, count]) => {
