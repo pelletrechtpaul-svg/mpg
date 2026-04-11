@@ -800,17 +800,24 @@ const App = () => {
           medailles[winner.joueur]++;
           medaillesLigues[winner.joueur].push(entry);
         }
-        // Championnats perdus d'un point (tous sauf le vainqueur, écart = 1pt)
+        // Championnats perdus de justesse : 1 point, goal average, ou différence particulière
         if (metadata.matchsTotal >= 6) {
           ranking.slice(1).forEach(p => {
-            if (winner.points - p.points === 1) {
+            let raison = null;
+            if (winner.points - p.points === 1) raison = '1 pt';
+            else if (winner.points === p.points && winner.ga > p.ga) raison = 'goal avg';
+            else if (winner.points === p.points && winner.ga === p.ga) raison = 'diff. part.';
+            if (raison) {
               perduUnPt[p.joueur].push({
                 ligue: matches[0].ligue,
                 championnat: matches[0].championnat,
                 saison: matches[0].saison,
                 points: p.points,
                 winnerPoints: winner.points,
+                winnerGa: winner.ga,
+                ga: p.ga,
                 winner: winner.joueur,
+                raison,
               });
             }
           });
@@ -831,9 +838,12 @@ const App = () => {
         victoires[winnerJoueur]++;
         victoiresLigues[winnerJoueur].push(entry);
         sorted.slice(1).forEach(p => {
-          if (sorted[0].points - p.points === 1 && perduUnPt[p.joueur]) {
-            perduUnPt[p.joueur].push({ ligue: mc.ligue, championnat: mc.championnat, saison: mc.saison, points: p.points, winnerPoints: sorted[0].points, winner: winnerJoueur });
-          }
+          if (!perduUnPt[p.joueur]) return;
+          let raison = null;
+          if (sorted[0].points - p.points === 1) raison = '1 pt';
+          else if (sorted[0].points === p.points && sorted[0].ga > p.ga) raison = 'goal avg';
+          else if (sorted[0].points === p.points && sorted[0].ga === p.ga) raison = 'diff. part.';
+          if (raison) perduUnPt[p.joueur].push({ ligue: mc.ligue, championnat: mc.championnat, saison: mc.saison, points: p.points, winnerPoints: sorted[0].points, winnerGa: sorted[0].ga, ga: p.ga, winner: winnerJoueur, raison });
         });
       } else {
         medailles[winnerJoueur]++;
@@ -3699,8 +3709,8 @@ const App = () => {
                 {perduUnPoint && (
                   <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
                     <ShareBtn contextText={`Championnats perdus d'un point — ${selectedSeason}`} />
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">😤 Championnats perdus d'un point</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Nombre de fois où le titre s'est joué à 1 point</p>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">😤 Championnats perdus de justesse</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Perdu à 1 point, au goal average ou à la différence particulière</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {joueurs.map(joueur => {
                         const count = (perduUnPoint[joueur] || []).length;
@@ -3714,8 +3724,10 @@ const App = () => {
                               <div className="mt-2 space-y-1">
                                 {(perduUnPoint[joueur] || []).map((d, i) => (
                                   <div key={i} className="text-xs text-slate-500 dark:text-slate-400">
-                                    {d.ligue} #{d.championnat}
-                                    <span className="text-slate-400 dark:text-slate-500"> · perdu vs {d.winner} ({d.points} vs {d.winnerPoints})</span>
+                                    <span className="font-medium text-slate-600 dark:text-slate-300">{d.ligue} #{d.championnat}</span>
+                                    <br />
+                                    <span className="text-slate-400 dark:text-slate-500">vs {d.winner} · </span>
+                                    <span className={`font-semibold ${d.raison === '1 pt' ? 'text-red-500' : d.raison === 'goal avg' ? 'text-orange-500' : 'text-purple-500'}`}>{d.raison}</span>
                                   </div>
                                 ))}
                               </div>
