@@ -767,14 +767,16 @@ const App = () => {
   };
 
   // Calculate championship victories (titres) and medals in a single pass
-  const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail } = useMemo(() => {
+  const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint } = useMemo(() => {
     const victoires = {};
     const medailles = {};
     const victoiresLigues = {}; // joueur -> [ligue, ...]
     const medaillesLigues = {}; // joueur -> [ligue, ...]
+    const perduUnPt = {}; // joueur -> [{ ligue, championnat, saison, points, winnerPoints, winner }]
     joueurs.forEach(j => {
       victoires[j] = 0; medailles[j] = 0;
       victoiresLigues[j] = []; medaillesLigues[j] = [];
+      perduUnPt[j] = [];
     });
 
     const championnatsMap = groupMatchesByChampionship(filteredData);
@@ -789,14 +791,29 @@ const App = () => {
         .sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
 
       if (ranking.length > 0 && ranking[0].points > 0) {
-        const winner = ranking[0].joueur;
+        const winner = ranking[0];
         const entry = { ligue: matches[0].ligue, saison: matches[0].saison };
         if (metadata.matchsTotal >= 6) {
-          victoires[winner]++;
-          victoiresLigues[winner].push(entry);
+          victoires[winner.joueur]++;
+          victoiresLigues[winner.joueur].push(entry);
         } else {
-          medailles[winner]++;
-          medaillesLigues[winner].push(entry);
+          medailles[winner.joueur]++;
+          medaillesLigues[winner.joueur].push(entry);
+        }
+        // Championnats perdus d'un point (tous sauf le vainqueur, écart = 1pt)
+        if (metadata.matchsTotal >= 6) {
+          ranking.slice(1).forEach(p => {
+            if (winner.points - p.points === 1) {
+              perduUnPt[p.joueur].push({
+                ligue: matches[0].ligue,
+                championnat: matches[0].championnat,
+                saison: matches[0].saison,
+                points: p.points,
+                winnerPoints: winner.points,
+                winner: winner.joueur,
+              });
+            }
+          });
         }
       }
     });
@@ -807,15 +824,20 @@ const App = () => {
       if (!filteredSeasons.has(mc.saison) && selectedSeason !== 'All-Time') return;
       const sorted = [...mc.standings].sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
       if (sorted.length === 0) return;
-      const winner = sorted[0].joueur;
-      if (victoires[winner] === undefined) return;
+      const winnerJoueur = sorted[0].joueur;
+      if (victoires[winnerJoueur] === undefined) return;
       const entry = { ligue: mc.ligue, saison: mc.saison };
       if (mc.matchsTotal >= 6) {
-        victoires[winner]++;
-        victoiresLigues[winner].push(entry);
+        victoires[winnerJoueur]++;
+        victoiresLigues[winnerJoueur].push(entry);
+        sorted.slice(1).forEach(p => {
+          if (sorted[0].points - p.points === 1 && perduUnPt[p.joueur]) {
+            perduUnPt[p.joueur].push({ ligue: mc.ligue, championnat: mc.championnat, saison: mc.saison, points: p.points, winnerPoints: sorted[0].points, winner: winnerJoueur });
+          }
+        });
       } else {
-        medailles[winner]++;
-        medaillesLigues[winner].push(entry);
+        medailles[winnerJoueur]++;
+        medaillesLigues[winnerJoueur].push(entry);
       }
     });
 
@@ -824,6 +846,7 @@ const App = () => {
       medaillesChampionnat: medailles,
       victoiresDetail: victoiresLigues,
       medaillesDetail: medaillesLigues,
+      perduUnPoint: perduUnPt,
     };
   }, [filteredData, joueurs, ligueMetadata, selectedSeason]);
 
@@ -3671,6 +3694,38 @@ const App = () => {
                     🌍 Ligues
                   </button>
                 </div>
+
+                {/* Championnats perdus d'un point */}
+                {perduUnPoint && (
+                  <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+                    <ShareBtn contextText={`Championnats perdus d'un point — ${selectedSeason}`} />
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">😤 Championnats perdus d'un point</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Nombre de fois où le titre s'est joué à 1 point</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {joueurs.map(joueur => {
+                        const count = (perduUnPoint[joueur] || []).length;
+                        const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' }[joueur];
+                        const colorBorder = { Paul: 'border-blue-200 dark:border-blue-800', Adrien: 'border-green-200 dark:border-green-800', Tiago: 'border-purple-200 dark:border-purple-800', Roman: 'border-orange-200 dark:border-orange-800' }[joueur];
+                        return (
+                          <div key={joueur} className={`rounded-lg border ${colorBorder} p-3 text-center`}>
+                            <div className={`text-3xl font-bold ${colorText}`}>{count}</div>
+                            <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1">{joueur}</div>
+                            {count > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {(perduUnPoint[joueur] || []).map((d, i) => (
+                                  <div key={i} className="text-xs text-slate-500 dark:text-slate-400">
+                                    {d.ligue} #{d.championnat}
+                                    <span className="text-slate-400 dark:text-slate-500"> · perdu vs {d.winner} ({d.points} vs {d.winnerPoints})</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Message si saison non disponible et onglet qui nécessite des données */}
                 {!seasonRecords && activeRecordsSubTab !== 'ligues' && (
