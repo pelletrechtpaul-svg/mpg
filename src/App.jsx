@@ -247,6 +247,9 @@ const App = () => {
     dateMatch: new Date().toISOString().split('T')[0]
   });
 
+  const [buteurs, setButeurs] = useState({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
+  const [scorerSearch, setScorerSearch] = useState({ m1j1: '', m1j2: '', m2j1: '', m2j2: '' });
+
   // Dark mode state
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('mpg_dark_mode');
@@ -2546,7 +2549,9 @@ const App = () => {
       points_j1,
       points_j2,
       dateMatch,
-      dateEntree: currentDate
+      dateEntree: currentDate,
+      buteurs_j1: buteurs.m1j1,
+      buteurs_j2: buteurs.m1j2
     });
 
     // Second match (if filled, empty fields default to 0)
@@ -2584,7 +2589,9 @@ const App = () => {
         points_j1: points_j3,
         points_j2: points_j4,
         dateMatch,
-        dateEntree: currentDate
+        dateEntree: currentDate,
+        buteurs_j1: buteurs.m2j1,
+        buteurs_j2: buteurs.m2j2
       });
     }
 
@@ -2645,6 +2652,8 @@ const App = () => {
       valise_j4: false,
       dateMatch: new Date().toISOString().split('T')[0]
     });
+    setButeurs({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
+    setScorerSearch({ m1j1: '', m1j2: '', m2j1: '', m2j2: '' });
 
     alert('Match ajouté avec succès !');
   };
@@ -2700,6 +2709,109 @@ const App = () => {
       console.error('Error updating match:', error);
       alert('Erreur lors de la modification');
     }
+  };
+
+  const addScorer = (key, player, isCsc) => {
+    setButeurs(prev => {
+      const list = prev[key];
+      const idx = list.findIndex(b => b.joueur === player.joueur && b.prenom === player.prenom && b.csc === isCsc);
+      if (idx >= 0) {
+        const updated = [...list];
+        updated[idx] = { ...updated[idx], buts: updated[idx].buts + 1 };
+        return { ...prev, [key]: updated };
+      }
+      return { ...prev, [key]: [...list, { joueur: player.joueur, prenom: player.prenom, club: player.club, buts: 1, csc: isCsc }] };
+    });
+    setScorerSearch(prev => ({ ...prev, [key]: '' }));
+  };
+
+  const removeScorer = (key, idx) => {
+    setButeurs(prev => ({ ...prev, [key]: prev[key].filter((_, i) => i !== idx) }));
+  };
+
+  const updateScorerButs = (key, idx, delta) => {
+    setButeurs(prev => {
+      const list = [...prev[key]];
+      const newButs = list[idx].buts + delta;
+      if (newButs <= 0) list.splice(idx, 1);
+      else list[idx] = { ...list[idx], buts: newButs };
+      return { ...prev, [key]: list };
+    });
+  };
+
+  const renderScorerSection = (key, ownerName, opponentName) => {
+    const { saison, ligue } = adminFormData;
+    const searchText = scorerSearch[key];
+    const selectedScorers = buteurs[key];
+
+    const dedup = players => {
+      const seen = new Set();
+      return players.filter(p => {
+        const k = `${p.joueur}|${p.prenom}`;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+    };
+
+    const ownPlayers = dedup(mercatoData.filter(p => p.acheteur === ownerName && p.saison === saison && p.ligue === ligue));
+    const oppPlayers = dedup(mercatoData.filter(p => p.acheteur === opponentName && p.saison === saison && p.ligue === ligue));
+
+    const searchLower = searchText.toLowerCase().trim();
+    const suggestions = searchLower.length >= 2 ? [
+      ...ownPlayers.filter(p => `${p.joueur} ${p.prenom}`.toLowerCase().includes(searchLower)).map(p => ({ ...p, isCsc: false })),
+      ...oppPlayers.filter(p => `${p.joueur} ${p.prenom}`.toLowerCase().includes(searchLower)).map(p => ({ ...p, isCsc: true }))
+    ].slice(0, 8) : [];
+
+    return (
+      <div className="mt-3">
+        <p className="text-xs font-medium text-slate-500 mb-2">Buteurs (optionnel)</p>
+        {selectedScorers.length > 0 && (
+          <div className="flex flex-col gap-1 mb-2">
+            {selectedScorers.map((s, i) => (
+              <div key={i} className="flex items-center gap-1 bg-white border border-slate-200 rounded px-2 py-1 text-xs">
+                <span className="flex-1 truncate">
+                  {s.prenom ? `${s.prenom} ${s.joueur}` : s.joueur}
+                  {s.club ? ` (${s.club})` : ''}
+                  {s.csc ? ' — csc' : ''}
+                </span>
+                <button type="button" onClick={() => updateScorerButs(key, i, -1)} className="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-slate-700 font-bold">−</button>
+                <span className="font-bold w-4 text-center">{s.buts}</span>
+                <button type="button" onClick={() => updateScorerButs(key, i, 1)} className="w-5 h-5 flex items-center justify-center text-slate-500 hover:text-slate-700 font-bold">+</button>
+                <button type="button" onClick={() => removeScorer(key, i)} className="text-red-400 hover:text-red-600 ml-1">×</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="relative">
+          <input
+            type="text"
+            value={searchText}
+            onChange={e => setScorerSearch(prev => ({ ...prev, [key]: e.target.value }))}
+            placeholder="Rechercher un buteur..."
+            className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-lg"
+          />
+          {suggestions.length > 0 && (
+            <div className="absolute z-20 top-full left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
+              {suggestions.map((p, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => addScorer(key, p, p.isCsc)}
+                  className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 flex items-center gap-2 border-b border-slate-100 last:border-0"
+                >
+                  <span className="flex-1">
+                    {p.prenom ? `${p.prenom} ${p.joueur}` : p.joueur}
+                    {p.club ? ` — ${p.club}` : ''}
+                  </span>
+                  {p.isCsc && <span className="text-orange-500 font-medium shrink-0">CSC</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const shareContext = [selectedSeason, selectedLigue && selectedLigue !== 'Toutes' ? selectedLigue : null].filter(Boolean).join(' · ');
@@ -5179,6 +5291,8 @@ const App = () => {
                               valise_j4: false,
                               dateMatch: new Date().toISOString().split('T')[0]
                             });
+                            setButeurs({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
+                            setScorerSearch({ m1j1: '', m1j2: '', m2j1: '', m2j2: '' });
                           }}
                           className="text-slate-600 hover:text-slate-800"
                         >
@@ -5388,6 +5502,10 @@ const App = () => {
                                 </p>
                               </div>
                             )}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>{renderScorerSection('m1j1', adminFormData.joueur1, adminFormData.joueur2)}</div>
+                              <div>{renderScorerSection('m1j2', adminFormData.joueur2, adminFormData.joueur1)}</div>
+                            </div>
                           </div>
                         )}
 
@@ -5500,6 +5618,10 @@ const App = () => {
                                 </p>
                               </div>
                             )}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>{renderScorerSection('m2j1', adminFormData.joueur3, adminFormData.joueur4)}</div>
+                              <div>{renderScorerSection('m2j2', adminFormData.joueur4, adminFormData.joueur3)}</div>
+                            </div>
                           </div>
                         )}
 
