@@ -40,10 +40,15 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
           git add data/
           if git diff --cached --quiet; then
             echo "Aucune nouvelle donnée."
           else
             git commit -m "chore: update MPG data $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push origin claude/scrape-mpg-api-TjKxV
+            for i in 1 2 3 4; do
+              git push origin claude/scrape-mpg-api-TjKxV && break
+              echo "Push échoué (tentative $i), retry dans ${i}0s…"
+              sleep $((i * 10))
+            done
           fi
