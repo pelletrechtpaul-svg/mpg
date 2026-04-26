@@ -32,6 +32,7 @@ jobs:
 
       - name: Run MPG scraper
         env:
+          MPG_REFRESH_TOKEN: ${{ secrets.MPG_REFRESH_TOKEN }}
           MPG_TOKEN: ${{ secrets.MPG_TOKEN }}
           MPG_LEAGUE_CODES: ${{ github.event.inputs.league_codes || 'SMGCPCDA,SKUNA5KT,SV6836ER,TMPWW77U,SSC13PHL,SKU4CP3P,SMGBRR3Z' }}
         run: node scripts/fetch-mpg-data.cjs
