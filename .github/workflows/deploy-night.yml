@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
@@ -43,3 +45,19 @@ jobs:
           git add -A
           git commit -m "deploy: MPG vit la nuit $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push origin HEAD:gh-pages-night --force
+
+      - name: Enable GitHub Pages on gh-pages-night
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"source":{"branch":"gh-pages-night","path":"/"}}' || true
+          curl -s -o /dev/null \
+            -X PUT \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"source":{"branch":"gh-pages-night","path":"/"}}' || true
+          echo "GitHub Pages configuré sur gh-pages-night"
