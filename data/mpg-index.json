@@ -1,0 +1,33 @@
+{
+  "fetchedAt": "2026-04-27T00:00:00.000Z",
+  "divisions": {
+    "mpg_division_SMGBRR3Z_1_1": {
+      "leagueId": "mpg_league_SMGBRR3Z",
+      "currentSeason": 1
+    },
+    "mpg_division_TMPWW77U_2_1": {
+      "leagueId": "mpg_league_TMPWW77U",
+      "currentSeason": 2
+    },
+    "mpg_division_SMGCPCDA_12_1": {
+      "leagueId": "mpg_league_SMGCPCDA",
+      "currentSeason": 12
+    },
+    "mpg_division_SKU4CP3P_3_1": {
+      "leagueId": "mpg_league_SKU4CP3P",
+      "currentSeason": 3
+    },
+    "mpg_division_SV6836ER_10_1": {
+      "leagueId": "mpg_league_SV6836ER",
+      "currentSeason": 10
+    },
+    "mpg_division_SSC13PHL_11_1": {
+      "leagueId": "mpg_league_SSC13PHL",
+      "currentSeason": 11
+    },
+    "mpg_division_SKUNA5KT_12_1": {
+      "leagueId": "mpg_league_SKUNA5KT",
+      "currentSeason": 12
+    }
+  }
+}

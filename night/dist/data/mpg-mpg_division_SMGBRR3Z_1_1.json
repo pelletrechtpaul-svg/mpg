@@ -1,0 +1,3989 @@
+{
+  "divisionId": "mpg_division_SMGBRR3Z_1_1",
+  "leagueId": "mpg_league_SMGBRR3Z",
+  "currentSeason": 1,
+  "division": {
+    "createdAt": "2024-09-06T23:37:46.202Z",
+    "finishedState": {
+      "seasonEndDate": "2024-12-12T04:45:18Z",
+      "winner": {
+        "firstName": "Paul",
+        "team": {
+          "abbreviation": "FCD",
+          "gear": {
+            "home": {
+              "jerseyId": "mpg_jersey_0_1722013286581"
+            }
+          },
+          "id": "mpg_team_SMGBRR3Z_1_1_3",
+          "name": "FC Dizidachompionsss"
+        },
+        "userId": "user_6464421",
+        "username": "Paul#769X6"
+      }
+    },
+    "gameSettings": {
+      "autoCloseMercato": true,
+      "blackMarketBonuses": false,
+      "blackMarketLoans": false,
+      "blackMarketTransfers": false,
+      "bonusesRules": {
+        "blockTacticalSubs": 0,
+        "boostAllPlayers": 0,
+        "boostOnePlayer": 1,
+        "fourStrikers": 0,
+        "mirror": 0,
+        "nerfGoalkeeper": 0,
+        "removeGoal": 1,
+        "removeRandomPlayer": 0
+      },
+      "budget": 500,
+      "captainAvailable": true,
+      "championshipId": 6,
+      "considerPostponedMatches": true,
+      "excludedClubsIds": [],
+      "excludedPlayersIds": [],
+      "liveBlackMarketType": 0,
+      "liveMercatoType": 0,
+      "liveSubstitutesAvailable": false,
+      "maxBuyableExtraBonus": 1,
+      "maxBuyableRemoveGoal": 1,
+      "mercatoStartDate": "2024-09-07T10:00:00Z",
+      "mercatoType": 1,
+      "midSeasonBudget": 0,
+      "mode": 1,
+      "numberUpAndDownPreference": 2,
+      "playersByClub": -1,
+      "playersStatusesAvailable": true,
+      "quotationMax": -1,
+      "quotationMin": -1,
+      "rating": "mpg"
+    },
+    "id": "mpg_division_SMGBRR3Z_1_1",
+    "lastPosts": [
+      {
+        "authorId": "mpg",
+        "content": "",
+        "date": "2024-09-06T23:37:46.216Z",
+        "isImageOnly": false,
+        "isMpgAuthorId": true
+      },
+      {
+        "authorId": "mpg",
+        "content": "",
+        "date": "2024-09-07T13:25:20.470Z",
+        "isImageOnly": false,
+        "isMpgAuthorId": true
+      },
+      {
+        "authorId": "mpg",
+        "date": "2024-09-20T03:46:06Z"
+      },
+      {
+        "authorId": "mpg",
+        "date": "2024-10-03T03:46:27Z"
+      },
+      {
+        "authorId": "mpg",
+        "date": "2024-10-24T03:46:23Z"
+      },
+      {
+        "authorId": "mpg",
+        "content": "",
+        "date": "2024-12-13T18:04:02.802Z",
+        "isImageOnly": false,
+        "isMpgAuthorId": true
+      }
+    ],
+    "leagueId": "mpg_league_SMGBRR3Z",
+    "liveState": {
+      "currentGameWeek": 6,
+      "firstRealGameWeek": 1,
+      "formationsStatuses": {
+        "mpg_team_SMGBRR3Z_1_1_0": 2,
+        "mpg_team_SMGBRR3Z_1_1_1": 2,
+        "mpg_team_SMGBRR3Z_1_1_2": 2,
+        "mpg_team_SMGBRR3Z_1_1_3": 2
+      },
+      "liveAt": "2024-09-08T08:23:03.924Z",
+      "standings": {
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "rank": 2,
+          "variation": 0
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "rank": 4,
+          "variation": 0
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "rank": 3,
+          "variation": 0
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "rank": 1,
+          "variation": 0
+        }
+      },
+      "totalGameWeeks": 6
+    },
+    "mercatoState": {
+      "mercatoClosed": true,
+      "mercatoTurnDate": "2024-09-07T13:09:04.330Z",
+      "nextMercatoTurn": "2024-09-11T09:00:00.000Z",
+      "reviveUsersSentAt": "2024-09-07T13:09:04.330Z",
+      "teamsStatuses": {
+        "mpg_team_SMGBRR3Z_1_1_0": 3,
+        "mpg_team_SMGBRR3Z_1_1_1": 3,
+        "mpg_team_SMGBRR3Z_1_1_2": 3,
+        "mpg_team_SMGBRR3Z_1_1_3": 3
+      },
+      "turn": 3
+    },
+    "status": 5,
+    "totalDivisions": 2,
+    "type": "mpg_division",
+    "updatedAt": "2024-12-12T04:45:03Z",
+    "usersTeams": {
+      "ghost_6465688_0": "mpg_team_SMGBRR3Z_1_1_2",
+      "user_2768811": "mpg_team_SMGBRR3Z_1_1_1",
+      "user_6464301": "mpg_team_SMGBRR3Z_1_1_0",
+      "user_6464421": "mpg_team_SMGBRR3Z_1_1_3"
+    },
+    "totalMissedPosts": 6,
+    "hasViewedMercatoTurn": false
+  },
+  "divisionTeams": [
+    {
+      "id": "mpg_team_SMGBRR3Z_1_1_2",
+      "name": "Guavas",
+      "abbreviation": "GUS",
+      "jerseyUrl": "https://s3-eu-west-3.amazonaws.com/jersey.mpg.football/prod/jersey_0_1561646533972.png",
+      "status": 3,
+      "budget": 5,
+      "squad": {
+        "mpg_championship_player_102380": {
+          "bidDate": "2024-09-07T11:45:22.497Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_102380",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_116406": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_116406",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_165809": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_165809",
+          "price": 18,
+          "status": 1
+        },
+        "mpg_championship_player_171314": {
+          "bidDate": "2024-09-07T11:45:22.497Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_171314",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_174292": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_174292",
+          "price": 14,
+          "status": 1
+        },
+        "mpg_championship_player_206255": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_206255",
+          "price": 11,
+          "status": 1
+        },
+        "mpg_championship_player_219438": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_219438",
+          "price": 19,
+          "status": 1
+        },
+        "mpg_championship_player_222784": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_222784",
+          "price": 16,
+          "status": 1
+        },
+        "mpg_championship_player_223094": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_223094",
+          "price": 94,
+          "status": 1
+        },
+        "mpg_championship_player_223255": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_223255",
+          "price": 31,
+          "status": 1
+        },
+        "mpg_championship_player_223340": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_223340",
+          "price": 57,
+          "status": 1
+        },
+        "mpg_championship_player_228539": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_228539",
+          "price": 7,
+          "status": 1
+        },
+        "mpg_championship_player_246333": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_246333",
+          "price": 57,
+          "status": 1
+        },
+        "mpg_championship_player_248875": {
+          "bidDate": "2024-09-07T11:45:22.497Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_248875",
+          "price": 18,
+          "status": 1
+        },
+        "mpg_championship_player_462424": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_462424",
+          "price": 15,
+          "status": 1
+        },
+        "mpg_championship_player_550840": {
+          "bidDate": "2024-09-07T11:45:22.497Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_550840",
+          "price": 16,
+          "status": 1
+        },
+        "mpg_championship_player_551150": {
+          "bidDate": "2024-09-07T10:06:13.396Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_551150",
+          "price": 14,
+          "status": 1
+        },
+        "mpg_championship_player_81352": {
+          "bidDate": "2024-09-07T11:45:22.497Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_81352",
+          "price": 18,
+          "status": 1
+        },
+        "mpg_championship_player_220325": {
+          "id": "mpg_championship_player_220325",
+          "price": 15,
+          "bidDate": "2024-09-07T13:25:20.456Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        },
+        "mpg_championship_player_219292": {
+          "id": "mpg_championship_player_219292",
+          "price": 15,
+          "bidDate": "2024-09-07T13:25:20.456Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        },
+        "mpg_championship_player_204716": {
+          "id": "mpg_championship_player_204716",
+          "price": 14,
+          "bidDate": "2024-09-07T13:25:20.456Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "mpg_team_SMGBRR3Z_1_1_1",
+      "name": "Sparta Praia ",
+      "abbreviation": "SPP",
+      "jerseyUrl": "https://s3-eu-west-3.amazonaws.com/jersey.mpg.football/back/jersey_0_1561646533972_temp.png",
+      "status": 3,
+      "budget": 0,
+      "squad": {
+        "mpg_championship_player_111732": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_111732",
+          "price": 23,
+          "status": 1
+        },
+        "mpg_championship_player_129487": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_129487",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_17745": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_17745",
+          "price": 15,
+          "status": 1
+        },
+        "mpg_championship_player_199432": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_199432",
+          "price": 15,
+          "status": 1
+        },
+        "mpg_championship_player_205880": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_205880",
+          "price": 29,
+          "status": 1
+        },
+        "mpg_championship_player_213783": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_213783",
+          "price": 8,
+          "status": 1
+        },
+        "mpg_championship_player_216065": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_216065",
+          "price": 31,
+          "status": 1
+        },
+        "mpg_championship_player_218449": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_218449",
+          "price": 6,
+          "status": 1
+        },
+        "mpg_championship_player_225059": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_225059",
+          "price": 14,
+          "status": 1
+        },
+        "mpg_championship_player_428585": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_428585",
+          "price": 16,
+          "status": 1
+        },
+        "mpg_championship_player_493362": {
+          "bidDate": "2024-09-07T10:21:08.132Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_493362",
+          "price": 27,
+          "status": 1
+        },
+        "mpg_championship_player_78830": {
+          "id": "mpg_championship_player_78830",
+          "price": 61,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_440077": {
+          "id": "mpg_championship_player_440077",
+          "price": 64,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_244855": {
+          "id": "mpg_championship_player_244855",
+          "price": 63,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_220566": {
+          "id": "mpg_championship_player_220566",
+          "price": 19,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_184029": {
+          "id": "mpg_championship_player_184029",
+          "price": 24,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_179370": {
+          "id": "mpg_championship_player_179370",
+          "price": 51,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_161919": {
+          "id": "mpg_championship_player_161919",
+          "price": 17,
+          "bidDate": "2024-09-07T13:09:04.321Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "mpg_team_SMGBRR3Z_1_1_0",
+      "name": "L’eau aime ",
+      "abbreviation": "OM",
+      "jerseyUrl": "https://s3-eu-west-3.amazonaws.com/jersey.mpg.football/back/jersey_0_1561646533972_temp.png",
+      "status": 3,
+      "budget": 10,
+      "squad": {
+        "mpg_championship_player_106004": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_106004",
+          "price": 22,
+          "status": 1
+        },
+        "mpg_championship_player_171384": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_171384",
+          "price": 21,
+          "status": 1
+        },
+        "mpg_championship_player_20388": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_20388",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_209244": {
+          "bidDate": "2024-09-07T11:40:30.147Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_209244",
+          "price": 35,
+          "status": 1
+        },
+        "mpg_championship_player_216094": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_216094",
+          "price": 17,
+          "status": 1
+        },
+        "mpg_championship_player_220160": {
+          "bidDate": "2024-09-07T11:40:30.147Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_220160",
+          "price": 72,
+          "status": 1
+        },
+        "mpg_championship_player_235084": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_235084",
+          "price": 22,
+          "status": 1
+        },
+        "mpg_championship_player_477424": {
+          "bidDate": "2024-09-07T11:40:30.147Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_477424",
+          "price": 16,
+          "status": 1
+        },
+        "mpg_championship_player_490541": {
+          "bidDate": "2024-09-07T11:40:30.147Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_490541",
+          "price": 19,
+          "status": 1
+        },
+        "mpg_championship_player_543612": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_543612",
+          "price": 16,
+          "status": 1
+        },
+        "mpg_championship_player_56764": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_56764",
+          "price": 42,
+          "status": 1
+        },
+        "mpg_championship_player_593109": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_593109",
+          "price": 35,
+          "status": 1
+        },
+        "mpg_championship_player_593110": {
+          "bidDate": "2024-09-07T11:40:30.147Z",
+          "bidMercatoTurn": 2,
+          "id": "mpg_championship_player_593110",
+          "price": 13,
+          "status": 1
+        },
+        "mpg_championship_player_61366": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_61366",
+          "price": 42,
+          "status": 1
+        },
+        "mpg_championship_player_72147": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_72147",
+          "price": 14,
+          "status": 1
+        },
+        "mpg_championship_player_90318": {
+          "bidDate": "2024-09-07T11:32:32.043Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_90318",
+          "price": 8,
+          "status": 1
+        },
+        "mpg_championship_player_57249": {
+          "id": "mpg_championship_player_57249",
+          "price": 19,
+          "bidDate": "2024-09-07T13:20:55.986Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        },
+        "mpg_championship_player_433145": {
+          "id": "mpg_championship_player_433145",
+          "price": 18,
+          "bidDate": "2024-09-07T13:20:55.986Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        },
+        "mpg_championship_player_118748": {
+          "id": "mpg_championship_player_118748",
+          "price": 52,
+          "bidDate": "2024-09-07T13:20:55.986Z",
+          "bidMercatoTurn": 3,
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "mpg_team_SMGBRR3Z_1_1_3",
+      "name": "FC Dizidachompionsss",
+      "abbreviation": "FCD",
+      "jerseyUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/prod/efad9fb6-2cd5-466d-87c7-08ce325fbe8c.png",
+      "status": 3,
+      "budget": 5,
+      "squad": {
+        "mpg_championship_player_194794": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_194794",
+          "price": 15,
+          "status": 1
+        },
+        "mpg_championship_player_196680": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_196680",
+          "price": 13,
+          "status": 1
+        },
+        "mpg_championship_player_204644": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_204644",
+          "price": 20,
+          "status": 1
+        },
+        "mpg_championship_player_219961": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_219961",
+          "price": 36,
+          "status": 1
+        },
+        "mpg_championship_player_223760": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_223760",
+          "price": 32,
+          "status": 1
+        },
+        "mpg_championship_player_224117": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_224117",
+          "price": 25,
+          "status": 1
+        },
+        "mpg_championship_player_230650": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_230650",
+          "price": 19,
+          "status": 1
+        },
+        "mpg_championship_player_244731": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_244731",
+          "price": 41,
+          "status": 1
+        },
+        "mpg_championship_player_244857": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_244857",
+          "price": 41,
+          "status": 1
+        },
+        "mpg_championship_player_424969": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_424969",
+          "price": 15,
+          "status": 1
+        },
+        "mpg_championship_player_437858": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_437858",
+          "price": 33,
+          "status": 1
+        },
+        "mpg_championship_player_443661": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_443661",
+          "price": 25,
+          "status": 1
+        },
+        "mpg_championship_player_465206": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_465206",
+          "price": 28,
+          "status": 1
+        },
+        "mpg_championship_player_466075": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_466075",
+          "price": 14,
+          "status": 1
+        },
+        "mpg_championship_player_482616": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_482616",
+          "price": 51,
+          "status": 1
+        },
+        "mpg_championship_player_494595": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_494595",
+          "price": 33,
+          "status": 1
+        },
+        "mpg_championship_player_511499": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_511499",
+          "price": 25,
+          "status": 1
+        },
+        "mpg_championship_player_85301": {
+          "bidDate": "2024-09-07T10:03:28.589Z",
+          "bidMercatoTurn": 1,
+          "id": "mpg_championship_player_85301",
+          "price": 1,
+          "status": 1
+        },
+        "mpg_championship_player_461358": {
+          "id": "mpg_championship_player_461358",
+          "price": 22,
+          "bidDate": "2024-09-07T11:55:56.671Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        },
+        "mpg_championship_player_120772": {
+          "id": "mpg_championship_player_120772",
+          "price": 11,
+          "bidDate": "2024-09-07T11:55:56.671Z",
+          "bidMercatoTurn": 2,
+          "status": 1
+        }
+      }
+    }
+  ],
+  "calendar": {
+    "id": "mpg_division_calendar_SMGBRR3Z_1_1",
+    "type": "mpg_division_calendar",
+    "championshipId": 6,
+    "championshipSeason": 2024,
+    "fixtures": [
+      {
+        "gameWeek": 1,
+        "realGameWeek": 1,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_1_1_2_0",
+          "mpg_division_match_SMGBRR3Z_1_1_1_2_1_3"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_2",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_0"
+      },
+      {
+        "gameWeek": 2,
+        "realGameWeek": 2,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_2_1_3_2",
+          "mpg_division_match_SMGBRR3Z_1_1_2_2_0_1"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_0",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_0"
+      },
+      {
+        "gameWeek": 3,
+        "realGameWeek": 3,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_3_1_3_0",
+          "mpg_division_match_SMGBRR3Z_1_1_3_2_1_2"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_0",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_3"
+      },
+      {
+        "gameWeek": 4,
+        "realGameWeek": 4,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_4_1_0_2",
+          "mpg_division_match_SMGBRR3Z_1_1_4_2_3_1"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_3",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_3"
+      },
+      {
+        "gameWeek": 5,
+        "realGameWeek": 5,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_5_1_2_3",
+          "mpg_division_match_SMGBRR3Z_1_1_5_2_1_0"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_3",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_3"
+      },
+      {
+        "gameWeek": 6,
+        "realGameWeek": 6,
+        "matchesIds": [
+          "mpg_division_match_SMGBRR3Z_1_1_6_1_0_3",
+          "mpg_division_match_SMGBRR3Z_1_1_6_2_2_1"
+        ],
+        "previousTargetMan": "mpg_team_SMGBRR3Z_1_1_3",
+        "afterTargetMan": "mpg_team_SMGBRR3Z_1_1_3"
+      }
+    ]
+  },
+  "history": {
+    "type": "mpg_division_history",
+    "live": {
+      "20241003": {
+        "incomes": [
+          {
+            "type": "removeGoal",
+            "amount": 5,
+            "fromTeamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "toTeamId": "mpg_team_SMGBRR3Z_1_1_3"
+          },
+          {
+            "type": "removeGoal",
+            "amount": 5,
+            "fromTeamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "toTeamId": "mpg_team_SMGBRR3Z_1_1_0"
+          }
+        ]
+      },
+      "20241024": {
+        "incomes": [
+          {
+            "type": "removeGoal",
+            "amount": 5,
+            "fromTeamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "toTeamId": "mpg_team_SMGBRR3Z_1_1_0"
+          }
+        ]
+      },
+      "20241107": {
+        "incomes": [
+          {
+            "type": "removeGoal",
+            "amount": 5,
+            "fromTeamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "toTeamId": "mpg_team_SMGBRR3Z_1_1_2"
+          }
+        ]
+      }
+    },
+    "mercato": {
+      "1": {
+        "mpg_championship_player_90318": {
+          "id": "mpg_championship_player_90318",
+          "firstName": "Iñigo",
+          "lastName": "Martínez",
+          "quotation": 8,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 8,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_85301": {
+          "id": "mpg_championship_player_85301",
+          "firstName": "Danijel",
+          "lastName": "Zagorac",
+          "quotation": 1,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_394",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 1,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_72147": {
+          "id": "mpg_championship_player_72147",
+          "firstName": "Marco",
+          "lastName": "Bizot",
+          "quotation": 14,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_862",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 14,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_61366": {
+          "id": "mpg_championship_player_61366",
+          "firstName": "Kevin",
+          "lastName": "De Bruyne",
+          "quotation": 25,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 42,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 31,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 27,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            }
+          ]
+        },
+        "mpg_championship_player_593109": {
+          "id": "mpg_championship_player_593109",
+          "firstName": "Lamine",
+          "lastName": "Lamine Yamal",
+          "quotation": 28,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 35,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_56764": {
+          "id": "mpg_championship_player_56764",
+          "firstName": "Robert",
+          "lastName": "Lewandowski",
+          "quotation": 33,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 42,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_551150": {
+          "id": "mpg_championship_player_551150",
+          "firstName": null,
+          "lastName": "João Neves",
+          "quotation": 14,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 14,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_543612": {
+          "id": "mpg_championship_player_543612",
+          "firstName": "Federico",
+          "lastName": "Gatti",
+          "quotation": 16,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_128",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 16,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_511499": {
+          "id": "mpg_championship_player_511499",
+          "firstName": "Mathys",
+          "lastName": "Tel",
+          "quotation": 10,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 25,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_494595": {
+          "id": "mpg_championship_player_494595",
+          "firstName": "Florian",
+          "lastName": "Wirtz",
+          "quotation": 18,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_164",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 33,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 24,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 23,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_493362": {
+          "id": "mpg_championship_player_493362",
+          "firstName": "Xavi",
+          "lastName": "Simons",
+          "quotation": 23,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_6339",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 27,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 23,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            }
+          ]
+        },
+        "mpg_championship_player_482616": {
+          "id": "mpg_championship_player_482616",
+          "firstName": "Bradley",
+          "lastName": "Barcola",
+          "quotation": 24,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 51,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 32,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 25,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 24,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            }
+          ]
+        },
+        "mpg_championship_player_466075": {
+          "id": "mpg_championship_player_466075",
+          "firstName": "Riccardo",
+          "lastName": "Calafiori",
+          "quotation": 9,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_3",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 14,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_465206": {
+          "id": "mpg_championship_player_465206",
+          "firstName": null,
+          "lastName": "Nuno Mendes",
+          "quotation": 15,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 28,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 17,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 15,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            }
+          ]
+        },
+        "mpg_championship_player_462424": {
+          "id": "mpg_championship_player_462424",
+          "firstName": "William",
+          "lastName": "Saliba",
+          "quotation": 15,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_3",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 15,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_443661": {
+          "id": "mpg_championship_player_443661",
+          "firstName": "Michael",
+          "lastName": "Olise",
+          "quotation": 16,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 25,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_437858": {
+          "id": "mpg_championship_player_437858",
+          "firstName": null,
+          "lastName": "Vitinha",
+          "quotation": 22,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 33,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 22,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            }
+          ]
+        },
+        "mpg_championship_player_428585": {
+          "id": "mpg_championship_player_428585",
+          "firstName": null,
+          "lastName": "Bremer",
+          "quotation": 16,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_128",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 16,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_424969": {
+          "id": "mpg_championship_player_424969",
+          "firstName": "Edmond",
+          "lastName": "Tapsoba",
+          "quotation": 12,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_164",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 15,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_246333": {
+          "id": "mpg_championship_player_246333",
+          "firstName": null,
+          "lastName": "Vinícius Júnior",
+          "quotation": 37,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 57,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 52,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 51,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_244857": {
+          "id": "mpg_championship_player_244857",
+          "firstName": "Jamal",
+          "lastName": "Musiala",
+          "quotation": 22,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 41,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 25,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_244731": {
+          "id": "mpg_championship_player_244731",
+          "firstName": "Luis",
+          "lastName": "Díaz",
+          "quotation": 24,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_14",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 41,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_235084": {
+          "id": "mpg_championship_player_235084",
+          "firstName": "Loïs",
+          "lastName": "Openda",
+          "quotation": 22,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_6339",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 22,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_230650": {
+          "id": "mpg_championship_player_230650",
+          "firstName": "Michele",
+          "lastName": "Di Gregorio",
+          "quotation": 17,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_128",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 19,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_228539": {
+          "id": "mpg_championship_player_228539",
+          "firstName": "Radoslaw",
+          "lastName": "Majecki",
+          "quotation": 7,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_146",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 7,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_225059": {
+          "id": "mpg_championship_player_225059",
+          "firstName": "Alphonso",
+          "lastName": "Davies",
+          "quotation": 13,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 14,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_224117": {
+          "id": "mpg_championship_player_224117",
+          "firstName": "Viktor",
+          "lastName": "Gyökeres",
+          "quotation": 17,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_255",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 25,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 23,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_223760": {
+          "id": "mpg_championship_player_223760",
+          "firstName": "Achraf",
+          "lastName": "Hakimi",
+          "quotation": 18,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 32,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 18,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            }
+          ]
+        },
+        "mpg_championship_player_223340": {
+          "id": "mpg_championship_player_223340",
+          "firstName": "Bukayo",
+          "lastName": "Saka",
+          "quotation": 30,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_3",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 57,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_223255": {
+          "id": "mpg_championship_player_223255",
+          "firstName": "Federico",
+          "lastName": "Valverde",
+          "quotation": 21,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 31,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 22,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_223094": {
+          "id": "mpg_championship_player_223094",
+          "firstName": "Erling",
+          "lastName": "Haaland",
+          "quotation": 42,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 94,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 81,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 51,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            }
+          ]
+        },
+        "mpg_championship_player_222784": {
+          "id": "mpg_championship_player_222784",
+          "firstName": "Theo",
+          "lastName": "Hernández",
+          "quotation": 16,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_120",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 16,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_219961": {
+          "id": "mpg_championship_player_219961",
+          "firstName": null,
+          "lastName": "Raphinha",
+          "quotation": 18,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 36,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+              "price": 31,
+              "bidDate": "2024-09-07T10:21:08.132Z"
+            },
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 18,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            }
+          ]
+        },
+        "mpg_championship_player_219438": {
+          "id": "mpg_championship_player_219438",
+          "firstName": "Ousmane",
+          "lastName": "Dembélé",
+          "quotation": 19,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 19,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_218449": {
+          "id": "mpg_championship_player_218449",
+          "firstName": null,
+          "lastName": "Éder Militão",
+          "quotation": 6,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 6,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_216094": {
+          "id": "mpg_championship_player_216094",
+          "firstName": "Jeremie",
+          "lastName": "Frimpong",
+          "quotation": 13,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_164",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 17,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+              "price": 15,
+              "bidDate": "2024-09-07T10:03:28.589Z"
+            }
+          ]
+        },
+        "mpg_championship_player_216065": {
+          "id": "mpg_championship_player_216065",
+          "firstName": null,
+          "lastName": "Rafael Leão",
+          "quotation": 27,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_120",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 31,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_213783": {
+          "id": "mpg_championship_player_213783",
+          "firstName": "Julian",
+          "lastName": "Ryerson",
+          "quotation": 8,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_157",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 8,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_206255": {
+          "id": "mpg_championship_player_206255",
+          "firstName": "Ferland",
+          "lastName": "Mendy",
+          "quotation": 11,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 11,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_205880": {
+          "id": "mpg_championship_player_205880",
+          "firstName": "Marcus",
+          "lastName": "Thuram",
+          "quotation": 26,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 29,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_204644": {
+          "id": "mpg_championship_player_204644",
+          "firstName": "Teun",
+          "lastName": "Koopmeiners",
+          "quotation": 14,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_128",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 20,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_20388": {
+          "id": "mpg_championship_player_20388",
+          "firstName": "Manuel",
+          "lastName": "Neuer",
+          "quotation": 17,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 17,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_199432": {
+          "id": "mpg_championship_player_199432",
+          "firstName": "Denzel",
+          "lastName": "Dumfries",
+          "quotation": 10,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 15,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 10,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            }
+          ]
+        },
+        "mpg_championship_player_196680": {
+          "id": "mpg_championship_player_196680",
+          "firstName": "Patrik",
+          "lastName": "Schick",
+          "quotation": 12,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_164",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 13,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_194794": {
+          "id": "mpg_championship_player_194794",
+          "firstName": "Fikayo",
+          "lastName": "Tomori",
+          "quotation": 12,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_120",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 15,
+            "bidDate": "2024-09-07T10:03:28.589Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 12,
+              "bidDate": "2024-09-07T11:32:32.043Z"
+            }
+          ]
+        },
+        "mpg_championship_player_17745": {
+          "id": "mpg_championship_player_17745",
+          "firstName": "Kasper",
+          "lastName": "Schmeichel",
+          "quotation": 14,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_61",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 15,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_174292": {
+          "id": "mpg_championship_player_174292",
+          "firstName": "Marco",
+          "lastName": "Asensio",
+          "quotation": 14,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 14,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_171384": {
+          "id": "mpg_championship_player_171384",
+          "firstName": "Nicolò",
+          "lastName": "Barella",
+          "quotation": 17,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 21,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_165809": {
+          "id": "mpg_championship_player_165809",
+          "firstName": null,
+          "lastName": "Bernardo Silva",
+          "quotation": 18,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 18,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_129487": {
+          "id": "mpg_championship_player_129487",
+          "firstName": "Mike",
+          "lastName": "Maignan",
+          "quotation": 16,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_120",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 17,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 16,
+              "bidDate": "2024-09-07T10:06:13.396Z"
+            }
+          ]
+        },
+        "mpg_championship_player_116406": {
+          "id": "mpg_championship_player_116406",
+          "firstName": null,
+          "lastName": "Marquinhos",
+          "quotation": 17,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 17,
+            "bidDate": "2024-09-07T10:06:13.396Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_111732": {
+          "id": "mpg_championship_player_111732",
+          "firstName": "Hakan",
+          "lastName": "Çalhanoglu",
+          "quotation": 23,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 23,
+            "bidDate": "2024-09-07T10:21:08.132Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_106004": {
+          "id": "mpg_championship_player_106004",
+          "firstName": "Álex",
+          "lastName": "Grimaldo",
+          "quotation": 15,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_164",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 22,
+            "bidDate": "2024-09-07T11:32:32.043Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+              "price": 18,
+              "bidDate": "2024-09-07T10:03:28.589Z"
+            }
+          ]
+        }
+      },
+      "2": {
+        "mpg_championship_player_81352": {
+          "id": "mpg_championship_player_81352",
+          "firstName": "Jan",
+          "lastName": "Oblak",
+          "quotation": 18,
+          "position": 1,
+          "ultraPosition": 10,
+          "clubId": "mpg_championship_club_175",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 18,
+            "bidDate": "2024-09-07T11:45:22.497Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_78830": {
+          "id": "mpg_championship_player_78830",
+          "firstName": "Harry",
+          "lastName": "Kane",
+          "quotation": 36,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 61,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 51,
+              "bidDate": "2024-09-07T11:40:30.147Z"
+            }
+          ]
+        },
+        "mpg_championship_player_593110": {
+          "id": "mpg_championship_player_593110",
+          "firstName": "Pau",
+          "lastName": "Cubarsí",
+          "quotation": 13,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 13,
+            "bidDate": "2024-09-07T11:40:30.147Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_550840": {
+          "id": "mpg_championship_player_550840",
+          "firstName": "Warren",
+          "lastName": "Zaïre-Emery",
+          "quotation": 16,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_149",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 16,
+            "bidDate": "2024-09-07T11:45:22.497Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_490541": {
+          "id": "mpg_championship_player_490541",
+          "firstName": null,
+          "lastName": "Pedri",
+          "quotation": 19,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 19,
+            "bidDate": "2024-09-07T11:40:30.147Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_477424": {
+          "id": "mpg_championship_player_477424",
+          "firstName": "Josko",
+          "lastName": "Gvardiol",
+          "quotation": 16,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 16,
+            "bidDate": "2024-09-07T11:40:30.147Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_461358": {
+          "id": "mpg_championship_player_461358",
+          "firstName": "Julián",
+          "lastName": "Alvarez",
+          "quotation": 22,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_175",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 22,
+            "bidDate": "2024-09-07T11:55:56.671Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_440077": {
+          "id": "mpg_championship_player_440077",
+          "firstName": null,
+          "lastName": "Rodrygo",
+          "quotation": 26,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 64,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_248875": {
+          "id": "mpg_championship_player_248875",
+          "firstName": "Jérémy",
+          "lastName": "Doku",
+          "quotation": 18,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 18,
+            "bidDate": "2024-09-07T11:45:22.497Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_244855": {
+          "id": "mpg_championship_player_244855",
+          "firstName": "Jude",
+          "lastName": "Bellingham",
+          "quotation": 29,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 63,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+              "price": 38,
+              "bidDate": "2024-09-07T11:40:30.147Z"
+            }
+          ]
+        },
+        "mpg_championship_player_220566": {
+          "id": "mpg_championship_player_220566",
+          "firstName": null,
+          "lastName": "Rodri",
+          "quotation": 18,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 19,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_220160": {
+          "id": "mpg_championship_player_220160",
+          "firstName": "Kylian",
+          "lastName": "Mbappé",
+          "quotation": 40,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 72,
+            "bidDate": "2024-09-07T11:40:30.147Z"
+          },
+          "lostBids": [
+            {
+              "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+              "price": 44,
+              "bidDate": "2024-09-07T11:45:22.497Z"
+            }
+          ]
+        },
+        "mpg_championship_player_209244": {
+          "id": "mpg_championship_player_209244",
+          "firstName": "Phil",
+          "lastName": "Foden",
+          "quotation": 22,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 35,
+            "bidDate": "2024-09-07T11:40:30.147Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_184029": {
+          "id": "mpg_championship_player_184029",
+          "firstName": "Martin",
+          "lastName": "Ødegaard",
+          "quotation": 23,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_3",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 24,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_179370": {
+          "id": "mpg_championship_player_179370",
+          "firstName": "Dani",
+          "lastName": "Olmo",
+          "quotation": 25,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 51,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_171314": {
+          "id": "mpg_championship_player_171314",
+          "firstName": null,
+          "lastName": "Rúben Dias",
+          "quotation": 17,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_43",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 17,
+            "bidDate": "2024-09-07T11:45:22.497Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_161919": {
+          "id": "mpg_championship_player_161919",
+          "firstName": "Federico",
+          "lastName": "Dimarco",
+          "quotation": 17,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+            "price": 17,
+            "bidDate": "2024-09-07T13:09:04.321Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_120772": {
+          "id": "mpg_championship_player_120772",
+          "firstName": null,
+          "lastName": "Raphaël Guerreiro",
+          "quotation": 11,
+          "position": 2,
+          "ultraPosition": 21,
+          "clubId": "mpg_championship_club_156",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+            "price": 11,
+            "bidDate": "2024-09-07T11:55:56.671Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_102380": {
+          "id": "mpg_championship_player_102380",
+          "firstName": "Antonio",
+          "lastName": "Rüdiger",
+          "quotation": 17,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 17,
+            "bidDate": "2024-09-07T11:45:22.497Z"
+          },
+          "lostBids": []
+        }
+      },
+      "3": {
+        "mpg_championship_player_57249": {
+          "id": "mpg_championship_player_57249",
+          "firstName": "Henrikh",
+          "lastName": "Mkhitaryan",
+          "quotation": 16,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_127",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 19,
+            "bidDate": "2024-09-07T13:20:55.986Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_433145": {
+          "id": "mpg_championship_player_433145",
+          "firstName": null,
+          "lastName": "Pote",
+          "quotation": 16,
+          "position": 3,
+          "ultraPosition": 31,
+          "clubId": "mpg_championship_club_255",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 18,
+            "bidDate": "2024-09-07T13:20:55.986Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_220325": {
+          "id": "mpg_championship_player_220325",
+          "firstName": "Jules",
+          "lastName": "Koundé",
+          "quotation": 15,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_178",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 15,
+            "bidDate": "2024-09-07T13:25:20.456Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_219292": {
+          "id": "mpg_championship_player_219292",
+          "firstName": "Aurélien",
+          "lastName": "Tchouaméni",
+          "quotation": 15,
+          "position": 3,
+          "ultraPosition": 30,
+          "clubId": "mpg_championship_club_186",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 15,
+            "bidDate": "2024-09-07T13:25:20.456Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_204716": {
+          "id": "mpg_championship_player_204716",
+          "firstName": "Ibrahima",
+          "lastName": "Konaté",
+          "quotation": 14,
+          "position": 2,
+          "ultraPosition": 20,
+          "clubId": "mpg_championship_club_14",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+            "price": 14,
+            "bidDate": "2024-09-07T13:25:20.456Z"
+          },
+          "lostBids": []
+        },
+        "mpg_championship_player_118748": {
+          "id": "mpg_championship_player_118748",
+          "firstName": "Mohamed",
+          "lastName": "Mohamed Salah",
+          "quotation": 32,
+          "position": 4,
+          "ultraPosition": 40,
+          "clubId": "mpg_championship_club_14",
+          "wonBid": {
+            "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+            "price": 52,
+            "bidDate": "2024-09-07T13:20:55.986Z"
+          },
+          "lostBids": []
+        }
+      }
+    },
+    "id": "mpg_division_history_SMGBRR3Z_1_1"
+  },
+  "myTeam": {
+    "abbreviation": "GUS",
+    "bids": [],
+    "bonuses": {
+      "blockTacticalSubs": 0,
+      "boostAllPlayers": 0,
+      "boostOnePlayer": 0,
+      "fourStrikers": 0,
+      "mirror": 0,
+      "nerfGoalkeeper": 0,
+      "removeGoal": 0,
+      "removeRandomPlayer": 0
+    },
+    "budget": 5,
+    "buyableExtraBonus": 0,
+    "gear": {
+      "home": {
+        "jerseyId": "mpg_jersey_0_1561646533972"
+      },
+      "away": {
+        "jerseyId": "mpg_jersey_0_1561646533972"
+      }
+    },
+    "id": "mpg_team_SMGBRR3Z_1_1_2",
+    "name": "Guavas",
+    "squad": {
+      "mpg_championship_player_102380": {
+        "bidDate": "2024-09-07T11:45:22.497Z",
+        "bidMercatoTurn": 2,
+        "id": "mpg_championship_player_102380",
+        "price": 17,
+        "status": 1
+      },
+      "mpg_championship_player_116406": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_116406",
+        "price": 17,
+        "status": 1
+      },
+      "mpg_championship_player_165809": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_165809",
+        "price": 18,
+        "status": 1
+      },
+      "mpg_championship_player_171314": {
+        "bidDate": "2024-09-07T11:45:22.497Z",
+        "bidMercatoTurn": 2,
+        "id": "mpg_championship_player_171314",
+        "price": 17,
+        "status": 1
+      },
+      "mpg_championship_player_206255": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_206255",
+        "price": 11,
+        "status": 1
+      },
+      "mpg_championship_player_219438": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_219438",
+        "price": 19,
+        "status": 1
+      },
+      "mpg_championship_player_223094": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_223094",
+        "price": 94,
+        "status": 1
+      },
+      "mpg_championship_player_223255": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_223255",
+        "price": 31,
+        "status": 1
+      },
+      "mpg_championship_player_223340": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_223340",
+        "price": 57,
+        "status": 1
+      },
+      "mpg_championship_player_246333": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_246333",
+        "price": 57,
+        "status": 1
+      },
+      "mpg_championship_player_248875": {
+        "bidDate": "2024-09-07T11:45:22.497Z",
+        "bidMercatoTurn": 2,
+        "id": "mpg_championship_player_248875",
+        "price": 18,
+        "status": 1
+      },
+      "mpg_championship_player_462424": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_462424",
+        "price": 15,
+        "status": 1
+      },
+      "mpg_championship_player_550840": {
+        "bidDate": "2024-09-07T11:45:22.497Z",
+        "bidMercatoTurn": 2,
+        "id": "mpg_championship_player_550840",
+        "price": 16,
+        "status": 1
+      },
+      "mpg_championship_player_551150": {
+        "bidDate": "2024-09-07T10:06:13.396Z",
+        "bidMercatoTurn": 1,
+        "id": "mpg_championship_player_551150",
+        "price": 14,
+        "status": 1
+      },
+      "mpg_championship_player_81352": {
+        "bidDate": "2024-09-07T11:45:22.497Z",
+        "bidMercatoTurn": 2,
+        "id": "mpg_championship_player_81352",
+        "price": 18,
+        "status": 1
+      },
+      "mpg_championship_player_220325": {
+        "id": "mpg_championship_player_220325",
+        "price": 15,
+        "bidDate": "2024-09-07T13:25:20.456Z",
+        "bidMercatoTurn": 3,
+        "status": 1
+      },
+      "mpg_championship_player_219292": {
+        "id": "mpg_championship_player_219292",
+        "price": 15,
+        "bidDate": "2024-09-07T13:25:20.456Z",
+        "bidMercatoTurn": 3,
+        "status": 1
+      },
+      "mpg_championship_player_204716": {
+        "id": "mpg_championship_player_204716",
+        "price": 14,
+        "bidDate": "2024-09-07T13:25:20.456Z",
+        "bidMercatoTurn": 3,
+        "status": 1
+      }
+    },
+    "status": 3,
+    "type": "mpg_team",
+    "initialValue": 391,
+    "buyableRemoveGoal": 0,
+    "backgroundUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/emptyStadium.png",
+    "availableBudget": 5,
+    "availableBonuses": {
+      "blockTacticalSubs": 0,
+      "boostAllPlayers": 0,
+      "boostOnePlayer": 0,
+      "fourStrikers": 0,
+      "mirror": 0,
+      "nerfGoalkeeper": 0,
+      "removeGoal": 0,
+      "removeRandomPlayer": 0
+    }
+  },
+  "offerHistory": null,
+  "offersReceived": {
+    "divisionOffers": []
+  },
+  "offerEmitted": null,
+  "mostExpensiveAvailable": {
+    "mostExpensivePlayers": [
+      {
+        "id": "mpg_championship_player_218329",
+        "lastName": "Osimhen",
+        "firstName": "Victor",
+        "position": 4,
+        "quotation": 26,
+        "ultraPosition": 40,
+        "clubId": "mpg_championship_club_208",
+        "joinDate": "2019-08-01",
+        "availableSince": "2025-09-05T10:18:40Z",
+        "birthDate": "1998-12-29",
+        "countryCode": "NIG",
+        "roles": {
+          "penalty_shooter": 3
+        },
+        "averagePoints": 5.73,
+        "averagePointsTrend": -1,
+        "stats": {
+          "averageRating": 5.8125,
+          "averagePoints": 5.73,
+          "totalGoals": 6,
+          "totalAssists": 1,
+          "totalRedCards": 0,
+          "totalYellowCards": 1,
+          "totalMatches": 10,
+          "totalStartedMatches": 8,
+          "totalPlayedMatches": 8,
+          "lastRatings": [
+            4.5,
+            5,
+            5,
+            6,
+            4
+          ],
+          "nearestMatches": {
+            "matches": [
+              {
+                "matchId": "mpg_championship_match_2601926",
+                "date": "2026-01-28T20:00:00.000Z",
+                "gameWeekNumber": 8,
+                "championshipId": 6,
+                "side": "away",
+                "home": {
+                  "clubId": "mpg_championship_club_43",
+                  "score": 2
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_208",
+                  "score": 0
+                },
+                "status": 1,
+                "rating": 5,
+                "goalsScored": 0
+              },
+              {
+                "matchId": "mpg_championship_match_2628855",
+                "date": "2026-03-10T17:45:00.000Z",
+                "gameWeekNumber": 9,
+                "championshipId": 6,
+                "side": "home",
+                "home": {
+                  "clubId": "mpg_championship_club_208",
+                  "score": 1
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_14",
+                  "score": 0
+                },
+                "status": 1,
+                "rating": 6,
+                "goalsScored": 0
+              },
+              {
+                "matchId": "mpg_championship_match_2628856",
+                "date": "2026-03-18T20:00:00.000Z",
+                "gameWeekNumber": 10,
+                "championshipId": 6,
+                "side": "away",
+                "home": {
+                  "clubId": "mpg_championship_club_14",
+                  "score": 4
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_208",
+                  "score": 0
+                },
+                "status": 1,
+                "rating": 4,
+                "goalsScored": 0
+              }
+            ],
+            "averageRatingTrend": -1
+          },
+          "quotationTrend": -1,
+          "averagePointsTrend": -1
+        }
+      },
+      {
+        "id": "mpg_championship_player_475168",
+        "lastName": "João Pedro",
+        "firstName": null,
+        "position": 4,
+        "quotation": 23,
+        "ultraPosition": 40,
+        "clubId": "mpg_championship_club_8",
+        "joinDate": "2025-07-02",
+        "availableSince": "2025-09-05T10:18:40Z",
+        "birthDate": "2001-09-26",
+        "countryCode": "BRA",
+        "roles": {},
+        "averagePoints": 4.98,
+        "averagePointsTrend": -1,
+        "stats": {
+          "averageRating": 4.5,
+          "averagePoints": 4.98,
+          "totalGoals": 3,
+          "totalAssists": 0,
+          "totalRedCards": 1,
+          "totalYellowCards": 0,
+          "totalMatches": 10,
+          "totalStartedMatches": 6,
+          "totalPlayedMatches": 8,
+          "lastRatings": [
+            6,
+            4.5,
+            7.5,
+            2.5,
+            4
+          ],
+          "nearestMatches": {
+            "matches": [
+              {
+                "matchId": "mpg_championship_match_2601932",
+                "date": "2026-01-28T20:00:00.000Z",
+                "gameWeekNumber": 8,
+                "championshipId": 6,
+                "side": "away",
+                "home": {
+                  "clubId": "mpg_championship_club_459",
+                  "score": 2
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_8",
+                  "score": 3
+                },
+                "status": 1,
+                "rating": 7.5,
+                "goalsScored": 2
+              },
+              {
+                "matchId": "mpg_championship_match_2628848",
+                "date": "2026-03-11T20:00:00.000Z",
+                "gameWeekNumber": 9,
+                "championshipId": 6,
+                "side": "away",
+                "home": {
+                  "clubId": "mpg_championship_club_149",
+                  "score": 5
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_8",
+                  "score": 2
+                },
+                "status": 1,
+                "rating": 2.5,
+                "goalsScored": 0
+              },
+              {
+                "matchId": "mpg_championship_match_2628849",
+                "date": "2026-03-17T20:00:00.000Z",
+                "gameWeekNumber": 10,
+                "championshipId": 6,
+                "side": "home",
+                "home": {
+                  "clubId": "mpg_championship_club_8",
+                  "score": 0
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_149",
+                  "score": 3
+                },
+                "status": 1,
+                "rating": 4,
+                "goalsScored": 0
+              }
+            ],
+            "averageRatingTrend": -1
+          },
+          "quotationTrend": 1,
+          "averagePointsTrend": -1
+        }
+      },
+      {
+        "id": "mpg_championship_player_243298",
+        "lastName": "Gakpo",
+        "firstName": "Cody",
+        "position": 4,
+        "quotation": 19,
+        "ultraPosition": 40,
+        "clubId": "mpg_championship_club_14",
+        "joinDate": "2023-01-01",
+        "availableSince": "2024-09-05T16:02:45Z",
+        "birthDate": "1999-05-07",
+        "countryCode": "NLD",
+        "roles": {},
+        "averagePoints": 5.46,
+        "averagePointsTrend": -1,
+        "stats": {
+          "averageRating": 5.5,
+          "averagePoints": 5.46,
+          "totalGoals": 2,
+          "totalAssists": 1,
+          "totalRedCards": 0,
+          "totalYellowCards": 0,
+          "totalMatches": 10,
+          "totalStartedMatches": 5,
+          "totalPlayedMatches": 9,
+          "lastRatings": [
+            null,
+            6.5,
+            7,
+            4.5,
+            4.5
+          ],
+          "nearestMatches": {
+            "matches": [
+              {
+                "matchId": "mpg_championship_match_2601925",
+                "date": "2026-01-28T20:00:00.000Z",
+                "gameWeekNumber": 8,
+                "championshipId": 6,
+                "side": "home",
+                "home": {
+                  "clubId": "mpg_championship_club_14",
+                  "score": 6
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_3107",
+                  "score": 0
+                },
+                "status": 1,
+                "rating": 7,
+                "goalsScored": 0
+              },
+              {
+                "matchId": "mpg_championship_match_2628855",
+                "date": "2026-03-10T17:45:00.000Z",
+                "gameWeekNumber": 9,
+                "championshipId": 6,
+                "side": "away",
+                "home": {
+                  "clubId": "mpg_championship_club_208",
+                  "score": 1
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_14",
+                  "score": 0
+                },
+                "status": 2,
+                "rating": 4.5,
+                "goalsScored": 0
+              },
+              {
+                "matchId": "mpg_championship_match_2628856",
+                "date": "2026-03-18T20:00:00.000Z",
+                "gameWeekNumber": 10,
+                "championshipId": 6,
+                "side": "home",
+                "home": {
+                  "clubId": "mpg_championship_club_14",
+                  "score": 4
+                },
+                "away": {
+                  "clubId": "mpg_championship_club_208",
+                  "score": 0
+                },
+                "status": 2,
+                "rating": 4.5,
+                "goalsScored": 0
+              }
+            ],
+            "averageRatingTrend": -1
+          },
+          "quotationTrend": 0,
+          "averagePointsTrend": -1
+        }
+      }
+    ]
+  },
+  "rankings": {
+    "teams": {
+      "teams": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "average": 5.89,
+          "averageWithBonus": 6.09
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "average": 5.79,
+          "averageWithBonus": 5.85
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "average": 5.56,
+          "averageWithBonus": 5.7
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "average": 5.39,
+          "averageWithBonus": 5.48
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "standings": {
+      "standings": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "rotaldo": true,
+          "bonusUsed": true,
+          "series": "lwwww",
+          "played": 6,
+          "won": 5,
+          "drawn": 0,
+          "lost": 1,
+          "goals": 24,
+          "goalsConceded": 16,
+          "difference": 8,
+          "points": 15,
+          "rank": 1,
+          "variation": 0
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "rotaldo": false,
+          "bonusUsed": true,
+          "series": "wlwwl",
+          "played": 6,
+          "won": 4,
+          "drawn": 0,
+          "lost": 2,
+          "goals": 19,
+          "goalsConceded": 15,
+          "difference": 4,
+          "points": 12,
+          "rank": 2,
+          "variation": 0
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "rotaldo": false,
+          "bonusUsed": true,
+          "series": "wwlld",
+          "played": 6,
+          "won": 2,
+          "drawn": 1,
+          "lost": 3,
+          "goals": 15,
+          "goalsConceded": 17,
+          "difference": -2,
+          "points": 7,
+          "rank": 3,
+          "variation": 0
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "rotaldo": true,
+          "bonusUsed": true,
+          "series": "lllld",
+          "played": 6,
+          "won": 0,
+          "drawn": 1,
+          "lost": 5,
+          "goals": 14,
+          "goalsConceded": 24,
+          "difference": -10,
+          "points": 1,
+          "rank": 4,
+          "variation": 0
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "forwards": {
+      "forwards": [
+        {
+          "playerId": "mpg_championship_player_223340",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "clubId": "mpg_championship_club_3",
+          "firstName": "Bukayo",
+          "lastName": "Saka",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 57,
+          "averageRating": 6.75
+        },
+        {
+          "playerId": "mpg_championship_player_56764",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_178",
+          "firstName": "Robert",
+          "lastName": "Lewandowski",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 42,
+          "averageRating": 6.5
+        },
+        {
+          "playerId": "mpg_championship_player_461358",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_175",
+          "firstName": "Julián",
+          "lastName": "Alvarez",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 22,
+          "averageRating": 6.38
+        },
+        {
+          "playerId": "mpg_championship_player_78830",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_156",
+          "firstName": "Harry",
+          "lastName": "Kane",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 61,
+          "averageRating": 6.38
+        },
+        {
+          "playerId": "mpg_championship_player_118748",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_14",
+          "firstName": "Mohamed",
+          "lastName": "Mohamed Salah",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 52,
+          "averageRating": 6.25
+        },
+        {
+          "playerId": "mpg_championship_player_246333",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "clubId": "mpg_championship_club_186",
+          "firstName": null,
+          "lastName": "Vinícius Júnior",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 57,
+          "averageRating": 6.2
+        },
+        {
+          "playerId": "mpg_championship_player_220160",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_186",
+          "firstName": "Kylian",
+          "lastName": "Mbappé",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 72,
+          "averageRating": 6
+        },
+        {
+          "playerId": "mpg_championship_player_224117",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_255",
+          "firstName": "Viktor",
+          "lastName": "Gyökeres",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 25,
+          "averageRating": 5.75
+        },
+        {
+          "playerId": "mpg_championship_player_223094",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "clubId": "mpg_championship_club_43",
+          "firstName": "Erling",
+          "lastName": "Haaland",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 94,
+          "averageRating": 5.5
+        },
+        {
+          "playerId": "mpg_championship_player_440077",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_186",
+          "firstName": null,
+          "lastName": "Rodrygo",
+          "position": 4,
+          "ultraPosition": 40,
+          "price": 64,
+          "averageRating": 5.5
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "midfielders": {
+      "midfielders": [
+        {
+          "playerId": "mpg_championship_player_219961",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_178",
+          "firstName": null,
+          "lastName": "Raphinha",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 36,
+          "averageRating": 7.6
+        },
+        {
+          "playerId": "mpg_championship_player_111732",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_127",
+          "firstName": "Hakan",
+          "lastName": "Çalhanoglu",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 23,
+          "averageRating": 6.75
+        },
+        {
+          "playerId": "mpg_championship_player_593109",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_178",
+          "firstName": "Lamine",
+          "lastName": "Lamine Yamal",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 35,
+          "averageRating": 6.7
+        },
+        {
+          "playerId": "mpg_championship_player_244857",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_156",
+          "firstName": "Jamal",
+          "lastName": "Musiala",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 41,
+          "averageRating": 6.63
+        },
+        {
+          "playerId": "mpg_championship_player_494595",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_164",
+          "firstName": "Florian",
+          "lastName": "Wirtz",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 33,
+          "averageRating": 6.5
+        },
+        {
+          "playerId": "mpg_championship_player_209244",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_43",
+          "firstName": "Phil",
+          "lastName": "Foden",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 35,
+          "averageRating": 6.4
+        },
+        {
+          "playerId": "mpg_championship_player_179370",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_178",
+          "firstName": "Dani",
+          "lastName": "Olmo",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 51,
+          "averageRating": 6.25
+        },
+        {
+          "playerId": "mpg_championship_player_184029",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_3",
+          "firstName": "Martin",
+          "lastName": "Ødegaard",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 24,
+          "averageRating": 6.25
+        },
+        {
+          "playerId": "mpg_championship_player_57249",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_127",
+          "firstName": "Henrikh",
+          "lastName": "Mkhitaryan",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 19,
+          "averageRating": 6
+        },
+        {
+          "playerId": "mpg_championship_player_493362",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_6339",
+          "firstName": "Xavi",
+          "lastName": "Simons",
+          "position": 3,
+          "ultraPosition": 31,
+          "price": 27,
+          "averageRating": 6
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "goalkeepers": {
+      "goalkeepers": [
+        {
+          "playerId": "mpg_championship_player_72147",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_862",
+          "firstName": "Marco",
+          "lastName": "Bizot",
+          "position": 1,
+          "ultraPosition": 10,
+          "price": 14,
+          "averageRating": 7.5
+        },
+        {
+          "playerId": "mpg_championship_player_129487",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_120",
+          "firstName": "Mike",
+          "lastName": "Maignan",
+          "position": 1,
+          "ultraPosition": 10,
+          "price": 17,
+          "averageRating": 6.3
+        },
+        {
+          "playerId": "mpg_championship_player_17745",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_61",
+          "firstName": "Kasper",
+          "lastName": "Schmeichel",
+          "position": 1,
+          "ultraPosition": 10,
+          "price": 15,
+          "averageRating": 6
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "defenses": {
+      "defenses": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "goals": 15,
+          "mpgGoals": 0,
+          "totalGoals": 15
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "goals": 14,
+          "mpgGoals": 2,
+          "totalGoals": 16
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "goals": 15,
+          "mpgGoals": 2,
+          "totalGoals": 17
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "goals": 23,
+          "mpgGoals": 1,
+          "totalGoals": 24
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        }
+      }
+    },
+    "attacks": {
+      "attacks": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "goals": 23,
+          "mpgGoals": 1,
+          "totalGoals": 24
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "goals": 17,
+          "mpgGoals": 2,
+          "totalGoals": 19
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "goals": 15,
+          "mpgGoals": 0,
+          "totalGoals": 15
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "goals": 12,
+          "mpgGoals": 2,
+          "totalGoals": 14
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "targetMans": {
+      "targetMans": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "gameWeekWithTargetMan": 3,
+          "totalMissedTargetMan": 0
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "gameWeekWithTargetMan": 2,
+          "totalMissedTargetMan": 1
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "gameWeekWithTargetMan": 1,
+          "totalMissedTargetMan": 1
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "gameWeekWithTargetMan": 0,
+          "totalMissedTargetMan": 2
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        }
+      }
+    },
+    "goalsValues": {
+      "goalsValues": [
+        {
+          "playerId": "mpg_championship_player_224117",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_255",
+          "firstName": "Viktor",
+          "lastName": "Gyökeres",
+          "price": 25,
+          "goals": 5,
+          "position": 4,
+          "ultraPosition": 40,
+          "totalGoals": 5,
+          "ratio": 5
+        },
+        {
+          "playerId": "mpg_championship_player_461358",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_175",
+          "firstName": "Julián",
+          "lastName": "Alvarez",
+          "price": 22,
+          "goals": 4,
+          "position": 4,
+          "ultraPosition": 40,
+          "totalGoals": 4,
+          "ratio": 5.5
+        },
+        {
+          "playerId": "mpg_championship_player_56764",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_178",
+          "firstName": "Robert",
+          "lastName": "Lewandowski",
+          "price": 42,
+          "goals": 7,
+          "position": 4,
+          "ultraPosition": 40,
+          "totalGoals": 7,
+          "ratio": 6
+        },
+        {
+          "playerId": "mpg_championship_player_494595",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_164",
+          "firstName": "Florian",
+          "lastName": "Wirtz",
+          "price": 33,
+          "goals": 5,
+          "position": 3,
+          "ultraPosition": 31,
+          "totalGoals": 5,
+          "ratio": 6.6
+        },
+        {
+          "playerId": "mpg_championship_player_90318",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_178",
+          "firstName": "Iñigo",
+          "lastName": "Martínez",
+          "price": 8,
+          "goals": 1,
+          "position": 2,
+          "ultraPosition": 20,
+          "totalGoals": 1,
+          "ratio": 8
+        },
+        {
+          "playerId": "mpg_championship_player_102380",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "clubId": "mpg_championship_club_186",
+          "firstName": "Antonio",
+          "lastName": "Rüdiger",
+          "price": 17,
+          "goals": 2,
+          "position": 2,
+          "ultraPosition": 20,
+          "totalGoals": 2,
+          "ratio": 8.5
+        },
+        {
+          "playerId": "mpg_championship_player_219961",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "clubId": "mpg_championship_club_178",
+          "firstName": null,
+          "lastName": "Raphinha",
+          "price": 36,
+          "goals": 4,
+          "position": 3,
+          "ultraPosition": 31,
+          "totalGoals": 4,
+          "ratio": 9
+        },
+        {
+          "playerId": "mpg_championship_player_106004",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "clubId": "mpg_championship_club_164",
+          "firstName": "Álex",
+          "lastName": "Grimaldo",
+          "price": 22,
+          "goals": 2,
+          "position": 2,
+          "ultraPosition": 21,
+          "totalGoals": 2,
+          "ratio": 11
+        },
+        {
+          "playerId": "mpg_championship_player_111732",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_127",
+          "firstName": "Hakan",
+          "lastName": "Çalhanoglu",
+          "price": 23,
+          "goals": 2,
+          "position": 3,
+          "ultraPosition": 31,
+          "totalGoals": 2,
+          "ratio": 11.5
+        },
+        {
+          "playerId": "mpg_championship_player_78830",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "clubId": "mpg_championship_club_156",
+          "firstName": "Harry",
+          "lastName": "Kane",
+          "price": 61,
+          "goals": 5,
+          "position": 4,
+          "ultraPosition": 40,
+          "totalGoals": 5,
+          "ratio": 12.2
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        }
+      }
+    },
+    "bonusesVictims": {
+      "bonusesVictims": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "penaltyPoints": 7
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "penaltyPoints": 4
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "penaltyPoints": 4
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "penaltyPoints": 1
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        }
+      }
+    },
+    "rotaldos": {
+      "rotaldos": [
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_1",
+          "played": 6,
+          "totalRotaldos": 2
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "played": 6,
+          "totalRotaldos": 1
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_0",
+          "played": 6,
+          "totalRotaldos": 0
+        },
+        {
+          "teamId": "mpg_team_SMGBRR3Z_1_1_2",
+          "played": 6,
+          "totalRotaldos": 0
+        }
+      ],
+      "teamsUsers": {
+        "mpg_team_SMGBRR3Z_1_1_1": {
+          "id": "user_2768811",
+          "applicationsData": {
+            "mpg": {
+              "level": 3,
+              "mainFavoriteClubId": "mpg_championship_club_2338"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/74538718-44e5-4f5a-9ad7-790f1db7a137.jpg",
+          "createdAt": "2021-06-09T18:41:32Z",
+          "lastLogin": "2026-04-26T19:58:42.010Z",
+          "username": "Tiago#3MGXC",
+          "firstName": "Tiago"
+        },
+        "mpg_team_SMGBRR3Z_1_1_0": {
+          "id": "user_6464301",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_144"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-144-125x125.png",
+          "createdAt": "2024-08-16T08:22:16.796Z",
+          "lastLogin": "2026-04-26T20:49:41.652Z",
+          "username": "roman#769TE",
+          "firstName": "roman"
+        },
+        "mpg_team_SMGBRR3Z_1_1_3": {
+          "id": "user_6464421",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T08:33:00.338Z",
+          "lastLogin": "2026-04-26T20:53:36.570Z",
+          "username": "Paul#769X6",
+          "firstName": "Paul"
+        },
+        "mpg_team_SMGBRR3Z_1_1_2": {
+          "id": "user_6465688",
+          "applicationsData": {
+            "mpg": {
+              "level": 2,
+              "mainFavoriteClubId": "mpg_championship_club_149"
+            }
+          },
+          "avatarUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/2025-149-125x125.png",
+          "createdAt": "2024-08-16T10:13:05.221Z",
+          "lastLogin": "2026-04-26T20:35:34.795Z",
+          "username": "Adri1C6",
+          "firstName": "Adrien"
+        }
+      }
+    },
+    "traders": {
+      "traders": [],
+      "teamsUsers": {}
+    },
+    "transfersExperts": {
+      "transfersExperts": [],
+      "teamsUsers": {}
+    },
+    "transfersLosers": {
+      "transfersLosers": [],
+      "teamsUsers": {}
+    }
+  },
+  "seasons": {},
+  "winners": {
+    "1": {
+      "id": "mpg_league_winners_SMGBRR3Z_1",
+      "type": "mpg_league_winners",
+      "firstRealGameWeekNumber": 1,
+      "lastRealGameWeekNumber": 6,
+      "championshipId": 6,
+      "championshipSeason": 2024,
+      "totalUsers": 8,
+      "divisions": {
+        "1": {
+          "divisionId": "mpg_division_SMGBRR3Z_1_1",
+          "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+          "userId": "user_6464421",
+          "usersIds": [
+            "user_6464421",
+            "user_6464301",
+            "user_6465688",
+            "user_2768811"
+          ],
+          "finalRanking": true
+        },
+        "2": {
+          "divisionId": "mpg_division_SMGBRR3Z_1_2",
+          "teamId": "mpg_team_SMGBRR3Z_1_2_2",
+          "userId": "user_6568514",
+          "usersIds": [
+            "user_6568514",
+            "user_459611",
+            "user_6269129",
+            "user_4995993"
+          ],
+          "finalRanking": true
+        }
+      },
+      "currentDivisionWinner": {
+        "divisionId": "mpg_division_SMGBRR3Z_1_1",
+        "teamId": "mpg_team_SMGBRR3Z_1_1_3",
+        "userId": "user_6464421",
+        "usersIds": [
+          "user_6464421",
+          "user_6464301",
+          "user_6465688",
+          "user_2768811"
+        ],
+        "finalRanking": true,
+        "divisionNumber": 1,
+        "firstName": "Paul",
+        "username": "Paul#769X6",
+        "points": 15,
+        "team": {
+          "name": "FC Dizidachompionsss",
+          "abbreviation": "FCD",
+          "jerseyUrl": "https://s3.eu-west-1.amazonaws.com/image.mpg/prod/efad9fb6-2cd5-466d-87c7-08ce325fbe8c.png"
+        }
+      }
+    }
+  }
+}
