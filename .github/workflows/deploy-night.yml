@@ -2,8 +2,8 @@ name: Deploy MPG vit la nuit
 
 on:
   push:
-    branches: [claude/scrape-mpg-api-TjKxV]
-    paths: ['night/**']
+    branches: [claude/automate-fetch-YKuaY]
+    paths: ['night/**', 'data/**']
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: claude/scrape-mpg-api-TjKxV
+          ref: claude/automate-fetch-YKuaY
 
       - uses: actions/setup-node@v4
         with:

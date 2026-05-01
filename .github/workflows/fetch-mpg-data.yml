@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: claude/scrape-mpg-api-TjKxV
+          ref: claude/automate-fetch-YKuaY
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
@@ -48,7 +48,7 @@ jobs:
           else
             git commit -m "chore: update MPG data $(date -u +'%Y-%m-%d %H:%M UTC')"
             for i in 1 2 3 4; do
-              git push origin claude/scrape-mpg-api-TjKxV && break
+              git push origin claude/automate-fetch-YKuaY && break
               echo "Push échoué (tentative $i), retry dans ${i}0s…"
               sleep $((i * 10))
             done
