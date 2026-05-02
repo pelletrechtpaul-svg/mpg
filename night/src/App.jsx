@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 // Bundled at build time from data/*.json
 const leagueModules = import.meta.glob('../../data/*.json', { eager: true });
@@ -205,6 +205,32 @@ const s = {
     fontSize: 13,
     fontStyle: 'italic',
   },
+  tabs: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 4,
+    padding: '10px 14px 0',
+    background: '#151f2e',
+    borderBottom: '1px solid #334155',
+  },
+  tab: {
+    padding: '4px 10px',
+    borderRadius: '6px 6px 0 0',
+    fontSize: 11,
+    fontWeight: 700,
+    cursor: 'pointer',
+    border: '1px solid transparent',
+    borderBottom: 'none',
+    marginBottom: '-1px',
+    color: '#64748b',
+    background: 'transparent',
+  },
+  tabActive: {
+    color: '#93c5fd',
+    background: '#1e293b',
+    border: '1px solid #334155',
+    borderBottom: '1px solid #1e293b',
+  },
   emptyPage: {
     display: 'flex',
     flexDirection: 'column',
@@ -307,12 +333,43 @@ function GameWeekResults({ gw, label }) {
   );
 }
 
+function ChampionnatTabs({ championnats, selected, onSelect }) {
+  if (!championnats?.length) return null;
+  return (
+    <div style={s.tabs}>
+      <button
+        style={{ ...s.tab, ...(selected === 'general' ? s.tabActive : {}) }}
+        onClick={() => onSelect('general')}
+      >
+        Général
+      </button>
+      {championnats.map(c => (
+        <button
+          key={c.number}
+          style={{ ...s.tab, ...(selected === c.number ? s.tabActive : {}) }}
+          onClick={() => onSelect(c.number)}
+        >
+          #{c.number}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function LeagueCard({ data }) {
+  const hasChampionnats = data.championnats?.length > 0;
+  const [selectedChamp, setSelectedChamp] = useState(hasChampionnats ? 'general' : null);
+
   const gwLabel = data.currentGameWeek != null && data.totalGameWeeks != null
     ? `GJ ${data.currentGameWeek} / ${data.totalGameWeeks}`
     : data.currentGameWeek != null
     ? `GJ ${data.currentGameWeek}`
     : null;
+
+  const ranking = useMemo(() => {
+    if (!hasChampionnats || selectedChamp === 'general') return data.ranking;
+    return data.championnats.find(c => c.number === selectedChamp)?.ranking ?? data.ranking;
+  }, [selectedChamp, data, hasChampionnats]);
 
   return (
     <div style={s.card}>
@@ -321,7 +378,15 @@ function LeagueCard({ data }) {
         {gwLabel && <span style={s.gwBadge}>{gwLabel}</span>}
       </div>
 
-      <RankingTable ranking={data.ranking} />
+      {hasChampionnats && (
+        <ChampionnatTabs
+          championnats={data.championnats}
+          selected={selectedChamp}
+          onSelect={setSelectedChamp}
+        />
+      )}
+
+      <RankingTable ranking={ranking} />
 
       {data.lastGameWeek && (
         <GameWeekResults

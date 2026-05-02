@@ -82,6 +82,23 @@ async function getToken() {
   throw new Error('No token: set MPG_TOKEN or MPG_REFRESH_TOKEN');
 }
 
+// ─── Championship ID parsing ──────────────────────────────────────────────────
+// IDs follow pattern: mpg_championship_{CODE}_{SEASON}_{PHASE}
+
+function parseChampId(id) {
+  if (!id) return { season: null, phase: null, prefix: null };
+  const parts = id.split('_');
+  if (parts.length < 2) return { season: null, phase: null, prefix: null };
+  const phase = parseInt(parts[parts.length - 1], 10);
+  const season = parseInt(parts[parts.length - 2], 10);
+  const prefix = parts.slice(0, -1).join('_');
+  return {
+    season: isNaN(season) ? null : season,
+    phase: isNaN(phase) ? null : phase,
+    prefix,
+  };
+}
+
 // ─── Ranking extraction (handles various API response shapes) ─────────────────
 
 function extractRanking(data) {
@@ -193,6 +210,30 @@ async function fetchLeague(code, token) {
     }
   }
 
+  // All championnats of the current season
+  const championnats = [];
+  const { season: currentSeason, phase: currentPhase, prefix: champPrefix } = parseChampId(championshipId);
+  if (champPrefix && currentPhase !== null) {
+    for (let p = 1; p <= currentPhase; p++) {
+      const champId = `${champPrefix}_${p}`;
+      try {
+        console.log(`  GET /api/data/championship-ranking/${champId} (championnat ${p})`);
+        const r = await httpGet(`${BASE}/api/data/championship-ranking/${champId}`, token);
+        let champRanking = extractRanking(r);
+        champRanking = champRanking.map(r => ({ ...r, teamName: teamMap[r.teamId] || r.teamName }));
+        champRanking.sort((a, b) => {
+          if (b.points !== a.points) return b.points - a.points;
+          return (b.goalsFor - b.goalsAgainst) - (a.goalsFor - a.goalsAgainst);
+        });
+        champRanking = champRanking.map((r, i) => ({ ...r, position: i + 1 }));
+        championnats.push({ id: champId, number: p, ranking: champRanking });
+      } catch (e) {
+        console.warn(`  Championnat ${p} failed: ${e.message}`);
+        break;
+      }
+    }
+  }
+
   // Previous game weeks (up to last 3)
   const previousGameWeeks = [];
   if (championshipId && currentDay && currentDay > 1) {
@@ -237,6 +278,7 @@ async function fetchLeague(code, token) {
       ? (championship.numberOfTeams - 1) * 2
       : null,
     ranking,
+    championnats,
     lastGameWeek,
     previousGameWeeks,
   };
