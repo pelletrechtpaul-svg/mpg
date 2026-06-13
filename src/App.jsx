@@ -213,6 +213,7 @@ const App = () => {
 
   // Admin states
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [showAddMatchForm, setShowAddMatchForm] = useState(false);
   const [showEditMatchForm, setShowEditMatchForm] = useState(false);
@@ -2443,19 +2444,15 @@ const App = () => {
   // Admin: Login
   const handleAdminLogin = async (e) => {
     e.preventDefault();
-    if (adminPassword === 'admin') {
-      try {
-        // Sign in with Firebase Auth
-        // Using a default admin account - you should create this user in Firebase Console
-        await signInWithEmailAndPassword(auth, 'admin@mpg-fantasy.app', 'adminmpg2025');
-        setAdminPassword('');
-      } catch (error) {
-        console.error('Login error:', error);
-        alert('Erreur de connexion. Assurez-vous que le compte admin existe dans Firebase.');
-        setAdminPassword('');
-      }
-    } else {
-      alert('Code incorrect');
+    try {
+      // Authenticate directly against Firebase Auth with the credentials
+      // entered in the form. No credentials are stored in the source code.
+      await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPassword);
+      setAdminEmail('');
+      setAdminPassword('');
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Identifiants incorrects ou compte admin introuvable.');
       setAdminPassword('');
     }
   };
@@ -5205,12 +5202,21 @@ const App = () => {
                 </div>
                 <form onSubmit={handleAdminLogin}>
                   <input
+                    type="email"
+                    value={adminEmail}
+                    onChange={(e) => setAdminEmail(e.target.value)}
+                    placeholder="Email"
+                    autoComplete="username"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4"
+                    autoFocus
+                  />
+                  <input
                     type="password"
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Code d'accès"
+                    placeholder="Mot de passe"
+                    autoComplete="current-password"
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4"
-                    autoFocus
                   />
                   <button type="submit" className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">
                     Se connecter
