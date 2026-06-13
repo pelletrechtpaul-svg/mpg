@@ -108,6 +108,32 @@ export const calculateLongestStreak = (playerMatches, conditionFn) => {
   return { length: max, startDate, endDate };
 };
 
+export const calculatePlayerStats = (matches, joueursList) => {
+  const stats = {};
+  joueursList.forEach(joueur => {
+    stats[joueur] = { points: 0, matchs: 0, victoires: 0, nuls: 0, defaites: 0, buts_pour: 0, buts_contre: 0, ga: 0 };
+  });
+  matches.forEach(match => {
+    const { joueur1, joueur2, buts_j1, buts_j2, points_j1, points_j2 } = match;
+    if (stats[joueur1]) {
+      stats[joueur1].points += points_j1; stats[joueur1].matchs++;
+      stats[joueur1].buts_pour += buts_j1; stats[joueur1].buts_contre += buts_j2;
+      if (buts_j1 > buts_j2) stats[joueur1].victoires++;
+      else if (buts_j1 === buts_j2) stats[joueur1].nuls++;
+      else stats[joueur1].defaites++;
+    }
+    if (stats[joueur2]) {
+      stats[joueur2].points += points_j2; stats[joueur2].matchs++;
+      stats[joueur2].buts_pour += buts_j2; stats[joueur2].buts_contre += buts_j1;
+      if (buts_j2 > buts_j1) stats[joueur2].victoires++;
+      else if (buts_j1 === buts_j2) stats[joueur2].nuls++;
+      else stats[joueur2].defaites++;
+    }
+  });
+  Object.keys(stats).forEach(j => { stats[j].ga = stats[j].buts_pour - stats[j].buts_contre; });
+  return stats;
+};
+
 export const shareCard = async (element, contextText) => {
   let footer = null;
   if (contextText) {
