@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { PLAYLIST } from './shared.jsx';
-import MercatoTab from './components/MercatoTab';
-import AdvancedStatsTab from './components/AdvancedStatsTab';
-import VersusTab from './components/VersusTab';
-import RecordsTab from './components/RecordsTab';
-import ClassementsTab from './components/ClassementsTab';
-import AdminTab from './components/AdminTab';
+const MercatoTab = lazy(() => import('./components/MercatoTab'));
+const AdvancedStatsTab = lazy(() => import('./components/AdvancedStatsTab'));
+const VersusTab = lazy(() => import('./components/VersusTab'));
+const RecordsTab = lazy(() => import('./components/RecordsTab'));
+const ClassementsTab = lazy(() => import('./components/ClassementsTab'));
+const AdminTab = lazy(() => import('./components/AdminTab'));
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
@@ -229,6 +229,7 @@ const App = () => {
           </div>
         )}
 
+        <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>}>
         {activeTab === 'classements' && (
           <ClassementsTab
             joueurs={joueurs}
@@ -313,6 +314,7 @@ const App = () => {
             shareContext={shareContext}
           />
         )}
+        </Suspense>
 
       </div>
     </div>
