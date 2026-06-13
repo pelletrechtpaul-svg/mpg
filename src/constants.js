@@ -1,0 +1,62 @@
+export const JOUEURS_MERCATO = ['Roman', 'Paul', 'Adrien', 'Tiago'];
+
+export const LIGUE_NAT_EXCLUE = {
+  'Ligue 1': 'Français',
+  'Liga': 'Espagnol',
+  'Serie A': 'Italien',
+  'Premier League': 'Anglais',
+  'Bundesliga': 'Allemand',
+};
+
+export const POSTE_LABEL = { A: 'Attaquants', M: 'Milieux', D: 'Défenseurs', G: 'Gardiens' };
+
+export const playerImages = {
+  'Roman': '/images/1.png',
+  'Adrien': '/images/2.png',
+  'Paul': '/images/3.png',
+  'Tiago': '/images/4.png',
+};
+
+export const playerColors = {
+  Paul: 'bg-blue-600',
+  Adrien: 'bg-green-600',
+  Tiago: 'bg-purple-600',
+  Roman: 'bg-orange-600',
+};
+
+export const playerColorHex = {
+  Paul: '#2563eb',
+  Adrien: '#16a34a',
+  Tiago: '#9333ea',
+  Roman: '#ea580c',
+};
+
+export const PLAYLIST = [
+  { title: "Baby c'est MPG",  src: "/audio/Baby c'est MPG.mp3" },
+  { title: 'Cette fusion',    src: '/audio/Cette fusion.mp3' },
+  { title: 'Communiqué',      src: '/audio/Communiqué.mp3' },
+  { title: 'Déni',            src: '/audio/Déni.mp3' },
+  { title: 'Faut doser',      src: '/audio/Faut doser.mp3' },
+  { title: 'Greenwood',       src: '/audio/Greenwood.mp3' },
+  { title: 'Jeanette',        src: '/audio/Jeanette.mp3' },
+  { title: 'Looser',          src: '/audio/Looser.mp3' },
+  { title: 'Mercato',         src: '/audio/Mercato.mp3' },
+  { title: "J'm'en vais d'ici", src: "/audio/J'm'en vais d'ici.mp3" },
+  { title: 'Merci',           src: '/audio/Merci .mp3' },
+  { title: "Sur la route d'Auxerre", src: "/audio/Sur la route d'Auxerre .mp3" },
+];
+
+export const MANUAL_CHAMPIONSHIPS = [
+  {
+    saison: '2024/2025',
+    ligue: 'Ligue des Champions',
+    championnat: '#1',
+    matchsTotal: 6,
+    standings: [
+      { joueur: 'Paul',   points: 15, ga: 8,   matchs: 6, victoires: 5, nuls: 0, defaites: 1 },
+      { joueur: 'Roman',  points: 12, ga: 4,   matchs: 6, victoires: 4, nuls: 0, defaites: 2 },
+      { joueur: 'Adrien', points: 7,  ga: -2,  matchs: 6, victoires: 2, nuls: 1, defaites: 3 },
+      { joueur: 'Tiago',  points: 1,  ga: -10, matchs: 6, victoires: 0, nuls: 1, defaites: 5 },
+    ]
+  }
+];
