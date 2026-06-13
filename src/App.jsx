@@ -2488,8 +2488,60 @@ const App = () => {
       return;
     }
 
+    if (!dateMatch) {
+      alert('Veuillez renseigner la date du match');
+      return;
+    }
+
+    const b1 = parseInt(buts_j1);
+    const b2 = parseInt(buts_j2);
+
+    if (b1 < 0 || b2 < 0) {
+      alert('Les buts ne peuvent pas être négatifs');
+      return;
+    }
+
+    if (b1 > 30 || b2 > 30) {
+      alert('Score inhabituellement élevé (> 30). Vérifiez la saisie.');
+      return;
+    }
+
+    const isDuplicate = matchData.some(m =>
+      m.dateMatch === dateMatch &&
+      m.championnat === championnat &&
+      ((m.joueur1 === joueur1 && m.joueur2 === joueur2) ||
+       (m.joueur1 === joueur2 && m.joueur2 === joueur1))
+    );
+    if (isDuplicate) {
+      const ok = window.confirm('Un match entre ces deux joueurs dans ce championnat à cette date existe déjà. Continuer quand même ?');
+      if (!ok) return;
+    }
+
     // Check if second match is filled
     const hasSecondMatch = joueur3 && joueur4 && buts_j3 !== '' && buts_j4 !== '';
+
+    if (hasSecondMatch) {
+      if (joueur3 === joueur4) {
+        alert('Match 2 : les deux joueurs doivent être différents');
+        return;
+      }
+      const allFour = [joueur1, joueur2, joueur3, joueur4];
+      const unique = new Set(allFour);
+      if (unique.size < 4) {
+        alert('Match 2 : les joueurs doivent être différents de ceux du match 1');
+        return;
+      }
+      const b3 = parseInt(buts_j3);
+      const b4 = parseInt(buts_j4);
+      if (b3 < 0 || b4 < 0) {
+        alert('Match 2 : les buts ne peuvent pas être négatifs');
+        return;
+      }
+      if (b3 > 30 || b4 > 30) {
+        alert('Match 2 : score inhabituellement élevé (> 30). Vérifiez la saisie.');
+        return;
+      }
+    }
 
     let championnatToUse = championnat;
 
