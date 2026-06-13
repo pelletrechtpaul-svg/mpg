@@ -172,6 +172,8 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastSyncTime, setLastSyncTime] = useState(null);
+  const [syncError, setSyncError] = useState(null);
+  const [loginError, setLoginError] = useState('');
 
   const [selectedSeason, setSelectedSeason] = useState('2025/2026');
   const [activeTab, setActiveTab] = useState('classements');
@@ -383,6 +385,7 @@ const App = () => {
         };
       } catch (error) {
         console.error('Error syncing with Firestore:', error);
+        setSyncError('Impossible de se connecter à la base de données. Les données affichées peuvent être obsolètes.');
         setIsLoading(false);
       }
     };
@@ -2440,6 +2443,7 @@ const App = () => {
   // Admin: Login
   const handleAdminLogin = async (e) => {
     e.preventDefault();
+    setLoginError('');
     try {
       // Authenticate directly against Firebase Auth with the credentials
       // entered in the form. No credentials are stored in the source code.
@@ -2448,7 +2452,7 @@ const App = () => {
       setAdminPassword('');
     } catch (error) {
       console.error('Login error:', error);
-      alert('Identifiants incorrects ou compte admin introuvable.');
+      setLoginError('Identifiants incorrects ou compte admin introuvable.');
       setAdminPassword('');
     }
   };
@@ -2961,6 +2965,14 @@ const App = () => {
             </div>
           </div>
         </div>
+
+        {/* Sync error banner */}
+        {syncError && (
+          <div className="flex items-center gap-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 rounded-lg px-4 py-3 mb-4 text-sm">
+            <span className="flex-1">{syncError}</span>
+            <button onClick={() => setSyncError(null)} className="text-red-400 hover:text-red-600 font-bold">✕</button>
+          </div>
+        )}
 
         {/* Season Navigation */}
         <div className="flex gap-2 mb-4 flex-wrap">
@@ -5266,6 +5278,9 @@ const App = () => {
                     autoComplete="current-password"
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4"
                   />
+                  {loginError && (
+                    <p className="text-red-600 text-sm mb-3">{loginError}</p>
+                  )}
                   <button type="submit" className="w-full px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">
                     Se connecter
                   </button>
