@@ -253,10 +253,11 @@ const App = () => {
   const [buteurs, setButeurs] = useState({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
   const [scorerSearch, setScorerSearch] = useState({ m1j1: '', m1j2: '', m2j1: '', m2j2: '' });
 
-  // Dark mode state
+  // Dark mode state — fallback to OS preference on first visit
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('mpg_dark_mode');
-    return saved ? JSON.parse(saved) : false;
+    if (saved !== null) return JSON.parse(saved);
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   // Save dark mode preference
