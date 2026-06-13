@@ -331,7 +331,6 @@ const App = () => {
               batch.set(matchRef, { ...match, id: matchRef.id });
             });
             await batch.commit();
-            console.log('✅ Matches migrated to Firestore');
             localStorage.removeItem('mpg_match_data'); // Clean up
           }
         }
@@ -345,7 +344,6 @@ const App = () => {
               batch.set(metaRef, value);
             });
             await batch.commit();
-            console.log('✅ Metadata migrated to Firestore');
             localStorage.removeItem('mpg_ligue_metadata'); // Clean up
           }
         }
@@ -2417,7 +2415,6 @@ const App = () => {
               lastRecalculated: new Date().toISOString()
             });
             updatedCount++;
-            console.log(`Updating ${key}: ${metadata.matchsEntered}/${metadata.matchsTotal} → ${actualMatchDays}/${metadata.matchsTotal} (${actualEntries} entrées, ${uniqueDates.size} dates)`);
           }
         } else {
           // Create metadata if it doesn't exist
@@ -2429,7 +2426,6 @@ const App = () => {
             lastRecalculated: new Date().toISOString()
           });
           updatedCount++;
-          console.log(`Creating metadata for ${key}: ${actualMatchDays} journées (${actualEntries} entrées)`);
         }
       });
 
