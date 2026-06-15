@@ -1,217 +1,303 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
+import ScorerSection from './AdminScorerSection';
 
-const AdminEditPanel = ({ matchData, joueurs, onClose }) => {
-  const [editSelectedSaison, setEditSelectedSaison] = useState('');
-  const [editSelectedLigue, setEditSelectedLigue] = useState('');
-  const [editSelectedChampionnat, setEditSelectedChampionnat] = useState('');
-  const [selectedMatchesToDelete, setSelectedMatchesToDelete] = useState([]);
-  const [selectedChampionnatsToDelete, setSelectedChampionnatsToDelete] = useState([]);
-  const [editingMatch, setEditingMatch] = useState(null);
+const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
+const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
 
-  const handleEditMatch = async (e) => {
+function normalizeLegacyButeurs(match) {
+  if (match.buteurs) return match.buteurs;
+  return [
+    ...(match.buteurs_j1 || []).map(b => ({ ...b, acheteur: match.joueur1 })),
+    ...(match.buteurs_j2 || []).map(b => ({ ...b, acheteur: match.joueur2 })),
+  ];
+}
+
+function calcResult(b1, b2) {
+  if (b1 > b2) return { points_j1: 3, points_j2: 0, resultat: 'victoire_j1' };
+  if (b1 < b2) return { points_j1: 0, points_j2: 3, resultat: 'victoire_j2' };
+  return { points_j1: 1, points_j2: 1, resultat: 'nul' };
+}
+
+const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, onClose }) => {
+  const [selSaison, setSelSaison] = useState('');
+  const [selLigue, setSelLigue] = useState('');
+  const [selChamp, setSelChamp] = useState('');
+  const [selMatchIds, setSelMatchIds] = useState([]);
+  const [selChamps, setSelChamps] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [buteurs, setButeurs] = useState({ m: [] });
+
+  const championnats = useMemo(() => {
+    if (!selSaison || !selLigue) return [];
+    return [...new Set(matchData.filter(m => m.saison === selSaison && m.ligue === selLigue).map(m => m.championnat))].sort((a, b) => {
+      const na = parseInt(a.match(/#(\d+)/)?.[1] || '0');
+      const nb = parseInt(b.match(/#(\d+)/)?.[1] || '0');
+      return na - nb;
+    });
+  }, [matchData, selSaison, selLigue]);
+
+  const currentMatches = useMemo(() => {
+    if (!selSaison || !selLigue || !selChamp) return [];
+    return matchData.filter(m => m.saison === selSaison && m.ligue === selLigue && m.championnat === selChamp);
+  }, [matchData, selSaison, selLigue, selChamp]);
+
+  const allLigues = useMemo(() => [...new Set(matchData.filter(m => m.saison === selSaison).map(m => m.ligue))], [matchData, selSaison]);
+
+  const openEdit = (match) => {
+    setEditing({ ...match, _buteurs: normalizeLegacyButeurs(match) });
+    setButeurs({ m: normalizeLegacyButeurs(match) });
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const { buts_j1, buts_j2 } = editingMatch;
-      let points_j1, points_j2, resultat;
-      if (buts_j1 > buts_j2) { points_j1 = 3; points_j2 = 0; resultat = 'victoire_j1'; }
-      else if (buts_j1 < buts_j2) { points_j1 = 0; points_j2 = 3; resultat = 'victoire_j2'; }
-      else { points_j1 = 1; points_j2 = 1; resultat = 'nul'; }
-      const updatedMatch = { ...editingMatch, points_j1, points_j2, resultat };
-      delete updatedMatch.index;
-      await setDoc(doc(db, 'matches', matchData[editingMatch.index].firestoreId), updatedMatch);
-      alert('Match modifié avec succès !');
-      setEditingMatch(null);
-    } catch (error) {
-      console.error('Error editing match:', error);
-      alert('Erreur lors de la modification du match');
+      const b1 = parseInt(editing.buts_j1), b2 = parseInt(editing.buts_j2);
+      const updated = {
+        ...editing,
+        buts_j1: b1,
+        buts_j2: b2,
+        ...calcResult(b1, b2),
+        buteurs: buteurs.m,
+      };
+      delete updated._buteurs;
+      delete updated.buteurs_j1;
+      delete updated.buteurs_j2;
+      delete updated.firestoreId;
+      await setDoc(doc(db, 'matches', editing.firestoreId), updated);
+      showToast('Match modifié');
+      setEditing(null);
+    } catch {
+      showToast('Erreur lors de la modification', 'error');
     }
   };
 
-  return (
-    <div className="bg-slate-50 rounded-lg p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-slate-800">Éditer / Supprimer un match</h3>
-        <button onClick={onClose} className="text-slate-600 hover:text-slate-800">Annuler</button>
-      </div>
+  const handleDeleteMatch = async (firestoreId) => {
+    try {
+      await deleteDoc(doc(db, 'matches', firestoreId));
+      showToast('Match supprimé');
+      setEditing(null);
+    } catch {
+      showToast('Erreur lors de la suppression', 'error');
+    }
+  };
 
-      {!editingMatch ? (
-        <div className="space-y-4">
-          {!editSelectedSaison && (
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Sélectionnez une saison</label>
-              <div className="space-y-2">
-                {['2025/2026', '2024/2025'].map(saison => (
-                  <button key={saison} onClick={() => setEditSelectedSaison(saison)} className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold">{saison}</button>
-                ))}
-              </div>
-            </div>
-          )}
+  const handleDeleteMatches = async () => {
+    try {
+      await Promise.all(selMatchIds.map(id => deleteDoc(doc(db, 'matches', id))));
+      showToast(`${selMatchIds.length} match(s) supprimé(s)`);
+      setSelMatchIds([]);
+    } catch {
+      showToast('Erreur lors de la suppression', 'error');
+    }
+  };
 
-          {editSelectedSaison && !editSelectedLigue && (
-            <div>
-              <button onClick={() => setEditSelectedSaison('')} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour aux saisons</button>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Sélectionnez une compétition ({editSelectedSaison})</label>
-              <div className="space-y-2">
-                {Array.from(new Set(matchData.filter(m => m.saison === editSelectedSaison).map(m => m.ligue))).map(ligue => (
-                  <button key={ligue} onClick={() => setEditSelectedLigue(ligue)} className="w-full p-4 bg-white rounded-lg border hover:border-blue-500 text-left font-semibold">{ligue}</button>
-                ))}
-              </div>
-            </div>
-          )}
+  const handleDeleteChamps = async () => {
+    try {
+      const toDelete = matchData.filter(m => selChamps.includes(m.championnat) && m.saison === selSaison && m.ligue === selLigue);
+      await Promise.all(toDelete.map(m => deleteDoc(doc(db, 'matches', m.firestoreId))));
+      showToast(`${toDelete.length} match(s) supprimé(s)`);
+      setSelChamps([]);
+    } catch {
+      showToast('Erreur lors de la suppression', 'error');
+    }
+  };
 
-          {editSelectedSaison && editSelectedLigue && !editSelectedChampionnat && (() => {
-            const championnats = Array.from(new Set(matchData.filter(m => m.saison === editSelectedSaison && m.ligue === editSelectedLigue).map(m => m.championnat)));
-            return (
-              <div>
-                <button onClick={() => { setEditSelectedLigue(''); setSelectedChampionnatsToDelete([]); }} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour aux compétitions</button>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-slate-700">Sélectionnez un championnat ({editSelectedLigue})</label>
-                  <div className="flex gap-2">
-                    {championnats.length > 0 && (
-                      <button type="button" onClick={() => setSelectedChampionnatsToDelete(selectedChampionnatsToDelete.length === championnats.length ? [] : championnats)} className="px-3 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300">
-                        {selectedChampionnatsToDelete.length === championnats.length ? 'Tout désélectionner' : 'Tout sélectionner'}
-                      </button>
-                    )}
-                    {selectedChampionnatsToDelete.length > 0 && (
-                      <button type="button" onClick={async () => {
-                        if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedChampionnatsToDelete.length} championnat(s) et tous leurs matchs ?`)) {
-                          try {
-                            const toDelete = matchData.filter(m => selectedChampionnatsToDelete.includes(m.championnat) && m.saison === editSelectedSaison && m.ligue === editSelectedLigue);
-                            await Promise.all(toDelete.map(m => deleteDoc(doc(db, 'matches', m.firestoreId))));
-                            alert(`${toDelete.length} match(s) supprimé(s) avec succès !`);
-                            setSelectedChampionnatsToDelete([]);
-                          } catch (error) {
-                            console.error('Error deleting championships:', error);
-                            alert('Erreur lors de la suppression des championnats');
-                          }
-                        }
-                      }} className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700">
-                        Supprimer ({selectedChampionnatsToDelete.length})
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {championnats.sort((a, b) => parseInt(a.match(/#(\d+)/)?.[1] || '0') - parseInt(b.match(/#(\d+)/)?.[1] || '0')).map(ch => (
-                    <div key={ch} className="flex items-center gap-2 p-4 bg-white rounded-lg border">
-                      <input type="checkbox" checked={selectedChampionnatsToDelete.includes(ch)}
-                        onChange={(e) => setSelectedChampionnatsToDelete(e.target.checked ? [...selectedChampionnatsToDelete, ch] : selectedChampionnatsToDelete.filter(c => c !== ch))}
-                        onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-red-600 cursor-pointer" />
-                      <button onClick={() => setEditSelectedChampionnat(ch)} className="flex-1 text-left hover:bg-slate-50 rounded px-2 py-1 font-semibold">{ch}</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
+  if (editing) {
+    return (
+      <div>
+        <button onClick={() => setEditing(null)} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+        <form onSubmit={handleSave} className="space-y-4">
+          <p className="text-sm text-slate-500">{editing.saison} · {editing.ligue} · {editing.championnat}</p>
 
-          {editSelectedSaison && editSelectedLigue && editSelectedChampionnat && (() => {
-            const currentMatches = matchData.filter(m => m.saison === editSelectedSaison && m.ligue === editSelectedLigue && m.championnat === editSelectedChampionnat);
-            return (
-              <div>
-                <button onClick={() => { setEditSelectedChampionnat(''); setSelectedMatchesToDelete([]); }} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour aux championnats</button>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-slate-700">Sélectionnez un match ({editSelectedChampionnat})</label>
-                  <div className="flex gap-2">
-                    {currentMatches.length > 0 && (
-                      <button type="button" onClick={() => { const ids = currentMatches.map(m => m.firestoreId); setSelectedMatchesToDelete(selectedMatchesToDelete.length === ids.length ? [] : ids); }} className="px-3 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300">
-                        {selectedMatchesToDelete.length === currentMatches.length ? 'Tout désélectionner' : 'Tout sélectionner'}
-                      </button>
-                    )}
-                    {selectedMatchesToDelete.length > 0 && (
-                      <button type="button" onClick={async () => {
-                        if (confirm(`Êtes-vous sûr de vouloir supprimer ${selectedMatchesToDelete.length} match(s) ?`)) {
-                          try {
-                            await Promise.all(selectedMatchesToDelete.map(id => deleteDoc(doc(db, 'matches', id))));
-                            alert(`${selectedMatchesToDelete.length} match(s) supprimé(s) avec succès !`);
-                            setSelectedMatchesToDelete([]);
-                          } catch (error) {
-                            console.error('Error deleting matches:', error);
-                            alert('Erreur lors de la suppression des matchs');
-                          }
-                        }
-                      }} className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700">
-                        Supprimer ({selectedMatchesToDelete.length})
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {matchData.map((match, index) => ({ match, index })).filter(({ match }) => match.saison === editSelectedSaison && match.ligue === editSelectedLigue && match.championnat === editSelectedChampionnat).map(({ match, index }) => (
-                    <div key={index} className="flex items-center gap-2 p-4 bg-white rounded-lg border">
-                      <input type="checkbox" checked={selectedMatchesToDelete.includes(match.firestoreId)}
-                        onChange={(e) => setSelectedMatchesToDelete(e.target.checked ? [...selectedMatchesToDelete, match.firestoreId] : selectedMatchesToDelete.filter(id => id !== match.firestoreId))}
-                        onClick={(e) => e.stopPropagation()} className="w-4 h-4 text-red-600 cursor-pointer" />
-                      <button onClick={() => setEditingMatch({ ...match, index })} className="flex-1 text-left hover:bg-slate-50 rounded px-2 py-1">
-                        <p className="font-semibold text-slate-800">{match.joueur1} {match.buts_j1} - {match.buts_j2} {match.joueur2}{match.joueur3 && ` • ${match.joueur3} ${match.buts_j3} - ${match.buts_j4} ${match.joueur4}`}</p>
-                        <p className="text-sm text-slate-600">{match.dateMatch || 'Date non définie'}{match.valise_j1 && ' 🧳 ' + match.joueur1}{match.valise_j2 && ' 🧳 ' + match.joueur2}</p>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-        </div>
-      ) : (
-        <form onSubmit={handleEditMatch} className="space-y-4">
-          <p className="text-sm text-slate-600"><strong>Match :</strong> {editingMatch.saison} • {editingMatch.ligue} • {editingMatch.championnat}</p>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Date du match</label>
-            <input type="date" value={editingMatch.dateMatch || new Date().toISOString().split('T')[0]} onChange={(e) => setEditingMatch({ ...editingMatch, dateMatch: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
-          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 1</label>
-              <select value={editingMatch.joueur1} onChange={(e) => setEditingMatch({ ...editingMatch, joueur1: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                {joueurs.filter(j => j !== editingMatch.joueur2).map(j => <option key={j} value={j}>{j}</option>)}
+              <label className="block text-sm font-medium text-slate-700 mb-1">Saison</label>
+              <select value={editing.saison} onChange={e => setEditing({ ...editing, saison: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                {saisons.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Joueur 2</label>
-              <select value={editingMatch.joueur2} onChange={(e) => setEditingMatch({ ...editingMatch, joueur2: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg">
-                {joueurs.filter(j => j !== editingMatch.joueur1).map(j => <option key={j} value={j}>{j}</option>)}
-              </select>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+              <input type="date" value={editing.dateMatch || ''} onChange={e => setEditing({ ...editing, dateMatch: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
             </div>
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Buts {editingMatch.joueur1}</label>
-              <input type="number" value={editingMatch.buts_j1} onChange={(e) => setEditingMatch({ ...editingMatch, buts_j1: parseInt(e.target.value) || 0 })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
-              <label className="flex items-center gap-2 mt-2">
-                <input type="checkbox" checked={editingMatch.valise_j1 || false} onChange={(e) => setEditingMatch({ ...editingMatch, valise_j1: e.target.checked })} className="w-4 h-4" />
-                <span className="text-sm">🧳 Valise {editingMatch.joueur1}</span>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Ligue</label>
+              <select value={editing.ligue} onChange={e => setEditing({ ...editing, ligue: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+                {LIGUES.map(l => <option key={l} value={l}>{l}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Championnat</label>
+              <input type="text" value={editing.championnat} onChange={e => setEditing({ ...editing, championnat: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{editing.joueur1}</label>
+              <select value={editing.joueur1} onChange={e => setEditing({ ...editing, joueur1: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white mb-2">
+                {JOUEURS.filter(j => j !== editing.joueur2).map(j => <option key={j} value={j}>{j}</option>)}
+              </select>
+              <input type="number" value={editing.buts_j1} onChange={e => setEditing({ ...editing, buts_j1: parseInt(e.target.value) || 0 })}
+                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                <input type="checkbox" checked={editing.valise_j1 || false} onChange={e => setEditing({ ...editing, valise_j1: e.target.checked })} className="w-3.5 h-3.5" />
+                <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Buts {editingMatch.joueur2}</label>
-              <input type="number" value={editingMatch.buts_j2} onChange={(e) => setEditingMatch({ ...editingMatch, buts_j2: parseInt(e.target.value) || 0 })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
-              <label className="flex items-center gap-2 mt-2">
-                <input type="checkbox" checked={editingMatch.valise_j2 || false} onChange={(e) => setEditingMatch({ ...editingMatch, valise_j2: e.target.checked })} className="w-4 h-4" />
-                <span className="text-sm">🧳 Valise {editingMatch.joueur2}</span>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{editing.joueur2}</label>
+              <select value={editing.joueur2} onChange={e => setEditing({ ...editing, joueur2: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white mb-2">
+                {JOUEURS.filter(j => j !== editing.joueur1).map(j => <option key={j} value={j}>{j}</option>)}
+              </select>
+              <input type="number" value={editing.buts_j2} onChange={e => setEditing({ ...editing, buts_j2: parseInt(e.target.value) || 0 })}
+                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                <input type="checkbox" checked={editing.valise_j2 || false} onChange={e => setEditing({ ...editing, valise_j2: e.target.checked })} className="w-3.5 h-3.5" />
+                <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
             </div>
           </div>
-          <div className="flex gap-3">
-            <button type="submit" className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">Enregistrer</button>
-            <button type="button" onClick={async () => {
-              if (confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) {
-                try {
-                  await deleteDoc(doc(db, 'matches', matchData[editingMatch.index].firestoreId));
-                  alert('Match supprimé avec succès !');
-                  setEditingMatch(null);
-                } catch (error) {
-                  console.error('Error deleting match:', error);
-                  alert('Erreur lors de la suppression du match');
-                }
-              }
-            }} className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">Supprimer</button>
-            <button type="button" onClick={() => setEditingMatch(null)} className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-medium">Retour</button>
+
+          <ScorerSection
+            matchKey="m"
+            joueur1={editing.joueur1}
+            joueur2={editing.joueur2}
+            saison={editing.saison}
+            ligue={editing.ligue}
+            buteurs={buteurs}
+            setButeurs={setButeurs}
+            mercatoData={mercatoData}
+          />
+
+          <div className="flex gap-3 pt-2">
+            <button type="submit" className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">Enregistrer</button>
+            <button type="button" onClick={() => handleDeleteMatch(editing.firestoreId)}
+              className="px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">Supprimer</button>
+            <button type="button" onClick={() => setEditing(null)}
+              className="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-lg font-medium">Annuler</button>
           </div>
         </form>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button onClick={onClose} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+      <h3 className="text-lg font-semibold text-slate-800 mb-4">Éditer / Supprimer un match</h3>
+
+      <div className="space-y-4">
+        {/* Saison */}
+        {!selSaison && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Saison</label>
+            <div className="space-y-2">
+              {saisons.map(s => (
+                <button key={s} onClick={() => setSelSaison(s)} className="w-full p-3 bg-white rounded-lg border hover:border-blue-400 text-left font-medium text-sm">{s}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ligue */}
+        {selSaison && !selLigue && (
+          <div>
+            <button onClick={() => setSelSaison('')} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Compétition · {selSaison}</label>
+            <div className="space-y-2">
+              {allLigues.map(l => (
+                <button key={l} onClick={() => setSelLigue(l)} className="w-full p-3 bg-white rounded-lg border hover:border-blue-400 text-left font-medium text-sm">{l}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Championnats */}
+        {selSaison && selLigue && !selChamp && (
+          <div>
+            <button onClick={() => { setSelLigue(''); setSelChamps([]); }} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-slate-700">{selLigue}</label>
+              <div className="flex gap-2">
+                {championnats.length > 0 && (
+                  <button onClick={() => setSelChamps(selChamps.length === championnats.length ? [] : championnats)}
+                    className="px-3 py-1 text-xs bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300">
+                    {selChamps.length === championnats.length ? 'Désélectionner tout' : 'Tout sélectionner'}
+                  </button>
+                )}
+                {selChamps.length > 0 && (
+                  <button onClick={handleDeleteChamps} className="px-3 py-1 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Supprimer ({selChamps.length})
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              {championnats.map(ch => (
+                <div key={ch} className="flex items-center gap-2 p-3 bg-white rounded-lg border">
+                  <input type="checkbox" checked={selChamps.includes(ch)}
+                    onChange={e => setSelChamps(e.target.checked ? [...selChamps, ch] : selChamps.filter(c => c !== ch))}
+                    onClick={e => e.stopPropagation()} className="w-4 h-4 text-red-600 cursor-pointer" />
+                  <button onClick={() => setSelChamp(ch)} className="flex-1 text-left text-sm font-medium hover:text-blue-600">{ch}</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Matches */}
+        {selSaison && selLigue && selChamp && (
+          <div>
+            <button onClick={() => { setSelChamp(''); setSelMatchIds([]); }} className="mb-3 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-slate-700">{selChamp}</label>
+              <div className="flex gap-2">
+                {currentMatches.length > 0 && (
+                  <button onClick={() => { const ids = currentMatches.map(m => m.firestoreId); setSelMatchIds(selMatchIds.length === ids.length ? [] : ids); }}
+                    className="px-3 py-1 text-xs bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300">
+                    {selMatchIds.length === currentMatches.length ? 'Désélectionner tout' : 'Tout sélectionner'}
+                  </button>
+                )}
+                {selMatchIds.length > 0 && (
+                  <button onClick={handleDeleteMatches} className="px-3 py-1 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Supprimer ({selMatchIds.length})
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {currentMatches.map(match => (
+                <div key={match.firestoreId} className="flex items-center gap-2 p-3 bg-white rounded-lg border">
+                  <input type="checkbox" checked={selMatchIds.includes(match.firestoreId)}
+                    onChange={e => setSelMatchIds(e.target.checked ? [...selMatchIds, match.firestoreId] : selMatchIds.filter(id => id !== match.firestoreId))}
+                    onClick={e => e.stopPropagation()} className="w-4 h-4 text-red-600 cursor-pointer" />
+                  <button onClick={() => openEdit(match)} className="flex-1 text-left hover:bg-slate-50 rounded px-2 py-1">
+                    <p className="text-sm font-semibold text-slate-800">{match.joueur1} {match.buts_j1} – {match.buts_j2} {match.joueur2}</p>
+                    <p className="text-xs text-slate-500">
+                      {match.dateMatch || 'Date ?'}
+                      {match.valise_j1 && ` · 💼 ${match.joueur1}`}
+                      {match.valise_j2 && ` · 💼 ${match.joueur2}`}
+                      {(match.buteurs || match.buteurs_j1 || []).length > 0 && ` · ⚽ ${(match.buteurs || [...(match.buteurs_j1||[]), ...(match.buteurs_j2||[])]).map(b => b.joueur).join(', ')}`}
+                    </p>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
