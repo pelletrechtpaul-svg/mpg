@@ -7,7 +7,7 @@ db.collection('mercato').get().then(snap => {
   const players = {};
   snap.docs.forEach(doc => {
     const d = doc.data();
-    const key = d.joueur+'_'+d.ligue+'_'+d.championnat+'_'+d.tour;
+    const key = (d.prenom||'')+' '+d.joueur+'_'+d.ligue+'_'+d.championnat+'_'+d.tour;
     if (!players[key]) players[key] = [];
     players[key].push({ id: doc.id, acheteur: d.acheteur, prix: d.prix, poste: d.poste, prenom: d.prenom||'-', nationalite: d.nationalite||'-' });
   });

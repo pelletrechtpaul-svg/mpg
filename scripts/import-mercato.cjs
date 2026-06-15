@@ -1,293 +1,160 @@
-#!/usr/bin/env node
+/**
+ * Script d'import mercato pour une nouvelle saison.
+ *
+ * Usage:
+ *   node scripts/import-mercato.cjs <fichier.json>
+ *   DRY_RUN=false node scripts/import-mercato.cjs <fichier.json>   ← écrit en DB
+ *
+ * Format du fichier d'entrée (généré par Claude depuis un screen) :
+ * {
+ *   "ligue": "Liga",
+ *   "championnat": "next",   // ou numéro explicite
+ *   "tour": 1,
+ *   "saison": "2026/2027",
+ *   "joueurs": [
+ *     {
+ *       "joueur": "Yamal",
+ *       "poste": "A",
+ *       "club": "Barcelona",
+ *       "prix": 45,
+ *       "acheteur": "Paul",
+ *       "equipe_acheteur": "Tout en Miam",
+ *       "encheres_perdues": [{ "equipe": "Les ananas", "prix": 40 }]
+ *     }
+ *   ]
+ * }
+ */
+
 const admin = require('firebase-admin');
 const path = require('path');
-
-const serviceAccount = require(path.join(__dirname, '..', 'serviceAccountKey.json'));
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+const fs = require('fs');
+const sa = require('../serviceAccountKey.json');
+admin.initializeApp({ credential: admin.credential.cert(sa) });
 const db = admin.firestore();
 
-async function importMercato(data) {
-  const batch = db.batch();
-  for (const entry of data) {
-    const ref = db.collection('mercato').doc();
-    batch.set(ref, entry);
+const NAT_NORM = {
+  'Algérienne':'Algérien','Allemande':'Allemand','Américaine':'Américain',
+  'Anglaise':'Anglais','Angolaise':'Angolais','Argentine':'Argentin',
+  'Brésilienne':'Brésilien','Colombienne':'Colombien','Congolaise':'Congolais',
+  'Espagnole':'Espagnol','Française':'Français','Galloise':'Gallois',
+  'Ghanéenne':'Ghanéen','Grecque':'Grec','Guinéenne':'Guinéen',
+  'Islandaise':'Islandais','Ivoirienne':'Ivoirien','Japonaise':'Japonais',
+  'Malienne':'Malien','Marocaine':'Marocain','Néerlandaise':'Néerlandais',
+  'Nigériane':'Nigérian','Norvégienne':'Norvégien','Paraguayenne':'Paraguayen',
+  'Polonaise':'Polonais','Portugaise':'Portugais','Roumaine':'Roumain',
+  'Sénégalaise':'Sénégalais','Suédoise':'Suédois','Turque':'Turc',
+  'Ukrainienne':'Ukrainien','Uruguayenne':'Uruguayen','Zimbabwéenne':'Zimbabwéen',
+  'Écossaise':'Écossais','Égyptienne':'Égyptien','Équatorienne':'Équatorien',
+};
+
+const registryPath = path.join(__dirname, 'players-registry.json');
+const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+
+async function getNextChampionnat(ligue) {
+  const snap = await db.collection('mercato').where('ligue', '==', ligue).get();
+  let max = 0;
+  snap.docs.forEach(d => { if (d.data().championnat > max) max = d.data().championnat; });
+  return max + 1;
+}
+
+async function checkDuplicate(joueur, ligue, championnat, tour) {
+  const snap = await db.collection('mercato')
+    .where('joueur', '==', joueur)
+    .where('ligue', '==', ligue)
+    .where('championnat', '==', championnat)
+    .where('tour', '==', tour)
+    .get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function main() {
+  const inputFile = process.argv[2];
+  if (!inputFile) { console.error('Usage: node import-mercato.cjs <fichier.json>'); process.exit(1); }
+
+  const input = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
+  const { ligue, tour, saison, joueurs } = input;
+  const championnat = input.championnat === 'next'
+    ? await getNextChampionnat(ligue)
+    : Number(input.championnat);
+
+  console.log(`\n=== IMPORT MERCATO ===`);
+  console.log(`Ligue: ${ligue} | Championnat: ${championnat} | Tour: ${tour} | Saison: ${saison}`);
+  console.log(`Joueurs: ${joueurs.length}\n`);
+
+  const toWrite = [];
+  const warnings = [];
+
+  for (const j of joueurs) {
+    const regKey = j.joueur + '|' + ligue;
+    const known = registry[regKey];
+
+    const nat = j.nationalite || known?.nationalite || null;
+    const entry = {
+      joueur: j.joueur,
+      ligue,
+      championnat,
+      tour,
+      saison,
+      poste: j.poste || known?.poste || null,
+      club: j.club || known?.clubs?.[0] || null,
+      prix: j.prix,
+      acheteur: j.acheteur,
+      equipe_acheteur: j.equipe_acheteur || null,
+      encheres_perdues: j.encheres_perdues || [],
+      nationalite: NAT_NORM[nat] || nat,
+    };
+
+    const prenom = j.prenom || known?.prenom || null;
+    if (prenom && !entry.joueur.startsWith(prenom)) entry.prenom = prenom;
+
+    const dupes = await checkDuplicate(j.joueur, ligue, championnat, tour);
+    if (dupes.length > 0) warnings.push(`⚠️  DOUBLON: ${j.joueur} déjà en DB (id: ${dupes[0].id})`);
+    if (!known) warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
+
+    toWrite.push(entry);
+    const prenomDisplay = entry.prenom ? entry.prenom + ' ' : '';
+    console.log(`${known ? '✅' : '❓'} ${prenomDisplay}${j.joueur} | ${entry.poste} | ${entry.nationalite || '?'} | ${entry.club || '?'} → ${j.acheteur} ${j.prix}M`);
   }
-  await batch.commit();
-  console.log(`✅ ${data.length} entrées importées dans 'mercato'`);
+
+  if (warnings.length) {
+    console.log('\n=== AVERTISSEMENTS ===');
+    warnings.forEach(w => console.log(w));
+  }
+
+  if (warnings.some(w => w.startsWith('⚠️'))) {
+    console.log('\n❌ Doublons détectés — corrige le fichier et relance.');
+    process.exit(1);
+  }
+
+  console.log(`\n→ ${toWrite.length} entrées prêtes.`);
+
+  if (process.env.DRY_RUN === 'false') {
+    const chunks = [];
+    for (let i = 0; i < toWrite.length; i += 499) chunks.push(toWrite.slice(i, i+499));
+    for (const chunk of chunks) {
+      const batch = db.batch();
+      chunk.forEach(e => batch.set(db.collection('mercato').doc(), e));
+      await batch.commit();
+    }
+    console.log(`✅ ${toWrite.length} joueurs importés.`);
+
+    // Mise à jour du registre
+    toWrite.forEach(e => {
+      const key = e.joueur + '|' + e.ligue;
+      if (!registry[key]) {
+        registry[key] = { prenom: e.prenom || null, nationalite: e.nationalite, poste: e.poste, clubs: e.club ? [e.club] : [] };
+      } else {
+        if (e.club && !registry[key].clubs.includes(e.club)) registry[key].clubs.push(e.club);
+        if (e.prenom && !registry[key].prenom) registry[key].prenom = e.prenom;
+      }
+    });
+    fs.writeFileSync(registryPath, JSON.stringify(registry, null, 2));
+    console.log('✅ Registre mis à jour.');
+  } else {
+    console.log('  → Dry run. Passe DRY_RUN=false pour écrire en DB.');
+  }
+
   process.exit(0);
 }
 
-const DATA = [
-  // --- Premier League #7, Tour 3 ---
-  { joueur: "Gakpo",         prenom: "Cody",     club: "Liverpool",         poste: "A",  prix: 80, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [{ equipe: "Kiwis", prix: 64 }], nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  { joueur: "Rice",          prenom: "Declan",   club: "Arsenal",           poste: "MD", prix: 26, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  { joueur: "Woltemade",     prenom: "Nick",     club: "Newcastle",         poste: "A",  prix: 23, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                              nationalite: "Allemand",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  { joueur: "Guéhi",         prenom: "Marc",     club: "Crystal Palace",    poste: "DC", prix: 17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  { joueur: "Marmoush",      prenom: "Omar",     club: "Manchester City",   poste: "MO", prix:  8, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                              nationalite: "Égyptien",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  { joueur: "Isak",          prenom: "Alexander",club: "Newcastle",         poste: "A",  prix:  1, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Suédois",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 3 },
-  // --- Premier League #7, Tour 4 ---
-  { joueur: "Watkins",       prenom: "Ollie",    club: "Aston Villa",       poste: "A",  prix: 19, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
-  { joueur: "Zubimendi",     prenom: "Martín",   club: "Arsenal",           poste: "MD", prix: 17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
-  { joueur: "Welbeck",       prenom: "Danny",    club: "Brighton",          poste: "A",  prix: 16, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
-  { joueur: "Tielemans",     prenom: "Youri",    club: "Aston Villa",       poste: "MD", prix: 12, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                              nationalite: "Belge",       saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 4 },
-];
-
-const DATA_UNUSED_PL_T2 = [
-  // --- Premier League #7, Tour 2 ---
-  { joueur: "Igor Thiago",   prenom: "Igor",      club: "Brentford",         poste: "A",  prix: 123, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [{ equipe: "Tout en Miam", prix: 103 }],       nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Mbeumo",        prenom: "Bryan",     club: "Manchester United", poste: "MO", prix:  83, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [{ equipe: "Kiwis", prix: 69 }],               nationalite: "Camerounais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Gibbs-White",   prenom: "Morgan",    club: "Nottingham Forest", poste: "MO", prix:  65, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Raids Débiles", prix: 34 }],       nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Wirtz",         prenom: "Florian",   club: "Liverpool",         poste: "MO", prix:  31, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Allemand",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Fernández",     prenom: "Enzo",      club: "Chelsea",           poste: "MD", prix:  25, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                            nationalite: "Argentin",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Calvert-Lewin", prenom: "Dominic",   club: "Leeds",             poste: "A",  prix:  25, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                            nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Evanilson",     prenom: "Evanilson", club: "Bournemouth",       poste: "A",  prix:  19, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Henderson",     prenom: "Jordan",    club: "Brentford",         poste: "MD", prix:  17, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                            nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Lammens",       prenom: "Senne",     club: "Manchester United", poste: "G",  prix:  16, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Belge",       saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "van Hecke",     prenom: "Jan Paul",  club: "Brighton",          poste: "DC", prix:  13, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Kiwis", prix: 13 }],               nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Truffert",      prenom: "Adrien",    club: "Bournemouth",       poste: "DL", prix:  12, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                            nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Doku",          prenom: "Jeremy",    club: "Manchester City",   poste: "MO", prix:  11, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Belge",       saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Rodon",         prenom: "Joe",       club: "Leeds",             poste: "DC", prix:  10, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                            nationalite: "Gallois",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Bayindir",      prenom: "Altay",     club: "Manchester United", poste: "G",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Turc",        saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-  { joueur: "Dowman",        prenom: "Max",       club: "Arsenal",           poste: "MO", prix:   1, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                            nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 2 },
-];
-
-const DATA_UNUSED_PL_T1_P2 = [
-  // --- Premier League #7, Tour 1 (partie 2) ---
-  { joueur: "Bernardo Silva", prenom: "Bernardo",  club: "Manchester City",   poste: "MO", prix: 15, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Portugais",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Alisson",        prenom: "Alisson",   club: "Liverpool",         poste: "G",  prix: 15, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Gusto",          prenom: "Malo",      club: "Chelsea",           poste: "DL", prix: 14, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Madueke",        prenom: "Noni",      club: "Chelsea",           poste: "MO", prix: 14, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Rodri",          prenom: "Rodri",     club: "Manchester City",   poste: "MD", prix: 14, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Cucurella",      prenom: "Marc",      club: "Chelsea",           poste: "DL", prix: 14, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Kroupi",         prenom: "Junior",    club: "Bournemouth",       poste: "A",  prix: 13, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Rayan",          prenom: "Rayan",     club: "Bournemouth",       poste: "A",  prix: 13, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Ødegaard",       prenom: "Martin",    club: "Arsenal",           poste: "MO", prix: 13, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Norvégien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Keane",          prenom: "Michael",   club: "Everton",           poste: "DC", prix: 13, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [{ equipe: "The Champion", prix: 12 }],                                    nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Romero",         prenom: "Cristian",  club: "Tottenham",         poste: "DC", prix: 12, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                        nationalite: "Argentin",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Aït-Nouri",      prenom: "Rayan",     club: "Manchester City",   poste: "DL", prix: 11, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Algérien",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Gabriel",        prenom: "Gabriel",   club: "Arsenal",           poste: "DC", prix: 11, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Frimpong",       prenom: "Jeremie",   club: "Liverpool",         poste: "DL", prix: 11, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Maguire",        prenom: "Harry",     club: "Manchester United", poste: "DC", prix: 10, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Igor Jesus",     prenom: "Igor",      club: "Nottingham Forest", poste: "A",  prix: 10, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Xhaka",          prenom: "Granit",    club: "Sunderland",        poste: "MD", prix:  9, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                        nationalite: "Suisse",      saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Matheus Nunes",  prenom: "Matheus",   club: "Manchester City",   poste: "MD", prix:  9, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                        nationalite: "Portugais",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Porro",          prenom: "Pedro",     club: "Tottenham",         poste: "DL", prix:  9, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Williams",       prenom: "Neco",      club: "Nottingham Forest", poste: "DL", prix:  9, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Gallois",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Calafiori",      prenom: "Riccardo",  club: "Arsenal",           poste: "DC", prix:  8, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Italien",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Havertz",        prenom: "Kai",       club: "Arsenal",           poste: "MO", prix:  8, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                        nationalite: "Allemand",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Souza",          prenom: "Souza",     club: "Tottenham",         poste: "DL", prix:  7, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Mamardashvili",  prenom: "Giorgi",    club: "Liverpool",         poste: "G",  prix:  7, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Géorgien",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Cairns",         prenom: "Alex",      club: "Leeds",             poste: "G",  prix:  1, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Pécsi",          prenom: "Ármin",     club: "Liverpool",         poste: "G",  prix:  1, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                        nationalite: "Hongrois",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Livramento",     prenom: "Tino",      club: "Newcastle",         poste: "DL", prix:  1, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-];
-
-const DATA_UNUSED_PL_T1_P1 = [
-  // --- Premier League #7, Tour 1 (partie 1) ---
-  { joueur: "João Pedro",    prenom: "João",      club: "Chelsea",           poste: "A",  prix: 102, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Tout en Miam", prix: 95 }, { equipe: "Kiwis", prix: 80 }, { equipe: "Raids Débiles", prix: 55 }], nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Semenyo",       prenom: "Antoine",   club: "Manchester City",   poste: "A",  prix:  88, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [{ equipe: "Kiwis", prix: 82 }, { equipe: "Raids Débiles", prix: 44 }],                                    nationalite: "Ghanéen",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Bruno Fernandes",prenom: "Bruno",    club: "Manchester United", poste: "MO", prix:  75, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                                                        nationalite: "Portugais",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Matheus Cunha", prenom: "Matheus",   club: "Manchester United", poste: "A",  prix:  73, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [{ equipe: "The Champion", prix: 66 }, { equipe: "Raids Débiles", prix: 41 }],                            nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Sesko",         prenom: "Benjamin",  club: "Manchester United", poste: "A",  prix:  72, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Tout en Miam", prix: 33 }],                                                                   nationalite: "Slovène",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Palmer",        prenom: "Cole",      club: "Chelsea",           poste: "MO", prix:  51, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Haaland",       prenom: "Erling",    club: "Manchester City",   poste: "A",  prix:  44, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Norvégien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Ekitiké",       prenom: "Hugo",      club: "Liverpool",         poste: "A",  prix:  42, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Cherki",        prenom: "Rayan",     club: "Manchester City",   poste: "MO", prix:  41, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Wilson",        prenom: "Callum",    club: "West Ham",          poste: "A",  prix:  39, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Bowen",         prenom: "Jarrod",    club: "West Ham",          poste: "MO", prix:  33, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Gordon",        prenom: "Anthony",   club: "Newcastle",         poste: "A",  prix:  30, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Martinelli",    prenom: "Gabriel",   club: "Arsenal",           poste: "A",  prix:  29, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Saka",          prenom: "Bukayo",    club: "Arsenal",           poste: "MO", prix:  27, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [{ equipe: "Kiwis", prix: 23 }],                                                                          nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Szoboszlai",    prenom: "Dominik",   club: "Liverpool",         poste: "MO", prix:  26, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Raids Débiles", prix: 26 }],                                                                  nationalite: "Hongrois",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Gyökeres",      prenom: "Viktor",    club: "Arsenal",           poste: "A",  prix:  24, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Suédois",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "van Dijk",      prenom: "Virgil",    club: "Liverpool",         poste: "DC", prix:  23, acheteur: "Tiago",  equipe_acheteur: "Raids Débiles", encheres_perdues: [],                                                                                                        nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Rúben Dias",    prenom: "Rúben",     club: "Manchester City",   poste: "DC", prix:  22, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [{ equipe: "Kiwis", prix: 14 }],                                                                          nationalite: "Portugais",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Salah",         prenom: "Mohamed",   club: "Liverpool",         poste: "A",  prix:  22, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [{ equipe: "Kiwis", prix: 22 }],                                                                          nationalite: "Égyptien",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Raya",          prenom: "David",     club: "Arsenal",           poste: "G",  prix:  20, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Espagnol",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Timber",        prenom: "Jurriën",   club: "Arsenal",           poste: "DL", prix:  18, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Anderson",      prenom: "Elliot",    club: "Nottingham Forest", poste: "MD", prix:  18, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Anglais",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Richarlison",   prenom: "Richarlison",club: "Tottenham",        poste: "A",  prix:  18, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Casemiro",      prenom: "Casemiro",  club: "Manchester United", poste: "MD", prix:  17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Brésilien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Summerville",   prenom: "Crysencio", club: "West Ham",          poste: "MO", prix:  17, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                                                        nationalite: "Néerlandais", saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Donnarumma",    prenom: "Gianluigi", club: "Manchester City",   poste: "G",  prix:  17, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Italien",     saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Thiaw",         prenom: "Malick",    club: "Newcastle",         poste: "DC", prix:  16, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Allemand",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Saliba",        prenom: "William",   club: "Arsenal",           poste: "DC", prix:  16, acheteur: "roman",  equipe_acheteur: "The Champion",  encheres_perdues: [],                                                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Muñoz",         prenom: "Daniel",    club: "Crystal Palace",    poste: "DL", prix:  16, acheteur: "Paul",   equipe_acheteur: "Tout en Miam",  encheres_perdues: [],                                                                                                        nationalite: "Colombien",   saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-  { joueur: "Konaté",        prenom: "Ibrahima",  club: "Liverpool",         poste: "DC", prix:  15, acheteur: "Adrien", equipe_acheteur: "Kiwis",         encheres_perdues: [],                                                                                                        nationalite: "Français",    saison: "2025/2026", ligue: "Premier League", championnat: 7, tour: 1 },
-];
-
-const DATA_UNUSED_LIGA_T4 = [
-  // --- Liga #5, Tour 4 ---
-  { joueur: "Guruzeta", prenom: "Gorka",   club: "Athletic", poste: "A",  prix: 10, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Espagnol", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
-  { joueur: "Laporte",  prenom: "Aymeric", club: "Athletic", poste: "DC", prix:  4, acheteur: "Tiago", equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [], nationalite: "Français", saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 4 },
-];
-
-const DATA_UNUSED_LIGA_T3 = [
-  // --- Liga #5, Tour 3 ---
-  { joueur: "Sørloth",       prenom: "Alexander", club: "Atlético",      poste: "A",  prix: 74, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Norvégien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Hernández",     prenom: "Cucho",     club: "Betis",         poste: "A",  prix: 19, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 14 }], nationalite: "Colombien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Méndez",        prenom: "Brais",     club: "Real Sociedad", poste: "MD", prix: 18, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Valverde",      prenom: "Federico",  club: "Real Madrid",   poste: "MD", prix: 17, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Uruguayen",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Vanat",         prenom: "Vladyslav", club: "Girona",        poste: "A",  prix: 16, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Ukrainien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Pape Gueye",    prenom: "Pape",      club: "Villarreal",    poste: "MD", prix: 14, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Sénégalais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Almada",        prenom: "Thiago",    club: "Atlético",      poste: "MO", prix: 13, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Argentin",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Buchanan",      prenom: "Tajon",     club: "Villarreal",    poste: "MO", prix: 10, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Canadien",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-  { joueur: "Gonzalo García",prenom: "Gonzalo",   club: "Real Madrid",   poste: "A",  prix:  9, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 3 },
-];
-
-const DATA_UNUSED_LIGA_T2 = [
-  // --- Liga #5, Tour 2 ---
-  { joueur: "Vinícius Júnior", prenom: "Vinícius",   club: "Real Madrid",  poste: "A",  prix: 131, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 99 }, { equipe: "Manzanas", prix: 93 }], nationalite: "Brésilien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Lewandowski",     prenom: "Robert",     club: "Barcelona",    poste: "A",  prix:  52, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                              nationalite: "Polonais",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Álvarez",         prenom: "Julián",     club: "Atlético",     poste: "A",  prix:  27, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                              nationalite: "Argentin",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Rashford",        prenom: "Marcus",     club: "Barcelona",    poste: "A",  prix:  24, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                              nationalite: "Anglais",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Pépé",            prenom: "Nicolas",    club: "Villarreal",   poste: "MO", prix:  23, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 12 }],                                  nationalite: "Ivoirien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Moleiro",         prenom: "Alberto",    club: "Las Palmas",   poste: "MO", prix:  21, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                              nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Bellingham",      prenom: "Jude",       club: "Real Madrid",  poste: "MO", prix:  18, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                              nationalite: "Anglais",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Baena",           prenom: "Alex",       club: "Villarreal",   poste: "MO", prix:  15, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                                                              nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Ounahi",          prenom: "Azzedine",   club: "Girona",       poste: "MD", prix:   8, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                                                              nationalite: "Marocain",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Berchiche",       prenom: "Yuri",       club: "Athletic",     poste: "DL", prix:   8, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                                                              nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Szczesny",        prenom: "Wojciech",   club: "Barcelona",    poste: "G",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                              nationalite: "Polonais",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-  { joueur: "Núñez",           prenom: "Unai",       club: "Valencia",     poste: "DC", prix:   7, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                                                              nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 2 },
-];
-
-const DATA_UNUSED_LIGA_T1_SUITE = [
-  // --- Liga #5, Tour 1, suite ---
-  { joueur: "Cabrera",      prenom: "Leandro",    club: "Espanyol",       poste: "DC", prix: 14, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Uruguayen",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Catena",       prenom: "Alejandro",  club: "Osasuna",        poste: "DC", prix: 14, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Soler",        prenom: "Carlos",     club: "Real Sociedad",  poste: "MD", prix: 14, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Ezzalzouli",   prenom: "Abde",       club: "Betis",          poste: "A",  prix: 13, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                          nationalite: "Marocain",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Gayà",         prenom: "José",       club: "Valencia",       poste: "DL", prix: 13, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Lejeune",      prenom: "Florian",    club: "Rayo Vallecano", poste: "DC", prix: 12, acheteur: "Adrien", equipe_acheteur: "Manzanas",             encheres_perdues: [],                                          nationalite: "Français",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Rueda",        prenom: "Javi",       club: "Celta",          poste: "DL", prix: 12, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [{ equipe: "El Campeon", prix: 12 }],         nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Natan",        prenom: "Natan",      club: "Betis",          poste: "DC", prix: 11, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Brésilien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Román",        prenom: "Miguel",     club: "Celta",          poste: "MD", prix: 10, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Ruggeri",      prenom: "Matteo",     club: "Atlético",       poste: "DL", prix: 10, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Italien",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Vázquez",      prenom: "Luis",       club: "Getafe",         poste: "A",  prix: 10, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Argentin",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Renato Veiga", prenom: "Renato",     club: "Villarreal",     poste: "DL", prix:  9, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Portugais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Witsel",       prenom: "Axel",       club: "Girona",         poste: "DC", prix:  9, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                          nationalite: "Belge",      saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "João Cancelo", prenom: "João",       club: "Barcelona",      poste: "DL", prix:  9, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Portugais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Romero",       prenom: "Zaid",       club: "Getafe",         poste: "DC", prix:  8, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [{ equipe: "Machines Alavès", prix: 7 }],    nationalite: "Argentin",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Galán",        prenom: "Javi",       club: "Osasuna",        poste: "DL", prix:  8, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Lunin",        prenom: "Andriy",     club: "Real Madrid",    poste: "G",  prix:  7, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                          nationalite: "Ukrainien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Caleta-Car",   prenom: "Duje",       club: "Real Sociedad",  poste: "DC", prix:  7, acheteur: "roman",  equipe_acheteur: "El Campeon",           encheres_perdues: [],                                          nationalite: "Croate",     saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Llorente",     prenom: "Diego",      club: "Betis",          poste: "DC", prix:  7, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "López",        prenom: "Fer",        club: "Celta",          poste: "MO", prix:  6, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 6 }],nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Bailly",       prenom: "Eric",       club: "Real Oviedo",    poste: "DC", prix:  4, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Ivoirien",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Vargas",       prenom: "Rubén",      club: "Sevilla",        poste: "MO", prix:  3, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Suisse",     saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Gómez",        prenom: "Rubén",      club: "Villarreal",     poste: "G",  prix:  1, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",      encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Juan Carlos",  prenom: "Juan Carlos",club: "Girona",         poste: "G",  prix:  1, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Isco",         prenom: "Isco",       club: "Betis",          poste: "MO", prix:  1, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Amrabat",      prenom: "Sofyan",     club: "Betis",          poste: "MD", prix:  1, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                          nationalite: "Marocain",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-];
-
-const DATA_UNUSED_LIGA_T1 = [
-  // --- Liga #5, Tour 1 ---
-  { joueur: "Mbappé",         prenom: "Kylian",    club: "Real Madrid",    poste: "A",  prix: 162, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [{ equipe: "El Campeon", prix: 113 }, { equipe: "Manzanas", prix: 52 }, { equipe: "Real Bêtise Balompié", prix: 52 }], nationalite: "Français",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Lamine Yamal",   prenom: "Lamine",    club: "Barcelona",      poste: "A",  prix: 107, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Antony",         prenom: "Antony",    club: "Betis",          poste: "MO", prix:  91, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [{ equipe: "Manzanas", prix: 63 }],                                                                                   nationalite: "Brésilien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Raphinha",       prenom: "Raphinha",  club: "Barcelona",      poste: "A",  prix:  85, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                    nationalite: "Brésilien",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Oyarzabal",      prenom: "Mikel",     club: "Real Sociedad",  poste: "MO", prix:  83, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [{ equipe: "Manzanas", prix: 44 }],                                                                                    nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Budimir",        prenom: "Ante",      club: "Osasuna",        poste: "A",  prix:  77, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 45 }],                                                                        nationalite: "Croate",     saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Lookman",        prenom: "Ademola",   club: "Atlético",       poste: "A",  prix:  74, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [{ equipe: "Real Bêtise Balompié", prix: 66 }, { equipe: "Manzanas", prix: 22 }],                                     nationalite: "Nigérian",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Fornals",        prenom: "Pablo",     club: "Betis",          poste: "MO", prix:  41, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Muriqi",         prenom: "Vedat",     club: "Mallorca",       poste: "A",  prix:  40, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                   nationalite: "Kosovar",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "López",          prenom: "Fermín",    club: "Barcelona",      poste: "MD", prix:  34, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [{ equipe: "Machines Alavès", prix: 23 }],                                                                             nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Torres",         prenom: "Ferran",    club: "Barcelona",      poste: "MO", prix:  30, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Pedri",          prenom: "Pedri",     club: "Barcelona",      poste: "MO", prix:  29, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                   nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Eric García",    prenom: "Eric",      club: "Barcelona",      poste: "DC", prix:  27, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Gonçalo Guedes", prenom: "Gonçalo",   club: "Real Sociedad",  poste: "A",  prix:  25, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Portugais",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Olmo",           prenom: "Dani",      club: "Barcelona",      poste: "MO", prix:  24, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "de Frutos",      prenom: "Óscar",     club: "Rayo Vallecano", poste: "MO", prix:  23, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [{ equipe: "Manzanas", prix: 18 }],                                                                                    nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Griezmann",      prenom: "Antoine",   club: "Atlético",       poste: "A",  prix:  22, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Français",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Iglesias",       prenom: "Borja",     club: "Celta",          poste: "A",  prix:  19, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Arambarri",      prenom: "Mauro",     club: "Getafe",         poste: "MD", prix:  19, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [],                                                                                                                     nationalite: "Uruguayen",  saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Courtois",       prenom: "Thibaut",   club: "Real Madrid",    poste: "G",  prix:  18, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Belge",      saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Joan García",    prenom: "Joan",      club: "Barcelona",      poste: "G",  prix:  18, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                   nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Simón",          prenom: "Unai",      club: "Athletic",       poste: "G",  prix:  18, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Oblak",          prenom: "Jan",       club: "Atlético",       poste: "G",  prix:  17, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Slovène",    saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Koundé",         prenom: "Jules",     club: "Barcelona",      poste: "DC", prix:  17, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Français",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "de Jong",        prenom: "Frenkie",   club: "Barcelona",      poste: "MD", prix:  17, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Néerlandais",saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Herrera",        prenom: "Sergio",    club: "Osasuna",        poste: "G",  prix:  17, acheteur: "Paul",   equipe_acheteur: "Machines Alavès",    encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Asencio",        prenom: "Raúl",      club: "Real Madrid",    poste: "DC", prix:  16, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Güler",          prenom: "Arda",      club: "Real Madrid",    poste: "MO", prix:  16, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Turc",       saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Darder",         prenom: "Sergi",     club: "Mallorca",       poste: "MO", prix:  16, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Cubarsí",        prenom: "Pau",       club: "Barcelona",      poste: "DC", prix:  15, acheteur: "roman",  equipe_acheteur: "El Campeon",          encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Romero",         prenom: "Carlos",    club: "Espanyol",       poste: "DL", prix:  15, acheteur: "Adrien", equipe_acheteur: "Manzanas",            encheres_perdues: [],                                                                                                                     nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Balde",          prenom: "Alejandro", club: "Barcelona",      poste: "DL", prix:  15, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                   nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-  { joueur: "Alonso",         prenom: "Marcos",    club: "Celta",          poste: "DL", prix:  14, acheteur: "Tiago",  equipe_acheteur: "Real Bêtise Balompié", encheres_perdues: [],                                                                                                                   nationalite: "Espagnol",   saison: "2025/2026", ligue: "Liga", championnat: 5, tour: 1 },
-];
-
-const DATA_UNUSED_SA_T3 = [
-  // --- Serie A #6, Tour 3 ---
-  { joueur: "Simeone",      prenom: "Giovanni", club: "Torino",     poste: "A",  prix: 40, acheteur: "roman", equipe_acheteur: "Il Campione",         encheres_perdues: [], nationalite: "Argentin", saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 3 },
-  { joueur: "Orsolini",     prenom: "Riccardo", club: "Bologna",    poste: "MO", prix: 19, acheteur: "Tiago", equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [], nationalite: "Italien",  saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 3 },
-  { joueur: "Dodô",         prenom: "Dodô",     club: "Fiorentina", poste: "DL", prix:  9, acheteur: "roman", equipe_acheteur: "Il Campione",         encheres_perdues: [], nationalite: "Brésilien",saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 3 },
-  { joueur: "Vandeputte",   prenom: "Joris",    club: "Cremonese",  poste: "MD", prix:  7, acheteur: "Tiago", equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [], nationalite: "Belge",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 3 },
-];
-
-const DATA_UNUSED_T2 = [
-  // --- Serie A #6, Tour 2 ---
-  { joueur: "Thuram",           prenom: "Marcus",     club: "Inter",         poste: "A",  prix:  77, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [{ equipe: "Il Campione", prix: 37 }],            nationalite: "Français",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Pulisic",          prenom: "Christian",  club: "Milan",         poste: "A",  prix:  64, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                               nationalite: "Américain",   saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Rafael Leão",      prenom: "Rafael",     club: "Milan",         poste: "A",  prix:  49, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Portugais",   saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "De Ketelaere",     prenom: "Charles",    club: "Atalanta",      poste: "MO", prix:  44, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [{ equipe: "Hélas Verre de Rhum", prix: 13 }],    nationalite: "Belge",       saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Çalhanoglu",       prenom: "Hakan",      club: "Inter",         poste: "MD", prix:  38, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                               nationalite: "Turc",        saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Pavlovic",         prenom: "Strahinja",  club: "Milan",         poste: "DC", prix:  27, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                               nationalite: "Serbe",       saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Østigård",         prenom: "Leo",        club: "Genoa",         poste: "DC", prix:  27, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                               nationalite: "Norvégien",   saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Esposito",         prenom: "Pio",        club: "Inter",         poste: "A",  prix:  19, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                               nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Nkunku",           prenom: "Christopher",club: "Milan",         poste: "MO", prix:  18, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Français",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Koné",             prenom: "Ismaël",     club: "Sassuolo",      poste: "MD", prix:  17, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Canadien",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Butez",            prenom: "Jean",       club: "Como",          poste: "G",  prix:  17, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                               nationalite: "Belge",       saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Koné",             prenom: "Manu",       club: "Roma",          poste: "MD", prix:  16, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Français",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Cambiaso",         prenom: "Andrea",     club: "Juventus",      poste: "DL", prix:  15, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Esposito",         prenom: "Sebastiano", club: "Cagliari",      poste: "MO", prix:  14, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                               nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Solet",            prenom: "Oumar",      club: "Udinese",       poste: "DC", prix:  14, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Français",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Politano",         prenom: "Matteo",     club: "Napoli",        poste: "MO", prix:  13, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [{ equipe: "Hélas Verre de Rhum", prix: 13 }],    nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Vásquez",          prenom: "Johan",      club: "Genoa",         poste: "DC", prix:  12, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [{ equipe: "Il Campione", prix: 12 }],            nationalite: "Mexicain",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Gallo",            prenom: "Antonino",   club: "Lecce",         poste: "DL", prix:  10, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                               nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Milinkovic-Savic", prenom: "Vanja",      club: "Napoli",        poste: "G",  prix:  10, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                               nationalite: "Serbe",       saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Edmundsson",       prenom: "Andrias",    club: "Hellas Verona", poste: "DC", prix:   8, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                               nationalite: "Féroïen",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Terracciano",      prenom: "Pietro",     club: "Milan",         poste: "G",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                               nationalite: "Italien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-  { joueur: "Cavlina",          prenom: "Nikola",     club: "Como",          poste: "G",  prix:   7, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                               nationalite: "Croate",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 2 },
-];
-
-const DATA_UNUSED = [
-  // --- Serie A #6, Tour 1, suite ---
-  { joueur: "Ramón",          prenom: "Jacobo",       club: "Como",       poste: "DC", prix:  22, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Espagnol",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Locatelli",      prenom: "Manuel",       club: "Juventus",   poste: "MD", prix:  22, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Laurienté",      prenom: "Armand",       club: "Sassuolo",   poste: "A",  prix:  21, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Dumfries",       prenom: "Denzel",       club: "Inter",      poste: "DL", prix:  21, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Néerlandais",  saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Maignan",        prenom: "Mike",         club: "Milan",      poste: "G",  prix:  21, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "da Cunha",       prenom: "Lucas",        club: "Como",       poste: "A",  prix:  20, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Krstovic",       prenom: "Nikola",       club: "Atalanta",   poste: "A",  prix:  20, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Monténégrin",  saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Modric",         prenom: "Luka",         club: "Milan",      poste: "MO", prix:  19, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Croate",       saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Thuram",         prenom: "Khéphren",     club: "Juventus",   poste: "MD", prix:  19, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Mkhitaryan",     prenom: "Henrikh",      club: "Inter",      poste: "MO", prix:  18, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Arménien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Bisseck",        prenom: "Yann",         club: "Inter",      poste: "DC", prix:  18, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Allemand",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Fagioli",        prenom: "Nicolò",       club: "Fiorentina", poste: "MO", prix:  18, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Zalewski",       prenom: "Nicola",       club: "Atalanta",   poste: "DL", prix:  17, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Svilar",         prenom: "Mile",         club: "Roma",       poste: "G",  prix:  17, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Belge",        saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Falcone",        prenom: "Wladimiro",    club: "Lecce",      poste: "G",  prix:  17, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Rabiot",         prenom: "Adrien",       club: "Milan",      poste: "MO", prix:  17, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Kalulu",         prenom: "Pierre",       club: "Juventus",   poste: "DL", prix:  16, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [{ equipe: "Fragolas", prix: 15 }],               nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Alisson Santos", prenom: "Alisson",      club: "Napoli",     poste: "A",  prix:  15, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [{ equipe: "Hélas Verre de Rhum", prix: 11 }],    nationalite: "Brésilien",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Motta",          prenom: "Edoardo",      club: "Lazio",      poste: "G",  prix:  14, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [{ equipe: "Il Campione", prix: 14 }],            nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Wesley",         prenom: "Wesley",       club: "Roma",       poste: "DL", prix:  14, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Brésilien",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "David",          prenom: "Jonathan",     club: "Juventus",   poste: "A",  prix:  14, acheteur: "Adrien", equipe_acheteur: "Fragolas",            encheres_perdues: [],                                              nationalite: "Canadien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Palestra",       prenom: "Marco",        club: "Cagliari",   poste: "DL", prix:  12, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Gila",           prenom: "Mario",        club: "Lazio",      poste: "DC", prix:  11, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [{ equipe: "Fragolas", prix: 10 }],               nationalite: "Espagnol",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Zaniolo",        prenom: "Nicolò",       club: "Udinese",    poste: "MO", prix:  11, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Boga",           prenom: "Jérémie",      club: "Juventus",   poste: "A",  prix:  11, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Ivoirien",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Anguissa",       prenom: "André-Frank",  club: "Napoli",     poste: "MD", prix:   7, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Camerounais",  saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Gatti",          prenom: "Federico",     club: "Juventus",   poste: "DC", prix:  10, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Bakola",         prenom: "Darryl",       club: "Sassuolo",   poste: "MD", prix:   9, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Français",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Diao",           prenom: "Assane",       club: "Como",       poste: "A",  prix:   7, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Sénégalais",   saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Furlanetto",     prenom: "Alessio",      club: "Lazio",      poste: "G",  prix:   7, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [],                                              nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Nuno Tavares",   prenom: "Nuno",         club: "Lazio",      poste: "DL", prix:   7, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Portugais",    saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Vlahovic",       prenom: "Dušan",        club: "Juventus",   poste: "A",  prix:   3, acheteur: "Tiago",  equipe_acheteur: "Hélas Verre de Rhum", encheres_perdues: [],                                              nationalite: "Serbe",        saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Zelezny",        prenom: "Radosław",     club: "Roma",       poste: "G",  prix:   1, acheteur: "Paul",   equipe_acheteur: "Ousmane Lecce",       encheres_perdues: [],                                              nationalite: "Polonais",     saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-  { joueur: "Provedel",       prenom: "Ivan",         club: "Lazio",      poste: "G",  prix:   1, acheteur: "roman",  equipe_acheteur: "Il Campione",         encheres_perdues: [{ equipe: "Hélas Verre de Rhum", prix: 1 }],     nationalite: "Italien",      saison: "2025/2026", ligue: "Serie A", championnat: 6, tour: 1 },
-];
-
-importMercato(DATA).catch(err => { console.error('❌', err.message); process.exit(1); });
+main().catch(e => { console.error(e.message); process.exit(1); });
