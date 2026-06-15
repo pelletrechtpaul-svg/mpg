@@ -2,6 +2,7 @@ import React, { useState, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { PLAYLIST } from './shared.jsx';
 const MercatoTab = lazy(() => import('./components/MercatoTab'));
+const JoueursTab = lazy(() => import('./components/JoueursTab'));
 const AdvancedStatsTab = lazy(() => import('./components/AdvancedStatsTab'));
 const VersusTab = lazy(() => import('./components/VersusTab'));
 const RecordsTab = lazy(() => import('./components/RecordsTab'));
@@ -216,6 +217,16 @@ const App = () => {
                 Records
               </button>
               <button
+                onClick={() => setActiveTab('joueurs')}
+                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  activeTab === 'joueurs'
+                    ? 'bg-amber-500 text-white shadow-lg'
+                    : 'bg-white text-amber-600 hover:bg-amber-50 dark:bg-slate-800 dark:text-amber-400'
+                }`}
+              >
+                Joueurs
+              </button>
+              <button
                 onClick={() => setActiveTab('mercato')}
                 className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                   activeTab === 'mercato'
@@ -306,6 +317,10 @@ const App = () => {
             setLigueRecordsMode={setLigueRecordsMode}
             shareContext={shareContext}
           />
+        )}
+
+        {activeTab === 'joueurs' && (
+          <JoueursTab mercatoData={mercatoData} />
         )}
 
         {activeTab === 'mercato' && (
