@@ -1,347 +1,283 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { db } from '../firebase';
-import { doc, collection, writeBatch } from 'firebase/firestore';
+import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
-
-const EMPTY_FORM = {
-  saison: '2025/2026', ligue: '', championnat: '', isNewChampionnat: false,
-  newChampionnatMatchs: 6, joueur1: '', joueur2: '', buts_j1: '', buts_j2: '',
-  valise_j1: false, valise_j2: false, joueur3: '', joueur4: '', buts_j3: '', buts_j4: '',
-  valise_j3: false, valise_j4: false, dateMatch: new Date().toISOString().split('T')[0]
-};
+import ScorerSection from './AdminScorerSection';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
+const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+const EMPTY_MATCH = { joueur1: '', joueur2: '', buts1: '', buts2: '', valise1: false, valise2: false };
 
-const ScorerSection = ({ matchKey, ownerName, opponentName, formData, buteurs, setButeurs, scorerSearch, setScorerSearch, mercatoData }) => {
-  if (!ownerName) return null;
-  const saison = formData.saison;
-  const ligue = formData.ligue;
-  const dedup = arr => arr.filter((p, i, self) => i === self.findIndex(q => q.joueur === p.joueur));
-  const ownPlayers = dedup(mercatoData.filter(p => p.acheteur === ownerName && p.saison === saison && p.ligue === ligue));
-  const oppPlayers = dedup(mercatoData.filter(p => p.acheteur === opponentName && p.saison === saison && p.ligue === ligue));
-  const allPlayers = [...ownPlayers, ...oppPlayers];
-  const search = scorerSearch[matchKey] || '';
-  const filtered = allPlayers.filter(p => p.joueur.toLowerCase().includes(search.toLowerCase())).slice(0, 8);
-  const current = buteurs[matchKey] || [];
+function calcResult(b1, b2) {
+  if (b1 > b2) return { points_j1: 3, points_j2: 0, resultat: 'victoire_j1' };
+  if (b1 < b2) return { points_j1: 0, points_j2: 3, resultat: 'victoire_j2' };
+  return { points_j1: 1, points_j2: 1, resultat: 'nul' };
+}
 
-  const addScorer = (joueur) => {
-    setButeurs(prev => ({ ...prev, [matchKey]: [...(prev[matchKey] || []), { joueur, buts: 1 }] }));
-    setScorerSearch(prev => ({ ...prev, [matchKey]: '' }));
-  };
-  const removeScorer = (i) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, idx) => idx !== i) }));
-  const updateButs = (i, buts) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, idx) => idx === i ? { ...s, buts } : s) }));
+function resultLabel(j1, j2, b1, b2) {
+  if (b1 > b2) return `Victoire ${j1} (3 pts)`;
+  if (b1 < b2) return `Victoire ${j2} (3 pts)`;
+  return 'Match nul (1 pt chacun)';
+}
+
+function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, matchKey, saison, ligue, valiseUsed, mercatoData, autoFilled }) {
+  const available1 = JOUEURS.filter(j => j !== match.joueur2 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
+  const available2 = JOUEURS.filter(j => j !== match.joueur1 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
+  const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
+  const hasResult = match.buts1 !== '' && match.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
 
   return (
-    <div className="mt-3">
-      <p className="text-xs font-medium text-slate-600 mb-1">Buteurs ({ownerName})</p>
-      {current.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
-          {current.map((s, i) => (
-            <span key={i} className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">
-              {s.joueur}
-              <input type="number" value={s.buts} min="1" max="10" onChange={(e) => updateButs(i, parseInt(e.target.value) || 1)} className="w-8 text-center bg-transparent border-none outline-none text-xs" />
-              <button type="button" onClick={() => removeScorer(i)} className="text-blue-500 hover:text-red-600">×</button>
-            </span>
-          ))}
-        </div>
-      )}
-      {allPlayers.length > 0 && (
-        <div className="relative">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setScorerSearch(prev => ({ ...prev, [matchKey]: e.target.value }))}
-            placeholder="Rechercher un buteur..."
-            className="w-full text-xs px-2 py-1 border border-slate-200 rounded"
-          />
-          {search && filtered.length > 0 && (
-            <div className="absolute z-10 w-full bg-white border border-slate-200 rounded shadow-lg mt-0.5 max-h-32 overflow-y-auto">
-              {filtered.map((p, i) => (
-                <button key={i} type="button" onClick={() => addScorer(p.joueur)}
-                  className="w-full text-left px-2 py-1 text-xs hover:bg-blue-50">
-                  {p.joueur} <span className="text-slate-400">({p.acheteur === ownerName ? ownerName : opponentName})</span>
-                </button>
-              ))}
+    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">{label}</h4>
+
+      <div className="grid grid-cols-2 gap-2">
+        {autoFilled ? (
+          <>
+            <div className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium">{match.joueur1 || '—'}</div>
+            <div className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700 font-medium">{match.joueur2 || '—'}</div>
+          </>
+        ) : (
+          <>
+            <select value={match.joueur1} onChange={e => setMatch({ ...match, joueur1: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+              <option value="">Joueur 1...</option>
+              {available1.map(j => <option key={j} value={j}>{j}</option>)}
+            </select>
+            <select value={match.joueur2} onChange={e => setMatch({ ...match, joueur2: e.target.value })}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+              <option value="">Joueur 2...</option>
+              {available2.map(j => <option key={j} value={j}>{j}</option>)}
+            </select>
+          </>
+        )}
+      </div>
+
+      {match.joueur1 && match.joueur2 && (
+        <>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-slate-500 mb-1">{match.joueur1}</label>
+              <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
+                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
+              {!valiseUsed[match.joueur1] && (
+                <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                  <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
+                  <span className="text-xs text-slate-500">Valise 💼</span>
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 mb-1">{match.joueur2}</label>
+              <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
+                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
+              {!valiseUsed[match.joueur2] && (
+                <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                  <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
+                  <span className="text-xs text-slate-500">Valise 💼</span>
+                </label>
+              )}
+            </div>
+          </div>
+
+          {hasResult && (
+            <div className="text-xs text-slate-600 bg-white px-3 py-2 rounded-lg border border-slate-200">
+              {resultLabel(match.joueur1, match.joueur2, b1, b2)}
             </div>
           )}
-        </div>
+
+          <ScorerSection
+            matchKey={matchKey}
+            joueur1={match.joueur1}
+            joueur2={match.joueur2}
+            saison={saison}
+            ligue={ligue}
+            buteurs={buteurs}
+            setButeurs={setButeurs}
+            mercatoData={mercatoData}
+          />
+        </>
       )}
     </div>
   );
-};
+}
 
-const AdminAddMatchForm = ({ matchData, ligues, mercatoData, ligueMetadata, onCancel }) => {
-  const [formData, setFormData] = useState(EMPTY_FORM);
-  const [buteurs, setButeurs] = useState({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
-  const [scorerSearch, setScorerSearch] = useState({ m1j1: '', m1j2: '', m2j1: '', m2j2: '' });
+const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetadata, showToast, onCancel }) => {
+  const today = new Date().toISOString().split('T')[0];
+  const [common, setCommon] = useState({ saison: saisons[0] || '', ligue: '', championnat: '', isNewChampionnat: false, newChampionnatMatchs: 6, dateMatch: today });
+  const [match1, setMatch1] = useState(EMPTY_MATCH);
+  const [match2, setMatch2] = useState(EMPTY_MATCH);
+  const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
+  const [saving, setSaving] = useState(false);
 
-  const adminChampionnatsByLigue = useMemo(() => {
-    const data = formData.saison === 'All-Time' ? matchData : matchData.filter(d => d.saison === formData.saison);
-    const map = {};
-    ligues.forEach(ligue => { map[ligue] = [...new Set(data.filter(d => d.ligue === ligue).map(d => d.championnat))].sort(); });
-    return map;
-  }, [matchData, ligues, formData.saison]);
+  // Sync saison when list loads
+  useEffect(() => {
+    if (!common.saison && saisons.length) setCommon(c => ({ ...c, saison: saisons[0] }));
+  }, [saisons]);
+
+  // Auto-fill match2 from match1 selection
+  useEffect(() => {
+    if (match1.joueur1 && match1.joueur2) {
+      const [j1, j2] = JOUEURS.filter(j => j !== match1.joueur1 && j !== match1.joueur2);
+      setMatch2(prev => ({ ...prev, joueur1: j1 || '', joueur2: j2 || '' }));
+    } else {
+      setMatch2(EMPTY_MATCH);
+    }
+  }, [match1.joueur1, match1.joueur2]);
+
+  const championnats = useMemo(() => {
+    if (!common.ligue) return [];
+    return [...new Set(matchData.filter(d => d.saison === common.saison && d.ligue === common.ligue).map(d => d.championnat))].sort();
+  }, [matchData, common.saison, common.ligue]);
 
   const valiseUsed = useMemo(() => {
-    if (!formData.ligue || !formData.championnat) return {};
+    if (!common.ligue || (!common.championnat && !common.isNewChampionnat)) return {};
     const used = {};
-    matchData.filter(m => m.saison === formData.saison && m.ligue === formData.ligue && m.championnat === formData.championnat).forEach(m => {
+    matchData.filter(m => m.saison === common.saison && m.ligue === common.ligue && m.championnat === common.championnat).forEach(m => {
       if (m.valise_j1) used[m.joueur1] = true;
       if (m.valise_j2) used[m.joueur2] = true;
     });
     return used;
-  }, [matchData, formData.saison, formData.ligue, formData.championnat]);
+  }, [matchData, common]);
+
+  const isReady = common.ligue && (common.championnat || common.isNewChampionnat) && common.dateMatch
+    && match1.joueur1 && match1.joueur2 && match1.buts1 !== '' && match1.buts2 !== ''
+    && match2.joueur1 && match2.joueur2 && match2.buts1 !== '' && match2.buts2 !== '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { saison, ligue, championnat, isNewChampionnat, newChampionnatMatchs, joueur1, joueur2, buts_j1, buts_j2, valise_j1, valise_j2, joueur3, joueur4, buts_j3, buts_j4, valise_j3, valise_j4, dateMatch } = formData;
-    if (!ligue || !joueur1 || !joueur2) { alert('Veuillez remplir tous les champs du premier match'); return; }
-    if (joueur1 === joueur2) { alert('Les deux joueurs doivent être différents'); return; }
-    if (buts_j1 === '' || buts_j2 === '') { alert('Veuillez entrer les buts des deux joueurs du premier match'); return; }
-    if (!dateMatch) { alert('Veuillez renseigner la date du match'); return; }
-    const b1 = parseInt(buts_j1), b2 = parseInt(buts_j2);
-    if (b1 < 0 || b2 < 0) { alert('Les buts ne peuvent pas être négatifs'); return; }
-    if (b1 > 30 || b2 > 30) { alert('Score inhabituellement élevé (> 30). Vérifiez la saisie.'); return; }
-    const isDuplicate = matchData.some(m => m.dateMatch === dateMatch && m.championnat === championnat && ((m.joueur1 === joueur1 && m.joueur2 === joueur2) || (m.joueur1 === joueur2 && m.joueur2 === joueur1)));
-    if (isDuplicate && !window.confirm('Un match entre ces deux joueurs dans ce championnat à cette date existe déjà. Continuer quand même ?')) return;
+    if (!isReady || saving) return;
 
-    const hasSecondMatch = joueur3 && joueur4 && buts_j3 !== '' && buts_j4 !== '';
-    if (hasSecondMatch) {
-      if (joueur3 === joueur4) { alert('Match 2 : les deux joueurs doivent être différents'); return; }
-      if (new Set([joueur1, joueur2, joueur3, joueur4]).size < 4) { alert('Match 2 : les joueurs doivent être différents de ceux du match 1'); return; }
-      const b3 = parseInt(buts_j3), b4 = parseInt(buts_j4);
-      if (b3 < 0 || b4 < 0) { alert('Match 2 : les buts ne peuvent pas être négatifs'); return; }
-      if (b3 > 30 || b4 > 30) { alert('Match 2 : score inhabituellement élevé (> 30). Vérifiez la saisie.'); return; }
-    }
+    const { saison, ligue, isNewChampionnat, newChampionnatMatchs, dateMatch } = common;
+    const scores = [parseInt(match1.buts1), parseInt(match1.buts2), parseInt(match2.buts1), parseInt(match2.buts2)];
+    if (scores.some(b => isNaN(b) || b < 0 || b > 30)) { showToast('Score invalide (0–30)', 'error'); return; }
 
-    let championnatToUse = championnat;
-    if (isNewChampionnat) {
-      const existingCount = matchData.filter(d => d.saison === saison && d.ligue === ligue).reduce((acc, d) => { if (!acc.includes(d.championnat)) acc.push(d.championnat); return acc; }, []).length;
-      championnatToUse = `#${existingCount + 1}`;
-    }
-    if (!championnatToUse) { alert('Veuillez sélectionner ou créer un championnat'); return; }
-
-    const newMatches = [];
-    const currentDate = new Date().toISOString();
-    const butsJ1 = parseInt(buts_j1) || 0, butsJ2 = parseInt(buts_j2) || 0;
-    let points_j1, points_j2, resultat;
-    if (butsJ1 > butsJ2) { points_j1 = 3; points_j2 = 0; resultat = 'victoire_j1'; }
-    else if (butsJ1 < butsJ2) { points_j1 = 0; points_j2 = 3; resultat = 'victoire_j2'; }
-    else { points_j1 = 1; points_j2 = 1; resultat = 'nul'; }
-    newMatches.push({ saison, ligue, championnat: championnatToUse, joueur1, joueur2, buts_j1: butsJ1, buts_j2: butsJ2, valise_j1, valise_j2, resultat, points_j1, points_j2, dateMatch, dateEntree: currentDate, buteurs_j1: buteurs.m1j1, buteurs_j2: buteurs.m1j2 });
-
-    if (hasSecondMatch) {
-      const butsJ3 = parseInt(buts_j3) || 0, butsJ4 = parseInt(buts_j4) || 0;
-      let p3, p4, r2;
-      if (butsJ3 > butsJ4) { p3 = 3; p4 = 0; r2 = 'victoire_j1'; }
-      else if (butsJ3 < butsJ4) { p3 = 0; p4 = 3; r2 = 'victoire_j2'; }
-      else { p3 = 1; p4 = 1; r2 = 'nul'; }
-      newMatches.push({ saison, ligue, championnat: championnatToUse, joueur1: joueur3, joueur2: joueur4, buts_j1: butsJ3, buts_j2: butsJ4, valise_j1: valise_j3, valise_j2: valise_j4, resultat: r2, points_j1: p3, points_j2: p4, dateMatch, dateEntree: currentDate, buteurs_j1: buteurs.m2j1, buteurs_j2: buteurs.m2j2 });
-    }
-
+    setSaving(true);
     try {
+      let championnat = common.championnat;
+      if (isNewChampionnat) {
+        const snap = await getDocs(query(collection(db, 'matches'), where('saison', '==', saison), where('ligue', '==', ligue)));
+        const existing = new Set(snap.docs.map(d => d.data().championnat));
+        championnat = `#${existing.size + 1}`;
+      }
+
+      const isDup = matchData.some(m =>
+        m.dateMatch === dateMatch && m.championnat === championnat &&
+        ((m.joueur1 === match1.joueur1 && m.joueur2 === match1.joueur2) || (m.joueur1 === match1.joueur2 && m.joueur2 === match1.joueur1))
+      );
+      if (isDup) { showToast('Ce match existe déjà pour cette date', 'error'); setSaving(false); return; }
+
+      const now = new Date().toISOString();
+      const buildMatch = (m, buts) => {
+        const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
+        return { saison, ligue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts };
+      };
+
       const batch = writeBatch(db);
-      newMatches.forEach(match => {
-        const matchRef = doc(collection(db, 'matches'));
-        batch.set(matchRef, { ...match, id: matchRef.id });
+      [buildMatch(match1, buteurs.m1), buildMatch(match2, buteurs.m2)].forEach(m => {
+        const ref = doc(collection(db, 'matches'));
+        batch.set(ref, { ...m, id: ref.id });
       });
 
+      const ligueKey = `${saison}-${ligue}-${championnat}`;
+      const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
       if (isNewChampionnat) {
-        const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-        const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
-        batch.set(metaRef, { createdAt: currentDate, matchsTotal: newChampionnatMatchs, matchsEntered: newMatches.length, ligue, saison, championnat: championnatToUse });
+        batch.set(metaRef, { createdAt: now, matchsTotal: newChampionnatMatchs, matchsEntered: 1, ligue, saison, championnat });
       } else {
-        const ligueKey = `${saison}-${ligue}-${championnatToUse}`;
-        const existingMeta = ligueMetadata[ligueKey];
-        if (existingMeta) {
-          const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
-          batch.set(metaRef, { ...existingMeta, matchsEntered: (existingMeta.matchsEntered || 0) + newMatches.length });
-        }
+        const meta = ligueMetadata[ligueKey];
+        if (meta) batch.set(metaRef, { ...meta, matchsEntered: (meta.matchsEntered || 0) + 1 });
       }
 
       await batch.commit();
-      alert(`${newMatches.length} match(s) enregistré(s) avec succès !`);
-      setFormData({ ...EMPTY_FORM, dateMatch: new Date().toISOString().split('T')[0] });
-      setButeurs({ m1j1: [], m1j2: [], m2j1: [], m2j2: [] });
-      setScorerSearch({ m1j1: '', m1j2: '', m2j1: '', m2j2: [] });
-    } catch (error) {
-      console.error('Error adding match:', error);
-      alert('Erreur lors de la sauvegarde du match');
+      showToast('Journée enregistrée !');
+      setMatch1(EMPTY_MATCH);
+      setMatch2(EMPTY_MATCH);
+      setButeurs({ m1: [], m2: [] });
+      setCommon(c => ({ ...c, dateMatch: today }));
+    } catch {
+      showToast('Erreur lors de la sauvegarde', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const scorerProps = { formData, buteurs, setButeurs, scorerSearch, setScorerSearch, mercatoData };
-
   return (
-    <div className="bg-slate-50 rounded-lg p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-slate-800">Nouveau match</h3>
-        <button onClick={onCancel} className="text-slate-600 hover:text-slate-800">Annuler</button>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-slate-800">Nouvelle journée</h3>
+        <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">Annuler</button>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Saison</label>
-          <select value={formData.saison} onChange={(e) => setFormData({ ...formData, saison: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg">
-            <option value="2025/2026">2025/2026</option>
-            <option value="2024/2025">2024/2025</option>
-          </select>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Saison</label>
+            <select value={common.saison} onChange={e => setCommon({ ...common, saison: e.target.value, championnat: '', isNewChampionnat: false })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+              {saisons.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+            <input type="date" value={common.dateMatch} onChange={e => setCommon({ ...common, dateMatch: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
-          <div className="flex flex-wrap gap-3">
-            {['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'].map(ligue => (
-              <label key={ligue} className="inline-flex items-center">
-                <input type="radio" name="ligue" value={ligue} checked={formData.ligue === ligue}
-                  onChange={(e) => setFormData({ ...formData, ligue: e.target.value, championnat: '', isNewChampionnat: false })}
-                  className="w-4 h-4 text-blue-600" />
-                <span className="ml-2 text-sm">{ligue}</span>
-              </label>
+          <div className="flex flex-wrap gap-2">
+            {LIGUES.map(l => (
+              <button key={l} type="button"
+                onClick={() => setCommon({ ...common, ligue: l, championnat: '', isNewChampionnat: false })}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${common.ligue === l ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-600 hover:border-blue-400'}`}>
+                {l}
+              </button>
             ))}
           </div>
         </div>
 
-        {formData.ligue && (
+        {common.ligue && (
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Championnat</label>
-            <div className="space-y-2">
-              {adminChampionnatsByLigue[formData.ligue]?.map(ch => (
-                <label key={ch} className="flex items-center">
-                  <input type="radio" name="championnat" value={ch} checked={!formData.isNewChampionnat && formData.championnat === ch}
-                    onChange={(e) => setFormData({ ...formData, championnat: e.target.value, isNewChampionnat: false })}
-                    className="w-4 h-4 text-blue-600" />
-                  <span className="ml-2 text-sm">{ch}</span>
-                </label>
+            <div className="flex flex-wrap gap-2">
+              {championnats.map(ch => (
+                <button key={ch} type="button"
+                  onClick={() => setCommon({ ...common, championnat: ch, isNewChampionnat: false })}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${!common.isNewChampionnat && common.championnat === ch ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-600 hover:border-blue-400'}`}>
+                  {ch}
+                </button>
               ))}
-              <label className="flex items-center">
-                <input type="radio" name="championnat" checked={formData.isNewChampionnat}
-                  onChange={() => setFormData({ ...formData, isNewChampionnat: true, championnat: '' })}
-                  className="w-4 h-4 text-blue-600" />
-                <span className="ml-2 text-sm font-medium text-blue-600">Nouveau championnat</span>
-              </label>
-              {formData.isNewChampionnat && (
-                <div className="ml-6 space-y-3">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-sm text-blue-800">
-                      <strong>Nom :</strong> #{matchData.filter(d => d.saison === formData.saison && d.ligue === formData.ligue).reduce((acc, d) => { if (!acc.includes(d.championnat)) acc.push(d.championnat); return acc; }, []).length + 1}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-700 mb-1">Nombre de matchs</label>
-                    <input type="number" value={formData.newChampionnatMatchs} onChange={(e) => setFormData({ ...formData, newChampionnatMatchs: parseInt(e.target.value) })} min="1" className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Date du match</label>
-          <input type="date" value={formData.dateMatch} onChange={(e) => setFormData({ ...formData, dateMatch: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg" />
-        </div>
-
-        <div>
-          <h4 className="text-md font-semibold text-slate-700 mb-4">1er match</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <select value={formData.joueur1} onChange={(e) => setFormData({ ...formData, joueur1: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg">
-              <option value="">Sélectionner...</option>
-              {JOUEURS.filter(j => j !== formData.joueur2).map(j => <option key={j} value={j}>{j}</option>)}
-            </select>
-            <select value={formData.joueur2} onChange={(e) => setFormData({ ...formData, joueur2: e.target.value })} className="w-full px-4 py-2 border border-slate-300 rounded-lg">
-              <option value="">Sélectionner...</option>
-              {JOUEURS.filter(j => j !== formData.joueur1).map(j => <option key={j} value={j}>{j}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {formData.joueur1 && formData.joueur2 && (
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Score</label>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <input type="number" value={formData.buts_j1} onChange={(e) => setFormData({ ...formData, buts_j1: e.target.value })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="0" />
-                {!valiseUsed[formData.joueur1] && (
-                  <label className="flex items-center gap-2 mt-2">
-                    <input type="checkbox" checked={formData.valise_j1} onChange={(e) => setFormData({ ...formData, valise_j1: e.target.checked })} className="w-4 h-4" />
-                    <span className="text-xs text-slate-600">Valise 💼</span>
-                  </label>
-                )}
-              </div>
-              <div>
-                <input type="number" value={formData.buts_j2} onChange={(e) => setFormData({ ...formData, buts_j2: e.target.value })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="0" />
-                {!valiseUsed[formData.joueur2] && (
-                  <label className="flex items-center gap-2 mt-2">
-                    <input type="checkbox" checked={formData.valise_j2} onChange={(e) => setFormData({ ...formData, valise_j2: e.target.checked })} className="w-4 h-4" />
-                    <span className="text-xs text-slate-600">Valise 💼</span>
-                  </label>
-                )}
-              </div>
-            </div>
-            {formData.buts_j1 !== '' && formData.buts_j2 !== '' && (
-              <div className="mt-3 bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Résultat :</strong> {parseInt(formData.buts_j1) > parseInt(formData.buts_j2) ? `Victoire ${formData.joueur1} (3 pts)` : parseInt(formData.buts_j1) < parseInt(formData.buts_j2) ? `Victoire ${formData.joueur2} (3 pts)` : 'Match nul (1 pt chacun)'}
-                </p>
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              <ScorerSection matchKey="m1j1" ownerName={formData.joueur1} opponentName={formData.joueur2} {...scorerProps} />
-              <ScorerSection matchKey="m1j2" ownerName={formData.joueur2} opponentName={formData.joueur1} {...scorerProps} />
-            </div>
-          </div>
-        )}
-
-        {formData.joueur1 && formData.joueur2 && formData.joueur3 && formData.joueur4 && (
-          <div className="border-t pt-6">
-            <h4 className="text-md font-semibold text-slate-700 mb-4">2ème match</h4>
-            <div className="flex items-center gap-2 mb-4">
-              <select value={formData.joueur3} onChange={(e) => setFormData({ ...formData, joueur3: e.target.value })} className="flex-1 px-4 py-2 border border-slate-300 rounded-lg">
-                {JOUEURS.filter(j => j !== formData.joueur1 && j !== formData.joueur2 && j !== formData.joueur4).map(j => <option key={j} value={j}>{j}</option>)}
-              </select>
-              <button type="button" onClick={() => setFormData({ ...formData, joueur3: formData.joueur4, joueur4: formData.joueur3, buts_j3: formData.buts_j4, buts_j4: formData.buts_j3, valise_j3: formData.valise_j4, valise_j4: formData.valise_j3 })} className="p-2 hover:bg-slate-100 rounded transition-colors shrink-0" title="Inverser les joueurs">
-                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+              <button type="button"
+                onClick={() => setCommon({ ...common, isNewChampionnat: true, championnat: '' })}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${common.isNewChampionnat ? 'bg-blue-600 text-white border-blue-600' : 'border-dashed border-slate-300 text-blue-600 hover:border-blue-400'}`}>
+                + Nouveau
               </button>
-              <select value={formData.joueur4} onChange={(e) => setFormData({ ...formData, joueur4: e.target.value })} className="flex-1 px-4 py-2 border border-slate-300 rounded-lg">
-                {JOUEURS.filter(j => j !== formData.joueur1 && j !== formData.joueur2 && j !== formData.joueur3).map(j => <option key={j} value={j}>{j}</option>)}
-              </select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <input type="number" value={formData.buts_j3} onChange={(e) => setFormData({ ...formData, buts_j3: e.target.value })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="0" />
-                {!valiseUsed[formData.joueur3] && (
-                  <label className="flex items-center gap-2 mt-2">
-                    <input type="checkbox" checked={formData.valise_j3} onChange={(e) => setFormData({ ...formData, valise_j3: e.target.checked })} className="w-4 h-4" />
-                    <span className="text-xs text-slate-600">Valise 💼</span>
-                  </label>
-                )}
-              </div>
-              <div>
-                <input type="number" value={formData.buts_j4} onChange={(e) => setFormData({ ...formData, buts_j4: e.target.value })} min="0" className="w-full px-4 py-2 border border-slate-300 rounded-lg" placeholder="0" />
-                {!valiseUsed[formData.joueur4] && (
-                  <label className="flex items-center gap-2 mt-2">
-                    <input type="checkbox" checked={formData.valise_j4} onChange={(e) => setFormData({ ...formData, valise_j4: e.target.checked })} className="w-4 h-4" />
-                    <span className="text-xs text-slate-600">Valise 💼</span>
-                  </label>
-                )}
-              </div>
-            </div>
-            {formData.buts_j3 !== '' && formData.buts_j4 !== '' && (
-              <div className="mt-3 bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Résultat :</strong> {parseInt(formData.buts_j3) > parseInt(formData.buts_j4) ? `Victoire ${formData.joueur3} (3 pts)` : parseInt(formData.buts_j3) < parseInt(formData.buts_j4) ? `Victoire ${formData.joueur4} (3 pts)` : 'Match nul (1 pt chacun)'}
-                </p>
+            {common.isNewChampionnat && (
+              <div className="mt-3 flex items-center gap-3">
+                <label className="text-sm text-slate-600">Nombre de journées :</label>
+                <input type="number" value={common.newChampionnatMatchs}
+                  onChange={e => setCommon({ ...common, newChampionnatMatchs: parseInt(e.target.value) || 6 })}
+                  min="1" max="20" className="w-20 px-3 py-1.5 border border-slate-300 rounded-lg text-sm text-center" />
               </div>
             )}
-            <div className="grid grid-cols-2 gap-4">
-              <ScorerSection matchKey="m2j1" ownerName={formData.joueur3} opponentName={formData.joueur4} {...scorerProps} />
-              <ScorerSection matchKey="m2j2" ownerName={formData.joueur4} opponentName={formData.joueur3} {...scorerProps} />
-            </div>
           </div>
         )}
 
-        <button type="submit" className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
-          Enregistrer {formData.joueur3 && formData.joueur4 && formData.buts_j3 !== '' && formData.buts_j4 !== '' ? 'les 2 matchs' : 'le match'}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
+            buteurs={buteurs} setButeurs={setButeurs} matchKey="m1"
+            saison={common.saison} ligue={common.ligue} valiseUsed={valiseUsed}
+            mercatoData={mercatoData} autoFilled={false} />
+          <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
+            buteurs={buteurs} setButeurs={setButeurs} matchKey="m2"
+            saison={common.saison} ligue={common.ligue} valiseUsed={valiseUsed}
+            mercatoData={mercatoData} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
+        </div>
+
+        <button type="submit" disabled={!isReady || saving}
+          className={`w-full px-6 py-3 rounded-xl font-semibold text-white transition-colors ${isReady && !saving ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-300 cursor-not-allowed'}`}>
+          {saving ? 'Enregistrement...' : 'Enregistrer la journée'}
         </button>
       </form>
     </div>
