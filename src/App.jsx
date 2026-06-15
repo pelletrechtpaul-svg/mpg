@@ -1,7 +1,6 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { PLAYLIST } from './shared.jsx';
-const MercatoTab = lazy(() => import('./components/MercatoTab'));
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
 const AdvancedStatsTab = lazy(() => import('./components/AdvancedStatsTab'));
 const VersusTab = lazy(() => import('./components/VersusTab'));
@@ -12,7 +11,7 @@ import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { useSeasonData } from './hooks/useSeasonData';
-import { useMercatoStats } from './hooks/useMercatoStats';
+
 import { useChampionshipStats } from './hooks/useChampionshipStats';
 import { usePlayerStats } from './hooks/usePlayerStats';
 import { useEvolutionData } from './hooks/useEvolutionData';
@@ -36,7 +35,7 @@ const App = () => {
   const { darkMode, setDarkMode } = useDarkMode();
   const { isPlaying, currentTrack, playPause, prevTrack, nextTrack } = useAudioPlayer();
   const { filteredData, joueurs, ligues, championnatsByLigue } = useSeasonData(matchData, selectedSeason);
-  const mercatoStats = useMercatoStats(mercatoData);
+
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
   const { statsDetaillees, cleanSheetsStats, scoreDistribution, heureDeGloire, valiseStats, versusStats, versusMatchHistory } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue);
   const { evolutionData, matchesListForChampionnat, historicalEvolution, buteursEvolution, loosersEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue, ligueMetadata, matchData, selectedSeason);
@@ -226,16 +225,6 @@ const App = () => {
               >
                 Joueurs
               </button>
-              <button
-                onClick={() => setActiveTab('mercato')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'mercato'
-                    ? 'bg-amber-500 text-white shadow-lg'
-                    : 'bg-white text-amber-600 hover:bg-amber-50 dark:bg-slate-800 dark:text-amber-400'
-                }`}
-              >
-                Mercato
-              </button>
             </div>
           </div>
         )}
@@ -323,12 +312,6 @@ const App = () => {
           <JoueursTab mercatoData={mercatoData} />
         )}
 
-        {activeTab === 'mercato' && (
-          <MercatoTab
-            mercatoStats={mercatoStats}
-            shareContext={shareContext}
-          />
-        )}
         </Suspense>
 
       </div>
