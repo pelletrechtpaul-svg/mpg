@@ -8,7 +8,7 @@ const RecordsTab = lazy(() => import('./components/RecordsTab'));
 const ClassementsTab = lazy(() => import('./components/ClassementsTab'));
 const AdminTab = lazy(() => import('./components/AdminTab'));
 import { db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
@@ -37,9 +37,10 @@ const App = () => {
 
   const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
   useEffect(() => {
-    getDoc(doc(db, 'config', 'saisons')).then(snap => {
+    const unsub = onSnapshot(doc(db, 'config', 'saisons'), snap => {
       if (snap.exists()) setSaisons(snap.data().list || ['2025/2026', '2024/2025']);
-    }).catch(() => {});
+    }, () => {});
+    return unsub;
   }, []);
   const { darkMode, setDarkMode } = useDarkMode();
   const { isPlaying, currentTrack, playPause, prevTrack, nextTrack } = useAudioPlayer();
