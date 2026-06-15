@@ -31,16 +31,19 @@ function PlayerPhoto({ player, size = 'lg' }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    // Try to load from public registry
-    fetch('/players-photos.json')
+    let cancelled = false;
+    const searchName = encodeURIComponent(player.displayName);
+    fetch(`https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${searchName}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        const key = player.joueur + '|' + player.ligue;
-        const url = data?.[key];
+        if (cancelled) return;
+        const p = data?.player?.[0];
+        const url = p?.strThumb || p?.strCutout || null;
         if (url) setPhotoUrl(url);
       })
       .catch(() => {});
-  }, [player.joueur, player.ligue]);
+    return () => { cancelled = true; };
+  }, [player.displayName]);
 
   if (!photoUrl || failed) return <InitialsAvatar displayName={player.displayName} size={size} />;
 
