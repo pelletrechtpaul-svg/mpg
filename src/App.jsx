@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { PLAYLIST } from './shared.jsx';
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
@@ -7,6 +7,8 @@ const VersusTab = lazy(() => import('./components/VersusTab'));
 const RecordsTab = lazy(() => import('./components/RecordsTab'));
 const ClassementsTab = lazy(() => import('./components/ClassementsTab'));
 const AdminTab = lazy(() => import('./components/AdminTab'));
+import { db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useDarkMode } from './hooks/useDarkMode';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
@@ -32,6 +34,13 @@ const App = () => {
   const [activeVersusTooltip, setActiveVersusTooltip] = useState(null);
 
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
+
+  const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
+  useEffect(() => {
+    getDoc(doc(db, 'config', 'saisons')).then(snap => {
+      if (snap.exists()) setSaisons(snap.data().list || ['2025/2026', '2024/2025']);
+    }).catch(() => {});
+  }, []);
   const { darkMode, setDarkMode } = useDarkMode();
   const { isPlaying, currentTrack, playPause, prevTrack, nextTrack } = useAudioPlayer();
   const { filteredData, joueurs, ligues, championnatsByLigue } = useSeasonData(matchData, selectedSeason);
@@ -151,7 +160,7 @@ const App = () => {
 
         {/* Season Navigation */}
         <div className="flex gap-2 mb-4 flex-wrap">
-          {['2025/2026', '2024/2025', 'All-Time'].map(season => (
+          {[...saisons, 'All-Time'].map(season => (
             <button
               key={season}
               onClick={() => {
