@@ -5,7 +5,15 @@ import { encodeFirestoreKey } from '../shared.jsx';
 import ScorerSection from './AdminScorerSection';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
-const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+
+const LIGUE_CONFIG = [
+  { id: 'Ligue 1',           label: 'Ligue 1',           flag: '🇫🇷', color: 'bg-blue-600 hover:bg-blue-700' },
+  { id: 'Premier League',    label: 'Premier League',    flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: 'bg-purple-600 hover:bg-purple-700' },
+  { id: 'Liga',              label: 'Liga',              flag: '🇪🇸', color: 'bg-red-600 hover:bg-red-700' },
+  { id: 'Serie A',           label: 'Serie A',           flag: '🇮🇹', color: 'bg-green-700 hover:bg-green-800' },
+  { id: 'Ligue des Champions', label: 'Champions',       flag: '⭐', color: 'bg-slate-700 hover:bg-slate-800' },
+];
+
 const EMPTY_MATCH = { joueur1: '', joueur2: '', buts1: '', buts2: '', valise1: false, valise2: false };
 
 function calcResult(b1, b2) {
@@ -18,6 +26,26 @@ function resultLabel(j1, j2, b1, b2) {
   if (b1 > b2) return `Victoire ${j1} (3 pts)`;
   if (b1 < b2) return `Victoire ${j2} (3 pts)`;
   return 'Match nul (1 pt chacun)';
+}
+
+function getChampStatus(matchData, ligueMetadata, saison, ligue) {
+  const championnats = [...new Set(
+    matchData.filter(m => m.saison === saison && m.ligue === ligue).map(m => m.championnat)
+  )].sort((a, b) => {
+    const na = parseInt(a.match(/#(\d+)/)?.[1] || 0);
+    const nb = parseInt(b.match(/#(\d+)/)?.[1] || 0);
+    return na - nb;
+  });
+
+  if (championnats.length === 0) return { championnat: null, number: 0, isFull: false, meta: null };
+
+  const current = championnats[championnats.length - 1];
+  const key = `${saison}-${ligue}-${current}`;
+  const meta = ligueMetadata[key] || null;
+  const number = parseInt(current.match(/#(\d+)/)?.[1] || 0);
+  const isFull = meta ? meta.matchsEntered >= meta.matchsTotal : false;
+
+  return { championnat: current, number, isFull, meta };
 }
 
 function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, matchKey, saison, ligue, valiseUsed, mercatoData, autoFilled }) {
@@ -101,20 +129,30 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
   );
 }
 
-const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetadata, showToast, onCancel }) => {
+// ─── Main component ───────────────────────────────────────────────────────────
+
+const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, showToast, onCancel }) => {
   const today = new Date().toISOString().split('T')[0];
-  const [common, setCommon] = useState({ saison: saisons[0] || '', ligue: '', championnat: '', isNewChampionnat: false, newChampionnatMatchs: 6, dateMatch: today });
+
+  // view: 'ligue' | 'entry' | 'newchamp'
+  const [view, setView] = useState('ligue');
+  const [selLigue, setSelLigue] = useState('');
+  const [selSaison, setSelSaison] = useState('');
+  const [championnat, setChampionnat] = useState('');
+  const [champMeta, setChampMeta] = useState(null);
+
+  // New championnat config
+  const [newChampMatchs, setNewChampMatchs] = useState(6);
+  const [creatingChamp, setCreatingChamp] = useState(false);
+
+  // Entry form state
+  const [dateMatch, setDateMatch] = useState(today);
   const [match1, setMatch1] = useState(EMPTY_MATCH);
   const [match2, setMatch2] = useState(EMPTY_MATCH);
   const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
   const [saving, setSaving] = useState(false);
 
-  // Sync saison when list loads
-  useEffect(() => {
-    if (!common.saison && saisons.length) setCommon(c => ({ ...c, saison: saisons[0] }));
-  }, [saisons]);
-
-  // Auto-fill match2 from match1 selection
+  // Auto-fill match2
   useEffect(() => {
     if (match1.joueur1 && match1.joueur2) {
       const [j1, j2] = JOUEURS.filter(j => j !== match1.joueur1 && j !== match1.joueur2);
@@ -124,52 +162,82 @@ const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetad
     }
   }, [match1.joueur1, match1.joueur2]);
 
-  const championnats = useMemo(() => {
-    if (!common.ligue) return [];
-    return [...new Set(matchData.filter(d => d.saison === common.saison && d.ligue === common.ligue).map(d => d.championnat))].sort();
-  }, [matchData, common.saison, common.ligue]);
+  const champStatus = useMemo(() =>
+    selSaison && selLigue ? getChampStatus(matchData, ligueMetadata, selSaison, selLigue) : null,
+    [matchData, ligueMetadata, selSaison, selLigue]
+  );
 
   const valiseUsed = useMemo(() => {
-    if (!common.ligue || (!common.championnat && !common.isNewChampionnat)) return {};
+    if (!championnat || !selLigue || !selSaison) return {};
     const used = {};
-    matchData.filter(m => m.saison === common.saison && m.ligue === common.ligue && m.championnat === common.championnat).forEach(m => {
+    matchData.filter(m => m.saison === selSaison && m.ligue === selLigue && m.championnat === championnat).forEach(m => {
       if (m.valise_j1) used[m.joueur1] = true;
       if (m.valise_j2) used[m.joueur2] = true;
     });
     return used;
-  }, [matchData, common]);
+  }, [matchData, selSaison, selLigue, championnat]);
 
-  const isReady = common.ligue && (common.championnat || common.isNewChampionnat) && common.dateMatch
+  const handleSelectLigue = (ligue) => {
+    const saison = saisons[0] || '';
+    setSelLigue(ligue);
+    setSelSaison(saison);
+    const status = getChampStatus(matchData, ligueMetadata, saison, ligue);
+    if (!status.championnat) {
+      // No championnat yet → go straight to new champ creation
+      setView('newchamp');
+    } else if (status.isFull) {
+      // Current champ is full → show entry but with full banner
+      setChampionnat(status.championnat);
+      setChampMeta(status.meta);
+      setView('entry');
+    } else {
+      setChampionnat(status.championnat);
+      setChampMeta(status.meta);
+      setView('entry');
+    }
+  };
+
+  const handleCreateChamp = async () => {
+    if (creatingChamp) return;
+    setCreatingChamp(true);
+    try {
+      const snap = await getDocs(query(collection(db, 'matches'), where('saison', '==', selSaison), where('ligue', '==', selLigue)));
+      const existing = new Set(snap.docs.map(d => d.data().championnat));
+      const newChamp = `#${existing.size + 1}`;
+      setChampionnat(newChamp);
+      setChampMeta({ matchsTotal: newChampMatchs, matchsEntered: 0 });
+      setView('entry');
+    } catch {
+      showToast('Erreur lors de la création du championnat', 'error');
+    } finally {
+      setCreatingChamp(false);
+    }
+  };
+
+  const isReady = championnat && dateMatch
     && match1.joueur1 && match1.joueur2 && match1.buts1 !== '' && match1.buts2 !== ''
-    && match2.joueur1 && match2.joueur2 && match2.buts1 !== '' && match2.buts2 !== '';
+    && match2.joueur1 && match2.joueur2 && match2.buts1 !== '' && match2.buts2 !== ''
+    && !(champStatus?.isFull && championnat === champStatus?.championnat);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isReady || saving) return;
 
-    const { saison, ligue, isNewChampionnat, newChampionnatMatchs, dateMatch } = common;
     const scores = [parseInt(match1.buts1), parseInt(match1.buts2), parseInt(match2.buts1), parseInt(match2.buts2)];
     if (scores.some(b => isNaN(b) || b < 0 || b > 30)) { showToast('Score invalide (0–30)', 'error'); return; }
 
+    const isDup = matchData.some(m =>
+      m.dateMatch === dateMatch && m.championnat === championnat &&
+      ((m.joueur1 === match1.joueur1 && m.joueur2 === match1.joueur2) || (m.joueur1 === match1.joueur2 && m.joueur2 === match1.joueur1))
+    );
+    if (isDup) { showToast('Ce match existe déjà pour cette date', 'error'); return; }
+
     setSaving(true);
     try {
-      let championnat = common.championnat;
-      if (isNewChampionnat) {
-        const snap = await getDocs(query(collection(db, 'matches'), where('saison', '==', saison), where('ligue', '==', ligue)));
-        const existing = new Set(snap.docs.map(d => d.data().championnat));
-        championnat = `#${existing.size + 1}`;
-      }
-
-      const isDup = matchData.some(m =>
-        m.dateMatch === dateMatch && m.championnat === championnat &&
-        ((m.joueur1 === match1.joueur1 && m.joueur2 === match1.joueur2) || (m.joueur1 === match1.joueur2 && m.joueur2 === match1.joueur1))
-      );
-      if (isDup) { showToast('Ce match existe déjà pour cette date', 'error'); setSaving(false); return; }
-
       const now = new Date().toISOString();
       const buildMatch = (m, buts) => {
         const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
-        return { saison, ligue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts };
+        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts };
       };
 
       const batch = writeBatch(db);
@@ -178,13 +246,13 @@ const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetad
         batch.set(ref, { ...m, id: ref.id });
       });
 
-      const ligueKey = `${saison}-${ligue}-${championnat}`;
+      const ligueKey = `${selSaison}-${selLigue}-${championnat}`;
       const metaRef = doc(db, 'metadata', encodeFirestoreKey(ligueKey));
-      if (isNewChampionnat) {
-        batch.set(metaRef, { createdAt: now, matchsTotal: newChampionnatMatchs, matchsEntered: 1, ligue, saison, championnat });
+      const isNew = !champMeta || champMeta.matchsEntered === 0;
+      if (isNew) {
+        batch.set(metaRef, { createdAt: now, matchsTotal: newChampMatchs, matchsEntered: 1, ligue: selLigue, saison: selSaison, championnat });
       } else {
-        const meta = ligueMetadata[ligueKey];
-        if (meta) batch.set(metaRef, { ...meta, matchsEntered: (meta.matchsEntered || 0) + 1 });
+        batch.set(metaRef, { ...champMeta, matchsEntered: (champMeta.matchsEntered || 0) + 1 });
       }
 
       await batch.commit();
@@ -192,7 +260,9 @@ const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetad
       setMatch1(EMPTY_MATCH);
       setMatch2(EMPTY_MATCH);
       setButeurs({ m1: [], m2: [] });
-      setCommon(c => ({ ...c, dateMatch: today }));
+      setDateMatch(today);
+      // Update local champMeta count
+      setChampMeta(prev => prev ? { ...prev, matchsEntered: (prev.matchsEntered || 0) + 1 } : null);
     } catch {
       showToast('Erreur lors de la sauvegarde', 'error');
     } finally {
@@ -200,86 +270,148 @@ const AdminAddMatchForm = ({ matchData, ligues, saisons, mercatoData, ligueMetad
     }
   };
 
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-slate-800">Nouvelle journée</h3>
-        <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">Annuler</button>
-      </div>
+  const currentLigueConfig = LIGUE_CONFIG.find(l => l.id === selLigue);
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Saison</label>
-            <select value={common.saison} onChange={e => setCommon({ ...common, saison: e.target.value, championnat: '', isNewChampionnat: false })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+  // ── VIEW: Ligue selection ──────────────────────────────────────────────────
+  if (view === 'ligue') {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold text-slate-800">Ajouter une journée</h3>
+          <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">Annuler</button>
+        </div>
+
+        {saisons.length > 1 && (
+          <div className="mb-5 flex items-center gap-2">
+            <span className="text-sm text-slate-500">Saison :</span>
+            <select value={saisons[0]} className="text-sm px-2 py-1 border border-slate-200 rounded-lg bg-white" disabled>
               {saisons.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
-            <input type="date" value={common.dateMatch} onChange={e => setCommon({ ...common, dateMatch: e.target.value })}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Ligue</label>
-          <div className="flex flex-wrap gap-2">
-            {LIGUES.map(l => (
-              <button key={l} type="button"
-                onClick={() => setCommon({ ...common, ligue: l, championnat: '', isNewChampionnat: false })}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${common.ligue === l ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-600 hover:border-blue-400'}`}>
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {common.ligue && (
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Championnat</label>
-            <div className="flex flex-wrap gap-2">
-              {championnats.map(ch => (
-                <button key={ch} type="button"
-                  onClick={() => setCommon({ ...common, championnat: ch, isNewChampionnat: false })}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${!common.isNewChampionnat && common.championnat === ch ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 text-slate-600 hover:border-blue-400'}`}>
-                  {ch}
-                </button>
-              ))}
-              <button type="button"
-                onClick={() => setCommon({ ...common, isNewChampionnat: true, championnat: '' })}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${common.isNewChampionnat ? 'bg-blue-600 text-white border-blue-600' : 'border-dashed border-slate-300 text-blue-600 hover:border-blue-400'}`}>
-                + Nouveau
-              </button>
-            </div>
-            {common.isNewChampionnat && (
-              <div className="mt-3 flex items-center gap-3">
-                <label className="text-sm text-slate-600">Nombre de journées :</label>
-                <input type="number" value={common.newChampionnatMatchs}
-                  onChange={e => setCommon({ ...common, newChampionnatMatchs: parseInt(e.target.value) || 6 })}
-                  min="1" max="20" className="w-20 px-3 py-1.5 border border-slate-300 rounded-lg text-sm text-center" />
-              </div>
-            )}
+            <span className="text-xs text-slate-400">(saison en cours)</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
-            buteurs={buteurs} setButeurs={setButeurs} matchKey="m1"
-            saison={common.saison} ligue={common.ligue} valiseUsed={valiseUsed}
-            mercatoData={mercatoData} autoFilled={false} />
-          <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
-            buteurs={buteurs} setButeurs={setButeurs} matchKey="m2"
-            saison={common.saison} ligue={common.ligue} valiseUsed={valiseUsed}
-            mercatoData={mercatoData} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {LIGUE_CONFIG.map(l => (
+            <button key={l.id} onClick={() => handleSelectLigue(l.id)}
+              className={`${l.color} text-white rounded-xl px-5 py-4 text-left transition-transform hover:scale-[1.02] active:scale-[0.98]`}>
+              <span className="text-2xl mb-2 block">{l.flag}</span>
+              <span className="font-semibold text-base">{l.label}</span>
+              {(() => {
+                const saison = saisons[0] || '';
+                if (!saison) return null;
+                const s = getChampStatus(matchData, ligueMetadata, saison, l.id);
+                if (!s.championnat) return <span className="block text-xs opacity-70 mt-1">Aucun championnat</span>;
+                if (s.isFull) return <span className="block text-xs opacity-70 mt-1">{s.championnat} · terminé</span>;
+                return <span className="block text-xs opacity-70 mt-1">{s.championnat} · {s.meta?.matchsEntered || 0}/{s.meta?.matchsTotal || '?'} journées</span>;
+              })()}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── VIEW: New championnat ──────────────────────────────────────────────────
+  if (view === 'newchamp') {
+    return (
+      <div>
+        <button onClick={() => setView('ligue')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-xl">{currentLigueConfig?.flag}</span>
+          <h3 className="text-lg font-semibold text-slate-800">Nouveau championnat · {selLigue}</h3>
         </div>
 
-        <button type="submit" disabled={!isReady || saving}
-          className={`w-full px-6 py-3 rounded-xl font-semibold text-white transition-colors ${isReady && !saving ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-300 cursor-not-allowed'}`}>
-          {saving ? 'Enregistrement...' : 'Enregistrer la journée'}
-        </button>
-      </form>
+        <div className="bg-slate-50 rounded-xl p-5 space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-3">Nombre de journées</label>
+            <div className="flex gap-2">
+              {[3, 4, 5, 6].map(n => (
+                <button key={n} type="button" onClick={() => setNewChampMatchs(n)}
+                  className={`w-12 h-12 rounded-lg font-semibold text-base transition-colors ${newChampMatchs === n ? 'bg-blue-600 text-white' : 'bg-white border border-slate-300 text-slate-700 hover:border-blue-400'}`}>
+                  {n}
+                </button>
+              ))}
+              <div className="flex items-center gap-2 ml-2">
+                <span className="text-sm text-slate-500">ou</span>
+                <input type="number" value={newChampMatchs} onChange={e => setNewChampMatchs(Math.max(1, parseInt(e.target.value) || 1))}
+                  min="1" max="20" className="w-16 px-2 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+              </div>
+            </div>
+          </div>
+
+          <button onClick={handleCreateChamp} disabled={creatingChamp}
+            className="w-full px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50">
+            {creatingChamp ? 'Création...' : `Créer et saisir la première journée`}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── VIEW: Match entry ──────────────────────────────────────────────────────
+  const isFull = champStatus?.isFull && championnat === champStatus?.championnat;
+
+  return (
+    <div>
+      <button onClick={() => setView('ligue')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{currentLigueConfig?.flag}</span>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800">{selLigue} · {championnat}</h3>
+            {champMeta && (
+              <p className="text-xs text-slate-500">
+                {isFull
+                  ? `${champMeta.matchsEntered}/${champMeta.matchsTotal} journées · terminé`
+                  : `Journée ${(champMeta.matchsEntered || 0) + 1} / ${champMeta.matchsTotal}`}
+              </p>
+            )}
+          </div>
+        </div>
+        <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">Annuler</button>
+      </div>
+
+      {/* Full championship banner */}
+      {isFull && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
+          <p className="text-amber-800 font-medium text-sm mb-3">
+            Le championnat {championnat} est terminé ({champMeta?.matchsTotal} journées jouées).
+          </p>
+          <button onClick={() => setView('newchamp')}
+            className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700">
+            Démarrer le championnat #{(champStatus?.number || 0) + 1}
+          </button>
+        </div>
+      )}
+
+      {!isFull && (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Date de la journée</label>
+            <input type="date" value={dateMatch} onChange={e => setDateMatch(e.target.value)}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
+              buteurs={buteurs} setButeurs={setButeurs} matchKey="m1"
+              saison={selSaison} ligue={selLigue} valiseUsed={valiseUsed}
+              mercatoData={mercatoData} autoFilled={false} />
+            <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
+              buteurs={buteurs} setButeurs={setButeurs} matchKey="m2"
+              saison={selSaison} ligue={selLigue} valiseUsed={valiseUsed}
+              mercatoData={mercatoData} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
+          </div>
+
+          <button type="submit" disabled={!isReady || saving}
+            className={`w-full px-6 py-3 rounded-xl font-semibold text-white transition-colors ${isReady && !saving ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-300 cursor-not-allowed'}`}>
+            {saving ? 'Enregistrement...' : 'Enregistrer la journée'}
+          </button>
+        </form>
+      )}
     </div>
   );
 };

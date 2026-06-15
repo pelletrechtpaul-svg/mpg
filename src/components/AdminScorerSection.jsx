@@ -32,13 +32,14 @@ export default function ScorerSection({ matchKey, joueur1, joueur2, saison, ligu
 
   const addScorer = (player) => {
     if (current.find(s => s.joueur === player.joueur)) return;
-    setButeurs(prev => ({ ...prev, [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: player.acheteur }] }));
+    setButeurs(prev => ({ ...prev, [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: player.acheteur, csc: false }] }));
     setSearch('');
     inputRef.current?.focus();
   };
 
   const removeScorer = (i) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, idx) => idx !== i) }));
   const updateButs = (i, val) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, idx) => idx === i ? { ...s, buts: Math.max(1, parseInt(val) || 1) } : s) }));
+  const toggleCsc = (i) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, idx) => idx === i ? { ...s, csc: !s.csc } : s) }));
 
   if (allPlayers.length === 0) return null;
 
@@ -48,12 +49,17 @@ export default function ScorerSection({ matchKey, joueur1, joueur2, saison, ligu
       {current.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
           {current.map((s, i) => (
-            <span key={i} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.acheteur === joueur1 ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}`}>
+            <span key={i} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${s.csc ? 'bg-orange-100 text-orange-800' : s.acheteur === joueur1 ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}`}>
               {s.displayName}
-              <span className="opacity-40">·</span>
+              <span className="opacity-30 mx-0.5">·</span>
               <input type="number" value={s.buts} min="1" max="10" onChange={e => updateButs(i, e.target.value)}
                 className="w-6 text-center bg-transparent border-none outline-none text-xs font-bold" />
-              <button type="button" onClick={() => removeScorer(i)} className="opacity-50 hover:opacity-100 leading-none">×</button>
+              <button type="button" onClick={() => toggleCsc(i)}
+                title="But contre son camp"
+                className={`text-[10px] px-1 py-0.5 rounded font-bold transition-colors ${s.csc ? 'bg-orange-400 text-white' : 'text-slate-300 hover:text-orange-400'}`}>
+                CSC
+              </button>
+              <button type="button" onClick={() => removeScorer(i)} className="opacity-50 hover:opacity-100 leading-none ml-0.5">×</button>
             </span>
           ))}
         </div>
