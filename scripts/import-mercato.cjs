@@ -28,6 +28,7 @@
 const admin = require('firebase-admin');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const sa = require('../serviceAccountKey.json');
 admin.initializeApp({ credential: admin.credential.cert(sa) });
 const db = admin.firestore();
@@ -48,7 +49,34 @@ const NAT_NORM = {
 };
 
 const registryPath = path.join(__dirname, 'players-registry.json');
+const photosPublicPath = path.join(__dirname, '../public/players-photos.json');
 const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+
+function fetchPhotoFromSportsDB(playerName) {
+  return new Promise(resolve => {
+    const query = encodeURIComponent(playerName);
+    const url = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${query}`;
+    https.get(url, { timeout: 5000 }, res => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const player = json.player?.[0];
+          resolve(player?.strThumb || player?.strCutout || null);
+        } catch { resolve(null); }
+      });
+    }).on('error', () => resolve(null)).on('timeout', () => resolve(null));
+  });
+}
+
+function writePhotosPublic() {
+  const photos = {};
+  Object.entries(registry).forEach(([key, val]) => {
+    if (val.photo) photos[key] = val.photo;
+  });
+  fs.writeFileSync(photosPublicPath, JSON.stringify(photos, null, 2));
+}
 
 async function getNextChampionnat(ligue) {
   const snap = await db.collection('mercato').where('ligue', '==', ligue).get();
@@ -107,6 +135,15 @@ async function main() {
     const prenom = j.prenom || known?.prenom || null;
     if (prenom && !entry.joueur.startsWith(prenom)) entry.prenom = prenom;
 
+    // Photo auto pour les nouveaux joueurs
+    if (!known || !known.photo) {
+      const searchName = entry.prenom ? `${entry.prenom} ${j.joueur}` : j.joueur;
+      const photo = await fetchPhotoFromSportsDB(searchName);
+      const regKey2 = j.joueur + '|' + ligue;
+      if (!registry[regKey2]) registry[regKey2] = { prenom: entry.prenom || null, nationalite: entry.nationalite, poste: entry.poste, clubs: entry.club ? [entry.club] : [], photo: null };
+      if (photo) { registry[regKey2].photo = photo; console.log(`  📸 Photo trouvée: ${searchName}`); }
+    }
+
     const dupes = await checkDuplicate(j.joueur, ligue, championnat, tour);
     if (dupes.length > 0) warnings.push(`⚠️  DOUBLON: ${j.joueur} déjà en DB (id: ${dupes[0].id})`);
     if (!known) warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
@@ -149,7 +186,8 @@ async function main() {
       }
     });
     fs.writeFileSync(registryPath, JSON.stringify(registry, null, 2));
-    console.log('✅ Registre mis à jour.');
+    writePhotosPublic();
+    console.log('✅ Registre et photos mis à jour.');
   } else {
     console.log('  → Dry run. Passe DRY_RUN=false pour écrire en DB.');
   }
