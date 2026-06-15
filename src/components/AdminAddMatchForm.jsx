@@ -152,6 +152,14 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
   const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
   const [saving, setSaving] = useState(false);
 
+  // Init selSaison to first saison that has mercato data
+  useEffect(() => {
+    if (saisons.length && !selSaison) {
+      const withData = saisons.find(s => mercatoData.some(p => p.saison === s));
+      setSelSaison(withData || saisons[0]);
+    }
+  }, [saisons, mercatoData]);
+
   // Auto-fill match2
   useEffect(() => {
     if (match1.joueur1 && match1.joueur2) {
@@ -178,9 +186,9 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
   }, [matchData, selSaison, selLigue, championnat]);
 
   const handleSelectLigue = (ligue) => {
-    const saison = saisons[0] || '';
+    const saison = selSaison || saisons[0] || '';
     setSelLigue(ligue);
-    setSelSaison(saison);
+    if (!selSaison) setSelSaison(saison);
     const status = getChampStatus(matchData, ligueMetadata, saison, ligue);
     if (!status.championnat) {
       // No championnat yet → go straight to new champ creation
@@ -281,13 +289,16 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
           <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700">Annuler</button>
         </div>
 
-        {saisons.length > 1 && (
+        {saisons.length > 0 && (
           <div className="mb-5 flex items-center gap-2">
             <span className="text-sm text-slate-500">Saison :</span>
-            <select value={saisons[0]} className="text-sm px-2 py-1 border border-slate-200 rounded-lg bg-white" disabled>
+            <select
+              value={selSaison || saisons[0]}
+              onChange={e => setSelSaison(e.target.value)}
+              className="text-sm px-2 py-1 border border-slate-200 rounded-lg bg-white"
+            >
               {saisons.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <span className="text-xs text-slate-400">(saison en cours)</span>
           </div>
         )}
 
@@ -298,7 +309,7 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
               <span className="text-2xl mb-2 block">{l.flag}</span>
               <span className="font-semibold text-base">{l.label}</span>
               {(() => {
-                const saison = saisons[0] || '';
+                const saison = selSaison || saisons[0] || '';
                 if (!saison) return null;
                 const s = getChampStatus(matchData, ligueMetadata, saison, l.id);
                 if (!s.championnat) return <span className="block text-xs opacity-70 mt-1">Aucun championnat</span>;
