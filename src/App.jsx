@@ -298,6 +298,7 @@ const App = () => {
             ligues={ligues}
             versusStats={versusStats}
             versusMatchHistory={versusMatchHistory}
+            heureDeGloire={heureDeGloire}
             activeVersusTooltip={activeVersusTooltip}
             setActiveVersusTooltip={setActiveVersusTooltip}
             selectedValiseTable={selectedValiseTable}
