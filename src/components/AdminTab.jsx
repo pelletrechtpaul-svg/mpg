@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Lock, Plus, Edit, Settings, RefreshCw } from 'lucide-react';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '../firebase';
 import { doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
@@ -27,7 +27,9 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
   const [view, setView] = useState('menu');
   const [saisons, setSaisons] = useState([]);
   const [toast, setToast] = useState(null);
-  const [newSaison, setNewSaison] = useState('');
+  const [saisonConfirm, setSaisonConfirm] = useState(null); // { action: 'add'|'remove', target?: string }
+  const [saisonPassword, setSaisonPassword] = useState('');
+  const [saisonAuthError, setSaisonAuthError] = useState('');
 
   const showToast = (message, type = 'success') => setToast({ message, type });
 
@@ -42,17 +44,42 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
     setSaisons(list);
   };
 
-  const handleAddSaison = async () => {
-    const s = newSaison.trim();
-    if (!s || saisons.includes(s)) return;
-    await saveSaisons([s, ...saisons]);
-    setNewSaison('');
-    showToast(`Saison ${s} ajoutée`);
+  function nextSaison(current) {
+    const match = current?.match(/(\d{4})\/(\d{4})/);
+    if (!match) return '';
+    return `${parseInt(match[1]) + 1}/${parseInt(match[2]) + 1}`;
+  }
+
+  const openSaisonConfirm = (action, target) => {
+    setSaisonConfirm({ action, target });
+    setSaisonPassword('');
+    setSaisonAuthError('');
   };
 
-  const handleRemoveSaison = async (s) => {
-    await saveSaisons(saisons.filter(x => x !== s));
-    showToast(`Saison ${s} supprimée`);
+  const handleSaisonConfirm = async () => {
+    setSaisonAuthError('');
+    try {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, saisonPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+    } catch {
+      setSaisonAuthError('Mot de passe incorrect.');
+      return;
+    }
+
+    try {
+      if (saisonConfirm.action === 'add') {
+        const next = nextSaison(saisons[0]);
+        await saveSaisons([next, ...saisons]);
+        showToast(`Saison ${next} ajoutée`);
+      } else if (saisonConfirm.action === 'remove') {
+        await saveSaisons(saisons.filter(x => x !== saisonConfirm.target));
+        showToast(`Saison ${saisonConfirm.target} supprimée`);
+      }
+      setSaisonConfirm(null);
+      setSaisonPassword('');
+    } catch {
+      showToast('Erreur lors de la modification', 'error');
+    }
   };
 
   const handleAdminLogin = async (e) => {
@@ -176,25 +203,56 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
               <div>
                 <button onClick={() => setView('menu')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Gérer les saisons</h3>
-                <div className="flex gap-2 mb-4">
-                  <input
-                    type="text"
-                    value={newSaison}
-                    onChange={e => setNewSaison(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAddSaison()}
-                    placeholder="ex: 2026/2027"
-                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-sm"
-                  />
-                  <button onClick={handleAddSaison} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Ajouter</button>
-                </div>
-                <div className="space-y-2">
-                  {saisons.map(s => (
-                    <div key={s} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                      <span className="font-medium text-sm">{s}</span>
-                      <button onClick={() => handleRemoveSaison(s)} className="text-sm text-red-500 hover:text-red-700">Supprimer</button>
+
+                {saisonConfirm ? (
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-4">
+                    <p className="text-sm text-slate-700">
+                      {saisonConfirm.action === 'add'
+                        ? `Confirmer l'ajout de la saison ${nextSaison(saisons[0])} ?`
+                        : `Confirmer la suppression de la saison ${saisonConfirm.target} ?`}
+                    </p>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Mot de passe admin</label>
+                      <input
+                        type="password"
+                        value={saisonPassword}
+                        onChange={e => setSaisonPassword(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleSaisonConfirm()}
+                        placeholder="••••••••"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                        autoFocus
+                      />
+                      {saisonAuthError && <p className="text-red-500 text-xs mt-1">{saisonAuthError}</p>}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex gap-2">
+                      <button onClick={handleSaisonConfirm}
+                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white ${saisonConfirm.action === 'remove' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                        Confirmer
+                      </button>
+                      <button onClick={() => setSaisonConfirm(null)}
+                        className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-medium">
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-2 mb-4">
+                      {saisons.map(s => (
+                        <div key={s} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <span className="font-medium text-sm">{s}</span>
+                          <button onClick={() => openSaisonConfirm('remove', s)} className="text-sm text-red-500 hover:text-red-700">Supprimer</button>
+                        </div>
+                      ))}
+                    </div>
+                    {saisons.length > 0 && (
+                      <button onClick={() => openSaisonConfirm('add')}
+                        className="w-full px-4 py-3 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl text-sm font-medium hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                        + Nouvelle saison ({nextSaison(saisons[0])})
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
