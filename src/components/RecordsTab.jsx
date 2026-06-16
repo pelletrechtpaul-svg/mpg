@@ -1,6 +1,94 @@
 import { useState } from 'react';
 import { playerColors, ShareBtn } from '../shared.jsx';
 
+const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' };
+const colorBorder = { Paul: 'border-blue-200 dark:border-blue-800', Adrien: 'border-green-200 dark:border-green-800', Tiago: 'border-purple-200 dark:border-purple-800', Roman: 'border-orange-200 dark:border-orange-800' };
+const colorBg = { Paul: 'bg-blue-500', Adrien: 'bg-green-500', Tiago: 'bg-purple-500', Roman: 'bg-orange-500' };
+
+const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
+
+// Grid showing all 4 players with a numeric score
+function AllPlayersGrid({ data, valueKey = 'count', suffix = '', formatValue, joueurs, children }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+      {data.map(entry => {
+        const val = formatValue ? formatValue(entry) : entry[valueKey];
+        return (
+          <div key={entry.joueur} className={`rounded-lg border-2 ${colorBorder[entry.joueur]} p-3 text-center`}>
+            <div className={`text-3xl font-bold ${colorText[entry.joueur]}`}>{val}{suffix}</div>
+            <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1">{entry.joueur}</div>
+            {children && children(entry)}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Ranked list of top-3 entries with player dot + detail
+function Top3List({ entries, renderValue, renderDetail }) {
+  if (!entries?.length) return null;
+  const medals = ['🥇', '🥈', '🥉'];
+  let rank = 0, prevScore = null;
+  return (
+    <div className="space-y-2 mt-2">
+      {entries.map((entry, i) => {
+        const score = renderValue(entry);
+        if (score !== prevScore) { rank = i; prevScore = score; }
+        return (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-base w-5">{medals[rank] || ''}</span>
+            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur || entry.champion]}`} />
+            <div>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{score}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">{renderDetail(entry)}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Card wrapper
+function RecordCard({ className = '', children, contextText, color = 'white' }) {
+  return (
+    <div data-card className={`relative rounded-lg p-4 border-2 ${className}`}>
+      <ShareBtn contextText={contextText} />
+      {children}
+    </div>
+  );
+}
+
+// Streak rows showing all 4 players sorted
+function StreakRows({ streakData, joueurs, unit }) {
+  const sorted = joueurs
+    .map(j => ({ joueur: j, ...(streakData[j] || { length: 0, startDate: null, endDate: null }) }))
+    .sort((a, b) => b.length - a.length);
+  const medals = ['🥇', '🥈', '🥉', ''];
+  let rank = 0, prevLen = null;
+  return (
+    <div className="space-y-2 mt-2">
+      {sorted.map((entry, i) => {
+        if (entry.length !== prevLen) { rank = i; prevLen = entry.length; }
+        return (
+          <div key={entry.joueur} className="flex items-center gap-2">
+            <span className="w-5 text-base">{entry.length > 0 ? (medals[rank] || '') : ''}</span>
+            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
+              <span className={`ml-2 font-bold ${colorText[entry.joueur]}`}>{entry.length} {unit}</span>
+              {entry.startDate && (
+                <span className="text-xs text-slate-400 dark:text-slate-500 ml-2">{fmt(entry.startDate)} → {fmt(entry.endDate)}</span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function RecordsTab({
   joueurs, selectedSeason,
   seasonRecords, perduUnPoint,
@@ -10,22 +98,27 @@ export default function RecordsTab({
 
   const ligueData = selectedSeason === 'All-Time' ? ligueRecordsAllTime : ligueRecordsSeason;
 
+  // Unbeaten champion count per player
+  const unbeatenCountPerPlayer = joueurs.map(j => ({
+    joueur: j,
+    count: seasonRecords ? (seasonRecords.unbeatenChampion || []).filter(e => e.joueur === j).length : 0,
+    instances: seasonRecords ? (seasonRecords.unbeatenChampion || []).filter(e => e.joueur === j) : [],
+  })).sort((a, b) => b.count - a.count);
+
   return (
     <>
       <div className="space-y-6">
         {/* Sub-tab navigation */}
         <div className="flex gap-1 overflow-x-auto pb-1">
           {[
-            { id: 'individuels', label: '👤 Individuels', needsData: true },
-            { id: 'collectifs', label: '🏆 Collectifs', needsData: true },
-            { id: 'ligues', label: '🌍 Ligues', needsData: false },
-          ].map(({ id, label, needsData }) => (
+            { id: 'individuels', label: '👤 Individuels' },
+            { id: 'collectifs', label: '🏆 Collectifs' },
+            { id: 'ligues', label: '🌍 Ligues' },
+          ].map(({ id, label }) => (
             <button
               key={id}
-              onClick={() => { if (!needsData || seasonRecords) setActiveSubTab(id); }}
-              disabled={needsData && !seasonRecords}
+              onClick={() => setActiveSubTab(id)}
               className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
-                needsData && !seasonRecords ? 'opacity-40 cursor-not-allowed text-slate-400 dark:text-slate-600' :
                 activeSubTab === id
                   ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
@@ -36,7 +129,7 @@ export default function RecordsTab({
           ))}
         </div>
 
-        {/* Championnats perdus d'un point */}
+        {/* Championnats perdus d'un point — flottant au-dessus de tout */}
         {perduUnPoint && (
           <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
             <ShareBtn contextText={`Championnats perdus d'un point — ${selectedSeason}`} />
@@ -45,11 +138,9 @@ export default function RecordsTab({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {joueurs.map(joueur => {
                 const count = (perduUnPoint[joueur] || []).length;
-                const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' }[joueur];
-                const colorBorder = { Paul: 'border-blue-200 dark:border-blue-800', Adrien: 'border-green-200 dark:border-green-800', Tiago: 'border-purple-200 dark:border-purple-800', Roman: 'border-orange-200 dark:border-orange-800' }[joueur];
                 return (
-                  <div key={joueur} className={`rounded-lg border ${colorBorder} p-3 text-center`}>
-                    <div className={`text-3xl font-bold ${colorText}`}>{count}</div>
+                  <div key={joueur} className={`rounded-lg border-2 ${colorBorder[joueur]} p-3 text-center`}>
+                    <div className={`text-3xl font-bold ${colorText[joueur]}`}>{count}</div>
                     <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1">{joueur}</div>
                     {count > 0 && (
                       <div className="mt-2 space-y-1">
@@ -79,467 +170,340 @@ export default function RecordsTab({
           </div>
         )}
 
-        {/* INDIVIDUELS */}
+        {/* ── INDIVIDUELS ── */}
         {activeSubTab === 'individuels' && seasonRecords && (<>
+
+          {/* Records personnels */}
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🏅 Records personnels</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* 🎯 Plus de buts dans un match — top 3 */}
               {seasonRecords.mostGoalsInMatch.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Plus de buts marqués dans un match</h3>
-                  <p className="text-2xl font-bold text-green-700">{seasonRecords.mostGoalsInMatch[0].buts} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostGoalsInMatch.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> contre {entry.adversaire} ({entry.buts}-{entry.butsAdv})</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(entry.date).toLocaleDateString('fr-FR')} • {entry.ligue} {entry.championnat}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <RecordCard className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:border-green-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Plus de buts dans un match</h3>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInMatch[0].buts} buts</p>
+                  <Top3List
+                    entries={seasonRecords.mostGoalsInMatch}
+                    renderValue={e => `${e.buts} buts`}
+                    renderDetail={e => `${e.joueur} vs ${e.adversaire} (${e.buts}-${e.butsAdv}) · ${fmt(e.date)} · ${e.ligue} ${e.championnat}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 💪 Plus grosse victoire — top 3 */}
               {seasonRecords.biggestWinMargin.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-200">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">💪 Plus grosse victoire</h3>
-                  <p className="text-2xl font-bold text-blue-700">+{seasonRecords.biggestWinMargin[0].margin} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.biggestWinMargin.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> {entry.score} contre {entry.adversaire}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(entry.date).toLocaleDateString('fr-FR')} • {entry.ligue} {entry.championnat}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <RecordCard className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/30 dark:to-indigo-900/30 dark:border-blue-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💪 Plus grosse victoire</h3>
+                  <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">+{seasonRecords.biggestWinMargin[0].margin} buts</p>
+                  <Top3List
+                    entries={seasonRecords.biggestWinMargin}
+                    renderValue={e => `+${e.margin} buts`}
+                    renderDetail={e => `${e.joueur} ${e.score} vs ${e.adversaire} · ${fmt(e.date)} · ${e.ligue} ${e.championnat}`}
+                  />
+                </RecordCard>
               )}
-              {seasonRecords.bestWinRatioPeak.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-4 border-2 border-purple-200">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">📈 Meilleur ratio de victoires atteint</h3>
-                  <p className="text-2xl font-bold text-purple-700">{(seasonRecords.bestWinRatioPeak[0].ratio * 100).toFixed(1)}%</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.bestWinRatioPeak.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> ({entry.wins}V sur {entry.totalMatches} matchs)</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Pic atteint le {new Date(entry.date).toLocaleDateString('fr-FR')} • min 30 matchs</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.bestCurrentWinRatio.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-cyan-50 to-sky-50 rounded-lg p-4 border-2 border-cyan-200">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">📊 Meilleur ratio de victoires actuel</h3>
-                  <p className="text-2xl font-bold text-cyan-700">{(seasonRecords.bestCurrentWinRatio[0].ratio * 100).toFixed(1)}%</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.bestCurrentWinRatio.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> ({entry.wins}V sur {entry.totalMatches} matchs)</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Ratio final sur l'ensemble de la saison</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.closeWinsKing.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border-2 border-teal-200">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">🔪 Roi des scores serrés</h3>
-                  <p className="text-2xl font-bold text-teal-700">{seasonRecords.closeWinsKing[0].count} victoires</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.closeWinsKing.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Victoires par exactement 1 but d'écart</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.berserkKing.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border-2 border-red-300">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">💥 Berserk</h3>
-                  <p className="text-2xl font-bold text-red-700">{seasonRecords.berserkKing[0].count} victoires</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.berserkKing.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Victoires avec 5 buts d'écart ou plus</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.clutchChampion.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-violet-50 to-purple-50 rounded-lg p-4 border-2 border-violet-300">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">🎯 Joueur le plus clutch</h3>
-                  <p className="text-2xl font-bold text-violet-700">{seasonRecords.clutchChampion[0].count} titre{seasonRecords.clutchChampion[0].count > 1 ? 's' : ''}</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.clutchChampion.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés avec exactement 1 point d'écart</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.drawSpecialist.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-700 dark:to-slate-600 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-500">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Spécialiste des nuls</h3>
-                  <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{(seasonRecords.drawSpecialist[0].ratio * 100).toFixed(0)}% de nuls</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.drawSpecialist.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.draws} nuls sur {entry.total} matchs</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+
+              {/* 🔪 Roi des scores serrés — 4 joueurs */}
+              <RecordCard className="bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200 dark:from-teal-900/30 dark:to-cyan-900/30 dark:border-teal-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🔪 Roi des scores serrés</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Victoires par exactement 1 but d'écart</p>
+                <AllPlayersGrid data={seasonRecords.closeWinsKing} valueKey="count" />
+              </RecordCard>
+
+              {/* 💥 Berserk — 4 joueurs */}
+              <RecordCard className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200 dark:from-red-900/30 dark:to-orange-900/30 dark:border-red-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💥 Berserk</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Victoires avec 5 buts d'écart ou plus</p>
+                <AllPlayersGrid data={seasonRecords.berserkKing} valueKey="count" />
+              </RecordCard>
+
+              {/* 🎯 Clutch — 4 joueurs */}
+              <RecordCard className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200 dark:from-violet-900/30 dark:to-purple-900/30 dark:border-violet-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Joueur le plus clutch</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés avec exactement 1 point d'écart</p>
+                <AllPlayersGrid data={seasonRecords.clutchChampion} valueKey="count" />
+              </RecordCard>
+
             </div>
           </div>
 
+          {/* Records en championnat */}
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records en championnat</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { data: seasonRecords.mostGoalsInChampionship, label: '⚽ Plus de buts marqués en 1 championnat', valueKey: 'goals', color: 'green', suffix: ' buts' },
-                { data: seasonRecords.mostConcededInChampionship, label: '🥅 Plus de buts encaissés en 1 championnat', valueKey: 'goals', color: 'red', suffix: ' buts' },
-                { data: seasonRecords.bestGAChampionship, label: '📈 Meilleur goal average en 1 championnat', valueKey: 'ga', color: 'emerald', prefix: '+' },
-                { data: seasonRecords.worstGAChampionship, label: '📉 Pire goal average en 1 championnat', valueKey: 'ga', color: 'rose' },
-              ].map(({ data, label, valueKey, color, prefix = '', suffix = '' }) => data.length > 0 && (
-                <div key={label} data-card className={`relative bg-gradient-to-br from-${color}-50 to-${color}-100 dark:from-${color}-900/40 dark:to-${color}-900/40 rounded-lg p-4 border-2 border-${color}-200 dark:border-${color}-700`}>
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">{label}</h3>
-                  <p className={`text-2xl font-bold text-${color}-700 dark:text-${color}-400`}>{prefix}{data[0][valueKey]}{suffix}</p>
-                  <div className="space-y-1 mt-1">
-                    {data.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur || entry.champion]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur || entry.champion}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {seasonRecords.biggestDomination.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-yellow-200 dark:border-yellow-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">👑 Plus grande domination en 1 championnat</h3>
-                  <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">+{seasonRecords.biggestDomination[0].gap} pts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.biggestDomination.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.champion]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.champion}</strong> ({entry.pointsChampion} pts) devant <strong>{entry.second}</strong> ({entry.pointsSecond} pts)</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+
+              {/* ⚽ Plus de buts en 1 champ — top 3 */}
+              {seasonRecords.mostGoalsInChampionship.length > 0 && (
+                <RecordCard className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 dark:from-green-900/30 dark:border-green-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⚽ Plus de buts en 1 championnat</h3>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-400">{seasonRecords.mostGoalsInChampionship[0].goals} buts</p>
+                  <Top3List
+                    entries={seasonRecords.mostGoalsInChampionship}
+                    renderValue={e => `${e.goals} buts`}
+                    renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
-              {seasonRecords.remontada.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/40 dark:to-blue-900/40 rounded-lg p-4 border-2 border-indigo-200 dark:border-indigo-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔄 Remontada</h3>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.remontada.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-400">{entry.joueur}</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300">Dernier à mi-parcours ({entry.halfPoints} pts) → Champion ({entry.finalPoints} pts)</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+
+              {/* 🥅 Plus de buts encaissés — top 3 */}
+              {seasonRecords.mostConcededInChampionship.length > 0 && (
+                <RecordCard className="bg-gradient-to-br from-red-50 to-rose-100 border-red-200 dark:from-red-900/30 dark:border-red-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🥅 Plus de buts encaissés en 1 championnat</h3>
+                  <p className="text-2xl font-bold text-red-700 dark:text-red-400">{seasonRecords.mostConcededInChampionship[0].goals} buts</p>
+                  <Top3List
+                    entries={seasonRecords.mostConcededInChampionship}
+                    renderValue={e => `${e.goals} buts`}
+                    renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
-              {seasonRecords.unbeatenChampion.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-lg p-4 border-2 border-blue-200 dark:border-blue-700 col-span-1 md:col-span-2">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🛡️ Titre sans défaite</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {seasonRecords.unbeatenChampion.map((entry, idx) => (
-                      <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
-                        <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur} — {entry.victoires}V {entry.nuls}N 0D</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+
+              {/* 📈 Meilleur GA — top 3 */}
+              {seasonRecords.bestGAChampionship.length > 0 && (
+                <RecordCard className="bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200 dark:from-emerald-900/30 dark:border-emerald-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📈 Meilleur goal average en 1 championnat</h3>
+                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">+{seasonRecords.bestGAChampionship[0].ga}</p>
+                  <Top3List
+                    entries={seasonRecords.bestGAChampionship}
+                    renderValue={e => `${e.ga > 0 ? '+' : ''}${e.ga}`}
+                    renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 📉 Pire GA — top 3 */}
+              {seasonRecords.worstGAChampionship.length > 0 && (
+                <RecordCard className="bg-gradient-to-br from-rose-50 to-red-100 border-rose-200 dark:from-rose-900/30 dark:border-rose-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📉 Pire goal average en 1 championnat</h3>
+                  <p className="text-2xl font-bold text-rose-700 dark:text-rose-400">{seasonRecords.worstGAChampionship[0].ga}</p>
+                  <Top3List
+                    entries={seasonRecords.worstGAChampionship}
+                    renderValue={e => `${e.ga}`}
+                    renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
+              )}
+
+              {/* 🛡️ Titres sans défaite par joueur */}
+              <RecordCard className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/30 dark:border-blue-700 md:col-span-2" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🛡️ Titres remportés sans défaite</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Championnats gagnés sans perdre un seul match</p>
+                <AllPlayersGrid data={unbeatenCountPerPlayer} valueKey="count">
+                  {entry => entry.instances.length > 0 && (
+                    <div className="mt-1 space-y-0.5">
+                      {entry.instances.map((inst, i) => (
+                        <div key={i} className="text-xs text-slate-400 dark:text-slate-500">{inst.ligue} #{inst.championnat} · {inst.saison}</div>
+                      ))}
+                    </div>
+                  )}
+                </AllPlayersGrid>
+              </RecordCard>
+
             </div>
           </div>
 
-          {/* Séries */}
+          {/* Séries remarquables */}
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { key: 'longestWinStreak', label: '🏆 Plus longue série de victoires', color: 'green', unit: 'victoires' },
-                { key: 'longestUnbeatenStreak', label: '🛡️ Plus longue série sans défaite', color: 'blue', unit: 'matchs' },
-                { key: 'longestLossStreak', label: '💔 Plus longue série de défaites', color: 'red', unit: 'défaites' },
-                { key: 'longestDrawStreak', label: '🤝 Plus longue série de nuls', color: 'slate', unit: 'nuls' },
-                { key: 'longestGoalDrought', label: '🚫 Plus longue disette offensive', color: 'amber', unit: 'matchs' },
-                { key: 'longestCleanSheetStreak', label: '🧤 Plus longue série sans encaisser', color: 'teal', unit: 'matchs' },
-              ].map(({ key, label, color, unit }) => {
-                const streakData = seasonRecords[key];
-                if (!streakData || Object.keys(streakData).length === 0) return null;
-                const sorted = Object.entries(streakData).sort((a, b) => b[1].length - a[1].length);
-                const maxLen = sorted[0][1].length;
-                const top = sorted.filter(([, d]) => d.length === maxLen);
-                return (
-                  <div key={key} data-card className={`relative bg-${color}-50 rounded-lg p-4 border border-${color}-200`}>
-                    <ShareBtn contextText={selectedSeason} />
-                    <h3 className="text-sm font-semibold text-slate-700 mb-3">{label}</h3>
-                    <p className={`font-bold text-${color}-700 text-xl`}>{maxLen} {unit}</p>
-                    <div className="space-y-1 mt-1">
-                      {top.map(([joueur, data]) => (
-                        <div key={joueur} className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[joueur]}`}></div>
-                          <div>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">{joueur}</p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(data.startDate).toLocaleDateString('fr-FR')} → {new Date(data.endDate).toLocaleDateString('fr-FR')}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-              {seasonRecords.bestH2HStreak.length > 0 && (
-                <div data-card className="relative bg-amber-50 rounded-lg p-4 border border-amber-200">
+                { key: 'longestWinStreak', label: '🏆 Plus longue série de victoires', color: 'from-green-50 to-green-100 border-green-200', unit: 'victoires' },
+                { key: 'longestUnbeatenStreak', label: '🛡️ Plus longue série sans défaite', color: 'from-blue-50 to-blue-100 border-blue-200', unit: 'matchs' },
+                { key: 'longestLossStreak', label: '💔 Plus longue série de défaites', color: 'from-red-50 to-red-100 border-red-200', unit: 'défaites' },
+                { key: 'longestDrawStreak', label: '🤝 Plus longue série de nuls', color: 'from-slate-50 to-slate-100 border-slate-200', unit: 'nuls' },
+                { key: 'longestGoalDrought', label: '🚫 Plus longue disette offensive', color: 'from-amber-50 to-amber-100 border-amber-200', unit: 'matchs sans marquer' },
+                { key: 'longestCleanSheetStreak', label: '🧤 Plus longue série sans encaisser', color: 'from-teal-50 to-teal-100 border-teal-200', unit: 'clean sheets' },
+              ].map(({ key, label, color, unit }) => (
+                <div key={key} data-card className={`relative bg-gradient-to-br ${color} dark:from-slate-700/40 dark:to-slate-700/40 dark:border-slate-600 rounded-lg p-4 border-2`}>
                   <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 mb-3">⚔️ Plus longue série en face-à-face</h3>
-                  <p className="font-bold text-amber-700 text-xl">{seasonRecords.bestH2HStreak[0].length} victoires</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.bestH2HStreak.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong> vs {entry.adversaire}</p>
-                          <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(entry.startDate).toLocaleDateString('fr-FR')} → {new Date(entry.endDate).toLocaleDateString('fr-FR')}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">{label}</h3>
+                  <StreakRows streakData={seasonRecords[key]} joueurs={joueurs} unit={unit} />
                 </div>
-              )}
+              ))}
+
+              {/* ⚔️ Meilleure série en face-à-face — par joueur */}
+              <div data-card className="relative bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 dark:from-amber-900/30 dark:to-orange-900/30 dark:border-amber-700 rounded-lg p-4 border-2">
+                <ShareBtn contextText={selectedSeason} />
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">⚔️ Meilleure série en face-à-face</h3>
+                <div className="space-y-2">
+                  {joueurs.map(j => {
+                    const best = seasonRecords.bestH2HStreak[j];
+                    return (
+                      <div key={j} className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[j]}`} />
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-14">{j}</span>
+                        {best ? (
+                          <>
+                            <span className={`font-bold ${colorText[j]}`}>{best.length} victoires</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500">vs {best.adversaire}</span>
+                          </>
+                        ) : (
+                          <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Régularité */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">📈 Régularité</h2>
-            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-4 py-3 mb-4 text-xs text-slate-500 dark:text-slate-400 font-mono">
-              σ(buts marqués − buts encaissés){' '}
-              <span className="font-sans not-italic text-slate-400 dark:text-slate-500">— plus σ est faible, plus les scores sont stables d'un match à l'autre</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {seasonRecords.mostRegular.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30 rounded-lg p-4 border-2 border-purple-200 dark:border-purple-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">📊 Joueur le plus régulier</h3>
-                  <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">σ = {seasonRecords.mostRegular[0].stdDev.toFixed(2)}</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostRegular.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Écart-type: {entry.stdDev.toFixed(2)} • {entry.matchs} matchs</p>
-                        </div>
+          {seasonRecords.allPlayerStdDevs.length > 0 && (
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">📈 Régularité des scores</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Du plus constant au plus imprévisible — basé sur l'écart-type des différences de buts</p>
+              <div data-card className="relative">
+                <ShareBtn contextText={selectedSeason} />
+                {(() => {
+                  const players = seasonRecords.allPlayerStdDevs;
+                  const maxStd = players[players.length - 1]?.stdDev || 1;
+                  const labels = ['🎖️ Très régulier', '✅ Régulier', '🎲 Variable', '🌪️ Imprévisible'];
+                  return players.map((entry, i) => (
+                    <div key={entry.joueur} className="flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                      <span className="text-base w-6">{['🥇', '🥈', '🥉', '4️⃣'][i] || ''}</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{entry.joueur}</span>
+                      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
+                        <div
+                          className={`h-4 rounded-full ${colorBg[entry.joueur]}`}
+                          style={{ width: `${(entry.stdDev / maxStd) * 100}%` }}
+                        />
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {seasonRecords.mostUnpredictable.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-200 dark:border-pink-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎲 Joueur le plus imprévisible</h3>
-                  <p className="text-2xl font-bold text-pink-700 dark:text-pink-400">σ = {seasonRecords.mostUnpredictable[0].stdDev.toFixed(2)}</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostUnpredictable.map((entry, i) => (
-                      <div key={i} className={`flex items-center gap-2 ${i > 0 ? 'pt-1 border-t border-current/10' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`}></div>
-                        <div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur}</strong></p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">Écart-type: {entry.stdDev.toFixed(2)} • {entry.matchs} matchs</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                      <span className="text-xs text-slate-400 dark:text-slate-500 w-8 font-mono">{entry.stdDev.toFixed(1)}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block w-32">{labels[i]}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
             </div>
-          </div>
+          )}
         </>)}
 
-        {/* COLLECTIFS */}
+        {/* ── COLLECTIFS ── */}
         {activeSubTab === 'collectifs' && seasonRecords && (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement pour les records de championnat</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* 🔥 Match le plus prolifique — top 3 */}
               {seasonRecords.mostProlificMatch.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🔥 Match le plus prolifique</h3>
+                <RecordCard className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-900/30 dark:border-orange-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🔥 Match le plus prolifique</h3>
                   <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostProlificMatch[0].totalGoals} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostProlificMatch.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur1}</strong> vs <strong>{entry.joueur2}</strong> ({entry.score})</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(entry.date).toLocaleDateString('fr-FR')} • {entry.ligue} {entry.championnat}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <Top3List
+                    entries={seasonRecords.mostProlificMatch}
+                    renderValue={e => `${e.totalGoals} buts`}
+                    renderDetail={e => `${e.joueur1} vs ${e.joueur2} (${e.score}) · ${fmt(e.date)} · ${e.ligue} ${e.championnat}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 🤝 Nul le plus prolifique — top 3 */}
               {seasonRecords.mostProlificDraw.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-300 dark:border-slate-600">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Match nul le plus prolifique</h3>
+                <RecordCard className="bg-gradient-to-br from-slate-50 to-zinc-50 border-slate-300 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🤝 Nul le plus prolifique</h3>
                   <p className="text-2xl font-bold text-slate-700 dark:text-slate-200">{seasonRecords.mostProlificDraw[0].totalGoals} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostProlificDraw.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <p className="text-sm text-slate-600 dark:text-slate-300"><strong>{entry.joueur1}</strong> vs <strong>{entry.joueur2}</strong> ({entry.score})</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(entry.date).toLocaleDateString('fr-FR')} • {entry.ligue} {entry.championnat}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <Top3List
+                    entries={seasonRecords.mostProlificDraw}
+                    renderValue={e => `${e.totalGoals} buts`}
+                    renderDetail={e => `${e.joueur1} vs ${e.joueur2} (${e.score}) · ${fmt(e.date)} · ${e.ligue} ${e.championnat}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 🎯 Championnat le plus serré — top 3 */}
               {seasonRecords.tightestChampionship.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-700/50 dark:to-zinc-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🎯 Championnat le plus serré</h3>
+                <RecordCard className="bg-gradient-to-br from-slate-50 to-zinc-50 border-slate-200 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Championnat le plus serré</h3>
                   <p className="text-2xl font-bold text-slate-700 dark:text-slate-200 font-mono">σ = {seasonRecords.tightestChampionship[0].sigma}</p>
-                  <div className="space-y-1 mt-1">
+                  <div className="space-y-3 mt-2">
                     {seasonRecords.tightestChampionship.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <div className="mt-1 space-y-0.5">
+                      <div key={i} className={i > 0 ? 'pt-2 border-t border-slate-200 dark:border-slate-700' : ''}>
+                        {['🥇', '🥈', '🥉'][i] && <span className="text-sm">{['🥇', '🥈', '🥉'][i]} </span>}
+                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{entry.ligue} #{entry.championnat} · {entry.saison} · σ={entry.sigma}</span>
+                        <div className="mt-1">
                           {entry.ranking.map((p, j) => (
-                            <p key={j} className="text-xs text-slate-600 dark:text-slate-300">{j + 1}. <strong>{p.joueur}</strong> — {p.points} pts</p>
+                            <div key={j} className="flex items-center gap-1">
+                              <div className={`w-2 h-2 rounded-full ${playerColors[p.joueur]}`} />
+                              <span className="text-xs text-slate-600 dark:text-slate-300">{j + 1}. <strong>{p.joueur}</strong> — {p.points} pts</span>
+                            </div>
                           ))}
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{entry.ligue} {entry.championnat} • {entry.saison}</p>
                       </div>
                     ))}
                   </div>
-                </div>
+                </RecordCard>
               )}
+
+              {/* 💥 Championnat le plus explosif — top 3 */}
               {seasonRecords.mostExplosive.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-900/40 rounded-lg p-4 border-2 border-orange-200 dark:border-orange-700">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">💥 Championnat le plus explosif</h3>
+                <RecordCard className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:border-orange-700" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💥 Championnat le plus explosif</h3>
                   <p className="text-2xl font-bold text-orange-700 dark:text-orange-400">{seasonRecords.mostExplosive[0].totalGoals} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostExplosive.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">{entry.avgGoals.toFixed(1)} buts/match</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <Top3List
+                    entries={seasonRecords.mostExplosive}
+                    renderValue={e => `${e.totalGoals} buts`}
+                    renderDetail={e => `${e.avgGoals.toFixed(1)} buts/match · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 🥱 Championnat le moins explosif — top 3 */}
               {seasonRecords.leastExplosive.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-700/50 dark:to-gray-700/50 rounded-lg p-4 border-2 border-slate-200 dark:border-slate-600">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🥱 Championnat le moins explosif</h3>
+                <RecordCard className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🥱 Championnat le moins explosif</h3>
                   <p className="text-2xl font-bold text-slate-600 dark:text-slate-300">{seasonRecords.leastExplosive[0].totalGoals} buts</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.leastExplosive.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">{entry.avgGoals.toFixed(1)} buts/match</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <Top3List
+                    entries={seasonRecords.leastExplosive}
+                    renderValue={e => `${e.totalGoals} buts`}
+                    renderDetail={e => `${e.avgGoals.toFixed(1)} buts/match · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
+
+              {/* 🤝 Championnat avec le plus de nuls — top 3 */}
               {seasonRecords.mostDrawsChampionship.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-800/50 dark:to-slate-800/50 rounded-lg p-4 border-2 border-zinc-300 dark:border-zinc-600">
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">🤝 Championnat avec le plus de nuls</h3>
-                  <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{seasonRecords.mostDrawsChampionship[0].count} nul{seasonRecords.mostDrawsChampionship[0].count > 1 ? 's' : ''}</p>
-                  <div className="space-y-1 mt-1">
-                    {seasonRecords.mostDrawsChampionship.map((entry, i) => (
-                      <div key={i} className={i > 0 ? 'pt-1 border-t border-current/10' : ''}>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">sur {entry.total} matchs ({Math.round(entry.count / entry.total * 100)}%)</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <RecordCard className="bg-gradient-to-br from-zinc-50 to-slate-50 border-zinc-300 dark:from-zinc-800/50 dark:border-zinc-600" contextText={selectedSeason}>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🤝 Championnat avec le plus de nuls</h3>
+                  <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">{seasonRecords.mostDrawsChampionship[0].count} nuls</p>
+                  <Top3List
+                    entries={seasonRecords.mostDrawsChampionship}
+                    renderValue={e => `${e.count} nuls`}
+                    renderDetail={e => `sur ${e.total} matchs (${Math.round(e.count / e.total * 100)}%) · ${e.ligue} ${e.championnat} · ${e.saison}`}
+                  />
+                </RecordCard>
               )}
-              {seasonRecords.perfectSeason.length > 0 && (
-                <div data-card className="relative bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/40 dark:to-orange-900/40 rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-600 col-span-1 md:col-span-2">
-                  <ShareBtn contextText={selectedSeason} />
+
+              {/* 🌟 Saison parfaite */}
+              {seasonRecords.perfectSeason.length > 0 ? (
+                <RecordCard className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300 dark:from-yellow-900/30 dark:border-yellow-600 md:col-span-2" contextText={selectedSeason}>
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">🌟 Saison parfaite (6V/6)</h3>
                   <div className="flex flex-wrap gap-3">
                     {seasonRecords.perfectSeason.map((entry, idx) => (
                       <div key={idx} className="flex items-center gap-2 bg-white/60 dark:bg-slate-700/60 rounded-lg px-3 py-2">
-                        <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${playerColors[entry.joueur]}`} />
                         <div>
                           <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{entry.joueur}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} {entry.championnat} • {entry.saison}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{entry.ligue} #{entry.championnat} · {entry.saison}</p>
                         </div>
                       </div>
                     ))}
                   </div>
+                </RecordCard>
+              ) : (
+                <div className="md:col-span-2 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-dashed border-yellow-200 dark:from-yellow-900/10 dark:border-yellow-700 rounded-lg p-4 text-center">
+                  <p className="text-2xl mb-1">🌟</p>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Saison parfaite (6V/6)</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Aucun joueur n'a encore réussi à remporter les 6 matchs d'un championnat</p>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* LIGUES */}
+        {/* ── LIGUES ── */}
         {activeSubTab === 'ligues' && (
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🌍 Stats par ligue</h2>
@@ -549,21 +513,69 @@ export default function RecordsTab({
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {[
-                    { label: '⚽ Ligue la plus prolifique', data: ligueData.mostProlific, value: `${ligueData.mostProlific.avgGoals.toFixed(2)} buts/match`, detail: `${ligueData.mostProlific.totalGoals} buts sur ${ligueData.mostProlific.matchs} matchs`, color: 'green' },
-                    { label: '🥱 Ligue la moins prolifique', data: ligueData.leastProlific, value: `${ligueData.leastProlific.avgGoals.toFixed(2)} buts/match`, detail: `${ligueData.leastProlific.totalGoals} buts sur ${ligueData.leastProlific.matchs} matchs`, color: 'slate' },
-                    { label: '🤝 Ligue avec le plus de nuls', data: ligueData.mostDraws, value: `${(ligueData.mostDraws.drawRate * 100).toFixed(1)}%`, detail: `${ligueData.mostDraws.drawCount} nuls sur ${ligueData.mostDraws.matchs} matchs`, color: 'zinc' },
-                    { label: '🧤 Ligue avec le plus de clean sheets', data: ligueData.mostCleanSheets, value: `${(ligueData.mostCleanSheets.cleanSheetRate * 100).toFixed(1)}%`, detail: `${ligueData.mostCleanSheets.cleanSheetCount} matchs avec clean sheet sur ${ligueData.mostCleanSheets.matchs}`, color: 'teal' },
-                    { label: '🎯 Ligue la plus serrée', data: ligueData.tightest, value: `${ligueData.tightest.avgMargin.toFixed(2)} buts d'écart/match`, detail: `${ligueData.tightest.matchs} matchs`, color: 'blue' },
-                  ].map(({ label, data, value, detail, color }) => (
-                    <div key={label} data-card className={`relative bg-gradient-to-br from-${color}-50 to-${color}-100 dark:from-${color}-900/40 dark:to-${color}-900/40 rounded-lg p-4 border-2 border-${color}-200 dark:border-${color}-700`}>
-                      <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
-                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">{label}</h3>
-                      <p className={`text-2xl font-bold text-${color}-700 dark:text-${color}-400`}>{value}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">{data.ligue}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{detail}</p>
-                    </div>
-                  ))}
+                    {
+                      label: '⚽ Ligue la plus prolifique',
+                      color: 'from-green-50 to-green-100 border-green-200 dark:from-green-900/30 dark:border-green-700',
+                      sorted: [...ligueData.ligues].sort((a, b) => b.avgGoals - a.avgGoals),
+                      renderValue: l => `${l.avgGoals.toFixed(2)} buts/match`,
+                      renderDetail: l => `${l.totalGoals} buts sur ${l.matchs} matchs`,
+                      textColor: 'text-green-700 dark:text-green-400',
+                    },
+                    {
+                      label: '🥱 Ligue la moins prolifique',
+                      color: 'from-slate-50 to-slate-100 border-slate-200 dark:from-slate-700/50 dark:border-slate-600',
+                      sorted: [...ligueData.ligues].sort((a, b) => a.avgGoals - b.avgGoals),
+                      renderValue: l => `${l.avgGoals.toFixed(2)} buts/match`,
+                      renderDetail: l => `${l.totalGoals} buts sur ${l.matchs} matchs`,
+                      textColor: 'text-slate-600 dark:text-slate-300',
+                    },
+                    {
+                      label: '🤝 Ligue avec le plus de nuls',
+                      color: 'from-zinc-50 to-zinc-100 border-zinc-300 dark:from-zinc-800/50 dark:border-zinc-600',
+                      sorted: [...ligueData.ligues].sort((a, b) => b.drawRate - a.drawRate),
+                      renderValue: l => `${(l.drawRate * 100).toFixed(1)}%`,
+                      renderDetail: l => `${l.drawCount} nuls sur ${l.matchs} matchs`,
+                      textColor: 'text-zinc-700 dark:text-zinc-300',
+                    },
+                    {
+                      label: '🧤 Ligue avec le plus de clean sheets',
+                      color: 'from-teal-50 to-teal-100 border-teal-200 dark:from-teal-900/30 dark:border-teal-700',
+                      sorted: [...ligueData.ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate),
+                      renderValue: l => `${(l.cleanSheetRate * 100).toFixed(1)}%`,
+                      renderDetail: l => `${l.cleanSheetCount} CS sur ${l.matchs} matchs`,
+                      textColor: 'text-teal-700 dark:text-teal-400',
+                    },
+                    {
+                      label: '🎯 Ligue la plus serrée',
+                      color: 'from-blue-50 to-blue-100 border-blue-200 dark:from-blue-900/30 dark:border-blue-700',
+                      sorted: [...ligueData.ligues].sort((a, b) => a.avgMargin - b.avgMargin),
+                      renderValue: l => `${l.avgMargin.toFixed(2)} buts d'écart/match`,
+                      renderDetail: l => `${l.matchs} matchs`,
+                      textColor: 'text-blue-700 dark:text-blue-400',
+                    },
+                  ].map(({ label, color, sorted, renderValue, renderDetail, textColor }) => {
+                    const top = sorted.slice(0, 3);
+                    const medals = ['🥇', '🥈', '🥉'];
+                    return (
+                      <div key={label} data-card className={`relative bg-gradient-to-br ${color} rounded-lg p-4 border-2`}>
+                        <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
+                        <p className={`text-2xl font-bold ${textColor} mb-2`}>{renderValue(top[0])}</p>
+                        <div className="space-y-1">
+                          {top.map((l, i) => (
+                            <div key={l.ligue} className="flex items-center gap-2">
+                              <span className="text-sm">{medals[i]}</span>
+                              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                              <span className="text-xs text-slate-500 dark:text-slate-400">— {renderDetail(l)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+
+                {/* Tableau comparatif */}
                 <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
                   <table className="w-full text-sm">
                     <thead>

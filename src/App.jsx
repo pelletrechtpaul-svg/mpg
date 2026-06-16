@@ -310,12 +310,11 @@ const App = () => {
         {activeTab === 'records' && (
           <RecordsTab
             joueurs={joueurs}
+            selectedSeason={selectedSeason}
             seasonRecords={seasonRecords}
+            perduUnPoint={perduUnPoint}
             ligueRecordsAllTime={ligueRecordsAllTime}
             ligueRecordsSeason={ligueRecordsSeason}
-            ligueRecordsMode={ligueRecordsMode}
-            setLigueRecordsMode={setLigueRecordsMode}
-            shareContext={shareContext}
           />
         )}
 
