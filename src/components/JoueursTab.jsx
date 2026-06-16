@@ -48,18 +48,28 @@ function InitialsAvatar({ displayName, size = 'lg' }) {
   );
 }
 
-function ChipFilter({ label, active, onClick, color }) {
+function ChipFilter({ label, active, onClick, color, dot }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded-full text-xs font-semibold transition-all border whitespace-nowrap ${
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border whitespace-nowrap ${
         active
-          ? `${color || 'bg-slate-700'} text-white border-transparent shadow`
-          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-400'
+          ? `${color || 'bg-slate-700'} text-white border-transparent shadow-sm`
+          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-400'
       }`}
     >
+      {dot && <span className={`w-2 h-2 rounded-full ${active ? 'bg-white/80' : dot}`}></span>}
       {label}
     </button>
+  );
+}
+
+function FilterGroup({ label, children }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide w-12 flex-shrink-0">{label}</span>
+      <div className="flex gap-1.5 flex-wrap">{children}</div>
+    </div>
   );
 }
 
@@ -162,142 +172,136 @@ function PlayerCard({ player, onClose }) {
   );
 }
 
+const LIGUE_SHORT_LABEL = { 'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA', 'Champions League': 'UCL', 'Ligue des Champions': 'LDC' };
+
+function ResultRow({ s, onClick }) {
+  const coachColor = COACH_COLORS[s.acheteurPrincipal];
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <InitialsAvatar displayName={s.displayName} size="md" />
+        <div className="min-w-0">
+          <div className="font-medium text-slate-900 dark:text-slate-100 text-sm truncate">{s.displayName}</div>
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            <span>{LIGUE_SHORT_LABEL[s.ligue] || s.ligue}</span>
+            {s.nbAchats > 1 && <><span>·</span><span>{s.nbAchats} achats</span></>}
+            {s.acheteurPrincipal && coachColor && (<><span>·</span><span className={coachColor.text}>{s.acheteurPrincipal}</span></>)}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">{s.prixMax}M</span>
+        {s.poste && <PosteBadge poste={s.poste} />}
+      </div>
+    </button>
+  );
+}
+
 export default function JoueursTab({ mercatoData }) {
   const [query, setQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [filterPoste, setFilterPoste] = useState(null);
-  const [filterAcheteur, setFilterAcheteur] = useState(null);
-  const [filterLigue, setFilterLigue] = useState(null);
+  const [postes, setPostes] = useState([]);
+  const [acheteurs, setAcheteurs] = useState([]);
+  const [ligues, setLigues] = useState([]);
   const inputRef = useRef(null);
 
   const { getSuggestions, getPlayerHistory, allPostes, allAcheteurs, allLigues } = useJoueursSearch(mercatoData);
 
-  const filters = { poste: filterPoste, acheteur: filterAcheteur, ligue: filterLigue };
-  const suggestions = getSuggestions(query, filters);
-  const hasFilters = filterPoste || filterAcheteur || filterLigue;
+  const results = getSuggestions(query, { postes, acheteurs, ligues });
+  const hasFilters = postes.length || acheteurs.length || ligues.length;
+  const isSearching = query.length >= 2 || hasFilters;
 
-  // Quand on tape ou change filtre → rouvre les suggestions
-  const showDrop = showSuggestions && (query.length >= 2 || hasFilters);
-
-  function selectPlayer(suggestion) {
-    const player = getPlayerHistory(suggestion.key);
-    setSelectedPlayer(player);
-    setQuery(suggestion.displayName);
-    setShowSuggestions(false);
+  function toggle(setter, value) {
+    setSelectedPlayer(null);
+    setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
   }
 
-  function handleClear() {
+  function selectPlayer(s) {
+    setSelectedPlayer(getPlayerHistory(s.key));
+  }
+
+  function clearAll() {
     setSelectedPlayer(null);
     setQuery('');
+    setPostes([]); setAcheteurs([]); setLigues([]);
     inputRef.current?.focus();
   }
 
-  function togglePoste(p) { setFilterPoste(v => v === p ? null : p); setSelectedPlayer(null); setShowSuggestions(true); }
-  function toggleAcheteur(a) { setFilterAcheteur(v => v === a ? null : a); setSelectedPlayer(null); setShowSuggestions(true); }
-  function toggleLigue(l) { setFilterLigue(v => v === l ? null : l); setSelectedPlayer(null); setShowSuggestions(true); }
-
-  const LIGUE_SHORT_LABEL = { 'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA', 'Champions League': 'UCL', 'Ligue des Champions': 'LDC' };
-
   return (
     <div className="space-y-4">
-      {/* Filtres chips */}
-      <div className="space-y-2">
-        {/* Acheteurs */}
-        <div className="flex gap-2 flex-wrap">
-          {allAcheteurs.map(a => (
-            <ChipFilter key={a} label={a} active={filterAcheteur === a} onClick={() => toggleAcheteur(a)} color={COACH_COLORS[a]?.bg} />
-          ))}
-        </div>
-        {/* Postes */}
-        <div className="flex gap-2 flex-wrap">
-          {allPostes.map(p => (
-            <ChipFilter key={p} label={p} active={filterPoste === p} onClick={() => togglePoste(p)} color="bg-slate-700" />
-          ))}
-        </div>
-        {/* Ligues */}
-        <div className="flex gap-2 flex-wrap">
-          {allLigues.map(l => (
-            <ChipFilter key={l} label={LIGUE_SHORT_LABEL[l] || l} active={filterLigue === l} onClick={() => toggleLigue(l)} color="bg-indigo-700" />
-          ))}
-        </div>
-      </div>
-
-      {/* Séparateur si filtres actifs */}
-      {hasFilters && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400">Filtres actifs</span>
-          <button onClick={() => { setFilterPoste(null); setFilterAcheteur(null); setFilterLigue(null); }} className="text-xs text-red-500 hover:text-red-700 underline">
-            Tout effacer
-          </button>
-        </div>
-      )}
-
       {/* Search */}
       <div className="relative">
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">🔍</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={e => { setQuery(e.target.value); setShowSuggestions(true); setSelectedPlayer(null); }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-            placeholder="Nom, club, nationalité, coach…"
-            className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm"
-          />
-          {query && (
-            <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
-          )}
-        </div>
-
-        {/* Dropdown suggestions */}
-        {showDrop && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-            {suggestions.map(s => {
-              const coachColor = COACH_COLORS[s.acheteurPrincipal];
-              return (
-                <button
-                  key={s.key}
-                  onMouseDown={() => selectPlayer(s)}
-                  className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 last:border-0"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <InitialsAvatar displayName={s.displayName} size="md" />
-                    <div className="min-w-0">
-                      <div className="font-medium text-slate-900 dark:text-slate-100 text-sm truncate">{s.displayName}</div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                        <span>{LIGUE_SHORT_LABEL[s.ligue] || s.ligue}</span>
-                        {s.nbAchats > 1 && <><span>·</span><span>{s.nbAchats} achats</span></>}
-                        {s.acheteurPrincipal && coachColor && (
-                          <><span>·</span><span className={coachColor.text}>{s.acheteurPrincipal}</span></>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">{s.prixMax}M</span>
-                    {s.poste && <PosteBadge poste={s.poste} />}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">🔍</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setSelectedPlayer(null); }}
+          placeholder="Nom, club, nationalité, coach…"
+          className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm"
+        />
+        {query && (
+          <button onClick={() => { setQuery(''); setSelectedPlayer(null); inputRef.current?.focus(); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
         )}
+      </div>
 
-        {showDrop && suggestions.length === 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm text-slate-400 dark:text-slate-500">
-            Aucun joueur trouvé
-          </div>
-        )}
+      {/* Filtres chips groupés */}
+      <div className="space-y-2 bg-slate-50/60 dark:bg-white/5 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
+        <FilterGroup label="Coach">
+          {allAcheteurs.map(a => (
+            <ChipFilter key={a} label={a} active={acheteurs.includes(a)} onClick={() => toggle(setAcheteurs, a)} color={COACH_COLORS[a]?.bg} dot={COACH_COLORS[a]?.dot} />
+          ))}
+        </FilterGroup>
+        <FilterGroup label="Poste">
+          {allPostes.map(p => (
+            <ChipFilter key={p} label={p} active={postes.includes(p)} onClick={() => toggle(setPostes, p)} color="bg-slate-700" />
+          ))}
+        </FilterGroup>
+        <FilterGroup label="Ligue">
+          {allLigues.map(l => (
+            <ChipFilter key={l} label={LIGUE_SHORT_LABEL[l] || l} active={ligues.includes(l)} onClick={() => toggle(setLigues, l)} color="bg-indigo-700" />
+          ))}
+        </FilterGroup>
       </div>
 
       {/* Player card */}
-      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={handleClear} />}
+      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />}
+
+      {/* Liste de résultats (inline) */}
+      {!selectedPlayer && isSearching && (
+        <div>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              {results.length} joueur{results.length > 1 ? 's' : ''}
+            </span>
+            {(hasFilters || query) && (
+              <button onClick={clearAll} className="text-xs text-red-500 hover:text-red-700 font-medium">Tout effacer</button>
+            )}
+          </div>
+          {results.length > 0 ? (
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden max-h-[60vh] overflow-y-auto">
+              {results.slice(0, 60).map(s => (
+                <ResultRow key={s.key} s={s} onClick={() => selectPlayer(s)} />
+              ))}
+              {results.length > 60 && (
+                <div className="px-4 py-2 text-xs text-center text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-700">
+                  Affine les filtres pour voir les {results.length - 60} autres
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-6 text-sm text-center text-slate-400 dark:text-slate-500">
+              Aucun joueur trouvé
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Empty state */}
-      {!selectedPlayer && !hasFilters && !query && (
+      {!selectedPlayer && !isSearching && (
         <div className="text-center py-16 text-slate-400 dark:text-slate-500">
           <div className="text-5xl mb-3">⚽</div>
           <p className="text-base">Recherche un joueur ou filtre par coach, poste, ligue</p>

@@ -54,12 +54,13 @@ export function useJoueursSearch(mercatoData) {
   }
 
   function getSuggestions(query, filters = {}) {
+    const { postes = [], acheteurs = [], ligues = [] } = filters;
     const q = normalize(query);
     return allPlayers.filter(p => {
-      // Filtres chips
-      if (filters.poste && p.poste !== filters.poste) return false;
-      if (filters.acheteur && !p.acheteurs.has(filters.acheteur)) return false;
-      if (filters.ligue && p.ligue !== filters.ligue) return false;
+      // Filtres multi-sélection (OR dans un groupe, AND entre groupes)
+      if (postes.length && !postes.includes(p.poste)) return false;
+      if (ligues.length && !ligues.includes(p.ligue)) return false;
+      if (acheteurs.length && ![...p.acheteurs].some(a => acheteurs.includes(a))) return false;
       // Recherche texte multi-critères
       if (q.length >= 2) {
         const nameMatch = normalize(p.displayName).includes(q);
@@ -69,7 +70,7 @@ export function useJoueursSearch(mercatoData) {
         if (!nameMatch && !clubMatch && !natMatch && !acheteurMatch) return false;
       }
       return true;
-    }).slice(0, 12);
+    });
   }
 
   function getPlayerHistory(key) {
