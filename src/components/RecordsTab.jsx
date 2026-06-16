@@ -541,10 +541,11 @@ export default function RecordsTab({
                         <p className={`text-2xl font-bold ${textColor} mb-2`}>{renderValue(top[0])}</p>
                         <div className="space-y-1">
                           {top.map((l, i) => (
-                            <div key={l.ligue} className="flex items-center gap-2">
+                            <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm">{medals[i]}</span>
                               <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
-                              <span className="text-xs text-slate-500 dark:text-slate-400">— {renderDetail(l)}</span>
+                              <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
+                              <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
                             </div>
                           ))}
                         </div>
