@@ -45,8 +45,8 @@ export default function ClassementsTab({
   return (
     <>
       {/* Onglets de ligue */}
-      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-3 sm:p-6 mb-6 hover:-translate-y-0.5 transition-all duration-200">
-        <div className="flex gap-1 sm:gap-2 mb-4 overflow-x-auto">
+      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-2 sm:p-3 mb-6 hover:-translate-y-0.5 transition-all duration-200">
+        <div className="flex gap-1 sm:gap-2 mb-0 overflow-x-auto justify-center">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
             className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 whitespace-nowrap ${
@@ -77,7 +77,7 @@ export default function ClassementsTab({
         </div>
 
         {selectedSeason !== 'All-Time' && selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
-          <div>
+          <div className="mt-2">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Championnat</label>
             <select
               value={selectedChampionnat}
