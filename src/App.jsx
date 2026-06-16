@@ -190,15 +190,12 @@ const App = () => {
                 { key: 'joueurs', label: 'Joueurs' },
               ];
               return (
-                <div
-                  className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]"
-                  style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
-                >
+                <div className="flex justify-between bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
                   {tabs.map(({ key, label }) => (
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-violet-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                      className={`px-2 sm:px-4 py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${activeTab === key ? 'bg-violet-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
                     >
                       {label}
                     </button>

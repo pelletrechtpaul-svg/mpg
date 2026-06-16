@@ -46,13 +46,10 @@ export default function ClassementsTab({
     <>
       {/* Onglets de ligue */}
       <div className="mb-6">
-        <div
-          className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full"
-          style={{ gridTemplateColumns: `repeat(${ligues.length + 1}, 1fr)` }}
-        >
+        <div className="flex justify-between bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
-            className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
+            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
               selectedLigue === 'general'
                 ? 'bg-purple-400 text-white shadow'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
@@ -67,7 +64,7 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
               }}
-              className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
+              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
                   ? 'bg-purple-400 text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
