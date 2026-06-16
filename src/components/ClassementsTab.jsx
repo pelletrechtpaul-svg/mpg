@@ -70,7 +70,7 @@ export default function ClassementsTab({
                   : 'bg-indigo-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-950/30'
               }`}
             >
-              <span className="sm:hidden">{ligue === 'Champions League' ? 'LDC' : ligue === 'Ligue 1' ? 'L1' : ligue === 'Premier League' ? 'PL' : ligue}</span>
+              <span className="sm:hidden">{ligue === 'Champions League' || ligue === 'Ligue des Champions' ? 'LDC' : ligue === 'Ligue 1' ? 'L1' : ligue === 'Premier League' ? 'PL' : ligue}</span>
               <span className="hidden sm:inline">{ligue}</span>
             </button>
           ))}
