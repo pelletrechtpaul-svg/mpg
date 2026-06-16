@@ -124,9 +124,9 @@ const App = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:px-10 lg:py-8">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 lg:flex lg:items-end lg:justify-between lg:gap-6">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400">MesPetitsBavons</h1>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
@@ -149,6 +149,26 @@ const App = () => {
               )}
             </div>
           </div>
+
+          {/* Season Navigation — à droite du header sur desktop */}
+          <div className="flex gap-1 mt-4 lg:mt-0 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+            {[...saisons, 'All-Time'].map(season => (
+              <button
+                key={season}
+                onClick={() => {
+                  setSelectedSeason(season);
+                  if (activeTab === 'admin') setActiveTab('classements');
+                }}
+                className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
+                  selectedSeason === season && activeTab !== 'admin'
+                    ? 'bg-indigo-700 text-white shadow'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
+                }`}
+              >
+                {season}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Sync error banner */}
@@ -159,29 +179,9 @@ const App = () => {
           </div>
         )}
 
-        {/* Season Navigation */}
-        <div className="inline-flex gap-1 mb-4 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
-          {[...saisons, 'All-Time'].map(season => (
-            <button
-              key={season}
-              onClick={() => {
-                setSelectedSeason(season);
-                if (activeTab === 'admin') setActiveTab('classements');
-              }}
-              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
-                selectedSeason === season && activeTab !== 'admin'
-                  ? 'bg-indigo-700 text-white shadow'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
-              }`}
-            >
-              {season}
-            </button>
-          ))}
-        </div>
-
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
-          <div className="mb-6">
+          <div className="mb-6 max-w-xl">
             {(() => {
               const tabs = [
                 { key: 'classements', label: 'Classement' },
