@@ -54,7 +54,7 @@ export default function ClassementsTab({
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
             className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
               selectedLigue === 'general'
-                ? 'bg-indigo-600 text-white shadow'
+                ? 'bg-indigo-300 text-indigo-900 shadow'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
             }`}
           >
@@ -69,7 +69,7 @@ export default function ClassementsTab({
               }}
               className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
                 selectedLigue === ligue
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-indigo-300 text-indigo-900 shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
