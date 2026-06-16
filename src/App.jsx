@@ -240,7 +240,26 @@ const App = () => {
         )}
 
         <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>}>
-        {activeTab === 'classements' && (
+
+        {/* Placeholder saison vide (hors admin, joueurs, all-time) */}
+        {filteredData.length === 0 && selectedSeason !== 'All-Time' && activeTab !== 'admin' && activeTab !== 'joueurs' ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className="text-8xl mb-6 select-none" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))' }}>
+              ⚽
+            </div>
+            <div className="text-6xl mb-2 -mt-4 select-none">💥</div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mt-4 mb-3 leading-tight">
+              Le retour de la bagarre<br/>
+              <span className="text-blue-600 dark:text-blue-400">bientôt sur vos écrans</span>
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-xs">
+              La saison <span className="font-semibold text-slate-700 dark:text-slate-200">{selectedSeason}</span> n'a pas encore commencé.<br />
+              Revenez quand les coups de pied ont fusé. 🥊
+            </p>
+          </div>
+        ) : null}
+
+        {activeTab === 'classements' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
           <ClassementsTab
             joueurs={joueurs}
             ligues={ligues}
@@ -273,7 +292,7 @@ const App = () => {
           />
         )}
 
-        {activeTab === 'stats-avancees' && (
+        {activeTab === 'stats-avancees' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
           <AdvancedStatsTab
             joueurs={joueurs}
             advancedStats={advancedStats}
@@ -287,7 +306,7 @@ const App = () => {
           />
         )}
 
-        {activeTab === 'versus' && (
+        {activeTab === 'versus' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
           <VersusTab
             joueurs={joueurs}
             selectedVersusPlayer1={selectedVersusPlayer1}
@@ -308,7 +327,7 @@ const App = () => {
           />
         )}
 
-        {activeTab === 'records' && (
+        {activeTab === 'records' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
           <RecordsTab
             joueurs={joueurs}
             selectedSeason={selectedSeason}
