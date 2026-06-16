@@ -185,7 +185,7 @@ const App = () => {
           <div className="mb-6">
             <div className="inline-flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] overflow-x-auto max-w-full">
               {[
-                { key: 'classements', label: 'Classements', short: 'Class.' },
+                { key: 'classements', label: 'Classements', short: 'Classement' },
                 ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme', short: 'Forme' }] : []),
                 { key: 'versus', label: 'Face à face', short: 'Versus' },
                 { key: 'records', label: 'Records', short: 'Records' },
