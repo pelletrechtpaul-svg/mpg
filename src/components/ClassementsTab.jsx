@@ -37,12 +37,7 @@ export default function ClassementsTab({
               key={ligue}
               onClick={() => {
                 setSelectedLigue(ligue);
-                if (selectedSeason === 'All-Time') {
-                  setSelectedChampionnat('total');
-                } else {
-                  const championnats = championnatsByLigue[ligue];
-                  setSelectedChampionnat(championnats?.length > 0 ? championnats[championnats.length - 1] : 'total');
-                }
+                setSelectedChampionnat('total');
               }}
               className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 selectedLigue === ligue
