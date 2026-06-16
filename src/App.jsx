@@ -185,25 +185,24 @@ const App = () => {
           <div className="mb-6">
             {(() => {
               const tabs = [
-                { key: 'classements', label: 'Classements', short: 'Classement' },
-                ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme', short: 'Forme' }] : []),
-                { key: 'versus', label: 'Face à face', short: 'Versus' },
-                { key: 'records', label: 'Records', short: 'Records' },
-                { key: 'joueurs', label: 'Joueurs', short: 'Joueurs' },
+                { key: 'classements', label: 'Classement' },
+                ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme' }] : []),
+                { key: 'versus', label: 'Versus' },
+                { key: 'records', label: 'Records' },
+                { key: 'joueurs', label: 'Joueurs' },
               ];
               return (
                 <div
-                  className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full"
+                  className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]"
                   style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
                 >
-                  {tabs.map(({ key, label, short }) => (
+                  {tabs.map(({ key, label }) => (
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`flex items-center justify-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
                     >
-                      <span className="sm:hidden">{short}</span>
-                      <span className="hidden sm:inline">{label}</span>
+                      {label}
                     </button>
                   ))}
                 </div>
