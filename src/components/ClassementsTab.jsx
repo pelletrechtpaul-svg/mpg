@@ -55,7 +55,8 @@ export default function ClassementsTab({
                 : 'bg-white/80 dark:bg-white/5 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
             }`}
           >
-            Général
+            <span className="sm:hidden">Gén.</span>
+            <span className="hidden sm:inline">Général</span>
           </button>
           {ligues.map(ligue => (
             <button
