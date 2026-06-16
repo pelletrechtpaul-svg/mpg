@@ -171,7 +171,7 @@ const App = () => {
               }}
               className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
                 selectedSeason === season && activeTab !== 'admin'
-                  ? 'bg-violet-700 text-white shadow'
+                  ? 'bg-indigo-700 text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
@@ -200,7 +200,7 @@ const App = () => {
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-slate-700 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-violet-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
                     >
                       {label}
                     </button>
