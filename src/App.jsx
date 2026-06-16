@@ -68,9 +68,9 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+      <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
         {/* Mini music player */}
-        <div className={`w-[220px] rounded-md shadow-md border transition-all ${
+        <div className={`pointer-events-auto w-[220px] rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
@@ -96,7 +96,7 @@ const App = () => {
         {/* Dark mode toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all hover:shadow-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-yellow-400 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+          className="pointer-events-auto w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all hover:shadow-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-yellow-400 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
           title={darkMode ? 'Mode clair' : 'Mode sombre'}
         >
           {darkMode ? (
@@ -113,7 +113,7 @@ const App = () => {
         {/* Admin button */}
         <button
           onClick={() => setActiveTab(activeTab === 'admin' ? 'classements' : 'admin')}
-          className={`w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all border ${
+          className={`pointer-events-auto w-8 h-8 flex items-center justify-center rounded-lg shadow-md transition-all border ${
             activeTab === 'admin'
               ? 'bg-red-600 border-red-600 text-white'
               : 'bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 border-slate-300 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-slate-700'
