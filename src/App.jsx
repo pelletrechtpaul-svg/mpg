@@ -183,18 +183,18 @@ const App = () => {
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
           <div className="mb-6">
-            <div className="inline-flex gap-1 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+            <div className="inline-flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] overflow-x-auto max-w-full">
               {[
                 { key: 'classements', label: 'Classements', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
                 ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' }] : []),
                 { key: 'versus', label: 'Face à face', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
                 { key: 'records', label: 'Records', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
-                { key: 'joueurs', label: 'Joueurs', active: 'bg-amber-500 text-white shadow', inactive: 'text-amber-600 dark:text-amber-400 hover:bg-amber-50/80 dark:hover:bg-amber-900/20' },
+                { key: 'joueurs', label: 'Joueurs', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
               ].map(({ key, label, active, inactive }) => (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                  className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? active : inactive}`}
+                  className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${activeTab === key ? active : inactive}`}
                 >
                   {label}
                 </button>
