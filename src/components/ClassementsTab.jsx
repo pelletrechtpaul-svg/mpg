@@ -45,7 +45,7 @@ export default function ClassementsTab({
   return (
     <>
       {/* Onglets de ligue */}
-      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-2 sm:p-3 mb-6 hover:-translate-y-0.5 transition-all duration-200">
+      <div className="mb-6">
         <div
           className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full"
           style={{ gridTemplateColumns: `repeat(${ligues.length + 1}, 1fr)` }}
@@ -80,7 +80,7 @@ export default function ClassementsTab({
         </div>
 
         {selectedSeason !== 'All-Time' && selectedLigue !== 'general' && championnatsByLigue[selectedLigue] && (
-          <div className="mt-2">
+          <div className="mt-3">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Championnat</label>
             <select
               value={selectedChampionnat}
