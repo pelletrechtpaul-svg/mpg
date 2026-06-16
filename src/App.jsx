@@ -129,7 +129,7 @@ const App = () => {
         {/* Header */}
         <div className="mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black mb-2 bg-gradient-to-b from-indigo-600 via-indigo-500 to-indigo-400 bg-clip-text text-transparent">MesPetitsBavons</h1>
+            <h1 className="text-3xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400">MesPetitsBavons</h1>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
             <div className="flex items-center gap-2 mt-2">
               {isOnline ? (
@@ -171,7 +171,7 @@ const App = () => {
               }}
               className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
                 selectedSeason === season && activeTab !== 'admin'
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-violet-700 text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
@@ -200,7 +200,7 @@ const App = () => {
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-indigo-500 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                      className={`min-w-0 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-slate-700 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
                     >
                       {label}
                     </button>
