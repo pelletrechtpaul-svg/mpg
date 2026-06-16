@@ -16,6 +16,22 @@ export default function ClassementsTab({
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
+
+  const getTrophyForRow = (index) => {
+    if (index !== 0) return null;
+    if (selectedLigue === 'general') {
+      return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" /> : null;
+    }
+    if (selectedChampionnat !== 'total') {
+      const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
+      if (metadata && metadata.matchsEntered >= metadata.matchsTotal) {
+        return metadata.matchsTotal < 6
+          ? <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
+          : <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />;
+      }
+    }
+    return null;
+  };
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
   const [showChampDetail, setShowChampDetail] = useState(null);
 
@@ -69,35 +85,204 @@ export default function ClassementsTab({
         )}
       </div>
 
-      {/* Toggle Tableau/Graphique */}
+      {/* Toggle Tableau/Graphique + Stats sub-tabs */}
       {selectedLigue === 'general' && (
-        <div className="mb-4 flex justify-end">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
             <button
-              onClick={() => setRankingsView('table')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'table' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'} rounded-l-lg`}
+              onClick={() => { setRankingsView('table'); setStatsTable(null); }}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'} rounded-l-lg`}
             >
               📊 Tableau
             </button>
             <button
-              onClick={() => setRankingsView('graph')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'graph' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'} rounded-r-lg`}
+              onClick={() => { setRankingsView('graph'); setStatsTable(null); }}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'graph' ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'} rounded-r-lg`}
             >
               📈 Évolution
             </button>
           </div>
+          {[
+            { key: 'buteurs', label: '⚽ Buteurs' },
+            { key: 'loosers', label: '🥅 Loosers' },
+            { key: 'cleansheets', label: '🧤 Clean sheets' },
+            { key: 'pannes', label: '🚫 Pannes' },
+            ...(valiseStats ? [
+              { key: 'valises', label: '💼 Valises' },
+              { key: 'valises-efficaces', label: '🎯 Valises eff.' },
+            ] : []),
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => { setStatsTable(statsTable === key ? null : key); setRankingsView('table'); }}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+                statsTable === key
+                  ? 'bg-blue-600 text-white border-blue-600 shadow'
+                  : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Tableau classement */}
-      {(selectedLigue !== 'general' || rankingsView === 'table') ? (
+      {/* Tableau classement / stats / graphique */}
+      {statsTable ? (
+        <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+          <ShareBtn contextText={shareContext} />
+          {statsTable === 'buteurs' && (
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
+                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_pour - a.buts_pour).map((player, index) => (
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
+                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
+                    <td className="px-3 py-2 text-center font-bold text-green-600">{player.buts_pour}</td>
+                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                    <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {statsTable === 'loosers' && (
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
+                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts enc.</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_contre - a.buts_contre).map((player, index) => (
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
+                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
+                    <td className="px-3 py-2 text-center font-bold text-red-600">{player.buts_contre}</td>
+                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                    <td className="px-3 py-2 text-center font-semibold text-orange-600 text-sm">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {statsTable === 'cleansheets' && (
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
+                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">CS</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...cleanSheetsStats].sort((a, b) => b.cleanSheets - a.cleanSheets).map((player, index) => (
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
+                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
+                    <td className="px-3 py-2 text-center font-bold text-sky-600">{player.cleanSheets}</td>
+                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                    <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {statsTable === 'pannes' && (
+            <>
+              <p className="text-xs text-slate-500 dark:text-slate-400 px-3 pt-3">Matchs sans marquer le moindre but</p>
+              <table className="w-full mt-2">
+                <thead className="bg-slate-50 dark:bg-slate-700">
+                  <tr>
+                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
+                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
+                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">0 but</th>
+                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
+                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...cleanSheetsStats].sort((a, b) => b.pannesOffensives - a.pannesOffensives).map((player, index) => (
+                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
+                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
+                      <td className="px-3 py-2 text-center font-bold text-orange-600">{player.pannesOffensives}</td>
+                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
+                      <td className="px-3 py-2 text-center font-semibold text-red-500 text-sm">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+          {statsTable === 'valises' && valiseStats && (
+            <table className="w-full text-xs sm:text-sm">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Utilisées</th>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
+                </tr>
+              </thead>
+              <tbody>
+                {joueurs.map(joueur => (
+                  <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                    <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{joueur}</span></div></td>
+                    <td className="px-3 py-2 text-center font-bold text-blue-600">{valiseStats[joueur].utilisees}</td>
+                    <td className="px-3 py-2 text-center font-bold text-red-600">{valiseStats[joueur].recues}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {statsTable === 'valises-efficaces' && valiseStats && (
+            <table className="w-full text-xs sm:text-sm">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 w-6">#</th>
+                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
+                  <th className="px-3 py-2 text-center font-semibold text-green-700 dark:text-green-400">Infligées</th>
+                  <th className="px-3 py-2 text-center font-semibold text-red-700 dark:text-red-400">Reçues</th>
+                </tr>
+              </thead>
+              <tbody>
+                {joueurs.map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
+                  .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
+                  .map((item, index) => (
+                    <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
+                      <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{item.joueur}</span></div></td>
+                      <td className="px-3 py-2 text-center font-bold text-green-600">{item.efficaces}</td>
+                      <td className="px-3 py-2 text-center font-bold text-red-500">{item.efficacesRecues}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ) : (selectedLigue !== 'general' || rankingsView === 'table') ? (
         <div data-card className="relative rounded-xl shadow-sm overflow-hidden bg-white dark:bg-slate-800">
           <ShareBtn contextText={shareContext} />
           <div className="overflow-x-auto">
             <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Rang</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Rang</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                   <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 hidden md:table-cell">Matchs</th>
                   <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">V</th>
@@ -120,30 +305,12 @@ export default function ClassementsTab({
               <tbody>
                 {classementParLigue.map((player, index) => (
                   <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4">
-                      <div className="flex items-center gap-0.5 sm:gap-2">
-                        <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
-                        <span className="w-3 sm:w-5 flex-shrink-0">
-                          {index === 0 && (() => {
-                            if (selectedLigue === 'general') {
-                              return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" /> : null;
-                            }
-                            if (selectedChampionnat !== 'total') {
-                              const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
-                              if (metadata && metadata.matchsEntered >= metadata.matchsTotal) {
-                                return metadata.matchsTotal < 6
-                                  ? <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />
-                                  : <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
-                              }
-                            }
-                            return null;
-                          })()}
-                        </span>
-                      </div>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
+                      <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                     </td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4">
                       <div className="flex items-center gap-1 sm:gap-3">
-                        <div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
+                        {getTrophyForRow(index) || <div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>}
                         <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span>
                       </div>
                     </td>
@@ -274,200 +441,6 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Stats globales + Valises */}
-      {selectedLigue === 'general' && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {[
-              { key: 'buteurs', label: '⚽ Buteurs' },
-              { key: 'loosers', label: '🥅 Loosers' },
-              { key: 'cleansheets', label: '🧤 Clean sheets' },
-              { key: 'pannes', label: '🚫 Pannes offensives' },
-              ...(valiseStats ? [
-                { key: 'valises', label: '💼 Valises' },
-                { key: 'valises-efficaces', label: '🎯 Valises efficaces' },
-              ] : []),
-            ].map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setStatsTable(statsTable === key ? null : key)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  statsTable === key
-                    ? 'bg-blue-600 text-white shadow'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {statsTable === 'buteurs' && (
-            <div data-card className="relative mt-4">
-              <ShareBtn contextText={shareContext} />
-              <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_pour - a.buts_pour).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-green-600">{player.buts_pour}</td>
-                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                      <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {statsTable === 'loosers' && (
-            <div data-card className="relative mt-4">
-              <ShareBtn contextText={shareContext} />
-              <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts enc.</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_contre - a.buts_contre).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-red-600">{player.buts_contre}</td>
-                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                      <td className="px-3 py-2 text-center font-semibold text-orange-600 text-sm">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {statsTable === 'cleansheets' && (
-            <div data-card className="relative mt-4">
-              <ShareBtn contextText={shareContext} />
-              <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">CS</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...cleanSheetsStats].sort((a, b) => b.cleanSheets - a.cleanSheets).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-sky-600">{player.cleanSheets}</td>
-                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                      <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {statsTable === 'pannes' && (
-            <div data-card className="relative mt-4">
-              <ShareBtn contextText={shareContext} />
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 mb-2">Matchs sans marquer le moindre but</p>
-              <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">0 but</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...cleanSheetsStats].sort((a, b) => b.pannesOffensives - a.pannesOffensives).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-orange-600">{player.pannesOffensives}</td>
-                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                      <td className="px-3 py-2 text-center font-semibold text-red-500 text-sm">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {statsTable === 'valises' && valiseStats && (
-            <div data-card className="relative mt-4 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
-              <ShareBtn contextText={shareContext} />
-              <table className="w-full text-xs sm:text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Utilisées</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {joueurs.map(joueur => (
-                    <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-blue-600">{valiseStats[joueur].utilisees}</td>
-                      <td className="px-3 py-2 text-center font-bold text-red-600">{valiseStats[joueur].recues}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {statsTable === 'valises-efficaces' && valiseStats && (
-            <div data-card className="relative mt-4 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
-              <ShareBtn contextText={shareContext} />
-              <table className="w-full text-xs sm:text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 w-6">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-green-700 dark:text-green-400">Infligées</th>
-                    <th className="px-3 py-2 text-center font-semibold text-red-700 dark:text-red-400">Reçues</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {joueurs.map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
-                    .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
-                    .map((item, index) => (
-                      <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                        <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm">{index + 1}</td>
-                        <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{item.joueur}</span></div></td>
-                        <td className="px-3 py-2 text-center font-bold text-green-600">{item.efficaces}</td>
-                        <td className="px-3 py-2 text-center font-bold text-red-500">{item.efficacesRecues}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Liste des matchs */}
       {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
