@@ -1,13 +1,6 @@
 import { useMemo } from 'react';
 
-/**
- * Builds a searchable index of players from mercatoData.
- * Returns:
- *   - suggestions(query): list of { key, displayName, joueur, ligue } for autocomplete
- *   - getPlayerHistory(key): full transfer history for a player
- */
 export function useJoueursSearch(mercatoData) {
-  // Deduplicated player index keyed by "joueur|||ligue"
   const playerIndex = useMemo(() => {
     if (!mercatoData?.length) return {};
     const index = {};
@@ -26,43 +19,79 @@ export function useJoueursSearch(mercatoData) {
             ? `${d.prenom} ${d.joueur}`
             : d.joueur,
           entries: [],
+          clubs: new Set(),
+          acheteurs: new Set(),
         };
       }
-      // Keep most recent prenom if missing
       if (!index[key].prenom && d.prenom) index[key].prenom = d.prenom;
       index[key].entries.push(d);
+      if (d.club) index[key].clubs.add(d.club.toLowerCase());
+      if (d.acheteur) index[key].acheteurs.add(d.acheteur);
     });
-    // Sort each player's entries chronologically
     Object.values(index).forEach(p => {
       p.entries.sort((a, b) => {
         if (a.saison !== b.saison) return a.saison.localeCompare(b.saison);
         if (a.championnat !== b.championnat) return a.championnat - b.championnat;
         return a.tour - b.tour;
       });
+      p.prixMax = Math.max(...p.entries.map(e => e.prix || 0));
+      p.nbAchats = p.entries.length;
+      // Acheteur le plus fréquent
+      const freq = {};
+      p.entries.forEach(e => { if (e.acheteur) freq[e.acheteur] = (freq[e.acheteur] || 0) + 1; });
+      p.acheteurPrincipal = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
     });
     return index;
   }, [mercatoData]);
 
-  // Sorted list for autocomplete
   const allPlayers = useMemo(() =>
-    Object.values(playerIndex).sort((a, b) =>
-      a.displayName.localeCompare(b.displayName)
-    ),
+    Object.values(playerIndex).sort((a, b) => a.displayName.localeCompare(b.displayName)),
     [playerIndex]
   );
 
-  function getSuggestions(query) {
-    if (!query || query.length < 2) return [];
-    const q = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function normalize(s) {
+    return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
+  function getSuggestions(query, filters = {}) {
+    const q = normalize(query);
     return allPlayers.filter(p => {
-      const name = p.displayName.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-      return name.includes(q);
-    }).slice(0, 8);
+      // Filtres chips
+      if (filters.poste && p.poste !== filters.poste) return false;
+      if (filters.acheteur && !p.acheteurs.has(filters.acheteur)) return false;
+      if (filters.ligue && p.ligue !== filters.ligue) return false;
+      // Recherche texte multi-critères
+      if (q.length >= 2) {
+        const nameMatch = normalize(p.displayName).includes(q);
+        const clubMatch = [...p.clubs].some(c => c.includes(q));
+        const natMatch = normalize(p.nationalite).includes(q);
+        const acheteurMatch = [...p.acheteurs].some(a => normalize(a).includes(q));
+        if (!nameMatch && !clubMatch && !natMatch && !acheteurMatch) return false;
+      }
+      return true;
+    }).slice(0, 12);
   }
 
   function getPlayerHistory(key) {
     return playerIndex[key] || null;
   }
 
-  return { getSuggestions, getPlayerHistory, allPlayers };
+  // Listes pour chips
+  const allPostes = useMemo(() => {
+    const s = new Set(allPlayers.map(p => p.poste).filter(Boolean));
+    const order = ['G', 'DC', 'DL', 'DG', 'DD', 'D', 'MD', 'MC', 'MO', 'M', 'A'];
+    return order.filter(p => s.has(p));
+  }, [allPlayers]);
+
+  const allAcheteurs = useMemo(() => {
+    const s = new Set();
+    allPlayers.forEach(p => p.acheteurs.forEach(a => s.add(a)));
+    return [...s].sort();
+  }, [allPlayers]);
+
+  const allLigues = useMemo(() => {
+    return [...new Set(allPlayers.map(p => p.ligue).filter(Boolean))].sort();
+  }, [allPlayers]);
+
+  return { getSuggestions, getPlayerHistory, allPlayers, allPostes, allAcheteurs, allLigues };
 }
