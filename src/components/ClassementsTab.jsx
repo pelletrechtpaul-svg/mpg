@@ -55,7 +55,7 @@ export default function ClassementsTab({
                 : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
             }`}
           >
-            Gén.
+            Général
           </button>
           {ligues.map(ligue => (
             <button
@@ -245,19 +245,23 @@ export default function ClassementsTab({
             <table className="w-full text-xs sm:text-sm">
               <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Utilisées</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Reçues</th>
                 </tr>
               </thead>
               <tbody>
-                {joueurs.map(joueur => (
-                  <tr key={joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 text-xs sm:text-base">{valiseStats[joueur].utilisees}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{valiseStats[joueur].recues}</td>
-                  </tr>
-                ))}
+                {joueurs.map(j => ({ joueur: j, utilisees: valiseStats[j].utilisees, recues: valiseStats[j].recues }))
+                  .sort((a, b) => b.utilisees - a.utilisees || a.recues - b.recues)
+                  .map((item, index) => (
+                    <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 text-xs sm:text-base">{item.utilisees}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{item.recues}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           )}
