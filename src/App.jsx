@@ -244,6 +244,7 @@ const App = () => {
           <ClassementsTab
             joueurs={joueurs}
             ligues={ligues}
+            saisons={saisons}
             selectedSeason={selectedSeason}
             selectedLigue={selectedLigue}
             setSelectedLigue={setSelectedLigue}
