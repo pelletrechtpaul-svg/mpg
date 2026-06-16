@@ -47,35 +47,48 @@ export default function EntraineursTab({
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [h2hLigue, setH2hLigue] = useState('all');
 
-  /* Stat signature : la catégorie où chaque joueur domine */
+  /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
   const signatures = useMemo(() => {
     const cs = {};
     cleanSheetsStats.forEach(c => { cs[c.joueur] = c.cleanSheets; });
+    const cl = j => classementGeneral.find(c => c.joueur === j);
 
     const metrics = [
-      { key: 'titres',  label: '👑 Roi du championnat', get: j => classementGeneral.find(c => c.joueur === j)?.victoiresChampionnat || 0, better: 'max' },
-      { key: 'buteur',  label: '⚽ Meilleur buteur',     get: j => statsDetaillees[j]?.buts_pour || 0, better: 'max' },
-      { key: 'mur',     label: '🧤 Mur défensif',        get: j => cs[j] || 0, better: 'max' },
-      { key: 'attaque', label: '🎯 Meilleure différence', get: j => statsDetaillees[j]?.ga ?? -Infinity, better: 'max' },
+      { key: 'titres',   label: '👑 Roi du championnat',  get: j => cl(j)?.victoiresChampionnat || 0 },
+      { key: 'buteur',   label: '⚽ Meilleur buteur',      get: j => statsDetaillees[j]?.buts_pour || 0 },
+      { key: 'mur',      label: '🧤 Mur défensif',         get: j => cs[j] || 0 },
+      { key: 'diff',     label: '🎯 Meilleure différence', get: j => statsDetaillees[j]?.ga ?? -Infinity },
+      { key: 'serie',    label: '🔥 Série de feu',         get: j => advancedStats[j]?.maxWinStreak || 0 },
+      { key: 'invinc',   label: '🛡️ Invincible',           get: j => advancedStats[j]?.maxUnbeatenStreak || 0 },
+      { key: 'tauxV',    label: '📈 Machine à gagner',     get: j => { const s = cl(j); return s && s.matchs ? s.victoires / s.matchs : 0; } },
+      { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; } },
     ];
 
-    // Pour chaque métrique, trouver le leader unique
-    const leaders = {};
+    // Classement des joueurs par métrique (rang 1 = meilleur)
+    const ranks = {}; // ranks[metricKey][joueur] = rang (1..n)
     metrics.forEach(m => {
-      const vals = joueurs.map(j => ({ j, v: m.get(j) }));
-      const best = Math.max(...vals.map(x => x.v));
-      const top = vals.filter(x => x.v === best && best > 0);
-      if (top.length === 1) leaders[m.key] = top[0].j;
+      const ordered = [...joueurs].map(j => ({ j, v: m.get(j) })).sort((a, b) => b.v - a.v);
+      ranks[m.key] = {};
+      ordered.forEach((o, i) => { ranks[m.key][o.j] = { rank: i + 1, value: o.v }; });
     });
 
-    // Assigner à chaque joueur la 1re métrique (par priorité) où il est leader unique
+    // Assignation gloutonne : on prend itérativement la meilleure paire (joueur, métrique)
     const result = {};
-    joueurs.forEach(j => {
-      const m = metrics.find(mm => leaders[mm.key] === j);
-      result[j] = m ? { label: m.label, value: m.get(j) } : null;
+    const usedMetrics = new Set();
+    const candidates = [];
+    joueurs.forEach(j => metrics.forEach(m => {
+      const r = ranks[m.key][j];
+      if (r.value > 0) candidates.push({ j, m, rank: r.rank, value: r.value });
+    }));
+    candidates.sort((a, b) => a.rank - b.rank || b.value - a.value);
+    candidates.forEach(c => {
+      if (result[c.j] || usedMetrics.has(c.m.key)) return;
+      result[c.j] = { label: c.m.label };
+      usedMetrics.add(c.m.key);
     });
+    joueurs.forEach(j => { if (!result[j]) result[j] = null; });
     return result;
-  }, [joueurs, classementGeneral, statsDetaillees, cleanSheetsStats]);
+  }, [joueurs, classementGeneral, statsDetaillees, cleanSheetsStats, advancedStats]);
 
   /* Head-to-head du joueur sélectionné contre tous les autres */
   const h2h = useMemo(() => {
@@ -222,27 +235,53 @@ export default function EntraineursTab({
         const adv = advancedStats[joueur];
         const form = adv?.recentForm?.map(m => m.result).slice(-5) || [];
         const sig = signatures[joueur];
+        const color = playerColorHex[joueur];
         return (
           <button
             key={joueur}
             onClick={() => { setSelectedPlayer(joueur); setH2hLigue('all'); }}
-            className="text-left bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-4 hover:-translate-y-1 hover:shadow-lg transition-all duration-200"
-            style={{ borderTopWidth: 3, borderTopColor: playerColorHex[joueur] }}
+            className="group relative text-left overflow-hidden rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0f0e1a] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
           >
-            <div className="flex flex-col items-center text-center">
-              <Avatar joueur={joueur} className="w-16 h-16 sm:w-20 sm:h-20 border-[3px] shadow mb-2" />
-              <h3 className="font-bold text-slate-800 dark:text-slate-100">{joueur}</h3>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm font-bold" style={{ color: playerColorHex[joueur] }}>#{rankOf(joueur)}</span>
-                <span className="text-sm text-slate-500 dark:text-slate-400">{pointsOf(joueur)} pts</span>
+            {/* Halo de couleur en fond */}
+            <div
+              className="absolute inset-x-0 top-0 h-24 opacity-20 dark:opacity-25 blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-30"
+              style={{ background: `radial-gradient(circle at 50% 0%, ${color}, transparent 70%)` }}
+            />
+            <div className="relative flex flex-col items-center text-center p-4 sm:p-5">
+              {/* Avatar + badge rang */}
+              <div className="relative mb-3">
+                <Avatar joueur={joueur} className="w-16 h-16 sm:w-20 sm:h-20 border-[3px] shadow-md" />
+                <span
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white shadow ring-2 ring-white dark:ring-[#0f0e1a]"
+                  style={{ backgroundColor: color }}
+                >
+                  {rankOf(joueur)}
+                </span>
               </div>
+
+              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base sm:text-lg leading-none">{joueur}</h3>
+
+              {/* Points */}
+              <div className="mt-1.5 flex items-baseline gap-1">
+                <span className="text-2xl font-black" style={{ color }}>{pointsOf(joueur)}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">pts</span>
+              </div>
+
+              {/* Forme */}
               <div className="mt-3">
                 <FormPills form={form} />
               </div>
+
+              {/* Signature en chip */}
               {sig && (
-                <p className="mt-3 text-[11px] sm:text-xs font-semibold text-violet-600 dark:text-violet-400 leading-tight">{sig.label}</p>
+                <span className="mt-3 inline-block px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 leading-tight">
+                  {sig.label}
+                </span>
               )}
-              <span className="mt-3 text-[11px] text-slate-400 dark:text-slate-500">Voir le détail →</span>
+
+              <span className="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
+                Voir le profil →
+              </span>
             </div>
           </button>
         );
