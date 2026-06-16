@@ -46,10 +46,10 @@ export default function ClassementsTab({
     <>
       {/* Onglets de ligue */}
       <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-2 sm:p-3 mb-6 hover:-translate-y-0.5 transition-all duration-200">
-        <div className="inline-flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] overflow-x-auto w-full justify-center">
+        <div className="flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
-            className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
+            className={`flex-1 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
               selectedLigue === 'general'
                 ? 'bg-indigo-600 text-white shadow'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
@@ -65,7 +65,7 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
               }}
-              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
+              className={`flex-1 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
                   ? 'bg-indigo-600 text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
