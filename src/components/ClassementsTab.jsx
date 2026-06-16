@@ -27,14 +27,14 @@ export default function ClassementsTab({
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
     if (selectedLigue === 'general') {
-      return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" /> : null;
+      return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" /> : null;
     }
     if (selectedChampionnat !== 'total') {
       const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
       if (metadata && metadata.matchsEntered >= metadata.matchsTotal) {
         return metadata.matchsTotal < 6
-          ? <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-          : <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />;
+          ? <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
+          : <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />;
       }
     }
     return null;
@@ -158,9 +158,9 @@ export default function ClassementsTab({
                   <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{player.buts_pour}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{player.buts_pour}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 dark:text-blue-400 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -182,9 +182,9 @@ export default function ClassementsTab({
                   <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{player.buts_contre}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 dark:text-red-400 text-xs sm:text-base">{player.buts_contre}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-orange-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -206,9 +206,9 @@ export default function ClassementsTab({
                   <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sky-600 text-xs sm:text-base">{player.cleanSheets}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sky-600 dark:text-sky-400 text-xs sm:text-base">{player.cleanSheets}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 dark:text-blue-400 text-xs sm:text-base">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -232,9 +232,9 @@ export default function ClassementsTab({
                     <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-orange-600 text-xs sm:text-base">{player.pannesOffensives}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{player.pannesOffensives}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-500 text-xs sm:text-base">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-500 dark:text-red-400 text-xs sm:text-base">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -258,8 +258,8 @@ export default function ClassementsTab({
                     <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 text-xs sm:text-base">{item.utilisees}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{item.recues}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 dark:text-blue-400 text-xs sm:text-base">{item.utilisees}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 dark:text-red-400 text-xs sm:text-base">{item.recues}</td>
                     </tr>
                   ))}
               </tbody>
@@ -282,8 +282,8 @@ export default function ClassementsTab({
                     <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{item.efficaces}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-500 text-xs sm:text-base">{item.efficacesRecues}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{item.efficaces}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-500 dark:text-red-400 text-xs sm:text-base">{item.efficacesRecues}</td>
                     </tr>
                   ))}
               </tbody>
@@ -329,33 +329,33 @@ export default function ClassementsTab({
                         <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span>
                       </div>
                     </td>
-                    <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 hidden md:table-cell">{player.matchs}</td>
-                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-green-600 font-semibold text-xs sm:text-base">{player.victoires}</td>
-                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-slate-600 text-xs sm:text-base">{player.nuls}</td>
-                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-red-600 font-semibold text-xs sm:text-base">{player.defaites}</td>
+                    <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-300 hidden md:table-cell">{player.matchs}</td>
+                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-green-600 dark:text-green-400 font-semibold text-xs sm:text-base">{player.victoires}</td>
+                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-slate-600 dark:text-slate-300 text-xs sm:text-base">{player.nuls}</td>
+                    <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-red-600 dark:text-red-400 font-semibold text-xs sm:text-base">{player.defaites}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
                       <div className="flex items-center justify-center gap-1 sm:gap-2">
-                        <span className={`font-bold ${player.ga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`font-bold ${player.ga >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                           {player.ga > 0 ? '+' : ''}{player.ga}
                         </span>
-                        <button onClick={() => setShowGoalsDetail(player)} className="text-blue-600 hover:text-blue-800 font-bold text-sm sm:text-lg">+</button>
+                        <button onClick={() => setShowGoalsDetail(player)} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 font-bold text-sm sm:text-lg">+</button>
                       </div>
                     </td>
                     {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                       <>
                         <td className="px-0.5 py-2 sm:px-6 sm:py-4 text-center">
                           <div className="flex items-center justify-center gap-0.5 sm:gap-1">
-                            <span className="font-semibold text-yellow-600 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
+                            <span className="font-semibold text-yellow-600 dark:text-yellow-400 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
                             {selectedLigue === 'general' && (player.victoiresChampionnat || 0) > 0 && (
-                              <button onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'titres', ligues: player.victoiresLigues || [] })} className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none">+</button>
+                              <button onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'titres', ligues: player.victoiresLigues || [] })} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none">+</button>
                             )}
                           </div>
                         </td>
                         <td className="px-0 py-2 sm:px-6 sm:py-4 text-center">
                           <div className="flex items-center justify-center gap-0.5 sm:gap-1">
-                            <span className="font-semibold text-slate-500 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
+                            <span className="font-semibold text-slate-500 dark:text-slate-300 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
                             {selectedLigue === 'general' && (player.medaillesChampionnat || 0) > 0 && (
-                              <button onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'medailles', ligues: player.medaillesLigues || [] })} className="text-blue-600 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none">+</button>
+                              <button onClick={() => setShowChampDetail({ joueur: player.joueur, type: 'medailles', ligues: player.medaillesLigues || [] })} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 font-bold text-xs sm:text-sm leading-none">+</button>
                             )}
                           </div>
                         </td>
@@ -395,7 +395,7 @@ export default function ClassementsTab({
               </div>
             </>
           ) : (
-            <div className="text-center text-slate-600 py-12"><p>Pas assez de données pour afficher l'évolution</p></div>
+            <div className="text-center text-slate-600 dark:text-slate-300 py-12"><p>Pas assez de données pour afficher l'évolution</p></div>
           )}
         </div>
       )}
@@ -405,17 +405,17 @@ export default function ClassementsTab({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowGoalsDetail(null)}>
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-slate-800">{showGoalsDetail.joueur}</h3>
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{showGoalsDetail.joueur}</h3>
               <button onClick={() => setShowGoalsDetail(null)} className="text-slate-600 hover:text-slate-800 dark:hover:text-slate-100">✕</button>
             </div>
             <div className="space-y-3">
-              <div className="flex flex-col items-center p-3 bg-green-50 rounded-lg">
-                <span className="text-slate-700 font-medium mb-2">Buts inscrits</span>
-                <span className="text-2xl font-bold text-green-600">{showGoalsDetail.buts_pour}</span>
+              <div className="flex flex-col items-center p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                <span className="text-slate-700 dark:text-slate-200 font-medium mb-2">Buts inscrits</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{showGoalsDetail.buts_pour}</span>
               </div>
-              <div className="flex flex-col items-center p-3 bg-red-50 rounded-lg">
-                <span className="text-slate-700 font-medium mb-2">Buts encaissés</span>
-                <span className="text-2xl font-bold text-red-600">{showGoalsDetail.buts_contre}</span>
+              <div className="flex flex-col items-center p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                <span className="text-slate-700 dark:text-slate-200 font-medium mb-2">Buts encaissés</span>
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{showGoalsDetail.buts_contre}</span>
               </div>
             </div>
           </div>
@@ -486,14 +486,14 @@ export default function ClassementsTab({
           <div className="space-y-2">
             {matchesListForChampionnat.map((match, index) => (
               <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors text-xs sm:text-base">
-                <span className="text-slate-600 min-w-[70px] sm:min-w-0">
+                <span className="text-slate-600 dark:text-slate-300 min-w-[70px] sm:min-w-0">
                   {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
-                <span className="font-medium text-slate-800">{match.joueur1}</span>
-                <span className="text-sm sm:text-lg font-bold text-blue-600">{match.buts_j1}</span>
+                <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
+                <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
                 <span className="text-slate-400">-</span>
-                <span className="text-sm sm:text-lg font-bold text-purple-600">{match.buts_j2}</span>
-                <span className="font-medium text-slate-800">{match.joueur2}</span>
+                <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
+                <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
                 {(match.valise_j1 || match.valise_j2) && (
                   <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
                 )}

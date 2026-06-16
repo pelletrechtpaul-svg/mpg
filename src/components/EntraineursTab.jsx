@@ -184,9 +184,9 @@ export default function EntraineursTab({
           {/* Bilan + forme */}
           <div className="grid grid-cols-4 gap-2 mt-6 pt-6 border-t dark:border-slate-700 text-center">
             <div><div className="text-xl font-bold text-slate-700 dark:text-slate-200">{stats?.matchs ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Matchs</div></div>
-            <div><div className="text-xl font-bold text-green-600">{stats?.victoires ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Victoires</div></div>
+            <div><div className="text-xl font-bold text-green-600 dark:text-green-400">{stats?.victoires ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Victoires</div></div>
             <div><div className="text-xl font-bold text-slate-400">{stats?.nuls ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Nuls</div></div>
-            <div><div className="text-xl font-bold text-red-600">{stats?.defaites ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Défaites</div></div>
+            <div><div className="text-xl font-bold text-red-600 dark:text-red-400">{stats?.defaites ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Défaites</div></div>
           </div>
           <div className="mt-5">
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 text-center">Forme récente</p>
@@ -228,9 +228,9 @@ export default function EntraineursTab({
                 </div>
                 {matchs > 0 ? (
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-bold text-green-600">{w}V</span>
+                    <span className="font-bold text-green-600 dark:text-green-400">{w}V</span>
                     <span className="font-bold text-slate-400">{d}N</span>
-                    <span className="font-bold text-red-600">{l}D</span>
+                    <span className="font-bold text-red-600 dark:text-red-400">{l}D</span>
                     <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
                   </div>
                 ) : (
