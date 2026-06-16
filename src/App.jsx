@@ -75,9 +75,9 @@ const App = () => {
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
-          {/* Track title — desktop only */}
-          <div className="hidden sm:block px-1.5 pt-1 pb-0 overflow-hidden h-4 w-[220px]">
-            <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 28 ? 'animate-marquee' : 'text-center'}`}>
+          {/* Track title */}
+          <div className="px-1.5 pt-1 pb-0 overflow-hidden h-4 w-[140px] sm:w-[220px]">
+            <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} animate-marquee`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
