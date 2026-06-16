@@ -49,7 +49,7 @@ export default function ClassementsTab({
         <div className="flex gap-1 sm:gap-2 mb-4 overflow-x-auto">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
-            className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 ${
+            className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 whitespace-nowrap ${
               selectedLigue === 'general'
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
                 : 'bg-white/80 dark:bg-white/5 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
@@ -64,7 +64,7 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
               }}
-              className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+              className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
                   ? 'bg-indigo-600 text-white'
                   : 'bg-indigo-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-950/30'
