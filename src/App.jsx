@@ -2,8 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 import { PLAYLIST } from './shared.jsx';
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
-const AdvancedStatsTab = lazy(() => import('./components/AdvancedStatsTab'));
-const VersusTab = lazy(() => import('./components/VersusTab'));
+const EntraineursTab = lazy(() => import('./components/EntraineursTab'));
 const RecordsTab = lazy(() => import('./components/RecordsTab'));
 const ClassementsTab = lazy(() => import('./components/ClassementsTab'));
 const AdminTab = lazy(() => import('./components/AdminTab'));
@@ -186,8 +185,7 @@ const App = () => {
             {(() => {
               const tabs = [
                 { key: 'classements', label: 'Classement' },
-                ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme' }] : []),
-                { key: 'versus', label: 'Versus' },
+                { key: 'entraineurs', label: 'Entraîneurs' },
                 { key: 'records', label: 'Records' },
                 { key: 'joueurs', label: 'Joueurs' },
               ];
@@ -264,37 +262,17 @@ const App = () => {
           />
         )}
 
-        {activeTab === 'stats-avancees' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
-          <AdvancedStatsTab
+        {activeTab === 'entraineurs' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
+          <EntraineursTab
             joueurs={joueurs}
-            advancedStats={advancedStats}
-            statsDetaillees={statsDetaillees}
-            scoreDistribution={scoreDistribution}
-            heureDeGloire={heureDeGloire}
-            buteursEvolution={buteursEvolution}
-            loosersEvolution={loosersEvolution}
-            perduUnPoint={perduUnPoint}
-            shareContext={shareContext}
-          />
-        )}
-
-        {activeTab === 'versus' && !(filteredData.length === 0 && selectedSeason !== 'All-Time') && (
-          <VersusTab
-            joueurs={joueurs}
-            selectedVersusPlayer1={selectedVersusPlayer1}
-            setSelectedVersusPlayer1={setSelectedVersusPlayer1}
-            selectedVersusPlayer2={selectedVersusPlayer2}
-            setSelectedVersusPlayer2={setSelectedVersusPlayer2}
-            selectedVersusLigue={selectedVersusLigue}
-            setSelectedVersusLigue={setSelectedVersusLigue}
             ligues={ligues}
-            versusStats={versusStats}
-            versusMatchHistory={versusMatchHistory}
+            filteredData={filteredData}
+            classementGeneral={classementGeneral}
+            advancedStats={advancedStats}
+            cleanSheetsStats={cleanSheetsStats}
+            statsDetaillees={statsDetaillees}
             heureDeGloire={heureDeGloire}
-            activeVersusTooltip={activeVersusTooltip}
-            setActiveVersusTooltip={setActiveVersusTooltip}
-            selectedValiseTable={selectedValiseTable}
-            setSelectedValiseTable={setSelectedValiseTable}
+            selectedSeason={selectedSeason}
             shareContext={shareContext}
           />
         )}
