@@ -354,81 +354,12 @@ const App = () => {
         )}
 
         {activeTab === 'style' && (
-          <div className="space-y-10">
-            <p className="text-slate-500 dark:text-slate-400 text-sm text-center">Aperçu de 4 directions visuelles — même données, styles différents</p>
+          <div className="space-y-8">
+            <p className="text-slate-500 dark:text-slate-400 text-sm text-center">Style D — version light vs dark</p>
 
-            {/* A — Glassmorphism */}
+            {/* D Light */}
             <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">A — Glassmorphism</h2>
-              <div className="rounded-2xl overflow-hidden" style={{background:'linear-gradient(135deg,#667eea,#764ba2 50%,#f093fb)'}}>
-                <div className="px-5 py-4 text-white/70 text-xs font-semibold uppercase tracking-widest border-b border-white/10">Classement général · 2025/2026</div>
-                <table className="w-full">
-                  <thead><tr className="border-b border-white/10">{['Rang','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-left text-white/60 text-xs font-semibold first:text-left last:text-center text-center">{h}</th>)}</tr></thead>
-                  <tbody>
-                    {[['Paul','blue-300',12,3,2,39],['Adrien','green-300',10,4,3,34],['Tiago','purple-300',8,5,4,29],['Roman','orange-300',6,2,9,20]].map(([name,color,v,n,d,pts],i)=>(
-                      <tr key={name} className="border-b border-white/10 hover:bg-white/10 transition-colors">
-                        <td className="px-4 py-3 text-white font-bold text-lg">{i+1}</td>
-                        <td className="px-4 py-3"><div className="flex items-center gap-2"><div className={`w-2 h-2 rounded-full bg-${color}`}></div><span className="text-white font-semibold">{name}</span></div></td>
-                        <td className="px-4 py-3 text-center text-emerald-300 font-bold">{v}</td>
-                        <td className="px-4 py-3 text-center text-white/70">{n}</td>
-                        <td className="px-4 py-3 text-center text-red-300 font-bold">{d}</td>
-                        <td className="px-4 py-3 text-center text-white font-black text-lg">{pts}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* B — Dark néon */}
-            <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">B — Dark + accents néon</h2>
-              <div className="rounded-2xl overflow-hidden" style={{background:'#0f1117',border:'1px solid #1e2130'}}>
-                <div className="px-5 py-4 text-slate-400 text-xs font-semibold uppercase tracking-widest border-b border-slate-800">Classement général · 2025/2026</div>
-                <table className="w-full">
-                  <thead><tr className="border-b border-slate-800">{['Rang','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-slate-500 text-xs font-semibold text-center first:text-left">{h}</th>)}</tr></thead>
-                  <tbody>
-                    {[['Paul','bg-blue-400',12,3,2,39],['Adrien','bg-green-400',10,4,3,34],['Tiago','bg-purple-400',8,5,4,29],['Roman','bg-orange-400',6,2,9,20]].map(([name,color,v,n,d,pts],i)=>(
-                      <tr key={name} className="border-b border-slate-800 hover:bg-slate-900 transition-colors">
-                        <td className="px-4 py-3 text-blue-400 font-bold text-lg">{i+1}</td>
-                        <td className="px-4 py-3"><div className="flex items-center gap-2"><div className={`w-2 h-2 rounded-full ${color}`}></div><span className="text-white font-semibold">{name}</span></div></td>
-                        <td className="px-4 py-3 text-center text-green-400 font-bold">{v}</td>
-                        <td className="px-4 py-3 text-center text-slate-400">{n}</td>
-                        <td className="px-4 py-3 text-center text-red-400 font-bold">{d}</td>
-                        <td className="px-4 py-3 text-center text-white font-black text-xl">{pts}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* C — Typo forte */}
-            <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">C — Typographie forte</h2>
-              <div className="rounded-2xl overflow-hidden bg-white">
-                <div className="px-5 py-5 border-b border-slate-100 flex items-baseline gap-3"><span className="text-2xl font-black text-slate-900">Classement</span><span className="text-slate-400 text-sm">2025/2026</span></div>
-                <table className="w-full">
-                  <thead><tr className="border-b border-slate-100">{['Rang','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-slate-300 text-xs font-semibold uppercase tracking-widest text-center first:text-left">{h}</th>)}</tr></thead>
-                  <tbody>
-                    {[['Paul','bg-blue-500',12,3,2,39],['Adrien','bg-green-500',10,4,3,34],['Tiago','bg-purple-500',8,5,4,29],['Roman','bg-orange-500',6,2,9,20]].map(([name,color,v,n,d,pts],i)=>(
-                      <tr key={name} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-4 font-black text-3xl text-slate-200">{i+1}</td>
-                        <td className="px-4 py-4"><div className="flex items-center gap-3"><div className={`w-1 h-8 rounded-full ${color}`}></div><span className="text-slate-900 font-black text-lg">{name}</span></div></td>
-                        <td className="px-4 py-4 text-center text-slate-900 font-bold">{v}</td>
-                        <td className="px-4 py-4 text-center text-slate-400">{n}</td>
-                        <td className="px-4 py-4 text-center text-slate-400">{d}</td>
-                        <td className="px-4 py-4 text-center font-black text-2xl text-slate-900">{pts}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* D — Gradient + borders */}
-            <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">D — Gradient doux + borders</h2>
+              <h2 className="text-base font-bold text-slate-500 mb-3">D — Light</h2>
               <div style={{background:'linear-gradient(135deg,#eff6ff,#f5f3ff)',borderRadius:16,padding:2}}>
                 <div className="rounded-2xl overflow-hidden bg-white border border-indigo-100">
                   <div className="px-5 py-4 border-b border-indigo-100 flex items-center justify-between">
@@ -446,6 +377,34 @@ const App = () => {
                           <td className="px-4 py-3 text-center text-slate-400">{n}</td>
                           <td className="px-4 py-3 text-center text-rose-400">{d}</td>
                           <td className="px-4 py-3 text-center font-black text-indigo-600 text-lg">{pts}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* D Dark */}
+            <div>
+              <h2 className="text-base font-bold text-slate-500 mb-3">D — Dark</h2>
+              <div style={{background:'linear-gradient(135deg,#1e1b4b,#1e1b4b 50%,#2e1065)',borderRadius:16,padding:2}}>
+                <div className="rounded-2xl overflow-hidden" style={{background:'#0f0e1a',border:'1px solid #2d2b5e'}}>
+                  <div className="px-5 py-4 flex items-center justify-between" style={{borderBottom:'1px solid #2d2b5e'}}>
+                    <span className="text-slate-200 font-semibold text-sm">Classement général</span>
+                    <span className="text-xs font-medium text-indigo-300 px-2 py-0.5 rounded-full" style={{background:'rgba(99,102,241,0.15)',border:'1px solid rgba(99,102,241,0.3)'}}>2025/2026</span>
+                  </div>
+                  <table className="w-full">
+                    <thead><tr style={{borderBottom:'1px solid #2d2b5e'}}>{['#','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-xs font-medium text-center first:text-left" style={{color:'#6b7280'}}>{h}</th>)}</tr></thead>
+                    <tbody>
+                      {[['Paul','blue','P','#3b82f6',12,3,2,39],['Adrien','green','A','#22c55e',10,4,3,34],['Tiago','purple','T','#a855f7',8,5,4,29],['Roman','orange','R','#f97316',6,2,9,20]].map(([name,color,letter,hex,v,n,d,pts],i)=>(
+                        <tr key={name} className="transition-colors" style={{borderBottom:'1px solid #1e1c3a'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(99,102,241,0.07)'} onMouseLeave={e=>e.currentTarget.style.background=''}>
+                          <td className="px-4 py-3 font-bold text-lg" style={{color:'#4f46e5'}}>{i+1}</td>
+                          <td className="px-4 py-3"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold" style={{background:`${hex}22`,border:`1px solid ${hex}55`,color:hex}}>{letter}</div><span className="text-slate-200 font-semibold">{name}</span></div></td>
+                          <td className="px-4 py-3 text-center font-semibold" style={{color:'#34d399'}}>{v}</td>
+                          <td className="px-4 py-3 text-center" style={{color:'#6b7280'}}>{n}</td>
+                          <td className="px-4 py-3 text-center" style={{color:'#f87171'}}>{d}</td>
+                          <td className="px-4 py-3 text-center font-black text-lg" style={{color:'#818cf8'}}>{pts}</td>
                         </tr>
                       ))}
                     </tbody>
