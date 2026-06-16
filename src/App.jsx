@@ -76,8 +76,8 @@ const App = () => {
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
           {/* Track title */}
-          <div className="px-1.5 pt-1.5 pb-0 overflow-hidden h-5 w-[120px] sm:w-[220px]">
-            <p className={`text-[11px] font-medium whitespace-nowrap leading-5 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} animate-marquee`}>
+          <div className="px-1.5 pt-1.5 pb-0 overflow-hidden h-6 w-[120px] sm:w-[220px]">
+            <p className={`text-[11px] font-medium whitespace-nowrap leading-6 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} animate-marquee`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
