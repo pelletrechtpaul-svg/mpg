@@ -70,25 +70,26 @@ const App = () => {
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
         {/* Mini music player */}
-        <div className={`pointer-events-auto w-[220px] rounded-md shadow-md border transition-all ${
+        <div className={`pointer-events-auto rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
         }`}>
-          <div className="px-1.5 pt-1 pb-0 overflow-hidden h-4">
+          {/* Track title — desktop only */}
+          <div className="hidden sm:block px-1.5 pt-1 pb-0 overflow-hidden h-4 w-[220px]">
             <p className={`text-[10px] font-medium whitespace-nowrap leading-4 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} ${PLAYLIST[currentTrack].title.length > 28 ? 'animate-marquee' : 'text-center'}`}>
               {PLAYLIST[currentTrack].title}
             </p>
           </div>
-          <div className="flex items-center justify-center gap-2 px-2 pb-1.5">
-            <button onClick={prevTrack} className="p-1.5 rounded hover:opacity-70 transition-opacity" title="Précédent">
-              <SkipBack className="w-4 h-4" />
+          <div className="flex items-center justify-center gap-1 sm:gap-2 px-1.5 sm:px-2 py-1 sm:pb-1.5 sm:pt-0">
+            <button onClick={prevTrack} className="p-1 sm:p-1.5 rounded hover:opacity-70 transition-opacity" title="Précédent">
+              <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
-            <button onClick={playPause} className="p-1.5 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <button onClick={playPause} className="p-1 sm:p-1.5 rounded hover:opacity-70 transition-opacity" title={isPlaying ? 'Pause' : 'Lecture'}>
+              {isPlaying ? <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </button>
-            <button onClick={nextTrack} className="p-1.5 rounded hover:opacity-70 transition-opacity" title="Suivant">
-              <SkipForward className="w-4 h-4" />
+            <button onClick={nextTrack} className="p-1 sm:p-1.5 rounded hover:opacity-70 transition-opacity" title="Suivant">
+              <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
         </div>
@@ -128,7 +129,7 @@ const App = () => {
         {/* Header */}
         <div className="mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">MonPetitGazon</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">MesPetitsBavons</h1>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
             <div className="flex items-center gap-2 mt-2">
               {isOnline ? (
