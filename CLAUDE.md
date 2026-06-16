@@ -2,7 +2,7 @@
 
 ## Branche de déploiement
 
-La webapp déploie depuis `claude/fantasy-football-dashboard-89253`.  
+La webapp déploie depuis `claude/charming-goodall-4nt05x` (branche de production Vercel, vérifiée dans les logs de build).  
 **Toujours committer et pusher sur ce branch directement** — chaque modification doit être immédiatement en ligne.
 
 ## Autonomie — aucune confirmation requise
