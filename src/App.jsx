@@ -183,24 +183,32 @@ const App = () => {
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
           <div className="mb-6">
-            <div className="flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full">
-              {[
+            {(() => {
+              const tabs = [
                 { key: 'classements', label: 'Classements', short: 'Classement' },
                 ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme', short: 'Forme' }] : []),
                 { key: 'versus', label: 'Face à face', short: 'Versus' },
                 { key: 'records', label: 'Records', short: 'Records' },
                 { key: 'joueurs', label: 'Joueurs', short: 'Joueurs' },
-              ].map(({ key, label, short }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  className={`flex-1 text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-base whitespace-nowrap ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+              ];
+              return (
+                <div
+                  className="grid gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full"
+                  style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
                 >
-                  <span className="sm:hidden">{short}</span>
-                  <span className="hidden sm:inline">{label}</span>
-                </button>
-              ))}
-            </div>
+                  {tabs.map(({ key, label, short }) => (
+                    <button
+                      key={key}
+                      onClick={() => setActiveTab(key)}
+                      className={`text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-base ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                    >
+                      <span className="sm:hidden">{short}</span>
+                      <span className="hidden sm:inline">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         )}
 
