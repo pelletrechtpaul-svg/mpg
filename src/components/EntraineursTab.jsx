@@ -65,27 +65,28 @@ export default function EntraineursTab({
       { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; }, detail: v => `${v.toFixed(2)} buts marqués par match en moyenne` },
     ];
 
-    // Classement des joueurs par métrique (rang 1 = meilleur)
-    const ranks = {}; // ranks[metricKey][joueur] = rang (1..n)
+    // Pour chaque métrique, déterminer le LEADER UNIQUE (valeur max strictement supérieure aux autres)
+    const leaders = []; // { metric, joueur, value, margin } — uniquement les vrais 1ers
     metrics.forEach(m => {
       const ordered = [...joueurs].map(j => ({ j, v: m.get(j) })).sort((a, b) => b.v - a.v);
-      ranks[m.key] = {};
-      ordered.forEach((o, i) => { ranks[m.key][o.j] = { rank: i + 1, value: o.v }; });
+      const best = ordered[0];
+      const second = ordered[1];
+      // Leader réel : valeur > 0 et strictement supérieur au 2e (pas d'ex æquo)
+      if (best && best.v > 0 && (!second || best.v > second.v)) {
+        leaders.push({ metric: m, joueur: best.j, value: best.v, margin: best.v - (second ? second.v : 0) });
+      }
     });
 
-    // Assignation gloutonne : on prend itérativement la meilleure paire (joueur, métrique)
+    // Assignation : chaque joueur reçoit au plus un titre, chaque titre va à son vrai leader.
+    // En cas de joueur leader de plusieurs titres, on lui donne celui où sa marge est la plus nette.
     const result = {};
+    const usedPlayers = new Set();
     const usedMetrics = new Set();
-    const candidates = [];
-    joueurs.forEach(j => metrics.forEach(m => {
-      const r = ranks[m.key][j];
-      if (r.value > 0) candidates.push({ j, m, rank: r.rank, value: r.value });
-    }));
-    candidates.sort((a, b) => a.rank - b.rank || b.value - a.value);
-    candidates.forEach(c => {
-      if (result[c.j] || usedMetrics.has(c.m.key)) return;
-      result[c.j] = { label: c.m.label, detail: c.m.detail(c.value) };
-      usedMetrics.add(c.m.key);
+    [...leaders].sort((a, b) => b.margin - a.margin).forEach(c => {
+      if (usedPlayers.has(c.joueur) || usedMetrics.has(c.metric.key)) return;
+      result[c.joueur] = { label: c.metric.label, detail: c.metric.detail(c.value) };
+      usedPlayers.add(c.joueur);
+      usedMetrics.add(c.metric.key);
     });
     joueurs.forEach(j => { if (!result[j]) result[j] = null; });
     return result;
