@@ -4,7 +4,7 @@ import { Trophy, Medal } from 'lucide-react';
 import { playerColors, playerColorHex, ShareBtn } from '../shared.jsx';
 
 export default function ClassementsTab({
-  joueurs, ligues, selectedSeason,
+  joueurs, ligues, saisons, selectedSeason,
   selectedLigue, setSelectedLigue,
   selectedChampionnat, setSelectedChampionnat,
   championnatsByLigue,
@@ -12,6 +12,8 @@ export default function ClassementsTab({
   valiseStats, matchesListForChampionnat,
   ligueMetadata, historicalEvolution, shareContext,
 }) {
+  const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
+  const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
@@ -123,18 +125,16 @@ export default function ClassementsTab({
                         <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
                         <span className="w-3 sm:w-5 flex-shrink-0">
                           {index === 0 && (() => {
-                            const isComplete = selectedLigue !== 'general' && selectedChampionnat !== 'total' && (() => {
-                              const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
-                              const metadata = ligueMetadata[ligueKey];
-                              return metadata && metadata.matchsEntered >= metadata.matchsTotal;
-                            })();
-                            const isGeneral20242025 = selectedLigue === 'general' && selectedSeason === '2024/2025';
-                            if (isComplete || isGeneral20242025) {
-                              if (isComplete && !isGeneral20242025) {
-                                const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
-                                if (metadata && metadata.matchsTotal < 6) return <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
+                            if (selectedLigue === 'general') {
+                              return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" /> : null;
+                            }
+                            if (selectedChampionnat !== 'total') {
+                              const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
+                              if (metadata && metadata.matchsEntered >= metadata.matchsTotal) {
+                                return metadata.matchsTotal < 6
+                                  ? <Medal className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />
+                                  : <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
                               }
-                              return <Trophy className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500" />;
                             }
                             return null;
                           })()}
@@ -145,11 +145,6 @@ export default function ClassementsTab({
                       <div className="flex items-center gap-1 sm:gap-3">
                         <div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>
                         <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span>
-                        {index === 0 && (() => {
-                          const flagIcons = { Paul: '🇫🇷', Adrien: '🇲🇨', Roman: '🇵🇱', Tiago: '🇧🇷' };
-                          const flag = flagIcons[player.joueur];
-                          return flag ? <span className="text-sm sm:text-base ml-1">{flag}</span> : null;
-                        })()}
                       </div>
                     </td>
                     <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 hidden md:table-cell">{player.matchs}</td>
