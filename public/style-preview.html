@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Preview — MesPetitsBavons</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+
+    /* A — Glassmorphism */
+    .glass-card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .glass-row {
+      background: rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .glass-row:hover { background: rgba(255,255,255,0.16); }
+
+    /* B — Dark néon */
+    .neon-card {
+      background: #0f1117;
+      border: 1px solid #1e2130;
+    }
+    .neon-row { border-bottom: 1px solid #1e2130; }
+    .neon-row:hover { background: #161b27; }
+    .neon-accent { color: #4ade80; }
+    .neon-rank { color: #60a5fa; }
+
+    /* C — Typo forte */
+    .typo-card {
+      background: #fff;
+      border: none;
+      box-shadow: none;
+    }
+    .typo-row { border-bottom: 1px solid #f1f5f9; }
+    .typo-row:hover { background: #fafafa; }
+
+    /* D — Gradient + borders */
+    .gradient-card {
+      background: #fff;
+      border: 1.5px solid #e0e7ff;
+    }
+    .gradient-row { border-bottom: 1px solid #eef2ff; }
+    .gradient-row:hover { background: #f5f3ff; }
+  </style>
+</head>
+<body class="bg-slate-100 p-6 space-y-12">
+
+  <h1 class="text-2xl font-bold text-slate-700 text-center mb-2">Aperçu styles — MesPetitsBavons</h1>
+  <p class="text-center text-slate-500 text-sm mb-8">Même données, 4 directions visuelles</p>
+
+  <!-- ═══ A — GLASSMORPHISM ═══ -->
+  <section>
+    <h2 class="text-lg font-bold text-slate-600 mb-3">A — Glassmorphism</h2>
+    <div class="rounded-2xl p-1 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 2px;">
+      <div class="rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);">
+        <div class="px-5 py-4 text-white/70 text-xs font-semibold uppercase tracking-widest" style="border-bottom:1px solid rgba(255,255,255,0.15)">
+          Classement général · 2025/2026
+        </div>
+        <table class="w-full">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.15)">
+              <th class="px-5 py-3 text-left text-white/60 text-xs font-semibold">Rang</th>
+              <th class="px-5 py-3 text-left text-white/60 text-xs font-semibold">Joueur</th>
+              <th class="px-5 py-3 text-center text-white/60 text-xs font-semibold">V</th>
+              <th class="px-5 py-3 text-center text-white/60 text-xs font-semibold">N</th>
+              <th class="px-5 py-3 text-center text-white/60 text-xs font-semibold">D</th>
+              <th class="px-5 py-3 text-center text-white/60 text-xs font-semibold">Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="glass-row">
+              <td class="px-5 py-3 text-white font-bold text-lg">1</td>
+              <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-300"></div><span class="text-white font-semibold">Paul</span></div></td>
+              <td class="px-5 py-3 text-center text-emerald-300 font-bold">12</td>
+              <td class="px-5 py-3 text-center text-white/70">3</td>
+              <td class="px-5 py-3 text-center text-red-300 font-bold">2</td>
+              <td class="px-5 py-3 text-center text-white font-black text-lg">39</td>
+            </tr>
+            <tr class="glass-row">
+              <td class="px-5 py-3 text-white font-bold text-lg">2</td>
+              <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-300"></div><span class="text-white font-semibold">Adrien</span></div></td>
+              <td class="px-5 py-3 text-center text-emerald-300 font-bold">10</td>
+              <td class="px-5 py-3 text-center text-white/70">4</td>
+              <td class="px-5 py-3 text-center text-red-300 font-bold">3</td>
+              <td class="px-5 py-3 text-center text-white font-black text-lg">34</td>
+            </tr>
+            <tr class="glass-row">
+              <td class="px-5 py-3 text-white font-bold text-lg">3</td>
+              <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-purple-300"></div><span class="text-white font-semibold">Tiago</span></div></td>
+              <td class="px-5 py-3 text-center text-emerald-300 font-bold">8</td>
+              <td class="px-5 py-3 text-center text-white/70">5</td>
+              <td class="px-5 py-3 text-center text-red-300 font-bold">4</td>
+              <td class="px-5 py-3 text-center text-white font-black text-lg">29</td>
+            </tr>
+            <tr class="glass-row">
+              <td class="px-5 py-3 text-white font-bold text-lg">4</td>
+              <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-300"></div><span class="text-white font-semibold">Roman</span></div></td>
+              <td class="px-5 py-3 text-center text-emerald-300 font-bold">6</td>
+              <td class="px-5 py-3 text-center text-white/70">2</td>
+              <td class="px-5 py-3 text-center text-red-300 font-bold">9</td>
+              <td class="px-5 py-3 text-center text-white font-black text-lg">20</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ B — DARK NÉON ═══ -->
+  <section>
+    <h2 class="text-lg font-bold text-slate-600 mb-3">B — Dark + accents néon</h2>
+    <div class="neon-card rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 text-slate-400 text-xs font-semibold uppercase tracking-widest border-b border-slate-800">
+        Classement général · 2025/2026
+      </div>
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-slate-800">
+            <th class="px-5 py-3 text-left text-slate-500 text-xs font-semibold">Rang</th>
+            <th class="px-5 py-3 text-left text-slate-500 text-xs font-semibold">Joueur</th>
+            <th class="px-5 py-3 text-center text-slate-500 text-xs font-semibold">V</th>
+            <th class="px-5 py-3 text-center text-slate-500 text-xs font-semibold">N</th>
+            <th class="px-5 py-3 text-center text-slate-500 text-xs font-semibold">D</th>
+            <th class="px-5 py-3 text-center text-slate-500 text-xs font-semibold">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="neon-row">
+            <td class="px-5 py-3 neon-rank font-bold text-lg">1</td>
+            <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-400"></div><span class="text-white font-semibold">Paul</span></div></td>
+            <td class="px-5 py-3 text-center neon-accent font-bold">12</td>
+            <td class="px-5 py-3 text-center text-slate-400">3</td>
+            <td class="px-5 py-3 text-center text-red-400 font-bold">2</td>
+            <td class="px-5 py-3 text-center text-white font-black text-xl">39</td>
+          </tr>
+          <tr class="neon-row">
+            <td class="px-5 py-3 neon-rank font-bold text-lg">2</td>
+            <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div><span class="text-white font-semibold">Adrien</span></div></td>
+            <td class="px-5 py-3 text-center neon-accent font-bold">10</td>
+            <td class="px-5 py-3 text-center text-slate-400">4</td>
+            <td class="px-5 py-3 text-center text-red-400 font-bold">3</td>
+            <td class="px-5 py-3 text-center text-white font-black text-xl">34</td>
+          </tr>
+          <tr class="neon-row">
+            <td class="px-5 py-3 neon-rank font-bold text-lg">3</td>
+            <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-purple-400"></div><span class="text-white font-semibold">Tiago</span></div></td>
+            <td class="px-5 py-3 text-center neon-accent font-bold">8</td>
+            <td class="px-5 py-3 text-center text-slate-400">5</td>
+            <td class="px-5 py-3 text-center text-red-400 font-bold">4</td>
+            <td class="px-5 py-3 text-center text-white font-black text-xl">29</td>
+          </tr>
+          <tr class="neon-row">
+            <td class="px-5 py-3 neon-rank font-bold text-lg">4</td>
+            <td class="px-5 py-3"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-400"></div><span class="text-white font-semibold">Roman</span></div></td>
+            <td class="px-5 py-3 text-center neon-accent font-bold">6</td>
+            <td class="px-5 py-3 text-center text-slate-400">2</td>
+            <td class="px-5 py-3 text-center text-red-400 font-bold">9</td>
+            <td class="px-5 py-3 text-center text-white font-black text-xl">20</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ C — TYPO FORTE ═══ -->
+  <section>
+    <h2 class="text-lg font-bold text-slate-600 mb-3">C — Typographie forte</h2>
+    <div class="typo-card rounded-2xl overflow-hidden bg-white">
+      <div class="px-5 py-5 border-b border-slate-100 flex items-baseline gap-3">
+        <span class="text-2xl font-black text-slate-900">Classement</span>
+        <span class="text-slate-400 text-sm font-medium">2025/2026</span>
+      </div>
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-slate-100">
+            <th class="px-5 py-3 text-left text-slate-300 text-xs font-semibold uppercase tracking-widest">Rang</th>
+            <th class="px-5 py-3 text-left text-slate-300 text-xs font-semibold uppercase tracking-widest">Joueur</th>
+            <th class="px-5 py-3 text-center text-slate-300 text-xs font-semibold uppercase tracking-widest">V</th>
+            <th class="px-5 py-3 text-center text-slate-300 text-xs font-semibold uppercase tracking-widest">N</th>
+            <th class="px-5 py-3 text-center text-slate-300 text-xs font-semibold uppercase tracking-widest">D</th>
+            <th class="px-5 py-3 text-center text-slate-300 text-xs font-semibold uppercase tracking-widest">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="typo-row">
+            <td class="px-5 py-4 font-black text-3xl text-slate-200">1</td>
+            <td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-1 h-8 rounded-full bg-blue-500"></div><span class="text-slate-900 font-black text-lg">Paul</span></div></td>
+            <td class="px-5 py-4 text-center text-slate-900 font-bold">12</td>
+            <td class="px-5 py-4 text-center text-slate-400">3</td>
+            <td class="px-5 py-4 text-center text-slate-400">2</td>
+            <td class="px-5 py-4 text-center font-black text-2xl text-slate-900">39</td>
+          </tr>
+          <tr class="typo-row">
+            <td class="px-5 py-4 font-black text-3xl text-slate-200">2</td>
+            <td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-1 h-8 rounded-full bg-green-500"></div><span class="text-slate-900 font-black text-lg">Adrien</span></div></td>
+            <td class="px-5 py-4 text-center text-slate-900 font-bold">10</td>
+            <td class="px-5 py-4 text-center text-slate-400">4</td>
+            <td class="px-5 py-4 text-center text-slate-400">3</td>
+            <td class="px-5 py-4 text-center font-black text-2xl text-slate-900">34</td>
+          </tr>
+          <tr class="typo-row">
+            <td class="px-5 py-4 font-black text-3xl text-slate-200">3</td>
+            <td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-1 h-8 rounded-full bg-purple-500"></div><span class="text-slate-900 font-black text-lg">Tiago</span></div></td>
+            <td class="px-5 py-4 text-center text-slate-900 font-bold">8</td>
+            <td class="px-5 py-4 text-center text-slate-400">5</td>
+            <td class="px-5 py-4 text-center text-slate-400">4</td>
+            <td class="px-5 py-4 text-center font-black text-2xl text-slate-900">29</td>
+          </tr>
+          <tr class="typo-row">
+            <td class="px-5 py-4 font-black text-3xl text-slate-200">4</td>
+            <td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-1 h-8 rounded-full bg-orange-500"></div><span class="text-slate-900 font-black text-lg">Roman</span></div></td>
+            <td class="px-5 py-4 text-center text-slate-900 font-bold">6</td>
+            <td class="px-5 py-4 text-center text-slate-400">2</td>
+            <td class="px-5 py-4 text-center text-slate-400">9</td>
+            <td class="px-5 py-4 text-center font-black text-2xl text-slate-900">20</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ D — GRADIENT + BORDERS ═══ -->
+  <section>
+    <h2 class="text-lg font-bold text-slate-600 mb-3">D — Gradient doux + borders</h2>
+    <div style="background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%); border-radius: 16px; padding: 2px;">
+      <div class="gradient-card rounded-2xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-indigo-100 flex items-center justify-between">
+          <span class="text-slate-700 font-semibold text-sm">Classement général</span>
+          <span class="text-xs font-medium text-indigo-400 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">2025/2026</span>
+        </div>
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-indigo-50">
+              <th class="px-5 py-3 text-left text-slate-400 text-xs font-medium">#</th>
+              <th class="px-5 py-3 text-left text-slate-400 text-xs font-medium">Joueur</th>
+              <th class="px-5 py-3 text-center text-slate-400 text-xs font-medium">V</th>
+              <th class="px-5 py-3 text-center text-slate-400 text-xs font-medium">N</th>
+              <th class="px-5 py-3 text-center text-slate-400 text-xs font-medium">D</th>
+              <th class="px-5 py-3 text-center text-slate-400 text-xs font-medium">Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="gradient-row">
+              <td class="px-5 py-3.5 text-indigo-300 font-bold text-lg">1</td>
+              <td class="px-5 py-3.5"><div class="flex items-center gap-2.5"><div class="w-6 h-6 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-xs font-bold text-blue-600">P</div><span class="text-slate-800 font-semibold">Paul</span></div></td>
+              <td class="px-5 py-3.5 text-center text-emerald-600 font-semibold">12</td>
+              <td class="px-5 py-3.5 text-center text-slate-400">3</td>
+              <td class="px-5 py-3.5 text-center text-rose-400">2</td>
+              <td class="px-5 py-3.5 text-center font-black text-indigo-600 text-lg">39</td>
+            </tr>
+            <tr class="gradient-row">
+              <td class="px-5 py-3.5 text-indigo-300 font-bold text-lg">2</td>
+              <td class="px-5 py-3.5"><div class="flex items-center gap-2.5"><div class="w-6 h-6 rounded-lg bg-green-100 border border-green-200 flex items-center justify-center text-xs font-bold text-green-600">A</div><span class="text-slate-800 font-semibold">Adrien</span></div></td>
+              <td class="px-5 py-3.5 text-center text-emerald-600 font-semibold">10</td>
+              <td class="px-5 py-3.5 text-center text-slate-400">4</td>
+              <td class="px-5 py-3.5 text-center text-rose-400">3</td>
+              <td class="px-5 py-3.5 text-center font-black text-indigo-600 text-lg">34</td>
+            </tr>
+            <tr class="gradient-row">
+              <td class="px-5 py-3.5 text-indigo-300 font-bold text-lg">3</td>
+              <td class="px-5 py-3.5"><div class="flex items-center gap-2.5"><div class="w-6 h-6 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center text-xs font-bold text-purple-600">T</div><span class="text-slate-800 font-semibold">Tiago</span></div></td>
+              <td class="px-5 py-3.5 text-center text-emerald-600 font-semibold">8</td>
+              <td class="px-5 py-3.5 text-center text-slate-400">5</td>
+              <td class="px-5 py-3.5 text-center text-rose-400">4</td>
+              <td class="px-5 py-3.5 text-center font-black text-indigo-600 text-lg">29</td>
+            </tr>
+            <tr class="gradient-row">
+              <td class="px-5 py-3.5 text-indigo-300 font-bold text-lg">4</td>
+              <td class="px-5 py-3.5"><div class="flex items-center gap-2.5"><div class="w-6 h-6 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-xs font-bold text-orange-600">R</div><span class="text-slate-800 font-semibold">Roman</span></div></td>
+              <td class="px-5 py-3.5 text-center text-emerald-600 font-semibold">6</td>
+              <td class="px-5 py-3.5 text-center text-slate-400">2</td>
+              <td class="px-5 py-3.5 text-center text-rose-400">9</td>
+              <td class="px-5 py-3.5 text-center font-black text-indigo-600 text-lg">20</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
