@@ -132,72 +132,72 @@ export default function ClassementsTab({
         <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
           <ShareBtn contextText={shareContext} />
           {statsTable === 'buteurs' && (
-            <table className="w-full">
+            <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_pour - a.buts_pour).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
-                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                    <td className="px-3 py-2 text-center font-bold text-green-600">{player.buts_pour}</td>
-                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                    <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{player.buts_pour}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
           {statsTable === 'loosers' && (
-            <table className="w-full">
+            <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Buts enc.</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">Moy.</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts enc.</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_contre - a.buts_contre).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
-                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                    <td className="px-3 py-2 text-center font-bold text-red-600">{player.buts_contre}</td>
-                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                    <td className="px-3 py-2 text-center font-semibold text-orange-600 text-sm">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{player.buts_contre}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-orange-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
           {statsTable === 'cleansheets' && (
-            <table className="w-full">
+            <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">CS</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CS</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">%</th>
                 </tr>
               </thead>
               <tbody>
                 {[...cleanSheetsStats].sort((a, b) => b.cleanSheets - a.cleanSheets).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
-                    <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                    <td className="px-3 py-2 text-center font-bold text-sky-600">{player.cleanSheets}</td>
-                    <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                    <td className="px-3 py-2 text-center font-semibold text-blue-600 text-sm">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sky-600 text-xs sm:text-base">{player.cleanSheets}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -205,25 +205,25 @@ export default function ClassementsTab({
           )}
           {statsTable === 'pannes' && (
             <>
-              <p className="text-xs text-slate-500 dark:text-slate-400 px-3 pt-3">Matchs sans marquer le moindre but</p>
-              <table className="w-full mt-2">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1 sm:px-6 pt-3">Matchs sans marquer le moindre but</p>
+              <table className="w-full text-xs sm:text-sm mt-2">
                 <thead className="bg-slate-50 dark:bg-slate-700">
                   <tr>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs w-8">#</th>
-                    <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs">Joueur</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">0 but</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">MJ</th>
-                    <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs">%</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">0 but</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">%</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[...cleanSheetsStats].sort((a, b) => b.pannesOffensives - a.pannesOffensives).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-2"><div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{player.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-orange-600">{player.pannesOffensives}</td>
-                      <td className="px-3 py-2 text-center text-sm text-slate-700 dark:text-slate-200">{player.matchs}</td>
-                      <td className="px-3 py-2 text-center font-semibold text-red-500 text-sm">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
+                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-orange-600 text-xs sm:text-base">{player.pannesOffensives}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-500 text-xs sm:text-base">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -234,17 +234,17 @@ export default function ClassementsTab({
             <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Utilisées</th>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Reçues</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Utilisées</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Reçues</th>
                 </tr>
               </thead>
               <tbody>
                 {joueurs.map(joueur => (
-                  <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{joueur}</span></div></td>
-                    <td className="px-3 py-2 text-center font-bold text-blue-600">{valiseStats[joueur].utilisees}</td>
-                    <td className="px-3 py-2 text-center font-bold text-red-600">{valiseStats[joueur].recues}</td>
+                  <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{joueur}</span></div></td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 text-xs sm:text-base">{valiseStats[joueur].utilisees}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{valiseStats[joueur].recues}</td>
                   </tr>
                 ))}
               </tbody>
@@ -254,21 +254,21 @@ export default function ClassementsTab({
             <table className="w-full text-xs sm:text-sm">
               <thead className="bg-slate-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200 w-6">#</th>
-                  <th className="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Joueur</th>
-                  <th className="px-3 py-2 text-center font-semibold text-green-700 dark:text-green-400">Infligées</th>
-                  <th className="px-3 py-2 text-center font-semibold text-red-700 dark:text-red-400">Reçues</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-green-700 dark:text-green-400 text-xs sm:text-sm">Infligées</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-700 dark:text-red-400 text-xs sm:text-sm">Reçues</th>
                 </tr>
               </thead>
               <tbody>
                 {joueurs.map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
                   .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
                   .map((item, index) => (
-                    <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-200 text-sm text-center">{index + 1}</td>
-                      <td className="px-3 py-2"><div className="flex items-center gap-1.5"><div className={`w-2 h-2 rounded-full ${playerColors[item.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-100">{item.joueur}</span></div></td>
-                      <td className="px-3 py-2 text-center font-bold text-green-600">{item.efficaces}</td>
-                      <td className="px-3 py-2 text-center font-bold text-red-500">{item.efficacesRecues}</td>
+                    <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[item.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{item.efficaces}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-500 text-xs sm:text-base">{item.efficacesRecues}</td>
                     </tr>
                   ))}
               </tbody>
