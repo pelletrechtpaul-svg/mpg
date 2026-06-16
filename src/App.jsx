@@ -200,7 +200,7 @@ const App = () => {
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-base ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
+                      className={`text-center py-1 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? 'bg-indigo-600 text-white shadow' : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'}`}
                     >
                       <span className="sm:hidden">{short}</span>
                       <span className="hidden sm:inline">{label}</span>
