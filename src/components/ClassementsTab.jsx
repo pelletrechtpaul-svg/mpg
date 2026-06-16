@@ -46,7 +46,7 @@ export default function ClassementsTab({
     <>
       {/* Onglets de ligue */}
       <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-3 sm:p-6 mb-6 hover:-translate-y-0.5 transition-all duration-200">
-        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
+        <div className="flex gap-1 sm:gap-2 mb-4 overflow-x-auto">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
             className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 ${
@@ -55,7 +55,8 @@ export default function ClassementsTab({
                 : 'bg-white/80 dark:bg-white/5 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
             }`}
           >
-            Général
+            <span className="sm:hidden">Gén.</span>
+            <span className="hidden sm:inline">Général</span>
           </button>
           {ligues.map(ligue => (
             <button
@@ -70,7 +71,8 @@ export default function ClassementsTab({
                   : 'bg-indigo-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-950/30'
               }`}
             >
-              {ligue}
+              <span className="sm:hidden">{ligue === 'Champions League' ? 'LDC' : ligue === 'Ligue 1' ? 'L1' : ligue === 'Premier League' ? 'PL' : ligue === 'Serie A' ? 'SA' : ligue}</span>
+              <span className="hidden sm:inline">{ligue}</span>
             </button>
           ))}
         </div>
