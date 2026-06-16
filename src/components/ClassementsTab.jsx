@@ -46,7 +46,7 @@ export default function ClassementsTab({
     <>
       {/* Onglets de ligue */}
       <div className="mb-6">
-        <div className="flex justify-between bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] w-full">
+        <div className="flex justify-between sm:justify-start gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] max-w-xl">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
             className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${

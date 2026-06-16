@@ -190,7 +190,7 @@ const App = () => {
                 { key: 'joueurs', label: 'Joueurs' },
               ];
               return (
-                <div className="flex justify-between bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+                <div className="flex justify-between sm:justify-start gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
                   {tabs.map(({ key, label }) => (
                     <button
                       key={key}
