@@ -55,10 +55,10 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#0a0918] dark:to-[#0d0a1a] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Chargement des données...</p>
+          <p className="text-slate-600 dark:text-slate-300">Chargement des données...</p>
         </div>
       </div>
     );
