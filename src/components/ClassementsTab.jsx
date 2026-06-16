@@ -46,13 +46,13 @@ export default function ClassementsTab({
     <>
       {/* Onglets de ligue */}
       <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-2 sm:p-3 mb-6 hover:-translate-y-0.5 transition-all duration-200">
-        <div className="flex gap-1 sm:gap-2 mb-0 overflow-x-auto justify-center">
+        <div className="inline-flex gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] overflow-x-auto w-full justify-center">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
-            className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 whitespace-nowrap ${
+            className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
               selectedLigue === 'general'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                : 'bg-white/80 dark:bg-white/5 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
+                ? 'bg-indigo-600 text-white shadow'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
             }`}
           >
             <span className="sm:hidden">Gén.</span>
@@ -65,10 +65,10 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
               }}
-              className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap ${
+              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-indigo-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-950/30'
+                  ? 'bg-indigo-600 text-white shadow'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
               {ligue === 'Champions League' || ligue === 'Ligue des Champions' ? 'LDC' : ligue}
