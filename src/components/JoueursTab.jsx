@@ -214,6 +214,25 @@ export default function JoueursTab({ mercatoData }) {
   const hasFilters = postes.length || acheteurs.length || ligues.length;
   const isSearching = query.length >= 2 || hasFilters;
 
+  // Complétion prédictive (ghost text)
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  let ghost = '';
+  if (query.length >= 2) {
+    const nq = norm(query);
+    const match = results.find(r => norm(r.displayName).startsWith(nq) && norm(r.displayName) !== nq);
+    if (match) ghost = match.displayName.slice(query.length);
+  }
+
+  function handleKeyDown(e) {
+    if (ghost && (e.key === 'Tab' || (e.key === 'ArrowRight' && inputRef.current?.selectionStart === query.length))) {
+      e.preventDefault();
+      setQuery(query + ghost);
+    } else if (e.key === 'Enter' && results.length) {
+      e.preventDefault();
+      selectPlayer(results[0]);
+    }
+  }
+
   function toggle(setter, value) {
     setSelectedPlayer(null);
     setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
@@ -233,15 +252,23 @@ export default function JoueursTab({ mercatoData }) {
   return (
     <div className="space-y-4">
       {/* Search */}
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">🔍</span>
+      <div className="relative rounded-xl bg-white dark:bg-slate-800 shadow-sm">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10">🔍</span>
+        {/* Ghost text de complétion */}
+        {ghost && (
+          <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center pl-10 pr-10 text-base whitespace-pre overflow-hidden">
+            <span className="invisible">{query}</span>
+            <span className="text-slate-400 dark:text-slate-500">{ghost}</span>
+          </div>
+        )}
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={e => { setQuery(e.target.value); setSelectedPlayer(null); }}
+          onKeyDown={handleKeyDown}
           placeholder="Nom, club, nationalité, coach…"
-          className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm"
+          className="relative w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm"
         />
         {query && (
           <button onClick={() => { setQuery(''); setSelectedPlayer(null); inputRef.current?.focus(); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
