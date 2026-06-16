@@ -46,6 +46,7 @@ export default function EntraineursTab({
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [h2hLigue, setH2hLigue] = useState('all');
+  const [sigBubble, setSigBubble] = useState(null);
 
   /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
   const signatures = useMemo(() => {
@@ -54,14 +55,14 @@ export default function EntraineursTab({
     const cl = j => classementGeneral.find(c => c.joueur === j);
 
     const metrics = [
-      { key: 'titres',   label: '👑 Roi du championnat',  get: j => cl(j)?.victoiresChampionnat || 0 },
-      { key: 'buteur',   label: '⚽ Meilleur buteur',      get: j => statsDetaillees[j]?.buts_pour || 0 },
-      { key: 'mur',      label: '🧤 Mur défensif',         get: j => cs[j] || 0 },
-      { key: 'diff',     label: '🎯 Meilleure différence', get: j => statsDetaillees[j]?.ga ?? -Infinity },
-      { key: 'serie',    label: '🔥 Série de feu',         get: j => advancedStats[j]?.maxWinStreak || 0 },
-      { key: 'invinc',   label: '🛡️ Invincible',           get: j => advancedStats[j]?.maxUnbeatenStreak || 0 },
-      { key: 'tauxV',    label: '📈 Machine à gagner',     get: j => { const s = cl(j); return s && s.matchs ? s.victoires / s.matchs : 0; } },
-      { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; } },
+      { key: 'titres',   label: '👑 Roi du championnat',  get: j => cl(j)?.victoiresChampionnat || 0, detail: v => `${v} titre${v > 1 ? 's' : ''} de championnat remporté${v > 1 ? 's' : ''}` },
+      { key: 'buteur',   label: '⚽ Meilleur buteur',      get: j => statsDetaillees[j]?.buts_pour || 0, detail: v => `${v} buts marqués, plus que tous les autres` },
+      { key: 'mur',      label: '🧤 Mur défensif',         get: j => cs[j] || 0, detail: v => `${v} clean sheet${v > 1 ? 's' : ''} (matchs sans encaisser)` },
+      { key: 'diff',     label: '🎯 Meilleure différence', get: j => statsDetaillees[j]?.ga ?? -Infinity, detail: v => `différence de buts de ${v > 0 ? '+' : ''}${v}, la meilleure du groupe` },
+      { key: 'serie',    label: '🔥 Série de feu',         get: j => advancedStats[j]?.maxWinStreak || 0, detail: v => `série record de ${v} victoires consécutives` },
+      { key: 'invinc',   label: '🛡️ Invincible',           get: j => advancedStats[j]?.maxUnbeatenStreak || 0, detail: v => `${v} matchs d'affilée sans défaite` },
+      { key: 'tauxV',    label: '📈 Machine à gagner',     get: j => { const s = cl(j); return s && s.matchs ? s.victoires / s.matchs : 0; }, detail: v => `${Math.round(v * 100)}% de victoires, le meilleur ratio` },
+      { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; }, detail: v => `${v.toFixed(2)} buts marqués par match en moyenne` },
     ];
 
     // Classement des joueurs par métrique (rang 1 = meilleur)
@@ -83,14 +84,14 @@ export default function EntraineursTab({
     candidates.sort((a, b) => a.rank - b.rank || b.value - a.value);
     candidates.forEach(c => {
       if (result[c.j] || usedMetrics.has(c.m.key)) return;
-      result[c.j] = { label: c.m.label };
+      result[c.j] = { label: c.m.label, detail: c.m.detail(c.value) };
       usedMetrics.add(c.m.key);
     });
     joueurs.forEach(j => { if (!result[j]) result[j] = null; });
     return result;
   }, [joueurs, classementGeneral, statsDetaillees, cleanSheetsStats, advancedStats]);
 
-  /* Head-to-head du joueur sélectionné contre tous les autres */
+  /* Head-to-head du joueur sélectionné contre tous les autres (totaux uniquement, triés par % victoire) */
   const h2h = useMemo(() => {
     if (!selectedPlayer) return [];
     return joueurs.filter(j => j !== selectedPlayer).map(opp => {
@@ -99,21 +100,43 @@ export default function EntraineursTab({
         (m.joueur1 === opp && m.joueur2 === selectedPlayer));
       if (h2hLigue !== 'all') matches = matches.filter(m => m.ligue === h2hLigue);
       let w = 0, d = 0, l = 0, bf = 0, ba = 0;
-      const history = [...matches].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch)).map(m => {
+      matches.forEach(m => {
         const pIs1 = m.joueur1 === selectedPlayer;
         const bp = pIs1 ? m.buts_j1 : m.buts_j2;
         const bc = pIs1 ? m.buts_j2 : m.buts_j1;
         bf += bp; ba += bc;
-        const res = bp > bc ? 'W' : bp < bc ? 'L' : 'D';
-        if (res === 'W') w++; else if (res === 'D') d++; else l++;
-        return { res, bp, bc, ligue: m.ligue, championnat: m.championnat, date: new Date(m.dateMatch).toLocaleDateString('fr-FR') };
+        if (bp > bc) w++; else if (bp === bc) d++; else l++;
       });
-      return { opp, w, d, l, bf, ba, matchs: matches.length, history };
-    });
+      const winPct = matches.length ? w / matches.length : -1;
+      return { opp, w, d, l, bf, ba, matchs: matches.length, winPct };
+    }).sort((a, b) => b.winPct - a.winPct);
   }, [selectedPlayer, joueurs, filteredData, h2hLigue]);
 
   const rankOf = j => classementGeneral.findIndex(c => c.joueur === j) + 1;
   const pointsOf = j => classementGeneral.find(c => c.joueur === j)?.points ?? 0;
+
+  /* Bulle détail signature (partagée entre les deux vues) */
+  const sigBubbleEl = sigBubble && (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+      onClick={() => setSigBubble(null)}
+    >
+      <div
+        className="bg-white dark:bg-[#15131f] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-xs w-full text-center shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">{sigBubble.label}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">{sigBubble.joueur}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300">{sigBubble.detail}</p>
+        <button
+          onClick={() => setSigBubble(null)}
+          className="mt-4 px-4 py-1.5 rounded-lg bg-violet-600 text-white text-sm font-medium hover:bg-violet-700 transition-colors"
+        >
+          Fermer
+        </button>
+      </div>
+    </div>
+  );
 
   /* ---------- Vue profil détaillé ---------- */
   if (selectedPlayer) {
@@ -148,7 +171,12 @@ export default function EntraineursTab({
                 </div>
               </div>
               {signatures[selectedPlayer] && (
-                <p className="mt-2 text-sm font-semibold text-violet-600 dark:text-violet-400">{signatures[selectedPlayer].label}</p>
+                <button
+                  onClick={() => setSigBubble({ joueur: selectedPlayer, label: signatures[selectedPlayer].label, detail: signatures[selectedPlayer].detail })}
+                  className="mt-2 inline-block text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                >
+                  {signatures[selectedPlayer].label}
+                </button>
               )}
             </div>
           </div>
@@ -186,44 +214,33 @@ export default function EntraineursTab({
               {ligues.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
-          <div className="space-y-4">
-            {h2h.map(({ opp, w, d, l, bf, ba, matchs, history }) => (
-              <div key={opp} className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div className="flex items-center gap-3">
-                    <Avatar joueur={opp} className="w-10 h-10 border-2 flex-shrink-0" />
+          <div className="space-y-3">
+            {h2h.map(({ opp, w, d, l, bf, ba, matchs, winPct }) => (
+              <div key={opp} className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                <div className="flex items-center gap-3">
+                  <Avatar joueur={opp} className="w-10 h-10 border-2 flex-shrink-0" />
+                  <div>
                     <span className="font-semibold text-slate-800 dark:text-slate-100">vs {opp}</span>
+                    {matchs > 0 && (
+                      <span className="block text-xs text-slate-500 dark:text-slate-400">{Math.round(winPct * 100)}% de victoires • {matchs} match{matchs > 1 ? 's' : ''}</span>
+                    )}
                   </div>
-                  {matchs > 0 ? (
-                    <div className="flex items-center gap-3 text-sm">
-                      <span className="font-bold text-green-600">{w}V</span>
-                      <span className="font-bold text-slate-400">{d}N</span>
-                      <span className="font-bold text-red-600">{l}D</span>
-                      <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-slate-400">Aucune confrontation</span>
-                  )}
                 </div>
-                {history.length > 0 && (
-                  <div className="flex gap-1 flex-wrap mt-3">
-                    {history.map((m, i) => (
-                      <span
-                        key={i}
-                        title={`${m.bp}-${m.bc} • ${m.ligue} ${m.championnat} • ${m.date}`}
-                        className={`px-1.5 h-6 rounded flex items-center justify-center text-[11px] font-bold text-white ${
-                          m.res === 'W' ? 'bg-green-600' : m.res === 'L' ? 'bg-red-600' : 'bg-slate-400'
-                        }`}
-                      >
-                        {m.bp}-{m.bc}
-                      </span>
-                    ))}
+                {matchs > 0 ? (
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="font-bold text-green-600">{w}V</span>
+                    <span className="font-bold text-slate-400">{d}N</span>
+                    <span className="font-bold text-red-600">{l}D</span>
+                    <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
                   </div>
+                ) : (
+                  <span className="text-sm text-slate-400">Aucune confrontation</span>
                 )}
               </div>
             ))}
           </div>
         </div>
+        {sigBubbleEl}
       </div>
     );
   }
@@ -237,10 +254,13 @@ export default function EntraineursTab({
         const sig = signatures[joueur];
         const color = playerColorHex[joueur];
         return (
-          <button
+          <div
             key={joueur}
+            role="button"
+            tabIndex={0}
             onClick={() => { setSelectedPlayer(joueur); setH2hLigue('all'); }}
-            className="group relative text-left overflow-hidden rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0f0e1a] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
+            onKeyDown={(e) => { if (e.key === 'Enter') { setSelectedPlayer(joueur); setH2hLigue('all'); } }}
+            className="group relative cursor-pointer text-left overflow-hidden rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0f0e1a] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
           >
             {/* Halo de couleur en fond */}
             <div
@@ -272,20 +292,25 @@ export default function EntraineursTab({
                 <FormPills form={form} />
               </div>
 
-              {/* Signature en chip */}
+              {/* Signature en chip cliquable */}
               {sig && (
-                <span className="mt-3 inline-block px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 leading-tight">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSigBubble({ joueur, label: sig.label, detail: sig.detail }); }}
+                  className="mt-3 inline-block px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 leading-tight hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
+                >
                   {sig.label}
-                </span>
+                </button>
               )}
 
               <span className="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
                 Voir le profil →
               </span>
             </div>
-          </button>
+          </div>
         );
       })}
+
+      {sigBubbleEl}
     </div>
   );
 }
