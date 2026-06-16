@@ -3,16 +3,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Trophy, Medal } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
 
-const BADGE = {
-  Paul:   'bg-blue-100 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400',
-  Adrien: 'bg-green-100 border-green-200 text-green-600 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400',
-  Tiago:  'bg-purple-100 border-purple-200 text-purple-600 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
-  Roman:  'bg-orange-100 border-orange-200 text-orange-600 dark:bg-orange-900/30 dark:border-orange-800 dark:text-orange-400',
-};
 const PlayerBadge = ({ joueur, sm = true }) => (
-  <div className={`${sm ? 'w-5 h-5 sm:w-6 sm:h-6 text-[10px] sm:text-xs' : 'w-6 h-6 text-xs'} rounded-md border flex items-center justify-center font-bold flex-shrink-0 ${BADGE[joueur] || 'bg-slate-100 border-slate-200 text-slate-600'}`}>
-    {joueur?.[0] || '?'}
-  </div>
+  <div
+    className={`${sm ? 'w-4 h-4 sm:w-5 sm:h-5' : 'w-5 h-5'} rounded-full flex-shrink-0 ring-2 ring-white dark:ring-[#0f0e1a]`}
+    style={{ backgroundColor: playerColorHex[joueur] || '#94a3b8' }}
+  />
 );
 
 export default function ClassementsTab({
@@ -50,7 +45,7 @@ export default function ClassementsTab({
   return (
     <>
       {/* Onglets de ligue */}
-      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-3 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-3 sm:p-6 mb-6 hover:-translate-y-0.5 transition-all duration-200">
         <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
@@ -141,7 +136,7 @@ export default function ClassementsTab({
 
       {/* Tableau classement / stats / graphique */}
       {statsTable ? (
-        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden">
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
           <ShareBtn contextText={shareContext} />
           {statsTable === 'buteurs' && (
             <table className="w-full text-xs sm:text-sm">
@@ -370,7 +365,7 @@ export default function ClassementsTab({
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6 hover:-translate-y-0.5 transition-all duration-200">
           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
           {historicalEvolution.length > 0 ? (
             <>
@@ -456,7 +451,7 @@ export default function ClassementsTab({
 
       {/* Liste des matchs */}
       {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 mt-6">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 mt-6 hover:-translate-y-0.5 transition-all duration-200">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
             Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
           </h3>
