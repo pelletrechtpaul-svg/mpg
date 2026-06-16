@@ -97,43 +97,47 @@ export default function ClassementsTab({
 
       {/* Toggle Tableau/Graphique + Stats sub-tabs */}
       {selectedLigue === 'general' && (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
+        <div className="mb-4">
+          {/* Ligne 1 : Tableau + Évolution */}
+          <div className="flex gap-2 mb-2">
             <button
               onClick={() => { setRankingsView('table'); setStatsTable(null); }}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'table' && !statsTable ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'} rounded-l-lg`}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📊 Tableau
             </button>
             <button
               onClick={() => { setRankingsView('graph'); setStatsTable(null); }}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'graph' ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'} rounded-r-lg`}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'graph' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📈 Évolution
             </button>
           </div>
-          {[
-            { key: 'buteurs', label: '⚽ Buteurs' },
-            { key: 'loosers', label: '🥅 Loosers' },
-            { key: 'cleansheets', label: '🧤 Clean sheets' },
-            { key: 'pannes', label: '🚫 Pannes' },
-            ...(valiseStats ? [
-              { key: 'valises', label: '💼 Valises' },
-              { key: 'valises-efficaces', label: '🎯 Valises eff.' },
-            ] : []),
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => { setStatsTable(statsTable === key ? null : key); setRankingsView('table'); }}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
-                statsTable === key
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow'
-                  : 'bg-white/80 dark:bg-white/5 border-indigo-100 dark:border-[#2d2b5e] text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+          {/* Ligne 2+ : stats, centrées, flex-wrap */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              { key: 'buteurs', label: '⚽ Buteurs' },
+              { key: 'loosers', label: '🥅 Loosers' },
+              { key: 'cleansheets', label: '🧤 Clean sheets' },
+              { key: 'pannes', label: '🚫 Pannes' },
+              ...(valiseStats ? [
+                { key: 'valises', label: '💼 Valises' },
+                { key: 'valises-efficaces', label: '🎯 Valises eff.' },
+              ] : []),
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => { setStatsTable(statsTable === key ? null : key); setRankingsView('table'); }}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
+                  statsTable === key
+                    ? 'bg-blue-600 text-white border-blue-600 shadow'
+                    : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
