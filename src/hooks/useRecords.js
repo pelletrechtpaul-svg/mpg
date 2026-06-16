@@ -18,12 +18,17 @@ const computeLigueStats = (matches, minMatchs = 3) => {
   return { ligues, mostProlific: ligues[0], leastProlific: ligues[ligues.length - 1], mostDraws: [...ligues].sort((a, b) => b.drawRate - a.drawRate)[0], mostCleanSheets: [...ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate)[0], tightest: [...ligues].sort((a, b) => a.avgMargin - b.avgMargin)[0] };
 };
 
-// Returns top n entries by scoreFn (descending), keeping ties at the nth position
-const topN = (arr, scoreFn, n = 3) => {
+const saisonTs = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
+const dateTs = d => d ? new Date(d).getTime() : 0;
+
+// Returns strictly top n entries; ties broken by tiebreakerFn (descending)
+const topN = (arr, scoreFn, tiebreakerFn = null, n = 3) => {
   if (!arr.length) return [];
-  const sorted = [...arr].sort((a, b) => scoreFn(b) - scoreFn(a));
-  const cutoff = scoreFn(sorted[Math.min(n, sorted.length) - 1]);
-  return sorted.filter(v => scoreFn(v) >= cutoff);
+  return [...arr].sort((a, b) => {
+    const diff = scoreFn(b) - scoreFn(a);
+    if (diff !== 0) return diff;
+    return tiebreakerFn ? tiebreakerFn(b) - tiebreakerFn(a) : 0;
+  }).slice(0, n);
 };
 
 export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason) => {
@@ -174,18 +179,21 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     });
 
     return {
-      mostGoalsInMatch: topN(rawMostGoalsInMatch, v => v.buts),
-      biggestWinMargin: topN(rawBiggestWinMargin, v => v.margin),
-      mostProlificMatch: topN(rawMostProlificMatch, v => v.totalGoals),
-      mostProlificDraw: topN(rawMostProlificDraw, v => v.totalGoals),
-      mostGoalsInChampionship: topN(rawMostGoalsInChamp, v => v.goals),
-      mostConcededInChampionship: topN(rawMostConcededInChamp, v => v.goals),
-      bestGAChampionship: topN(rawBestGA, v => v.ga),
-      worstGAChampionship: topN(rawWorstGA, v => -v.ga),
-      tightestChampionship: topN(rawTightest, v => -v.sigma),
-      mostExplosive: topN(rawMostExplosive, v => v.totalGoals),
-      leastExplosive: topN(rawLeastExplosive, v => -v.totalGoals),
-      mostDrawsChampionship: topN(rawMostDrawsChamp, v => v.count),
+      // Match records — tiebreaker: date la plus récente
+      mostGoalsInMatch: topN(rawMostGoalsInMatch, v => v.buts, v => dateTs(v.date)),
+      biggestWinMargin: topN(rawBiggestWinMargin, v => v.margin, v => dateTs(v.date)),
+      mostProlificMatch: topN(rawMostProlificMatch, v => v.totalGoals, v => dateTs(v.date)),
+      mostProlificDraw: topN(rawMostProlificDraw, v => v.totalGoals, v => dateTs(v.date)),
+      // Championship records — tiebreaker: saison la plus récente, puis numéro de championnat
+      mostGoalsInChampionship: topN(rawMostGoalsInChamp, v => v.goals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      mostConcededInChampionship: topN(rawMostConcededInChamp, v => v.goals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      bestGAChampionship: topN(rawBestGA, v => v.ga, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      worstGAChampionship: topN(rawWorstGA, v => -v.ga, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      tightestChampionship: topN(rawTightest, v => -v.sigma, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      mostExplosive: topN(rawMostExplosive, v => v.totalGoals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      leastExplosive: topN(rawLeastExplosive, v => -v.totalGoals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
+      // Tiebreaker pour nuls : % de nuls (count/total), puis saison récente
+      mostDrawsChampionship: topN(rawMostDrawsChamp, v => v.count, v => (v.count / v.total) * 1000 + saisonTs(v.saison) * 0.001),
       closeWinsKing: Object.entries(closeWinsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       berserkKing: Object.entries(berserkCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       clutchChampion: Object.entries(clutchCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
