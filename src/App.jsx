@@ -129,7 +129,7 @@ const App = () => {
         {/* Header */}
         <div className="mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">MesPetitsBavons</h1>
+            <h1 className="text-3xl sm:text-4xl font-black mb-2 bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">MesPetitsBavons</h1>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
             <div className="flex items-center gap-2 mt-2">
               {isOnline ? (
@@ -161,7 +161,7 @@ const App = () => {
         )}
 
         {/* Season Navigation */}
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="inline-flex gap-1 mb-4 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
           {[...saisons, 'All-Time'].map(season => (
             <button
               key={season}
@@ -169,10 +169,10 @@ const App = () => {
                 setSelectedSeason(season);
                 if (activeTab === 'admin') setActiveTab('classements');
               }}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
+              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
                 selectedSeason === season && activeTab !== 'admin'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  ? 'bg-indigo-600 text-white shadow'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
               {season}
@@ -182,60 +182,23 @@ const App = () => {
 
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
-          <div className="flex gap-4 mb-6 flex-wrap items-center">
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => setActiveTab('classements')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'classements'
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
-                }`}
-              >
-                Classements
-              </button>
-              {selectedSeason === '2025/2026' && (
+          <div className="mb-6">
+            <div className="inline-flex gap-1 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+              {[
+                { key: 'classements', label: 'Classements', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
+                ...(selectedSeason === '2025/2026' ? [{ key: 'stats-avancees', label: 'Forme', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' }] : []),
+                { key: 'versus', label: 'Face à face', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
+                { key: 'records', label: 'Records', active: 'bg-indigo-600 text-white shadow', inactive: 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10' },
+                { key: 'joueurs', label: 'Joueurs', active: 'bg-amber-500 text-white shadow', inactive: 'text-amber-600 dark:text-amber-400 hover:bg-amber-50/80 dark:hover:bg-amber-900/20' },
+              ].map(({ key, label, active, inactive }) => (
                 <button
-                  onClick={() => setActiveTab('stats-avancees')}
-                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                    activeTab === 'stats-avancees'
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
-                  }`}
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${activeTab === key ? active : inactive}`}
                 >
-                  Forme
+                  {label}
                 </button>
-              )}
-              <button
-                onClick={() => setActiveTab('versus')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'versus'
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
-                }`}
-              >
-                Face à face
-              </button>
-              <button
-                onClick={() => setActiveTab('records')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'records'
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
-                }`}
-              >
-                Records
-              </button>
-              <button
-                onClick={() => setActiveTab('joueurs')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'joueurs'
-                    ? 'bg-amber-500 text-white shadow-lg'
-                    : 'bg-white text-amber-600 hover:bg-amber-50 dark:bg-slate-800 dark:text-amber-400'
-                }`}
-              >
-                Joueurs
-              </button>
+              ))}
             </div>
           </div>
         )}

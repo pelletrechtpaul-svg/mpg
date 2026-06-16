@@ -10,7 +10,7 @@ export default function VersusTab({
   return (
     <>
       {/* Sélection des joueurs et filtre ligue */}
-      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 mb-6">
+      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Joueur 1</label>
@@ -52,7 +52,7 @@ export default function VersusTab({
 
       {versusStats.matchs > 0 ? (
         <>
-          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-4 sm:p-8 mb-6">
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-4 sm:p-8 mb-6">
             <ShareBtn contextText={[selectedSeason, selectedVersusLigue && selectedVersusLigue !== 'all' ? selectedVersusLigue : null].filter(Boolean).join(' · ') || null} />
             <div className="grid grid-cols-3 items-center gap-4 md:gap-6">
               <div className="flex flex-col items-center text-center">
@@ -156,7 +156,7 @@ export default function VersusTab({
           </div>
         </>
       ) : (
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-8 text-center">
           <p className="text-slate-600">
             Aucune confrontation directe entre {selectedVersusPlayer1} et {selectedVersusPlayer2}
             {selectedVersusLigue !== 'all' && ` en ${selectedVersusLigue}`}.
