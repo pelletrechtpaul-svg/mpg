@@ -74,7 +74,7 @@ export default function ClassementsTab({
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
-              {ligue === 'Champions League' || ligue === 'Ligue des Champions' ? 'LDC' : ligue}
+              {ligue === 'Champions League' || ligue === 'Ligue des Champions' ? 'LDC' : ligue === 'Premier League' ? 'PL' : ligue}
             </button>
           ))}
         </div>
