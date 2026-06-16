@@ -14,7 +14,7 @@ export default function AdvancedStatsTab({ joueurs, advancedStats, shareContext 
   return (
     <>
       <div className="space-y-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Forme récente</h2>
@@ -35,7 +35,7 @@ export default function AdvancedStatsTab({ joueurs, advancedStats, shareContext 
             if (!stats) return null;
 
             return (
-              <div key={joueur} data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+              <div key={joueur} data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
                 <ShareBtn contextText={shareContext} />
                 <div className="flex items-center gap-4 mb-6 pb-4 border-b dark:border-slate-700">
                   <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500">
