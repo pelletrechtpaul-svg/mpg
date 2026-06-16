@@ -1,7 +1,19 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal } from 'lucide-react';
-import { playerColors, playerColorHex, ShareBtn } from '../shared.jsx';
+import { playerColorHex, ShareBtn } from '../shared.jsx';
+
+const BADGE = {
+  Paul:   'bg-blue-100 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400',
+  Adrien: 'bg-green-100 border-green-200 text-green-600 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400',
+  Tiago:  'bg-purple-100 border-purple-200 text-purple-600 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+  Roman:  'bg-orange-100 border-orange-200 text-orange-600 dark:bg-orange-900/30 dark:border-orange-800 dark:text-orange-400',
+};
+const PlayerBadge = ({ joueur, sm = true }) => (
+  <div className={`${sm ? 'w-5 h-5 sm:w-6 sm:h-6 text-[10px] sm:text-xs' : 'w-6 h-6 text-xs'} rounded-md border flex items-center justify-center font-bold flex-shrink-0 ${BADGE[joueur] || 'bg-slate-100 border-slate-200 text-slate-600'}`}>
+    {joueur?.[0] || '?'}
+  </div>
+);
 
 export default function ClassementsTab({
   joueurs, ligues, saisons, selectedSeason,
@@ -38,14 +50,14 @@ export default function ClassementsTab({
   return (
     <>
       {/* Onglets de ligue */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-3 sm:p-6 mb-6">
+      <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-3 sm:p-6 mb-6">
         <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4">
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
             className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-base border-2 ${
               selectedLigue === 'general'
-                ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                : 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500 hover:bg-blue-50 dark:hover:bg-slate-600'
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                : 'bg-white/80 dark:bg-white/5 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
             }`}
           >
             Général
@@ -59,8 +71,8 @@ export default function ClassementsTab({
               }}
               className={`px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 selectedLigue === ligue
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-indigo-50/50 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-950/30'
               }`}
             >
               {ligue}
@@ -91,7 +103,7 @@ export default function ClassementsTab({
           <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
             <button
               onClick={() => { setRankingsView('table'); setStatsTable(null); }}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'} rounded-l-lg`}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${rankingsView === 'table' && !statsTable ? 'bg-indigo-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'} rounded-l-lg`}
             >
               📊 Tableau
             </button>
@@ -117,8 +129,8 @@ export default function ClassementsTab({
               onClick={() => { setStatsTable(statsTable === key ? null : key); setRankingsView('table'); }}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                 statsTable === key
-                  ? 'bg-blue-600 text-white border-blue-600 shadow'
-                  : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow'
+                  : 'bg-white/80 dark:bg-white/5 border-indigo-100 dark:border-[#2d2b5e] text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
               }`}
             >
               {label}
@@ -129,11 +141,11 @@ export default function ClassementsTab({
 
       {/* Tableau classement / stats / graphique */}
       {statsTable ? (
-        <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden">
           <ShareBtn contextText={shareContext} />
           {statsTable === 'buteurs' && (
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -144,9 +156,9 @@ export default function ClassementsTab({
               </thead>
               <tbody>
                 {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_pour - a.buts_pour).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                  <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{player.buts_pour}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
@@ -157,7 +169,7 @@ export default function ClassementsTab({
           )}
           {statsTable === 'loosers' && (
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -168,9 +180,9 @@ export default function ClassementsTab({
               </thead>
               <tbody>
                 {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_contre - a.buts_contre).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                  <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{player.buts_contre}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-orange-600 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
@@ -181,7 +193,7 @@ export default function ClassementsTab({
           )}
           {statsTable === 'cleansheets' && (
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -192,9 +204,9 @@ export default function ClassementsTab({
               </thead>
               <tbody>
                 {[...cleanSheetsStats].sort((a, b) => b.cleanSheets - a.cleanSheets).map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                  <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sky-600 text-xs sm:text-base">{player.cleanSheets}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 text-xs sm:text-base">{player.matchs > 0 ? ((player.cleanSheets / player.matchs) * 100).toFixed(0) : '0'}%</td>
@@ -207,7 +219,7 @@ export default function ClassementsTab({
             <>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1 sm:px-6 pt-3">Matchs sans marquer le moindre but</p>
               <table className="w-full text-xs sm:text-sm mt-2">
-                <thead className="bg-slate-50 dark:bg-slate-700">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
                     <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -218,9 +230,9 @@ export default function ClassementsTab({
                 </thead>
                 <tbody>
                   {[...cleanSheetsStats].sort((a, b) => b.pannesOffensives - a.pannesOffensives).map((player, index) => (
-                    <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
+                    <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span></div></td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-orange-600 text-xs sm:text-base">{player.pannesOffensives}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-500 text-xs sm:text-base">{player.matchs > 0 ? ((player.pannesOffensives / player.matchs) * 100).toFixed(0) : '0'}%</td>
@@ -232,7 +244,7 @@ export default function ClassementsTab({
           )}
           {statsTable === 'valises' && valiseStats && (
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Utilisées</th>
@@ -241,8 +253,8 @@ export default function ClassementsTab({
               </thead>
               <tbody>
                 {joueurs.map(joueur => (
-                  <tr key={joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{joueur}</span></div></td>
+                  <tr key={joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{joueur}</span></div></td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 text-xs sm:text-base">{valiseStats[joueur].utilisees}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 text-xs sm:text-base">{valiseStats[joueur].recues}</td>
                   </tr>
@@ -252,7 +264,7 @@ export default function ClassementsTab({
           )}
           {statsTable === 'valises-efficaces' && valiseStats && (
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -264,9 +276,9 @@ export default function ClassementsTab({
                 {joueurs.map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
                   .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
                   .map((item, index) => (
-                    <tr key={item.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[item.joueur] || 'bg-gray-600'}`}></div><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
+                    <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-4"><div className="flex items-center gap-1 sm:gap-3"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{item.joueur}</span></div></td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 text-xs sm:text-base">{item.efficaces}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-500 text-xs sm:text-base">{item.efficacesRecues}</td>
                     </tr>
@@ -276,11 +288,11 @@ export default function ClassementsTab({
           )}
         </div>
       ) : (selectedLigue !== 'general' || rankingsView === 'table') ? (
-        <div data-card className="relative rounded-xl shadow-sm overflow-hidden bg-white dark:bg-slate-800">
+        <div data-card className="relative rounded-2xl overflow-hidden bg-white dark:bg-[#0f0e1a] border border-indigo-100 dark:border-[#2d2b5e]">
           <ShareBtn contextText={shareContext} />
           <div className="overflow-x-auto">
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Rang</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
@@ -304,13 +316,13 @@ export default function ClassementsTab({
               </thead>
               <tbody>
                 {classementParLigue.map((player, index) => (
-                  <tr key={player.joueur} className="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                  <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
-                      <span className="font-bold text-sm sm:text-lg text-slate-700 dark:text-slate-200">{index + 1}</span>
+                      <span className="font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</span>
                     </td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4">
                       <div className="flex items-center gap-1 sm:gap-3">
-                        {getTrophyForRow(index) || <div className={`w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 ${playerColors[player.joueur] || 'bg-gray-600'}`}></div>}
+                        {getTrophyForRow(index) || <PlayerBadge joueur={player.joueur} />}
                         <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{player.joueur}</span>
                       </div>
                     </td>
@@ -347,7 +359,7 @@ export default function ClassementsTab({
                       </>
                     )}
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
-                      <span className="text-sm sm:text-xl font-bold text-blue-600">
+                      <span className="text-sm sm:text-xl font-bold text-indigo-600 dark:text-indigo-400">
                         {selectedLigue === 'general' ? player.points : selectedChampionnat === 'total' ? (player.pointsMatch || player.points) : player.points}
                       </span>
                     </td>
@@ -358,7 +370,7 @@ export default function ClassementsTab({
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-0 sm:p-6">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6">
           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
           {historicalEvolution.length > 0 ? (
             <>
@@ -388,7 +400,7 @@ export default function ClassementsTab({
       {/* Popup détails buts */}
       {showGoalsDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowGoalsDetail(null)}>
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-slate-800">{showGoalsDetail.joueur}</h3>
               <button onClick={() => setShowGoalsDetail(null)} className="text-slate-600 hover:text-slate-800 dark:hover:text-slate-100">✕</button>
@@ -410,7 +422,7 @@ export default function ClassementsTab({
       {/* Popup détail titres / médailles */}
       {showChampDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowChampDetail(null)}>
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 max-w-xs w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-xs w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                 {showChampDetail.joueur} — {showChampDetail.type === 'titres' ? '🏆 Titres' : '🥈 Médailles'}
@@ -444,7 +456,7 @@ export default function ClassementsTab({
 
       {/* Liste des matchs */}
       {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mt-6">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 mt-6">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
             Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
           </h3>

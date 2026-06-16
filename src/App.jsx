@@ -58,7 +58,7 @@ const App = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Chargement des données...</p>
         </div>
       </div>
@@ -66,7 +66,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-[#0a0918] dark:to-[#0d0a1a]">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
         {/* Mini music player */}
@@ -188,8 +188,8 @@ const App = () => {
                 onClick={() => setActiveTab('classements')}
                 className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                   activeTab === 'classements'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                 }`}
               >
                 Classements
@@ -210,8 +210,8 @@ const App = () => {
                 onClick={() => setActiveTab('versus')}
                 className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                   activeTab === 'versus'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                 }`}
               >
                 Face à face
@@ -220,8 +220,8 @@ const App = () => {
                 onClick={() => setActiveTab('records')}
                 className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
                   activeTab === 'records'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'bg-white/80 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                 }`}
               >
                 Records
@@ -236,21 +236,11 @@ const App = () => {
               >
                 Joueurs
               </button>
-              <button
-                onClick={() => setActiveTab('style')}
-                className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all text-sm sm:text-base ${
-                  activeTab === 'style'
-                    ? 'bg-pink-500 text-white shadow-lg'
-                    : 'bg-white text-pink-500 hover:bg-pink-50 dark:bg-slate-800 dark:text-pink-400'
-                }`}
-              >
-                🎨
-              </button>
             </div>
           </div>
         )}
 
-        <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>}>
+        <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div></div>}>
 
         {/* Placeholder saison vide (hors admin, joueurs, all-time) */}
         {filteredData.length === 0 && selectedSeason !== 'All-Time' && activeTab !== 'admin' && activeTab !== 'joueurs' ? (
@@ -351,68 +341,6 @@ const App = () => {
 
         {activeTab === 'joueurs' && (
           <JoueursTab mercatoData={mercatoData} />
-        )}
-
-        {activeTab === 'style' && (
-          <div className="space-y-8">
-            <p className="text-slate-500 dark:text-slate-400 text-sm text-center">Style D — version light vs dark</p>
-
-            {/* D Light */}
-            <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">D — Light</h2>
-              <div style={{background:'linear-gradient(135deg,#eff6ff,#f5f3ff)',borderRadius:16,padding:2}}>
-                <div className="rounded-2xl overflow-hidden bg-white border border-indigo-100">
-                  <div className="px-5 py-4 border-b border-indigo-100 flex items-center justify-between">
-                    <span className="text-slate-700 font-semibold text-sm">Classement général</span>
-                    <span className="text-xs font-medium text-indigo-400 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">2025/2026</span>
-                  </div>
-                  <table className="w-full">
-                    <thead><tr className="border-b border-indigo-50">{['#','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-slate-400 text-xs font-medium text-center first:text-left">{h}</th>)}</tr></thead>
-                    <tbody>
-                      {[['Paul','blue','P',12,3,2,39],['Adrien','green','A',10,4,3,34],['Tiago','purple','T',8,5,4,29],['Roman','orange','R',6,2,9,20]].map(([name,color,letter,v,n,d,pts],i)=>(
-                        <tr key={name} className="border-b border-indigo-50 hover:bg-indigo-50/50 transition-colors">
-                          <td className="px-4 py-3 text-indigo-300 font-bold text-lg">{i+1}</td>
-                          <td className="px-4 py-3"><div className="flex items-center gap-2"><div className={`w-6 h-6 rounded-lg bg-${color}-100 border border-${color}-200 flex items-center justify-center text-xs font-bold text-${color}-600`}>{letter}</div><span className="text-slate-800 font-semibold">{name}</span></div></td>
-                          <td className="px-4 py-3 text-center text-emerald-600 font-semibold">{v}</td>
-                          <td className="px-4 py-3 text-center text-slate-400">{n}</td>
-                          <td className="px-4 py-3 text-center text-rose-400">{d}</td>
-                          <td className="px-4 py-3 text-center font-black text-indigo-600 text-lg">{pts}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            {/* D Dark */}
-            <div>
-              <h2 className="text-base font-bold text-slate-500 mb-3">D — Dark</h2>
-              <div style={{background:'linear-gradient(135deg,#1e1b4b,#1e1b4b 50%,#2e1065)',borderRadius:16,padding:2}}>
-                <div className="rounded-2xl overflow-hidden" style={{background:'#0f0e1a',border:'1px solid #2d2b5e'}}>
-                  <div className="px-5 py-4 flex items-center justify-between" style={{borderBottom:'1px solid #2d2b5e'}}>
-                    <span className="text-slate-200 font-semibold text-sm">Classement général</span>
-                    <span className="text-xs font-medium text-indigo-300 px-2 py-0.5 rounded-full" style={{background:'rgba(99,102,241,0.15)',border:'1px solid rgba(99,102,241,0.3)'}}>2025/2026</span>
-                  </div>
-                  <table className="w-full">
-                    <thead><tr style={{borderBottom:'1px solid #2d2b5e'}}>{['#','Joueur','V','N','D','Pts'].map(h=><th key={h} className="px-4 py-3 text-xs font-medium text-center first:text-left" style={{color:'#6b7280'}}>{h}</th>)}</tr></thead>
-                    <tbody>
-                      {[['Paul','blue','P','#3b82f6',12,3,2,39],['Adrien','green','A','#22c55e',10,4,3,34],['Tiago','purple','T','#a855f7',8,5,4,29],['Roman','orange','R','#f97316',6,2,9,20]].map(([name,color,letter,hex,v,n,d,pts],i)=>(
-                        <tr key={name} className="transition-colors" style={{borderBottom:'1px solid #1e1c3a'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(99,102,241,0.07)'} onMouseLeave={e=>e.currentTarget.style.background=''}>
-                          <td className="px-4 py-3 font-bold text-lg" style={{color:'#4f46e5'}}>{i+1}</td>
-                          <td className="px-4 py-3"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold" style={{background:`${hex}22`,border:`1px solid ${hex}55`,color:hex}}>{letter}</div><span className="text-slate-200 font-semibold">{name}</span></div></td>
-                          <td className="px-4 py-3 text-center font-semibold" style={{color:'#34d399'}}>{v}</td>
-                          <td className="px-4 py-3 text-center" style={{color:'#6b7280'}}>{n}</td>
-                          <td className="px-4 py-3 text-center" style={{color:'#f87171'}}>{d}</td>
-                          <td className="px-4 py-3 text-center font-black text-lg" style={{color:'#818cf8'}}>{pts}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
         )}
 
         </Suspense>
