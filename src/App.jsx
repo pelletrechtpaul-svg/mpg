@@ -69,8 +69,8 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
-        {/* Mini music player */}
-        <div className={`pointer-events-auto w-[220px] rounded-md shadow-md border transition-all ${
+        {/* Mini music player — hidden on mobile */}
+        <div className={`pointer-events-auto hidden sm:block w-[220px] rounded-md shadow-md border transition-all ${
           isPlaying
             ? 'bg-blue-600 border-blue-600 text-white'
             : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
@@ -128,7 +128,7 @@ const App = () => {
         {/* Header */}
         <div className="mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">MonPetitGazon</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-2">MesPetitsBavons</h1>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
             <div className="flex items-center gap-2 mt-2">
               {isOnline ? (
