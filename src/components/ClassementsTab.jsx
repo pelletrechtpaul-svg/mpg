@@ -52,14 +52,13 @@ export default function ClassementsTab({
         >
           <button
             onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
-            className={`flex items-center justify-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
+            className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
               selectedLigue === 'general'
                 ? 'bg-indigo-600 text-white shadow'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
             }`}
           >
-            <span className="sm:hidden">Gén.</span>
-            <span className="hidden sm:inline">Général</span>
+            Gén.
           </button>
           {ligues.map(ligue => (
             <button
@@ -68,7 +67,7 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
               }}
-              className={`flex items-center justify-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
+              className={`min-w-0 text-center py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base ${
                 selectedLigue === ligue
                   ? 'bg-indigo-600 text-white shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
