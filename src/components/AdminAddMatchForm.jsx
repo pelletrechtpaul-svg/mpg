@@ -54,6 +54,28 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
   const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
   const hasResult = match.buts1 !== '' && match.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
 
+  const current = buteurs[matchKey] || [];
+  const scorersJ1 = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === match.joueur1);
+  const scorersJ2 = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === match.joueur2);
+  const scorersOther = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur !== match.joueur1 && s.acheteur !== match.joueur2);
+
+  const removeScorer = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, i) => i !== idx) }));
+  const updateButs = (idx, val) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: Math.max(1, parseInt(val) || 1) } : s) }));
+  const toggleCsc = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, csc: !s.csc } : s) }));
+
+  const ScorerList = ({ scorers }) => scorers.map(s => (
+    <div key={s.idx} className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 py-0.5">
+      <span className="flex-1 truncate">{s.displayName}{s.csc ? ' (CSC)' : ''}</span>
+      <input type="number" value={s.buts} min="1" max="10" onChange={e => updateButs(s.idx, e.target.value)}
+        className="w-7 text-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-xs font-bold py-0" />
+      <label className="flex items-center gap-0.5 cursor-pointer select-none">
+        <input type="checkbox" checked={s.csc} onChange={() => toggleCsc(s.idx)} className="w-3 h-3 accent-orange-500" />
+        <span className={`text-[10px] font-bold ${s.csc ? 'text-orange-500' : 'text-slate-300'}`}>CSC</span>
+      </label>
+      <button type="button" onClick={() => removeScorer(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
+    </div>
+  ));
+
   return (
     <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
       <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">{label}</h4>
@@ -87,6 +109,11 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur1}</label>
               <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
+              {(scorersJ1.length > 0 || scorersOther.filter(s => s.acheteur !== match.joueur2).length > 0) && (
+                <div className="mt-1.5 pl-1 border-l-2 border-blue-300 dark:border-blue-600">
+                  <ScorerList scorers={[...scorersJ1, ...scorersOther.filter(s => s.acheteur !== match.joueur2)]} />
+                </div>
+              )}
               {!valiseUsed[match.joueur1] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
@@ -98,6 +125,11 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur2}</label>
               <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
+              {scorersJ2.length > 0 && (
+                <div className="mt-1.5 pl-1 border-l-2 border-emerald-300 dark:border-emerald-600">
+                  <ScorerList scorers={scorersJ2} />
+                </div>
+              )}
               {!valiseUsed[match.joueur2] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
