@@ -60,13 +60,15 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
   const scorersOther = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur !== match.joueur1 && s.acheteur !== match.joueur2);
 
   const removeScorer = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, i) => i !== idx) }));
-  const updateButs = (idx, val) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: Math.max(1, parseInt(val) || 1) } : s) }));
+  const updateButs = (idx, val) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: val === '' ? '' : Math.max(1, parseInt(val) || 1) } : s) }));
   const toggleCsc = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, csc: !s.csc } : s) }));
 
   const ScorerList = ({ scorers }) => scorers.map(s => (
     <div key={s.idx} className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 py-0.5">
       <span className="flex-1 truncate">{s.displayName}{s.csc ? ' (CSC)' : ''}</span>
-      <input type="number" value={s.buts} min="1" max="10" onChange={e => updateButs(s.idx, e.target.value)}
+      <input type="number" value={s.buts} min="1" max="10"
+        onChange={e => updateButs(s.idx, e.target.value)}
+        onBlur={e => { if (e.target.value === '') updateButs(s.idx, '1'); }}
         className="w-7 text-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-xs font-bold py-0" />
       <label className="flex items-center gap-0.5 cursor-pointer select-none">
         <input type="checkbox" checked={s.csc} onChange={() => toggleCsc(s.idx)} className="w-3 h-3 accent-orange-500" />
