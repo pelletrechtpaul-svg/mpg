@@ -31,6 +31,10 @@ export const playerColorHex = {
   Roman: '#ea580c',
 };
 
+// Playlist SoundCloud lue par le mini-player (piloté via la Widget API).
+// Laisser '' pour retomber sur les MP3 locaux (PLAYLIST ci-dessous).
+export const SOUNDCLOUD_PLAYLIST_URL = 'https://soundcloud.com/paul-610524335/sets/mpg';
+
 export const PLAYLIST = [
   { title: "Baby c'est MPG",  src: "/audio/Baby c'est MPG.mp3" },
   { title: 'Cette fusion',    src: '/audio/Cette fusion.mp3' },

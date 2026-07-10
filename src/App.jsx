@@ -1,6 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
-import { PLAYLIST } from './shared.jsx';
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
 const EntraineursTab = lazy(() => import('./components/EntraineursTab'));
 const RecordsTab = lazy(() => import('./components/RecordsTab'));
@@ -42,7 +41,7 @@ const App = () => {
     return unsub;
   }, []);
   const { darkMode, setDarkMode } = useDarkMode();
-  const { isPlaying, currentTrack, playPause, prevTrack, nextTrack } = useAudioPlayer();
+  const { isPlaying, currentTitle, playPause, prevTrack, nextTrack } = useAudioPlayer();
   const { filteredData, joueurs, ligues, championnatsByLigue } = useSeasonData(matchData, selectedSeason);
 
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
@@ -77,7 +76,7 @@ const App = () => {
           {/* Track title */}
           <div className="px-1.5 pt-1.5 pb-0 overflow-hidden h-6 w-[120px] sm:w-[220px]">
             <p className={`text-[11px] font-medium whitespace-nowrap leading-6 ${isPlaying ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} animate-marquee`}>
-              {PLAYLIST[currentTrack].title}
+              {currentTitle}
             </p>
           </div>
           <div className="flex items-center justify-center gap-1 sm:gap-2 px-1.5 sm:px-2 py-1 sm:pb-1.5 sm:pt-0">
