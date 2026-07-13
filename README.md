@@ -1,112 +1,86 @@
-# Tableau de Bord MonPetitGazon
+# MesPetitsBavons ⚽
 
-Application web pour visualiser et analyser les statistiques de vos ligues MonPetitGazon entre amis.
+Tableau de bord privé de nos ligues **MPG** (Mon Petit Gazon) — stats, classements,
+records et mercato pour les 4 entraîneurs : Paul, Adrien, Tiago et Roman.
 
-## Fonctionnalités
+🌐 **En ligne** : [mespetitsbavons.vercel.app](https://mespetitsbavons.vercel.app)
 
-- **Classements** : Visualisez le classement général ou par championnat
-- **Statistiques** : Analysez les performances de chaque joueur avec des graphiques interactifs
-- **Face à Face** : Comparez les confrontations directes entre joueurs
-- **Import/Export CSV** : Mettez facilement à jour vos données via des fichiers CSV
+## ✨ Onglets
 
-## Installation
+- **Classement** — général et par ligue (Ligue 1, Liga, PL, Serie A, LDC) :
+  tableau, graphique d'évolution, buteurs, loosers, clean sheets, pannes, valises
+- **Entraîneurs** — carte par coach : rang, forme (5 derniers matchs), stat signature,
+  profil détaillé avec heure de gloire et head-to-head
+- **Records** — records de saison et all-time
+- **Joueurs** — recherche multi-critères (nom, club, nationalité, coach) avec filtres
+  par chips, complétion prédictive et historique mercato de chaque joueur
+- **Admin** 🔒 — saisie des journées : scores, buteurs (+/- et CSC), valises,
+  création de championnats, gestion des saisons
+
+Bonus : mode sombre 🌙 et mini-player audio branché sur notre
+[playlist SoundCloud](https://soundcloud.com/paul-610524335/sets/mpg) 🎵
+
+## 🛠 Stack
+
+| Couche | Techno |
+|---|---|
+| Front | React 19 + Vite |
+| Styles | Tailwind CSS |
+| Data | Firebase Firestore (synchro temps réel) |
+| Graphiques | Recharts |
+| Audio | SoundCloud Widget API |
+| Déploiement | Vercel |
+
+## 🚀 Développement
 
 ```bash
-# Installer les dépendances
 npm install
-
-# Lancer le serveur de développement
-npm run dev
-
-# Build pour la production
-npm run build
+npm run dev        # serveur local
+npm run build      # build de production
+npm run test       # tests (vitest)
 ```
 
-## Mise à jour des données
+**Déploiement** : Vercel déploie automatiquement la branche de production
+(voir `CLAUDE.md`) — chaque push est en ligne en ~1 minute.
 
-### Méthode 1 : Import CSV (Recommandé)
+## 📥 Import mercato
 
-1. Cliquez sur "Exporter données principales" pour télécharger un template CSV
-2. Modifiez le fichier avec vos données
-3. Cliquez sur "Importer données principales (CSV)" pour charger vos données
-
-#### Format CSV pour les données principales
-
-```csv
-championnat,edition,joueur,matchs,buts_pour,buts_contre,ga,points,rang
-Ligue 1,01/09/24-15/10/24,Paul,6,12,8,4,78,2
-Ligue 1,01/09/24-15/10/24,Adrien,6,10,9,1,65,3
-...
-```
-
-#### Format CSV pour le face-à-face
-
-```csv
-joueur1,joueur2,buts_j1,buts_j2,ga_j1,victoires_j1,victoires_j2,nuls
-Paul,Adrien,24,19,5,8,6,2
-Paul,Tiago,22,26,-4,6,9,1
-...
-```
-
-### Méthode 2 : Modification directe du code
-
-Éditez les variables `defaultSampleData` et `defaultVsData` dans `src/App.jsx`.
-
-## Structure du projet
-
-```
-mpg/
-├── src/
-│   ├── App.jsx          # Composant principal avec toute la logique
-│   ├── index.css        # Styles Tailwind CSS
-│   └── main.jsx         # Point d'entrée React
-├── package.json
-├── tailwind.config.js
-└── vite.config.js
-```
-
-## Technologies utilisées
-
-- **React** - Framework UI
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **Recharts** - Graphiques
-- **Lucide React** - Icônes
-- **PapaParse** - Import/export CSV
-
-## Système de points
-
-Le classement général utilise le système suivant :
-- Points gagnés dans chaque édition de championnat
-- +3 points bonus pour chaque victoire d'édition (1ère place)
-
-## Déploiement
-
-Pour déployer l'application, plusieurs options gratuites :
-
-### Vercel (Recommandé)
+Les résultats de mercato s'importent depuis un JSON via :
 
 ```bash
-npm install -g vercel
-vercel
+node scripts/import-mercato.cjs mercato.json                 # dry-run
+DRY_RUN=false node scripts/import-mercato.cjs mercato.json   # écriture en base
 ```
 
-### Netlify
+Le registre des joueurs (`scripts/players-registry.json`) est mis à jour
+automatiquement. Le workflow complet (format JSON, résolution des joueurs
+inconnus) est documenté dans `CLAUDE.md`. Les autres scripts de `scripts/`
+servent aux audits et corrections ponctuelles de la base.
 
-```bash
-npm run build
-# Glissez-déposez le dossier dist/ sur netlify.com
+## 📐 Règles du jeu
+
+- Une **ligue** contient des **championnats** = mini-saisons de ≤ 6 journées,
+  numérotées indépendamment par ligue
+- Victoire d'un championnat de 6 journées = 🏆 (+3 pts au classement général) ;
+  championnat plus court = 🥇 (+2 pts)
+- Une **valise** 💼 par joueur et par championnat
+- Départage : points, puis goal average
+
+## 📁 Structure
+
 ```
-
-### GitHub Pages
-
-1. Ajoutez dans `vite.config.js` :
-   ```js
-   base: '/nom-du-repo/'
-   ```
-2. `npm run build`
-3. Déployez le dossier `dist/`
-
-## Support
-
-Pour toute question ou problème, créez une issue sur GitHub.
+src/
+├── App.jsx                  # Shell : header, navigation, player, dark mode
+├── components/              # Un composant par onglet + admin
+│   ├── ClassementsTab.jsx
+│   ├── EntraineursTab.jsx
+│   ├── RecordsTab.jsx
+│   ├── JoueursTab.jsx
+│   ├── AdminTab.jsx / AdminAddMatchForm.jsx / AdminScorerSection.jsx …
+├── hooks/                   # Toute la logique de calcul
+│   ├── useFirestoreSync.js  # Synchro temps réel Firestore
+│   ├── useChampionshipStats.js, usePlayerStats.js, useRecords.js …
+├── constants.js             # Joueurs, couleurs, playlist, championnats manuels
+└── firebase.js              # Config Firebase
+scripts/                     # Import mercato + maintenance de la base
+```
