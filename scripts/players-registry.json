@@ -454,5 +454,185 @@
     "clubs": [
       "Real Sociedad"
     ]
+  },
+  "Vertrouwd|Liga": {
+    "prenom": "Jozhua",
+    "nationalite": "Néerlandais",
+    "poste": "DC",
+    "clubs": [
+      "Rayo Vallecano"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p65vl31762546461.jpg"
+  },
+  "Copete|Liga": {
+    "prenom": "José",
+    "nationalite": "Espagnol",
+    "poste": "DC",
+    "clubs": [
+      "Valencia"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/x39jbq1678829777.jpg"
+  },
+  "Parreño|Liga": {
+    "prenom": "Germán",
+    "nationalite": "Espagnol",
+    "poste": "G",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8eiw5l1527937375.jpg"
+  },
+  "Hancko|Liga": {
+    "prenom": "Dávid",
+    "nationalite": "Slovaque",
+    "poste": "DC",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/u9nsy61546426677.jpg"
+  },
+  "Natan|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i3td7p1702563899.jpg"
+  },
+  "Starfelt|Liga": {
+    "prenom": "Carl",
+    "nationalite": "Suédois",
+    "poste": "DC",
+    "clubs": [
+      "Celta"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zb4ki31723545733.jpg"
+  },
+  "Padilla|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": null
+  },
+  "Iñaki Williams|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bjgctf1503241984.jpg"
+  },
+  "Sangante|Liga": {
+    "prenom": "Arouna",
+    "nationalite": "Sénégalais",
+    "poste": "DC",
+    "clubs": [
+      "Sevilla"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/amu2v01702293177.jpg"
+  },
+  "Vivian|Liga": {
+    "prenom": "Dani",
+    "nationalite": "Espagnol",
+    "poste": "DC",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v8xx1629191642.jpg"
+  },
+  "Bigas|Liga": {
+    "prenom": "Pedro",
+    "nationalite": "Espagnol",
+    "poste": "DC",
+    "clubs": [
+      "Elche"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vdklrp1603133119.jpg"
+  },
+  "Chupe|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "A",
+    "clubs": [
+      "Málaga"
+    ],
+    "photo": null
+  },
+  "Gabriel Moscardo|Liga": {
+    "prenom": null,
+    "nationalite": "Brésilien",
+    "poste": "MD",
+    "clubs": [
+      "Espanyol"
+    ],
+    "photo": null
+  },
+  "Renato Veiga|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Villarreal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1u0amz1678362097.jpg"
+  },
+  "Álvaro García|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "Rayo Vallecano"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5j0ud31573336936.jpg"
+  },
+  "Leo Román|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "G",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utvnys1701170666.jpg"
+  },
+  "Carlos Romero|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Villarreal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8blz0b1701165576.jpg"
+  },
+  "Zaid Romero|Liga": {
+    "prenom": null,
+    "nationalite": "Argentin",
+    "poste": "DC",
+    "clubs": [
+      "Getafe"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8sa4cv1716496520.jpg"
+  },
+  "Ratiu|Liga": {
+    "prenom": "Andrei",
+    "nationalite": "Roumain",
+    "poste": "DL",
+    "clubs": [
+      "Rayo Vallecano"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qo4bxk1643235335.jpg"
+  },
+  "Carreira|Liga": {
+    "prenom": "Sergio",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Celta"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p7hl8y1603553273.jpg"
   }
 }
