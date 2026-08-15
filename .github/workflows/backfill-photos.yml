@@ -1,4 +1,4 @@
-name: Backfill photos (Transfermarkt)
+name: Backfill photos (TheSportsDB)
 
 on:
   workflow_dispatch:
@@ -20,11 +20,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
-
       - name: Run backfill
-        run: node scripts/backfill-photos-transfermarkt.cjs
+        run: node scripts/backfill-photos.cjs
 
       - name: Commit results
         run: |
@@ -34,6 +31,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Rien à committer."
           else
-            git commit -m "chore: backfill photos joueurs depuis Transfermarkt"
+            git commit -m "chore: backfill photos joueurs depuis TheSportsDB"
             git push origin claude/charming-goodall-4nt05x
           fi
