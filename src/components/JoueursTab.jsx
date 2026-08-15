@@ -1,5 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
+
+function usePlayerPhotos() {
+  const [photos, setPhotos] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/players-photos.json')
+      .then(r => r.ok ? r.json() : {})
+      .then(data => { if (!cancelled) setPhotos(data); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+  return photos;
+}
 
 const COACH_COLORS = {
   Paul:   { bg: 'bg-blue-600',   text: 'text-blue-600 dark:text-blue-400',   dot: 'bg-blue-600',   ring: 'ring-blue-400' },
@@ -48,6 +61,21 @@ function InitialsAvatar({ displayName, size = 'lg' }) {
   );
 }
 
+function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
+  const [failed, setFailed] = useState(false);
+  const photoUrl = photos[`${joueur}|${ligue}`];
+  if (!photoUrl || failed) return <InitialsAvatar displayName={displayName} size={size} />;
+  const sizeClass = size === 'lg' ? 'w-16 h-16' : size === 'md' ? 'w-10 h-10' : 'w-8 h-8';
+  return (
+    <img
+      src={photoUrl}
+      alt={displayName}
+      onError={() => setFailed(true)}
+      className={`${sizeClass} rounded-full object-cover flex-shrink-0 bg-slate-200 dark:bg-slate-600`}
+    />
+  );
+}
+
 function ChipFilter({ label, active, onClick, color, dot }) {
   return (
     <button
@@ -73,8 +101,8 @@ function FilterGroup({ label, children }) {
   );
 }
 
-function PlayerCard({ player, onClose }) {
-  const { entries, displayName, poste, nationalite } = player;
+function PlayerCard({ player, onClose, photos }) {
+  const { entries, displayName, poste, nationalite, joueur, ligue } = player;
 
   const byChamp = {};
   entries.forEach(e => {
@@ -94,7 +122,7 @@ function PlayerCard({ player, onClose }) {
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div className="p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-start gap-4">
-          <InitialsAvatar displayName={displayName} size="lg" />
+          <PlayerAvatar joueur={joueur} ligue={ligue} displayName={displayName} photos={photos} size="lg" />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -174,7 +202,7 @@ function PlayerCard({ player, onClose }) {
 
 const LIGUE_SHORT_LABEL = { 'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA', 'Champions League': 'UCL', 'Ligue des Champions': 'LDC' };
 
-function ResultRow({ s, onClick }) {
+function ResultRow({ s, onClick, photos }) {
   const coachColor = COACH_COLORS[s.acheteurPrincipal];
   return (
     <button
@@ -182,7 +210,7 @@ function ResultRow({ s, onClick }) {
       className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <InitialsAvatar displayName={s.displayName} size="md" />
+        <PlayerAvatar joueur={s.joueur} ligue={s.ligue} displayName={s.displayName} photos={photos} size="md" />
         <div className="min-w-0">
           <div className="font-medium text-slate-900 dark:text-slate-100 text-sm truncate">{s.displayName}</div>
           <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
@@ -200,7 +228,17 @@ function ResultRow({ s, onClick }) {
   );
 }
 
+const NO_DATA_JOKES = [
+  "Aucune trace de mercato ici. Nos archivistes ont dû le perdre entre deux bières.",
+  "Le mercato de cette saison a existé, promis. On l'a juste égaré quelque part entre deux championnats.",
+  "Cette saison est mercato-vierge. Comme la cave à trophées de certains coachs.",
+  "Rien à afficher ici — cette saison remonte à avant l'ère de la base de données. On appelle ça l'âge de pierre du MPG.",
+  "Motus et bouche cousue sur le mercato de cette saison. Les archives ont brûlé (façon de parler).",
+];
+
 export default function JoueursTab({ mercatoData }) {
+  const [joke] = useState(() => NO_DATA_JOKES[Math.floor(Math.random() * NO_DATA_JOKES.length)]);
+  const photos = usePlayerPhotos();
   const [query, setQuery] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [postes, setPostes] = useState([]);
@@ -249,6 +287,15 @@ export default function JoueursTab({ mercatoData }) {
     inputRef.current?.focus();
   }
 
+  if (mercatoData.length === 0) {
+    return (
+      <div className="text-center py-16 text-slate-400 dark:text-slate-500">
+        <div className="text-5xl mb-3">🕵️‍♂️</div>
+        <p className="text-base max-w-sm mx-auto">{joke}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Search */}
@@ -295,7 +342,7 @@ export default function JoueursTab({ mercatoData }) {
       </div>
 
       {/* Player card */}
-      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />}
+      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={() => setSelectedPlayer(null)} photos={photos} />}
 
       {/* Liste de résultats (inline) */}
       {!selectedPlayer && isSearching && (
@@ -311,7 +358,7 @@ export default function JoueursTab({ mercatoData }) {
           {results.length > 0 ? (
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden max-h-[60vh] overflow-y-auto">
               {results.slice(0, 60).map(s => (
-                <ResultRow key={s.key} s={s} onClick={() => selectPlayer(s)} />
+                <ResultRow key={s.key} s={s} onClick={() => selectPlayer(s)} photos={photos} />
               ))}
               {results.length > 60 && (
                 <div className="px-4 py-2 text-xs text-center text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-700">
