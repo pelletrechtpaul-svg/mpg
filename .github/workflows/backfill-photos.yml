@@ -1,0 +1,39 @@
+name: Backfill photos (Transfermarkt)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run backfill
+        run: node scripts/backfill-photos-transfermarkt.cjs
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/players-registry.json public/players-photos.json
+          if git diff --cached --quiet; then
+            echo "Rien à committer."
+          else
+            git commit -m "chore: backfill photos joueurs depuis Transfermarkt"
+            git push origin claude/charming-goodall-4nt05x
+          fi
