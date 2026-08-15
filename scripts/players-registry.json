@@ -3151,5 +3151,68 @@
     "clubs": [
       "Como"
     ]
+  },
+  "Cucurella|Liga": {
+    "prenom": "Marc",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": null
+  },
+  "Yan Diomande|Liga": {
+    "prenom": null,
+    "nationalite": "Ivoirien",
+    "poste": "MO",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": null
+  },
+  "Dumfries|Liga": {
+    "prenom": "Denzel",
+    "nationalite": "Néerlandais",
+    "poste": "DL",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": null
+  },
+  "Adeyemi|Liga": {
+    "prenom": "Karim",
+    "nationalite": "Allemand",
+    "poste": "A",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": null
+  },
+  "Grimaldo|Liga": {
+    "prenom": "Alejandro",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": null
+  },
+  "Mikautadze|Liga": {
+    "prenom": "Georges",
+    "nationalite": "Géorgien",
+    "poste": "A",
+    "clubs": [
+      "Villarreal"
+    ],
+    "photo": null
+  },
+  "Bernardo Silva|Liga": {
+    "prenom": null,
+    "nationalite": "Portugais",
+    "poste": "MO",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": null
   }
 }
