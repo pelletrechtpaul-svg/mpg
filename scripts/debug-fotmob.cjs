@@ -24,7 +24,7 @@ function getJson(url) {
 }
 
 async function main() {
-  const json = await getJson('https://www.fotmob.com/api/searchapi/search?term=Isco&userLang=en');
+  const json = await getJson('https://apigw.fotmob.com/searchapi/search?term=Isco&userLang=en');
   console.log('---PARSED---');
   console.log(JSON.stringify(json, null, 2)?.slice(0, 2000));
 }
