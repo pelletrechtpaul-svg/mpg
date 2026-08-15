@@ -48,11 +48,21 @@ async function fetchSummaryPhoto(title) {
 }
 
 async function fetchWikipediaPhoto(name, club) {
-  // 1ère tentative: recherche directe "Nom footballer"
-  let title = await searchWikipediaTitle(`${name} footballer ${club || ''}`.trim());
-  if (!title) title = await searchWikipediaTitle(`${name} footballer`);
-  if (!title) return null;
-  return fetchSummaryPhoto(title);
+  const queries = [
+    `${name} footballer ${club || ''}`.trim(),
+    `${name} footballer`,
+    name,
+    `${name} (footballer)`,
+  ];
+  const triedTitles = new Set();
+  for (const q of queries) {
+    const title = await searchWikipediaTitle(q);
+    if (!title || triedTitles.has(title)) continue;
+    triedTitles.add(title);
+    const photo = await fetchSummaryPhoto(title);
+    if (photo) return photo;
+  }
+  return null;
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
