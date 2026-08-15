@@ -1,0 +1,28 @@
+{
+  "ligue": "Liga",
+  "championnat": 1,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    { "joueur": "Vertrouwd", "prenom": "Jozhua", "nationalite": "Néerlandais", "poste": "DC", "club": "Rayo Vallecano", "prix": 1, "acheteur": "Tiago", "equipe_acheteur": "Real Bêtise Balompié", "encheres_perdues": [] },
+    { "joueur": "Copete", "prenom": "José", "nationalite": "Espagnol", "poste": "DC", "club": "Valencia", "prix": 1, "acheteur": "Tiago", "equipe_acheteur": "Real Bêtise Balompié", "encheres_perdues": [] },
+    { "joueur": "Parreño", "prenom": "Germán", "nationalite": "Espagnol", "poste": "G", "club": "La Corogne", "prix": 1, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [{ "equipe": "Tiago", "prix": 1 }] },
+    { "joueur": "Hancko", "prenom": "Dávid", "nationalite": "Slovaque", "poste": "DC", "club": "Atlético", "prix": 10, "acheteur": "Roman", "equipe_acheteur": "A jamas el primero", "encheres_perdues": [{ "equipe": "Paul", "prix": 9 }] },
+    { "joueur": "Natan", "poste": "DC", "club": "Betis", "prix": 9, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [{ "equipe": "Tiago", "prix": 9 }] },
+    { "joueur": "Starfelt", "prenom": "Carl", "nationalite": "Suédois", "poste": "DC", "club": "Celta", "prix": 9, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [] },
+    { "joueur": "Padilla", "poste": "G", "club": "Athletic", "prix": 7, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] },
+    { "joueur": "Iñaki Williams", "poste": "A", "club": "Athletic", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] },
+    { "joueur": "Sangante", "prenom": "Arouna", "nationalite": "Sénégalais", "poste": "DC", "club": "Sevilla", "prix": 11, "acheteur": "Roman", "equipe_acheteur": "A jamas el primero", "encheres_perdues": [] },
+    { "joueur": "Vivian", "prenom": "Dani", "nationalite": "Espagnol", "poste": "DC", "club": "Athletic", "prix": 11, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] },
+    { "joueur": "Bigas", "prenom": "Pedro", "nationalite": "Espagnol", "poste": "DC", "club": "Elche", "prix": 10, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [] },
+    { "joueur": "Chupe", "nationalite": "Espagnol", "poste": "A", "club": "Málaga", "prix": 10, "acheteur": "Tiago", "equipe_acheteur": "Real Bêtise Balompié", "encheres_perdues": [] },
+    { "joueur": "Gabriel Moscardo", "nationalite": "Brésilien", "poste": "MD", "club": "Espanyol", "prix": 10, "acheteur": "Tiago", "equipe_acheteur": "Real Bêtise Balompié", "encheres_perdues": [] },
+    { "joueur": "Renato Veiga", "poste": "DC", "club": "Villarreal", "prix": 10, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [] },
+    { "joueur": "Álvaro García", "nationalite": "Espagnol", "poste": "MO", "club": "Rayo Vallecano", "prix": 14, "acheteur": "Roman", "equipe_acheteur": "A jamas el primero", "encheres_perdues": [] },
+    { "joueur": "Leo Román", "nationalite": "Espagnol", "poste": "G", "club": "La Corogne", "prix": 13, "acheteur": "Roman", "equipe_acheteur": "A jamas el primero", "encheres_perdues": [{ "equipe": "Tiago", "prix": 13 }] },
+    { "joueur": "Carlos Romero", "nationalite": "Espagnol", "poste": "DL", "club": "Villarreal", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] },
+    { "joueur": "Zaid Romero", "nationalite": "Argentin", "poste": "DC", "club": "Getafe", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] },
+    { "joueur": "Ratiu", "prenom": "Andrei", "nationalite": "Roumain", "poste": "DL", "club": "Rayo Vallecano", "prix": 12, "acheteur": "Paul", "equipe_acheteur": "Machines Alavès", "encheres_perdues": [] },
+    { "joueur": "Carreira", "prenom": "Sergio", "nationalite": "Espagnol", "poste": "DL", "club": "Celta", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Manzanas", "encheres_perdues": [] }
+  ]
+}
