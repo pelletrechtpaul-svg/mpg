@@ -2148,7 +2148,8 @@
     "nationalite": "Espagnol",
     "poste": "MO",
     "clubs": [
-      "Villarreal"
+      "Villarreal",
+      "Atlético"
     ]
   },
   "Martínez|Liga": {
@@ -3212,6 +3213,150 @@
     "poste": "MO",
     "clubs": [
       "Real Madrid"
+    ],
+    "photo": null
+  },
+  "Lee Kang-In|Liga": {
+    "prenom": null,
+    "nationalite": "Sud-Coréen",
+    "poste": "MO",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": null
+  },
+  "Etta Eyong|Liga": {
+    "prenom": "Karl",
+    "nationalite": "Camerounais",
+    "poste": "A",
+    "clubs": [
+      "Levante"
+    ],
+    "photo": null
+  },
+  "Hjulmand|Liga": {
+    "prenom": "Morten",
+    "nationalite": "Danois",
+    "poste": "MD",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": null
+  },
+  "Bellerín|Liga": {
+    "prenom": "Héctor",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": null
+  },
+  "Yeremay Hernández|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": null
+  },
+  "Andrés Martín|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "Santander"
+    ],
+    "photo": null
+  },
+  "Boyomo|Liga": {
+    "prenom": "Enzo",
+    "nationalite": "Camerounais",
+    "poste": "DC",
+    "clubs": [
+      "Osasuna"
+    ],
+    "photo": null
+  },
+  "Radu|Liga": {
+    "prenom": "Ionuț",
+    "nationalite": "Roumain",
+    "poste": "G",
+    "clubs": [
+      "Celta"
+    ],
+    "photo": null
+  },
+  "Jon Martín|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "DC",
+    "clubs": [
+      "Real Sociedad"
+    ],
+    "photo": null
+  },
+  "Aubameyang|Liga": {
+    "prenom": "Pierre-Emerick",
+    "nationalite": "Gabonais",
+    "poste": "A",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": null
+  },
+  "Gordon|Liga": {
+    "prenom": "Anthony",
+    "nationalite": "Anglais",
+    "poste": "A",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": null
+  },
+  "Jauregizar|Liga": {
+    "prenom": "Mikel",
+    "nationalite": "Espagnol",
+    "poste": "MD",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": null
+  },
+  "Gavi|Liga": {
+    "prenom": "Pablo",
+    "nationalite": "Espagnol",
+    "poste": "MD",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": null
+  },
+  "Riquelme|Liga": {
+    "prenom": "Rodrigo",
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": null
+  },
+  "Angeliño|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": null
+  },
+  "Barrenetxea|Liga": {
+    "prenom": "Ander",
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "Real Sociedad"
     ],
     "photo": null
   }
