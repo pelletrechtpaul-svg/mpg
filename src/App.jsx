@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
 const EntraineursTab = lazy(() => import('./components/EntraineursTab'));
@@ -18,8 +18,11 @@ import { useEvolutionData } from './hooks/useEvolutionData';
 import { useAdvancedStats } from './hooks/useAdvancedStats';
 import { useRecords } from './hooks/useRecords';
 
+const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
+const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - saisonYear(a))[0];
+
 const App = () => {
-  const [selectedSeason, setSelectedSeason] = useState('2025/2026');
+  const [selectedSeason, setSelectedSeason] = useState(() => mostRecentSeason(['2025/2026', '2024/2025']));
   const [activeTab, setActiveTab] = useState('classements');
   const [ligueRecordsMode, setLigueRecordsMode] = useState('alltime');
   const [selectedLigue, setSelectedLigue] = useState('general');
@@ -34,9 +37,17 @@ const App = () => {
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
 
   const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
+  const hasSetInitialSeason = useRef(false);
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'saisons'), snap => {
-      if (snap.exists()) setSaisons(snap.data().list || ['2025/2026', '2024/2025']);
+      if (snap.exists()) {
+        const list = snap.data().list || ['2025/2026', '2024/2025'];
+        setSaisons(list);
+        if (!hasSetInitialSeason.current) {
+          setSelectedSeason(mostRecentSeason(list));
+          hasSetInitialSeason.current = true;
+        }
+      }
     }, () => {});
     return unsub;
   }, []);
@@ -159,6 +170,7 @@ const App = () => {
               <button
                 key={season}
                 onClick={() => {
+                  hasSetInitialSeason.current = true;
                   setSelectedSeason(season);
                   if (activeTab === 'admin') setActiveTab('classements');
                 }}
