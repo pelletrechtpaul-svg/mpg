@@ -37,15 +37,17 @@ const App = () => {
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
 
   const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
-  const hasSetInitialSeason = useRef(false);
+  // true seulement après un choix manuel de saison par l'utilisateur (jamais
+  // sur un simple événement de synchro — Firestore peut renvoyer d'abord une
+  // version en cache périmée avant la vraie donnée serveur)
+  const hasUserPickedSeason = useRef(false);
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'saisons'), snap => {
       if (snap.exists()) {
         const list = snap.data().list || ['2025/2026', '2024/2025'];
         setSaisons(list);
-        if (!hasSetInitialSeason.current) {
+        if (!hasUserPickedSeason.current) {
           setSelectedSeason(mostRecentSeason(list));
-          hasSetInitialSeason.current = true;
         }
       }
     }, () => {});
@@ -170,7 +172,7 @@ const App = () => {
               <button
                 key={season}
                 onClick={() => {
-                  hasSetInitialSeason.current = true;
+                  hasUserPickedSeason.current = true;
                   setSelectedSeason(season);
                   if (activeTab === 'admin') setActiveTab('classements');
                 }}
