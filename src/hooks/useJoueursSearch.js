@@ -19,13 +19,11 @@ export function useJoueursSearch(mercatoData) {
             ? `${d.prenom} ${d.joueur}`
             : d.joueur,
           entries: [],
-          clubs: new Set(),
           acheteurs: new Set(),
         };
       }
       if (!index[key].prenom && d.prenom) index[key].prenom = d.prenom;
       index[key].entries.push(d);
-      if (d.club) index[key].clubs.add(d.club.toLowerCase());
       if (d.acheteur) index[key].acheteurs.add(d.acheteur);
     });
     Object.values(index).forEach(p => {
@@ -53,46 +51,15 @@ export function useJoueursSearch(mercatoData) {
     return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
 
-  function getSuggestions(query, filters = {}) {
-    const { postes = [], acheteurs = [], ligues = [] } = filters;
+  function getSuggestions(query) {
+    if (!query || query.length < 2) return [];
     const q = normalize(query);
-    return allPlayers.filter(p => {
-      // Filtres multi-sélection (OR dans un groupe, AND entre groupes)
-      if (postes.length && !postes.includes(p.poste)) return false;
-      if (ligues.length && !ligues.includes(p.ligue)) return false;
-      if (acheteurs.length && ![...p.acheteurs].some(a => acheteurs.includes(a))) return false;
-      // Recherche texte multi-critères
-      if (q.length >= 2) {
-        const nameMatch = normalize(p.displayName).includes(q);
-        const clubMatch = [...p.clubs].some(c => c.includes(q));
-        const natMatch = normalize(p.nationalite).includes(q);
-        const acheteurMatch = [...p.acheteurs].some(a => normalize(a).includes(q));
-        if (!nameMatch && !clubMatch && !natMatch && !acheteurMatch) return false;
-      }
-      return true;
-    });
+    return allPlayers.filter(p => normalize(p.displayName).includes(q));
   }
 
   function getPlayerHistory(key) {
     return playerIndex[key] || null;
   }
 
-  // Listes pour chips
-  const allPostes = useMemo(() => {
-    const s = new Set(allPlayers.map(p => p.poste).filter(Boolean));
-    const order = ['G', 'DC', 'DL', 'DG', 'DD', 'D', 'MD', 'MC', 'MO', 'M', 'A'];
-    return order.filter(p => s.has(p));
-  }, [allPlayers]);
-
-  const allAcheteurs = useMemo(() => {
-    const s = new Set();
-    allPlayers.forEach(p => p.acheteurs.forEach(a => s.add(a)));
-    return [...s].sort();
-  }, [allPlayers]);
-
-  const allLigues = useMemo(() => {
-    return [...new Set(allPlayers.map(p => p.ligue).filter(Boolean))].sort();
-  }, [allPlayers]);
-
-  return { getSuggestions, getPlayerHistory, allPlayers, allPostes, allAcheteurs, allLigues };
+  return { getSuggestions, getPlayerHistory, allPlayers };
 }

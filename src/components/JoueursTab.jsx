@@ -15,10 +15,10 @@ function usePlayerPhotos() {
 }
 
 const COACH_COLORS = {
-  Paul:   { bg: 'bg-blue-600',   text: 'text-blue-600 dark:text-blue-400',   dot: 'bg-blue-600',   ring: 'ring-blue-400' },
-  Adrien: { bg: 'bg-green-600',  text: 'text-green-600 dark:text-green-400', dot: 'bg-green-600',  ring: 'ring-green-400' },
-  Tiago:  { bg: 'bg-purple-600', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-600', ring: 'ring-purple-400' },
-  Roman:  { bg: 'bg-orange-600', text: 'text-orange-600 dark:text-orange-400', dot: 'bg-orange-600', ring: 'ring-orange-400' },
+  Paul:   { bg: 'bg-blue-600',   text: 'text-blue-600 dark:text-blue-400',   dot: 'bg-blue-600' },
+  Adrien: { bg: 'bg-green-600',  text: 'text-green-600 dark:text-green-400', dot: 'bg-green-600' },
+  Tiago:  { bg: 'bg-purple-600', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-600' },
+  Roman:  { bg: 'bg-orange-600', text: 'text-orange-600 dark:text-orange-400', dot: 'bg-orange-600' },
 };
 
 const LIGUE_SHORT = {
@@ -73,31 +73,6 @@ function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
       onError={() => setFailed(true)}
       className={`${sizeClass} rounded-full object-cover flex-shrink-0 bg-slate-200 dark:bg-slate-600`}
     />
-  );
-}
-
-function ChipFilter({ label, active, onClick, color, dot }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border whitespace-nowrap ${
-        active
-          ? `${color || 'bg-slate-700'} text-white border-transparent shadow-sm`
-          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-400'
-      }`}
-    >
-      {dot && <span className={`w-2 h-2 rounded-full ${active ? 'bg-white/80' : dot}`}></span>}
-      {label}
-    </button>
-  );
-}
-
-function FilterGroup({ label, children }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide w-12 flex-shrink-0">{label}</span>
-      <div className="flex gap-1.5 flex-wrap">{children}</div>
-    </div>
   );
 }
 
@@ -241,16 +216,12 @@ export default function JoueursTab({ mercatoData }) {
   const photos = usePlayerPhotos();
   const [query, setQuery] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [postes, setPostes] = useState([]);
-  const [acheteurs, setAcheteurs] = useState([]);
-  const [ligues, setLigues] = useState([]);
   const inputRef = useRef(null);
 
-  const { getSuggestions, getPlayerHistory, allPostes, allAcheteurs, allLigues } = useJoueursSearch(mercatoData);
+  const { getSuggestions, getPlayerHistory } = useJoueursSearch(mercatoData);
 
-  const results = getSuggestions(query, { postes, acheteurs, ligues });
-  const hasFilters = postes.length || acheteurs.length || ligues.length;
-  const isSearching = query.length >= 2 || hasFilters;
+  const results = getSuggestions(query);
+  const isSearching = query.length >= 2;
 
   // Complétion prédictive (ghost text)
   const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -271,19 +242,13 @@ export default function JoueursTab({ mercatoData }) {
     }
   }
 
-  function toggle(setter, value) {
-    setSelectedPlayer(null);
-    setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
-  }
-
   function selectPlayer(s) {
     setSelectedPlayer(getPlayerHistory(s.key));
   }
 
-  function clearAll() {
+  function handleClear() {
     setSelectedPlayer(null);
     setQuery('');
-    setPostes([]); setAcheteurs([]); setLigues([]);
     inputRef.current?.focus();
   }
 
@@ -314,31 +279,12 @@ export default function JoueursTab({ mercatoData }) {
           value={query}
           onChange={e => { setQuery(e.target.value); setSelectedPlayer(null); }}
           onKeyDown={handleKeyDown}
-          placeholder="Nom, club, nationalité, coach…"
+          placeholder="Rechercher un joueur…"
           className="relative w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base shadow-sm"
         />
         {query && (
-          <button onClick={() => { setQuery(''); setSelectedPlayer(null); inputRef.current?.focus(); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+          <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
         )}
-      </div>
-
-      {/* Filtres chips groupés */}
-      <div className="space-y-2 bg-slate-50/60 dark:bg-white/5 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
-        <FilterGroup label="Coach">
-          {allAcheteurs.map(a => (
-            <ChipFilter key={a} label={a} active={acheteurs.includes(a)} onClick={() => toggle(setAcheteurs, a)} color={COACH_COLORS[a]?.bg} dot={COACH_COLORS[a]?.dot} />
-          ))}
-        </FilterGroup>
-        <FilterGroup label="Poste">
-          {allPostes.map(p => (
-            <ChipFilter key={p} label={p} active={postes.includes(p)} onClick={() => toggle(setPostes, p)} color="bg-slate-700" />
-          ))}
-        </FilterGroup>
-        <FilterGroup label="Ligue">
-          {allLigues.map(l => (
-            <ChipFilter key={l} label={LIGUE_SHORT_LABEL[l] || l} active={ligues.includes(l)} onClick={() => toggle(setLigues, l)} color="bg-indigo-700" />
-          ))}
-        </FilterGroup>
       </div>
 
       {/* Player card */}
@@ -351,9 +297,6 @@ export default function JoueursTab({ mercatoData }) {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               {results.length} joueur{results.length > 1 ? 's' : ''}
             </span>
-            {(hasFilters || query) && (
-              <button onClick={clearAll} className="text-xs text-red-500 hover:text-red-700 font-medium">Tout effacer</button>
-            )}
           </div>
           {results.length > 0 ? (
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden max-h-[60vh] overflow-y-auto">
@@ -362,7 +305,7 @@ export default function JoueursTab({ mercatoData }) {
               ))}
               {results.length > 60 && (
                 <div className="px-4 py-2 text-xs text-center text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-700">
-                  Affine les filtres pour voir les {results.length - 60} autres
+                  Affine ta recherche pour voir les {results.length - 60} autres
                 </div>
               )}
             </div>
@@ -378,7 +321,7 @@ export default function JoueursTab({ mercatoData }) {
       {!selectedPlayer && !isSearching && (
         <div className="text-center py-16 text-slate-400 dark:text-slate-500">
           <div className="text-5xl mb-3">⚽</div>
-          <p className="text-base">Recherche un joueur ou filtre par coach, poste, ligue</p>
+          <p className="text-base">Recherche un joueur par son nom</p>
         </div>
       )}
     </div>
