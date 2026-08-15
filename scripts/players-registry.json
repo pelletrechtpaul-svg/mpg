@@ -1,1056 +1,26 @@
 {
-  "Yamal|Liga": {
-    "prenom": "Lamine",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Guruzeta|Liga": {
-    "prenom": "Gorka",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Rodri|Premier League": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Ruggeri|Liga": {
-    "prenom": "Matteo",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Risser|Ligue 1": {
-    "prenom": "Robin",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Rulli|Ligue 1": {
-    "prenom": "Gerónimo",
-    "nationalite": "Argentin",
-    "poste": "G",
-    "clubs": [
-      "Marseille"
-    ]
-  },
-  "Moleiro|Liga": {
-    "prenom": "Alberto",
-    "nationalite": "Espagnol",
+  "Vargas|Liga": {
+    "prenom": "Rubén",
+    "nationalite": "Suisse",
     "poste": "MO",
     "clubs": [
-      "Las Palmas",
-      "Villarreal"
+      "Sevilla"
     ]
   },
-  "Marquinhos|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Nordin|Ligue 1": {
-    "prenom": "Arnaud",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Timber|Premier League": {
-    "prenom": "Jurriën",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Samba|Ligue 1": {
-    "prenom": "Brice",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Szczesny|Liga": {
-    "prenom": "Wojciech",
-    "nationalite": "Polonais",
-    "poste": "G",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Herrera|Liga": {
-    "prenom": "Sergio",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Osasuna"
-    ]
-  },
-  "Sørloth|Liga": {
-    "prenom": "Alexander",
-    "nationalite": "Norvégien",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Lamine Yamal|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Rashford|Liga": {
-    "prenom": "Marcus",
+  "Gordon|Liga": {
+    "prenom": "Anthony",
     "nationalite": "Anglais",
     "poste": "A",
     "clubs": [
       "Barcelona"
     ]
   },
-  "Almada|Liga": {
-    "prenom": "Thiago",
-    "nationalite": "Argentin",
-    "poste": "MO",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Soria|Liga": {
-    "prenom": "David",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Getafe"
-    ]
-  },
-  "Rúben Dias|Premier League": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "DC",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Safonov|Ligue 1": {
-    "prenom": "Matvey",
-    "nationalite": "Russe",
-    "poste": "G",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Porro|Premier League": {
-    "prenom": "Pedro",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Tottenham"
-    ]
-  },
-  "Pedri|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Fofana|Ligue 1": {
-    "prenom": "Rayan",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Fagioli|Serie A": {
-    "prenom": "Nicolò",
-    "nationalite": "Italien",
-    "poste": "MO",
-    "clubs": [
-      "Fiorentina"
-    ]
-  },
-  "Saïd|Ligue 1": {
-    "prenom": "Wesley",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Centonze|Ligue 1": {
-    "prenom": "Fabien",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Nantes"
-    ]
-  },
-  "Igor Jesus|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Nottingham Forest"
-    ]
-  },
-  "Fernández|Premier League": {
-    "prenom": "Enzo",
-    "nationalite": "Argentin",
-    "poste": "MD",
-    "clubs": [
-      "Chelsea"
-    ]
-  },
-  "Ounahi|Liga": {
-    "prenom": "Azzedine",
-    "nationalite": "Marocain",
-    "poste": "MD",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Pape Gueye|Liga": {
-    "prenom": null,
-    "nationalite": "Sénégalais",
-    "poste": "MD",
-    "clubs": [
-      "Villarreal"
-    ]
-  },
-  "Aït Boudlal|Ligue 1": {
-    "prenom": "Abdelhamid",
-    "nationalite": "Marocain",
-    "poste": "DC",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Mkhitaryan|Serie A": {
-    "prenom": "Henrikh",
-    "nationalite": "Arménien",
-    "poste": "MO",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Himbert|Ligue 1": {
-    "prenom": "Rémi",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Østigård|Serie A": {
-    "prenom": "Leo",
-    "nationalite": "Norvégien",
-    "poste": "DC",
-    "clubs": [
-      "Genoa"
-    ]
-  },
-  "João Pedro|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Chelsea"
-    ]
-  },
-  "Pépé|Liga": {
-    "prenom": "Nicolas",
-    "nationalite": "Ivoirien",
-    "poste": "A",
-    "clubs": [
-      "Villarreal"
-    ]
-  },
-  "Keane|Premier League": {
-    "prenom": "Michael",
-    "nationalite": "Anglais",
-    "poste": "DC",
-    "clubs": [
-      "Everton"
-    ]
-  },
-  "Haraldsson|Ligue 1": {
-    "prenom": "Hákon Arnar",
-    "nationalite": "Islandais",
-    "poste": "MO",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Mojica|Liga": {
-    "prenom": "Johan",
-    "nationalite": "Colombien",
-    "poste": "DL",
-    "clubs": [
-      "Mallorca"
-    ]
-  },
-  "Salah|Premier League": {
-    "prenom": "Mohamed",
-    "nationalite": "Égyptien",
-    "poste": "A",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Llorente|Liga": {
-    "prenom": "Diego",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Adingra|Ligue 1": {
-    "prenom": "Simon",
-    "nationalite": "Ivoirien",
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Teze|Ligue 1": {
-    "prenom": "Benjamin",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Vázquez|Liga": {
-    "prenom": "Luis",
-    "nationalite": "Argentin",
-    "poste": "A",
-    "clubs": [
-      "Getafe"
-    ]
-  },
-  "Pogba|Ligue 1": {
-    "prenom": "Paul",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Bailly|Liga": {
-    "prenom": "Eric",
-    "nationalite": "Ivoirien",
-    "poste": "DC",
-    "clubs": [
-      "Real Oviedo"
-    ]
-  },
-  "Dimarco|Serie A": {
+  "Valverde|Liga": {
     "prenom": "Federico",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Witsel|Liga": {
-    "prenom": "Axel",
-    "nationalite": "Belge",
-    "poste": "DC",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Natan|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Gatti|Serie A": {
-    "prenom": "Federico",
-    "nationalite": "Italien",
-    "poste": "DC",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Wilson|Premier League": {
-    "prenom": "Callum",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "West Ham"
-    ]
-  },
-  "Maguire|Premier League": {
-    "prenom": "Harry",
-    "nationalite": "Anglais",
-    "poste": "DC",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Svilar|Serie A": {
-    "prenom": "Mile",
-    "nationalite": "Belge",
-    "poste": "G",
-    "clubs": [
-      "Roma"
-    ]
-  },
-  "Provedel|Serie A": {
-    "prenom": "Ivan",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Lazio"
-    ]
-  },
-  "Majecki|Ligue 1": {
-    "prenom": "Radosław",
-    "nationalite": "Polonais",
-    "poste": "G",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Doué|Ligue 1": {
-    "prenom": "Désiré",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Paris",
-      "Strasbourg"
-    ]
-  },
-  "Güler|Liga": {
-    "prenom": "Arda",
-    "nationalite": "Turc",
-    "poste": "MO",
+    "nationalite": "Uruguayen",
+    "poste": "MD",
     "clubs": [
       "Real Madrid"
-    ]
-  },
-  "Aït-Nouri|Premier League": {
-    "prenom": "Rayan",
-    "nationalite": "Algérien",
-    "poste": "DL",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Lemar|Liga": {
-    "prenom": "Thomas",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Fornals|Liga": {
-    "prenom": "Pablo",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Alonso|Liga": {
-    "prenom": "Marcos",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Celta"
-    ]
-  },
-  "Antony|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Faes|Ligue 1": {
-    "prenom": "Wout",
-    "nationalite": "Belge",
-    "poste": "DC",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Fernandez-Pardo|Ligue 1": {
-    "prenom": "Matias",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Oyarzabal|Liga": {
-    "prenom": "Mikel",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "Szoboszlai|Premier League": {
-    "prenom": "Dominik",
-    "nationalite": "Hongrois",
-    "poste": "MO",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Muñoz|Premier League": {
-    "prenom": "Daniel",
-    "nationalite": "Colombien",
-    "poste": "DL",
-    "clubs": [
-      "Crystal Palace"
-    ]
-  },
-  "Dieng|Ligue 1": {
-    "prenom": "Bamba",
-    "nationalite": "Sénégalais",
-    "poste": "A",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Juan Carlos|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Nuno Mendes|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "van Dijk|Premier League": {
-    "prenom": "Virgil",
-    "nationalite": "Néerlandais",
-    "poste": "DC",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Lepaul|Ligue 1": {
-    "prenom": "Arnaud",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Laporte|Liga": {
-    "prenom": "Aymeric",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Eric García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Beraldo|Ligue 1": {
-    "prenom": "Lucas",
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Sinayoko|Ligue 1": {
-    "prenom": "Lassine",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Auxerre"
-    ]
-  },
-  "Renato Veiga|Liga": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Villarreal"
-    ]
-  },
-  "Truffert|Premier League": {
-    "prenom": "Adrien",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Bournemouth"
-    ]
-  },
-  "Calvert-Lewin|Premier League": {
-    "prenom": "Dominic",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Leeds"
-    ]
-  },
-  "Ødegaard|Premier League": {
-    "prenom": "Martin",
-    "nationalite": "Norvégien",
-    "poste": "MO",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Gurtner|Ligue 1": {
-    "prenom": "Régis",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Alvarez|Liga": {
-    "prenom": "Julián",
-    "nationalite": "Argentin",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Lookman|Liga": {
-    "prenom": "Ademola",
-    "nationalite": "Nigérian",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Fort|Liga": {
-    "prenom": "Hector",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Elche"
-    ]
-  },
-  "Dro Fernández|Ligue 1": {
-    "prenom": "Pedro",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Kamara|Ligue 1": {
-    "prenom": "Boubacar",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Koundé|Liga": {
-    "prenom": "Jules",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Camara|Ligue 1": {
-    "prenom": "Lamine",
-    "nationalite": "Sénégalais",
-    "poste": "MD",
-    "clubs": [
-      "Monaco",
-      "Rennes"
-    ]
-  },
-  "Coppola|Ligue 1": {
-    "prenom": "Diego",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "Casemiro|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "MD",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Cavlina|Serie A": {
-    "prenom": "Nikola",
-    "nationalite": "Croate",
-    "poste": "G",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Vitinha|Ligue 1": {
-    "prenom": "Vítor",
-    "nationalite": "Portugais",
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "de Jong|Liga": {
-    "prenom": "Frenkie",
-    "nationalite": "Néerlandais",
-    "poste": "MD",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Dumfries|Serie A": {
-    "prenom": "Denzel",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Budimir|Liga": {
-    "prenom": "Ante",
-    "nationalite": "Croate",
-    "poste": "A",
-    "clubs": [
-      "Osasuna"
-    ]
-  },
-  "Davis|Serie A": {
-    "prenom": "Keinan",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Udinese"
-    ]
-  },
-  "Pagis|Ligue 1": {
-    "prenom": "Pablo",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Esposito|Serie A": {
-    "prenom": "Sebastiano",
-    "nationalite": "Italien",
-    "poste": "MO",
-    "clubs": [
-      "Cagliari",
-      "Inter"
-    ]
-  },
-  "Williams|Premier League": {
-    "prenom": "Neco",
-    "nationalite": "Gallois",
-    "poste": "DL",
-    "clubs": [
-      "Nottingham Forest"
-    ]
-  },
-  "Sangaré|Ligue 1": {
-    "prenom": "Ibrahim",
-    "nationalite": "Ivoirien",
-    "poste": "MD",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Mbeumo|Premier League": {
-    "prenom": "Bryan",
-    "nationalite": "Camerounais",
-    "poste": "MO",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Igor Thiago|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Brentford"
-    ]
-  },
-  "Cherki|Premier League": {
-    "prenom": "Rayan",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Félix Correia|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Romero|Liga": {
-    "prenom": "Zaid",
-    "nationalite": "Argentin",
-    "poste": "DC",
-    "clubs": [
-      "Getafe",
-      "Espanyol"
-    ]
-  },
-  "Morton|Ligue 1": {
-    "prenom": "Tyler",
-    "nationalite": "Anglais",
-    "poste": "MD",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Raolisoa|Ligue 1": {
-    "prenom": "Lilian",
-    "nationalite": "Malgache",
-    "poste": "DL",
-    "clubs": [
-      "Angers"
-    ]
-  },
-  "Berchiche|Liga": {
-    "prenom": "Yuri",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Catena|Liga": {
-    "prenom": "Alejandro",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Osasuna"
-    ]
-  },
-  "Sarr|Ligue 1": {
-    "prenom": "Malang",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Darder|Liga": {
-    "prenom": "Sergi",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Mallorca"
-    ]
-  },
-  "Jourdren|Ligue 1": {
-    "prenom": "Steeve",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Dodô|Serie A": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DL",
-    "clubs": [
-      "Fiorentina"
-    ]
-  },
-  "Matheus Nunes|Premier League": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MD",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Coulibaly|Ligue 1": {
-    "prenom": "Mamadou",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Nkunku|Serie A": {
-    "prenom": "Christopher",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Koné|Serie A": {
-    "prenom": "Manu",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Roma",
-      "Sassuolo"
-    ]
-  },
-  "Kubo|Liga": {
-    "prenom": "Takefusa",
-    "nationalite": "Japonais",
-    "poste": "MO",
-    "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "Calafiori|Premier League": {
-    "prenom": "Riccardo",
-    "nationalite": "Italien",
-    "poste": "DC",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Griezmann|Liga": {
-    "prenom": "Antoine",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Gayà|Liga": {
-    "prenom": "José",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Valencia"
-    ]
-  },
-  "Rice|Premier League": {
-    "prenom": "Declan",
-    "nationalite": "Anglais",
-    "poste": "MD",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Guéhi|Premier League": {
-    "prenom": "Marc",
-    "nationalite": "Anglais",
-    "poste": "DC",
-    "clubs": [
-      "Crystal Palace"
-    ]
-  },
-  "Emegha|Ligue 1": {
-    "prenom": "Emanuel",
-    "nationalite": "Néerlandais",
-    "poste": "A",
-    "clubs": [
-      "Strasbourg"
-    ]
-  },
-  "de Lange|Ligue 1": {
-    "prenom": "Jeffrey",
-    "nationalite": "Néerlandais",
-    "poste": "G",
-    "clubs": [
-      "Marseille"
-    ]
-  },
-  "Immobile|Ligue 1": {
-    "prenom": "Ciro",
-    "nationalite": "Italien",
-    "poste": "A",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "Katseris|Ligue 1": {
-    "prenom": "Panos",
-    "nationalite": "Grec",
-    "poste": "DL",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Mostafa Mohamed|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Égyptien",
-    "poste": "A",
-    "clubs": [
-      "Nantes"
-    ]
-  },
-  "Politano|Serie A": {
-    "prenom": "Matteo",
-    "nationalite": "Italien",
-    "poste": "MO",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Pavlovic|Serie A": {
-    "prenom": "Strahinja",
-    "nationalite": "Serbe",
-    "poste": "DC",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Abner Vinícius|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DL",
-    "clubs": [
-      "Lyon"
     ]
   },
   "Olmo|Liga": {
@@ -1061,124 +31,20 @@
       "Barcelona"
     ]
   },
-  "Brassier|Ligue 1": {
-    "prenom": "Lilian",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Vinícius Júnior|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Fidalgo|Liga": {
-    "prenom": "Álvaro",
+  "López|Liga": {
+    "prenom": "Fermín",
     "nationalite": "Espagnol",
     "poste": "MO",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "João Neves|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Buchanan|Liga": {
-    "prenom": "Tajon",
-    "nationalite": "Canadien",
-    "poste": "MO",
-    "clubs": [
-      "Villarreal"
-    ]
-  },
-  "Joan García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "G",
     "clubs": [
       "Barcelona"
     ]
   },
-  "Pécsi|Premier League": {
-    "prenom": "Ármin",
-    "nationalite": "Hongrois",
-    "poste": "G",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Boga|Serie A": {
-    "prenom": "Jérémie",
-    "nationalite": "Ivoirien",
-    "poste": "A",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Matondo|Ligue 1": {
-    "prenom": "Rudy",
-    "nationalite": "Gallois",
-    "poste": "MD",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "Calvo|Liga": {
-    "prenom": "Dani",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Real Oviedo"
-    ]
-  },
-  "Bremer|Serie A": {
-    "prenom": "Gleison",
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Semenyo|Premier League": {
-    "prenom": "Antoine",
-    "nationalite": "Ghanéen",
-    "poste": "A",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Gonçalo Guedes|Liga": {
+  "Lee Kang-In|Liga": {
     "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "A",
+    "nationalite": "Sud-Coréen",
+    "poste": "MO",
     "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "Mingueza|Liga": {
-    "prenom": "Óscar",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Celta"
-    ]
-  },
-  "Livramento|Premier League": {
-    "prenom": "Tino",
-    "nationalite": "Anglais",
-    "poste": "DL",
-    "clubs": [
-      "Newcastle"
+      "Atlético"
     ]
   },
   "Courtois|Liga": {
@@ -1189,766 +55,52 @@
       "Real Madrid"
     ]
   },
-  "Munetsi|Ligue 1": {
-    "prenom": "Marshall",
-    "nationalite": "Zimbabwéen",
-    "poste": "MD",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "Lee Kang-In|Ligue 1": {
-    "prenom": "Kang-In",
-    "nationalite": "Sud-Coréen",
-    "poste": "MO",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "van Hecke|Premier League": {
-    "prenom": "Jan Paul",
-    "nationalite": "Néerlandais",
-    "poste": "DC",
-    "clubs": [
-      "Brighton"
-    ]
-  },
-  "Lewandowski|Liga": {
-    "prenom": "Robert",
-    "nationalite": "Polonais",
+  "Budimir|Liga": {
+    "prenom": "Ante",
+    "nationalite": "Croate",
     "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Fati|Ligue 1": {
-    "prenom": "Ansu",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Masuaku|Ligue 1": {
-    "prenom": "Arthur",
-    "nationalite": "Congolais",
-    "poste": "DL",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Balogun|Ligue 1": {
-    "prenom": "Folarin",
-    "nationalite": "Américain",
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Clinton Mata|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Angolais",
-    "poste": "DL",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Terracciano|Serie A": {
-    "prenom": "Pietro",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Cabrera|Liga": {
-    "prenom": "Leandro",
-    "nationalite": "Uruguayen",
-    "poste": "DC",
-    "clubs": [
-      "Espanyol"
-    ]
-  },
-  "Niakhaté|Ligue 1": {
-    "prenom": "Moussa",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Éder Militão|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Ousmane Camara|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Malien",
-    "poste": "DC",
-    "clubs": [
-      "Angers"
-    ]
-  },
-  "Lo Celso|Liga": {
-    "prenom": "Giovani",
-    "nationalite": "Argentin",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Makengo|Ligue 1": {
-    "prenom": "Aaron",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Núñez|Liga": {
-    "prenom": "Unai",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Valencia"
-    ]
-  },
-  "Laurienté|Serie A": {
-    "prenom": "Armand",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Sassuolo"
-    ]
-  },
-  "Dowman|Premier League": {
-    "prenom": "Max",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Palestra|Serie A": {
-    "prenom": "Marco",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Cagliari"
-    ]
-  },
-  "Lamine Camara|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Sénégalais",
-    "poste": "MD",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Flores|Liga": {
-    "prenom": "Alberto",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Sevilla"
-    ]
-  },
-  "Ali Youssif|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Nantes"
-    ]
-  },
-  "Alisson|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "G",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Del Castillo|Ligue 1": {
-    "prenom": "Franck",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Galán|Liga": {
-    "prenom": "Javi",
-    "nationalite": "Espagnol",
-    "poste": "DL",
     "clubs": [
       "Osasuna"
     ]
   },
-  "Modric|Serie A": {
-    "prenom": "Luka",
-    "nationalite": "Croate",
-    "poste": "MO",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Gila|Serie A": {
-    "prenom": "Mario",
+  "Riquelme|Liga": {
+    "prenom": "Rodrigo",
     "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Lazio"
-    ]
-  },
-  "Akanji|Serie A": {
-    "prenom": "Manuel",
-    "nationalite": "Suisse",
-    "poste": "DC",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Doku|Premier League": {
-    "prenom": "Jeremy",
-    "nationalite": "Belge",
     "poste": "MO",
     "clubs": [
-      "Manchester City"
+      "Betis"
     ]
   },
-  "Golovin|Ligue 1": {
-    "prenom": "Aleksandr",
-    "nationalite": "Russe",
+  "Bernardo Silva|Liga": {
+    "prenom": null,
+    "nationalite": "Portugais",
     "poste": "MO",
     "clubs": [
-      "Monaco"
+      "Real Madrid"
     ]
   },
-  "Simón|Liga": {
-    "prenom": "Unai",
+  "Eric García|Liga": {
+    "prenom": null,
     "nationalite": "Espagnol",
-    "poste": "G",
+    "poste": "DL",
     "clubs": [
-      "Athletic"
+      "Barcelona"
     ]
   },
-  "Ikoné|Ligue 1": {
-    "prenom": "Jonathan",
+  "Lejeune|Liga": {
+    "prenom": "Florian",
     "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "de Frutos|Liga": {
-    "prenom": "Isi",
-    "nationalite": "Espagnol",
-    "poste": "MO",
+    "poste": "DC",
     "clubs": [
       "Rayo Vallecano"
     ]
   },
-  "Simeone|Serie A": {
-    "prenom": "Giovanni",
-    "nationalite": "Argentin",
-    "poste": "A",
-    "clubs": [
-      "Torino"
-    ]
-  },
-  "Espí|Liga": {
-    "prenom": "Dani",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Levante"
-    ]
-  },
-  "Anderson|Premier League": {
-    "prenom": "Elliot",
-    "nationalite": "Anglais",
-    "poste": "MD",
-    "clubs": [
-      "Nottingham Forest"
-    ]
-  },
-  "Bellingham|Liga": {
-    "prenom": "Jude",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Rodon|Premier League": {
-    "prenom": "Joe",
-    "nationalite": "Gallois",
-    "poste": "DC",
-    "clubs": [
-      "Leeds"
-    ]
-  },
-  "López|Liga": {
-    "prenom": "Fermín",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Barcelona",
-      "Celta"
-    ]
-  },
-  "Padilla|Liga": {
-    "prenom": "Álex",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Doukouré|Ligue 1": {
-    "prenom": "Ismaël",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Strasbourg"
-    ]
-  },
-  "Greif|Ligue 1": {
-    "prenom": "Dominik",
-    "nationalite": "Allemand",
-    "poste": "G",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Ezzalzouli|Liga": {
-    "prenom": "Abde",
-    "nationalite": "Marocain",
-    "poste": "A",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Berenguer|Liga": {
-    "prenom": "Álex",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Thomasson|Ligue 1": {
-    "prenom": "Adrien",
-    "nationalite": "Suédois",
-    "poste": "MO",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Ruiz|Ligue 1": {
-    "prenom": "Fabián",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Lloris|Ligue 1": {
-    "prenom": "Hugo",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Le Havre"
-    ]
-  },
-  "Kempf|Serie A": {
-    "prenom": "Marc Oliver",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Escandell|Liga": {
-    "prenom": "Aarón",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Real Oviedo"
-    ]
-  },
-  "Valverde|Liga": {
-    "prenom": "Federico",
-    "nationalite": "Uruguayen",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Watkins|Premier League": {
-    "prenom": "Ollie",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Aston Villa"
-    ]
-  },
-  "Yildiz|Serie A": {
-    "prenom": "Kenan",
-    "nationalite": "Turc",
-    "poste": "A",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "De Ketelaere|Serie A": {
-    "prenom": "Charles",
-    "nationalite": "Belge",
-    "poste": "MO",
-    "clubs": [
-      "Atalanta"
-    ]
-  },
-  "Bisseck|Serie A": {
-    "prenom": "Yann",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Oblak|Liga": {
-    "prenom": "Jan",
-    "nationalite": "Slovène",
-    "poste": "G",
-    "clubs": [
-      "Atlético"
-    ]
-  },
-  "Furlanetto|Serie A": {
-    "prenom": "Alessio",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Lazio"
-    ]
-  },
-  "Donnarumma|Premier League": {
-    "prenom": "Gianluigi",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Cambiaso|Serie A": {
-    "prenom": "Andrea",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Chevalier|Ligue 1": {
-    "prenom": "Lucas",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Diop|Ligue 1": {
-    "prenom": "Boulaye",
-    "nationalite": "Sénégalais",
-    "poste": "MO",
-    "clubs": [
-      "Toulouse"
-    ]
-  },
-  "Rüdiger|Liga": {
-    "prenom": "Antonio",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Pulisic|Serie A": {
-    "prenom": "Christian",
-    "nationalite": "Américain",
-    "poste": "A",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Asencio|Liga": {
-    "prenom": "Raúl",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Bodart|Ligue 1": {
-    "prenom": "Arnaud",
-    "nationalite": "Belge",
-    "poste": "G",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Rafael Leão|Serie A": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "A",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Kebbal|Ligue 1": {
-    "prenom": "Zinedine",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Paris FC"
-    ]
-  },
-  "Bakola|Serie A": {
-    "prenom": "Darryl",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Sassuolo"
-    ]
-  },
-  "Zielinski|Serie A": {
-    "prenom": "Piotr",
-    "nationalite": "Polonais",
-    "poste": "MO",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Mandi|Ligue 1": {
-    "prenom": "Aïssa",
-    "nationalite": "Algérien",
-    "poste": "DC",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Edmundsson|Serie A": {
-    "prenom": "Andrias",
-    "nationalite": "Féroïen",
-    "poste": "DC",
-    "clubs": [
-      "Hellas Verona"
-    ]
-  },
-  "Pacho|Ligue 1": {
-    "prenom": "Willian",
-    "nationalite": "Équatorien",
-    "poste": "DC",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Bastoni|Serie A": {
-    "prenom": "Alessandro",
-    "nationalite": "Italien",
-    "poste": "DC",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Isco|Liga": {
+  "Yeremay Hernández|Liga": {
     "prenom": null,
     "nationalite": "Espagnol",
     "poste": "MO",
     "clubs": [
-      "Betis"
-    ]
-  },
-  "Baturina|Serie A": {
-    "prenom": "Martin",
-    "nationalite": "Croate",
-    "poste": "MD",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Gboho|Ligue 1": {
-    "prenom": "Christian",
-    "nationalite": "Ivoirien",
-    "poste": "MO",
-    "clubs": [
-      "Toulouse"
-    ]
-  },
-  "Vanderson|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DL",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Szymanski|Ligue 1": {
-    "prenom": "Sebastian",
-    "nationalite": "Polonais",
-    "poste": "MO",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "David|Serie A": {
-    "prenom": "Jonathan",
-    "nationalite": "Canadien",
-    "poste": "A",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Moreira|Ligue 1": {
-    "prenom": "Diego",
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Strasbourg"
-    ]
-  },
-  "Thuram|Serie A": {
-    "prenom": "Marcus",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Inter",
-      "Juventus"
-    ]
-  },
-  "Özer|Ligue 1": {
-    "prenom": "Berke",
-    "nationalite": "Turc",
-    "poste": "G",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Nico Williams|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Athletic"
-    ]
-  },
-  "Raya|Premier League": {
-    "prenom": "David",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Ajorque|Ligue 1": {
-    "prenom": "Ludovic",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Falcone|Serie A": {
-    "prenom": "Wladimiro",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Lecce"
-    ]
-  },
-  "Diao|Serie A": {
-    "prenom": "Assane",
-    "nationalite": "Sénégalais",
-    "poste": "A",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Marmoush|Premier League": {
-    "prenom": "Omar",
-    "nationalite": "Égyptien",
-    "poste": "MO",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Gallo|Serie A": {
-    "prenom": "Antonino",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Lecce"
-    ]
-  },
-  "Anguissa|Serie A": {
-    "prenom": "André-Frank",
-    "nationalite": "Camerounais",
-    "poste": "MD",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Bernardo Silva|Premier League": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Kroupi|Premier League": {
-    "prenom": "Junior",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Bournemouth"
-    ]
-  },
-  "Baidoo|Ligue 1": {
-    "prenom": "Samson",
-    "nationalite": "Autrichien",
-    "poste": "DC",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Enciso|Ligue 1": {
-    "prenom": "Julio",
-    "nationalite": "Paraguayen",
-    "poste": "MO",
-    "clubs": [
-      "Strasbourg"
-    ]
-  },
-  "Perraud|Ligue 1": {
-    "prenom": "Romain",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Wesley|Serie A": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DL",
-    "clubs": [
-      "Roma"
+      "La Corogne"
     ]
   },
   "Iglesias|Liga": {
@@ -1959,566 +111,204 @@
       "Celta"
     ]
   },
-  "Gabriel|Premier League": {
+  "Pedri|Liga": {
     "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DC",
+    "nationalite": "Espagnol",
+    "poste": "MD",
     "clubs": [
-      "Arsenal"
+      "Barcelona"
     ]
   },
-  "Endrick|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Mayulu|Ligue 1": {
-    "prenom": "Senny",
-    "nationalite": "Français",
+  "Güler|Liga": {
+    "prenom": "Arda",
+    "nationalite": "Turc",
     "poste": "MO",
     "clubs": [
-      "Paris"
+      "Real Madrid"
     ]
   },
-  "Rosier|Liga": {
-    "prenom": "Valentin",
-    "nationalite": "Français",
-    "poste": "DL",
+  "Gavi|Liga": {
+    "prenom": "Pablo",
+    "nationalite": "Espagnol",
+    "poste": "MD",
+    "clubs": [
+      "Barcelona"
+    ]
+  },
+  "Yan Diomande|Liga": {
+    "prenom": null,
+    "nationalite": "Ivoirien",
+    "poste": "MO",
+    "clubs": [
+      "Real Madrid"
+    ]
+  },
+  "Boyomo|Liga": {
+    "prenom": "Enzo",
+    "nationalite": "Camerounais",
+    "poste": "DC",
     "clubs": [
       "Osasuna"
     ]
   },
-  "Højbjerg|Ligue 1": {
-    "prenom": "Pierre-Emile",
-    "nationalite": "Danois",
-    "poste": "MD",
-    "clubs": [
-      "Marseille"
-    ]
-  },
-  "Welbeck|Premier League": {
-    "prenom": "Danny",
-    "nationalite": "Anglais",
+  "Mikautadze|Liga": {
+    "prenom": "Georges",
+    "nationalite": "Géorgien",
     "poste": "A",
     "clubs": [
-      "Brighton"
+      "Villarreal"
     ]
   },
-  "Vandeputte|Serie A": {
-    "prenom": "Joris",
-    "nationalite": "Belge",
-    "poste": "MD",
-    "clubs": [
-      "Cremonese"
-    ]
-  },
-  "Summerville|Premier League": {
-    "prenom": "Crysencio",
-    "nationalite": "Néerlandais",
-    "poste": "MO",
-    "clubs": [
-      "West Ham"
-    ]
-  },
-  "Akliouche|Ligue 1": {
-    "prenom": "Maghnes",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Sulc|Ligue 1": {
-    "prenom": "Pavel",
-    "nationalite": "Tchèque",
-    "poste": "MO",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Satriano|Liga": {
-    "prenom": "Martín",
-    "nationalite": "Uruguayen",
-    "poste": "A",
-    "clubs": [
-      "Getafe"
-    ]
-  },
-  "Muriqi|Liga": {
-    "prenom": "Vedat",
-    "nationalite": "Kosovar",
-    "poste": "A",
-    "clubs": [
-      "Mallorca"
-    ]
-  },
-  "Édouard|Ligue 1": {
-    "prenom": "Odsonne",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Ramón|Serie A": {
-    "prenom": "Jacobo",
+  "Fornals|Liga": {
+    "prenom": "Pablo",
     "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Zaniolo|Serie A": {
-    "prenom": "Nicolò",
-    "nationalite": "Italien",
-    "poste": "MO",
-    "clubs": [
-      "Udinese"
-    ]
-  },
-  "Igor Paixão|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Marseille"
-    ]
-  },
-  "Bruno Fernandes|Premier League": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Faivre|Ligue 1": {
-    "prenom": "Romain",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Auxerre"
-    ]
-  },
-  "Thauvin|Ligue 1": {
-    "prenom": "Florian",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Xhaka|Premier League": {
-    "prenom": "Granit",
-    "nationalite": "Suisse",
     "poste": "MD",
     "clubs": [
-      "Sunderland"
+      "Betis"
     ]
   },
-  "Matheus Cunha|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
+  "Sørloth|Liga": {
+    "prenom": "Alexander",
+    "nationalite": "Norvégien",
     "poste": "A",
     "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Cancelo|Liga": {
-    "prenom": "João",
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Tolisso|Ligue 1": {
-    "prenom": "Corentin",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Baena|Liga": {
-    "prenom": "Alex",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Villarreal",
       "Atlético"
     ]
   },
-  "Martínez|Liga": {
-    "prenom": "Arnau",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Girona",
-      "Alavés"
-    ]
-  },
-  "Román|Liga": {
-    "prenom": "Miguel",
-    "nationalite": "Espagnol",
-    "poste": "MD",
+  "Radu|Liga": {
+    "prenom": "Ionuț",
+    "nationalite": "Roumain",
+    "poste": "G",
     "clubs": [
       "Celta"
     ]
   },
-  "Godo|Ligue 1": {
-    "prenom": "Martial",
-    "nationalite": "Français",
+  "Etta Eyong|Liga": {
+    "prenom": "Karl",
+    "nationalite": "Camerounais",
     "poste": "A",
     "clubs": [
-      "Strasbourg"
+      "Levante"
     ]
   },
-  "Çalhanoglu|Serie A": {
-    "prenom": "Hakan",
-    "nationalite": "Turc",
-    "poste": "MD",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Tsygankov|Liga": {
-    "prenom": "Viktor",
-    "nationalite": "Ukrainien",
-    "poste": "MO",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Richarlison|Premier League": {
+  "Andrés Martín|Liga": {
     "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Tottenham"
-    ]
-  },
-  "Chardonnet|Ligue 1": {
-    "prenom": "Brendan",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Woltemade|Premier League": {
-    "prenom": "Nick",
-    "nationalite": "Allemand",
-    "poste": "A",
-    "clubs": [
-      "Newcastle"
-    ]
-  },
-  "Konaté|Premier League": {
-    "prenom": "Ibrahima",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Frimpong|Premier League": {
-    "prenom": "Jeremie",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Gordon|Premier League": {
-    "prenom": "Anthony",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Newcastle"
-    ]
-  },
-  "Maffeo|Liga": {
-    "prenom": "Pablo",
     "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Mallorca"
-    ]
-  },
-  "Dembélé|Ligue 1": {
-    "prenom": "Ousmane",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Madueke|Premier League": {
-    "prenom": "Noni",
-    "nationalite": "Anglais",
     "poste": "MO",
     "clubs": [
-      "Chelsea"
+      "Santander"
     ]
   },
-  "Gusto|Premier League": {
-    "prenom": "Malo",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Chelsea"
-    ]
-  },
-  "Raphinha|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Kehrer|Ligue 1": {
-    "prenom": "Thilo",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Kalulu|Serie A": {
-    "prenom": "Pierre",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Paz|Serie A": {
-    "prenom": "Nico",
-    "nationalite": "Argentin",
+  "Buchanan|Liga": {
+    "prenom": "Tajon",
+    "nationalite": "Canadien",
     "poste": "MO",
     "clubs": [
-      "Como"
+      "Villarreal"
     ]
   },
-  "Romero|Premier League": {
-    "prenom": "Cristian",
-    "nationalite": "Argentin",
-    "poste": "DC",
-    "clubs": [
-      "Tottenham"
-    ]
-  },
-  "Soler|Liga": {
-    "prenom": "Carlos",
+  "Jauregizar|Liga": {
+    "prenom": "Mikel",
     "nationalite": "Espagnol",
     "poste": "MD",
-    "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "Saint-Maximin|Ligue 1": {
-    "prenom": "Allan",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Iñaki Williams|Liga": {
-    "prenom": null,
-    "nationalite": "Ghanéen",
-    "poste": "A",
     "clubs": [
       "Athletic"
     ]
   },
-  "Lautaro Martínez|Serie A": {
+  "Angeliño|Liga": {
     "prenom": null,
-    "nationalite": "Argentin",
-    "poste": "A",
-    "clubs": [
-      "Inter"
-    ]
-  },
-  "Torres|Liga": {
-    "prenom": "Ferran",
     "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Martinelli|Premier League": {
-    "prenom": "Gabriel",
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Caio Henrique|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
     "poste": "DL",
     "clubs": [
-      "Monaco"
+      "La Corogne"
     ]
   },
-  "Bowen|Premier League": {
-    "prenom": "Jarrod",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "West Ham"
-    ]
-  },
-  "Gibbs-White|Premier League": {
-    "prenom": "Morgan",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Nottingham Forest"
-    ]
-  },
-  "Butez|Serie A": {
-    "prenom": "Jean",
-    "nationalite": "Belge",
+  "Simón|Liga": {
+    "prenom": "Unai",
+    "nationalite": "Espagnol",
     "poste": "G",
     "clubs": [
-      "Como"
+      "Athletic"
     ]
   },
-  "Kamory Doumbia|Ligue 1": {
+  "Grimaldo|Liga": {
+    "prenom": "Alejandro",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Atlético"
+    ]
+  },
+  "Bellerín|Liga": {
+    "prenom": "Héctor",
+    "nationalite": "Espagnol",
+    "poste": "DL",
+    "clubs": [
+      "Betis"
+    ]
+  },
+  "Antony|Liga": {
     "prenom": null,
-    "nationalite": "Guinéen",
-    "poste": "MD",
+    "nationalite": "Brésilien",
+    "poste": "MO",
     "clubs": [
-      "Brest"
+      "Betis"
     ]
   },
-  "Rongier|Ligue 1": {
-    "prenom": "Valentin",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "Havertz|Premier League": {
-    "prenom": "Kai",
+  "Rüdiger|Liga": {
+    "prenom": "Antonio",
     "nationalite": "Allemand",
-    "poste": "MO",
+    "poste": "DC",
     "clubs": [
-      "Arsenal"
+      "Real Madrid"
     ]
   },
-  "Zelezny|Serie A": {
-    "prenom": "Radosław",
-    "nationalite": "Polonais",
-    "poste": "G",
-    "clubs": [
-      "Roma"
-    ]
-  },
-  "Cairns|Premier League": {
-    "prenom": "Alex",
-    "nationalite": "Anglais",
-    "poste": "G",
-    "clubs": [
-      "Leeds"
-    ]
-  },
-  "Evanilson|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
+  "Adeyemi|Liga": {
+    "prenom": "Karim",
+    "nationalite": "Allemand",
     "poste": "A",
-    "clubs": [
-      "Bournemouth"
-    ]
-  },
-  "Orsolini|Serie A": {
-    "prenom": "Riccardo",
-    "nationalite": "Italien",
-    "poste": "MO",
-    "clubs": [
-      "Bologna"
-    ]
-  },
-  "Rabiot|Serie A": {
-    "prenom": "Adrien",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Cadiou|Ligue 1": {
-    "prenom": "Noah",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Ekitiké|Premier League": {
-    "prenom": "Hugo",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Henderson|Premier League": {
-    "prenom": "Jordan",
-    "nationalite": "Anglais",
-    "poste": "MD",
-    "clubs": [
-      "Brentford"
-    ]
-  },
-  "Zalewski|Serie A": {
-    "prenom": "Nicola",
-    "nationalite": "Italien",
-    "poste": "DL",
-    "clubs": [
-      "Atalanta"
-    ]
-  },
-  "Diaz|Ligue 1": {
-    "prenom": "Junior",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Igor Silva|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DC",
-    "clubs": [
-      "Lorient"
-    ]
-  },
-  "Cubarsí|Liga": {
-    "prenom": "Pau",
-    "nationalite": "Espagnol",
-    "poste": "DC",
     "clubs": [
       "Barcelona"
     ]
   },
-  "Malen|Serie A": {
-    "prenom": "Donyell",
-    "nationalite": "Néerlandais",
+  "Lamine Yamal|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
     "poste": "A",
     "clubs": [
-      "Roma"
+      "Barcelona"
+    ]
+  },
+  "Bellingham|Liga": {
+    "prenom": "Jude",
+    "nationalite": "Anglais",
+    "poste": "MO",
+    "clubs": [
+      "Real Madrid"
+    ]
+  },
+  "Pape Gueye|Liga": {
+    "prenom": null,
+    "nationalite": "Sénégalais",
+    "poste": "MD",
+    "clubs": [
+      "Villarreal"
+    ]
+  },
+  "Vinícius Júnior|Liga": {
+    "prenom": null,
+    "nationalite": "Brésilien",
+    "poste": "A",
+    "clubs": [
+      "Real Madrid"
+    ]
+  },
+  "Mbappé|Liga": {
+    "prenom": "Kylian",
+    "nationalite": "Français",
+    "poste": "A",
+    "clubs": [
+      "Real Madrid"
     ]
   },
   "Lunin|Liga": {
@@ -2529,98 +319,74 @@
       "Real Madrid"
     ]
   },
-  "ter Stegen|Liga": {
-    "prenom": "Marc-André",
-    "nationalite": "Allemand",
-    "poste": "G",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Barcola|Ligue 1": {
-    "prenom": "Bradley",
-    "nationalite": "Français",
+  "Lookman|Liga": {
+    "prenom": "Ademola",
+    "nationalite": "Nigérian",
     "poste": "A",
     "clubs": [
-      "Paris"
+      "Atlético"
     ]
   },
-  "Silistre|Ligue 1": {
-    "prenom": "Mathys",
-    "nationalite": "Roumain",
-    "poste": "G",
-    "clubs": [
-      "Rennes"
-    ]
-  },
-  "McTominay|Serie A": {
-    "prenom": "Scott",
-    "nationalite": "Écossais",
-    "poste": "MD",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Panichelli|Ligue 1": {
-    "prenom": "Théo",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Strasbourg"
-    ]
-  },
-  "Isak|Premier League": {
-    "prenom": "Alexander",
-    "nationalite": "Suédois",
-    "poste": "A",
-    "clubs": [
-      "Newcastle"
-    ]
-  },
-  "Letácek|Liga": {
-    "prenom": "Jiří",
-    "nationalite": "Tchèque",
-    "poste": "G",
-    "clubs": [
-      "Getafe"
-    ]
-  },
-  "Bayindir|Premier League": {
-    "prenom": "Altay",
-    "nationalite": "Turc",
-    "poste": "G",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Méndez|Liga": {
-    "prenom": "Brais",
+  "Jon Martín|Liga": {
+    "prenom": null,
     "nationalite": "Espagnol",
-    "poste": "MD",
+    "poste": "DC",
     "clubs": [
       "Real Sociedad"
     ]
   },
-  "Arambarri|Liga": {
-    "prenom": "Mauro",
-    "nationalite": "Uruguayen",
-    "poste": "MD",
+  "Aubameyang|Liga": {
+    "prenom": "Pierre-Emerick",
+    "nationalite": "Gabonais",
+    "poste": "A",
     "clubs": [
-      "Getafe"
+      "La Corogne"
     ]
   },
-  "Cucurella|Premier League": {
-    "prenom": "Marc",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Chelsea"
-    ]
-  },
-  "Álvarez|Liga": {
-    "prenom": "Julián",
+  "Simeone|Liga": {
+    "prenom": "Giovanni",
     "nationalite": "Argentin",
     "poste": "A",
+    "clubs": [
+      "Atlético"
+    ]
+  },
+  "Herrera|Liga": {
+    "prenom": "Sergio",
+    "nationalite": "Espagnol",
+    "poste": "G",
+    "clubs": [
+      "Osasuna"
+    ]
+  },
+  "Cubarsí|Liga": {
+    "prenom": "Pau",
+    "nationalite": "Espagnol",
+    "poste": "DC",
+    "clubs": [
+      "Barcelona"
+    ]
+  },
+  "Isco|Liga": {
+    "prenom": null,
+    "nationalite": "Espagnol",
+    "poste": "MO",
+    "clubs": [
+      "Betis"
+    ]
+  },
+  "Oyarzabal|Liga": {
+    "prenom": "Mikel",
+    "nationalite": "Espagnol",
+    "poste": "A",
+    "clubs": [
+      "Real Sociedad"
+    ]
+  },
+  "Hjulmand|Liga": {
+    "prenom": "Morten",
+    "nationalite": "Danois",
+    "poste": "MD",
     "clubs": [
       "Atlético"
     ]
@@ -2633,524 +399,44 @@
       "Betis"
     ]
   },
-  "Wirtz|Premier League": {
-    "prenom": "Florian",
-    "nationalite": "Allemand",
+  "Kubo|Liga": {
+    "prenom": "Takefusa",
+    "nationalite": "Japonais",
     "poste": "MO",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Solet|Serie A": {
-    "prenom": "Oumar",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Udinese"
-    ]
-  },
-  "Mamardashvili|Premier League": {
-    "prenom": "Giorgi",
-    "nationalite": "Géorgien",
-    "poste": "G",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Lejeune|Liga": {
-    "prenom": "Florian",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Rayo Vallecano"
-    ]
-  },
-  "Zaïre-Emery|Ligue 1": {
-    "prenom": "Warren",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Gonzalo García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
     "clubs": [
       "Real Sociedad"
     ]
   },
-  "McKennie|Serie A": {
-    "prenom": "Weston",
-    "nationalite": "Américain",
-    "poste": "MO",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Udol|Ligue 1": {
-    "prenom": "Matthieu",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Zakaria|Ligue 1": {
-    "prenom": "Denis",
-    "nationalite": "Suisse",
-    "poste": "MD",
-    "clubs": [
-      "Monaco"
-    ]
-  },
-  "Ganiou|Ligue 1": {
-    "prenom": "Ismaëlo",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Lens"
-    ]
-  },
-  "Locatelli|Serie A": {
-    "prenom": "Manuel",
-    "nationalite": "Italien",
-    "poste": "MD",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Kvaratskhelia|Ligue 1": {
-    "prenom": "Khvicha",
-    "nationalite": "Géorgien",
+  "Raphinha|Liga": {
+    "prenom": null,
+    "nationalite": "Brésilien",
     "poste": "A",
-    "clubs": [
-      "Paris"
-    ]
-  },
-  "Balde|Liga": {
-    "prenom": "Alejandro",
-    "nationalite": "Espagnol",
-    "poste": "DL",
     "clubs": [
       "Barcelona"
     ]
   },
-  "Simeone|Liga": {
-    "prenom": "Giovanni",
-    "nationalite": "Argentin",
-    "poste": "A",
+  "Baena|Liga": {
+    "prenom": "Alex",
+    "nationalite": "Espagnol",
+    "poste": "MO",
     "clubs": [
       "Atlético"
     ]
   },
-  "Lammens|Premier League": {
-    "prenom": "Senne",
-    "nationalite": "Belge",
-    "poste": "G",
-    "clubs": [
-      "Manchester United"
-    ]
-  },
-  "Cömert|Liga": {
-    "prenom": "Eray",
-    "nationalite": "Suisse",
-    "poste": "DC",
-    "clubs": [
-      "Valencia"
-    ]
-  },
-  "Mendy|Liga": {
-    "prenom": "Ferland",
-    "nationalite": "Français",
-    "poste": "DL",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Thiaw|Premier League": {
-    "prenom": "Malick",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Newcastle"
-    ]
-  },
-  "Nuno Tavares|Serie A": {
+  "Nico Williams|Liga": {
     "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Lazio"
-    ]
-  },
-  "Vásquez|Serie A": {
-    "prenom": "Johan",
-    "nationalite": "Mexicain",
-    "poste": "DC",
-    "clubs": [
-      "Genoa"
-    ]
-  },
-  "Højlund|Serie A": {
-    "prenom": "Rasmus",
-    "nationalite": "Danois",
-    "poste": "A",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Aubameyang|Ligue 1": {
-    "prenom": "Pierre-Emerick",
-    "nationalite": "Gabonais",
-    "poste": "A",
-    "clubs": [
-      "Marseille"
-    ]
-  },
-  "Rayan|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Bournemouth"
-    ]
-  },
-  "Gómez|Liga": {
-    "prenom": "Rubén",
     "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Villarreal"
-    ]
-  },
-  "Tielemans|Premier League": {
-    "prenom": "Youri",
-    "nationalite": "Belge",
-    "poste": "MD",
-    "clubs": [
-      "Aston Villa"
-    ]
-  },
-  "Palmer|Premier League": {
-    "prenom": "Cole",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Chelsea"
-    ]
-  },
-  "Ndicka|Serie A": {
-    "prenom": "Evan",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Roma"
-    ]
-  },
-  "Coudert|Ligue 1": {
-    "prenom": "Grégoire",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Brest"
-    ]
-  },
-  "Rueda|Liga": {
-    "prenom": "Javi",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Celta"
-    ]
-  },
-  "Tchouaméni|Liga": {
-    "prenom": "Aurélien",
-    "nationalite": "Français",
-    "poste": "MD",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "Sesko|Premier League": {
-    "prenom": "Benjamin",
-    "nationalite": "Slovène",
     "poste": "A",
     "clubs": [
-      "Manchester United"
+      "Athletic"
     ]
   },
-  "Kean|Serie A": {
-    "prenom": "Moise",
-    "nationalite": "Italien",
-    "poste": "A",
-    "clubs": [
-      "Fiorentina"
-    ]
-  },
-  "Gakpo|Premier League": {
-    "prenom": "Cody",
+  "Dumfries|Liga": {
+    "prenom": "Denzel",
     "nationalite": "Néerlandais",
-    "poste": "A",
-    "clubs": [
-      "Liverpool"
-    ]
-  },
-  "Saka|Premier League": {
-    "prenom": "Bukayo",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Milinkovic-Savic|Serie A": {
-    "prenom": "Vanja",
-    "nationalite": "Serbe",
-    "poste": "G",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Maignan|Serie A": {
-    "prenom": "Mike",
-    "nationalite": "Français",
-    "poste": "G",
-    "clubs": [
-      "Milan"
-    ]
-  },
-  "Mbappé|Liga": {
-    "prenom": "Kylian",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Real Madrid"
-    ]
-  },
-  "da Cunha|Serie A": {
-    "prenom": "Lucas",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Como"
-    ]
-  },
-  "Motta|Serie A": {
-    "prenom": "Edoardo",
-    "nationalite": "Italien",
-    "poste": "G",
-    "clubs": [
-      "Lazio"
-    ]
-  },
-  "Amrabat|Liga": {
-    "prenom": "Sofyan",
-    "nationalite": "Marocain",
-    "poste": "MD",
-    "clubs": [
-      "Betis"
-    ]
-  },
-  "Okoh|Ligue 1": {
-    "prenom": "Bryan",
-    "nationalite": "Ghanéen",
-    "poste": "DC",
-    "clubs": [
-      "Auxerre"
-    ]
-  },
-  "Vlahovic|Serie A": {
-    "prenom": "Dušan",
-    "nationalite": "Serbe",
-    "poste": "A",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "Ndiaye|Ligue 1": {
-    "prenom": "Rassoul",
-    "nationalite": "Sénégalais",
-    "poste": "MD",
-    "clubs": [
-      "Le Havre"
-    ]
-  },
-  "Kluivert|Ligue 1": {
-    "prenom": "Ruben",
-    "nationalite": "Néerlandais",
-    "poste": "DC",
-    "clubs": [
-      "Lyon"
-    ]
-  },
-  "Krstovic|Serie A": {
-    "prenom": "Nikola",
-    "nationalite": "Monténégrin",
-    "poste": "A",
-    "clubs": [
-      "Atalanta"
-    ]
-  },
-  "Alexander-Arnold|Liga": {
-    "prenom": "Trent",
-    "nationalite": "Anglais",
     "poste": "DL",
     "clubs": [
       "Real Madrid"
-    ]
-  },
-  "Araujo|Liga": {
-    "prenom": "Ronald",
-    "nationalite": "Uruguayen",
-    "poste": "DC",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Haaland|Premier League": {
-    "prenom": "Erling",
-    "nationalite": "Norvégien",
-    "poste": "A",
-    "clubs": [
-      "Manchester City"
-    ]
-  },
-  "Vanat|Liga": {
-    "prenom": "Vladyslav",
-    "nationalite": "Ukrainien",
-    "poste": "A",
-    "clubs": [
-      "Girona"
-    ]
-  },
-  "Rubén García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Osasuna"
-    ]
-  },
-  "Vlasic|Serie A": {
-    "prenom": "Nikola",
-    "nationalite": "Croate",
-    "poste": "MO",
-    "clubs": [
-      "Torino"
-    ]
-  },
-  "Saliba|Premier League": {
-    "prenom": "William",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Vargas|Liga": {
-    "prenom": "Rubén",
-    "nationalite": "Suisse",
-    "poste": "MO",
-    "clubs": [
-      "Sevilla"
-    ]
-  },
-  "Alisson Santos|Serie A": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Caleta-Car|Liga": {
-    "prenom": "Duje",
-    "nationalite": "Croate",
-    "poste": "DC",
-    "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "Perrin|Ligue 1": {
-    "prenom": "Gaëtan",
-    "nationalite": "Français",
-    "poste": "MO",
-    "clubs": [
-      "Lille"
-    ]
-  },
-  "Anthony Lopes|Ligue 1": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "G",
-    "clubs": [
-      "Nantes"
-    ]
-  },
-  "Gyökeres|Premier League": {
-    "prenom": "Viktor",
-    "nationalite": "Suédois",
-    "poste": "A",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Zubimendi|Premier League": {
-    "prenom": "Martín",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Arsenal"
-    ]
-  },
-  "Souza|Premier League": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "DL",
-    "clubs": [
-      "Tottenham"
-    ]
-  },
-  "Francisco Conceição|Serie A": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Juventus"
-    ]
-  },
-  "De Bruyne|Serie A": {
-    "prenom": "Kevin",
-    "nationalite": "Belge",
-    "poste": "MO",
-    "clubs": [
-      "Napoli"
-    ]
-  },
-  "Guedes|Liga": {
-    "prenom": "Gonçalo",
-    "nationalite": "Portugais",
-    "poste": "A",
-    "clubs": [
-      "Real Sociedad"
-    ]
-  },
-  "João Cancelo|Liga": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "DL",
-    "clubs": [
-      "Barcelona"
-    ]
-  },
-  "Douvikas|Serie A": {
-    "prenom": "Fotis",
-    "nationalite": "Grec",
-    "poste": "A",
-    "clubs": [
-      "Como"
     ]
   },
   "Cucurella|Liga": {
@@ -3159,197 +445,7 @@
     "poste": "DL",
     "clubs": [
       "Real Madrid"
-    ],
-    "photo": null
-  },
-  "Yan Diomande|Liga": {
-    "prenom": null,
-    "nationalite": "Ivoirien",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": null
-  },
-  "Dumfries|Liga": {
-    "prenom": "Denzel",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": null
-  },
-  "Adeyemi|Liga": {
-    "prenom": "Karim",
-    "nationalite": "Allemand",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": null
-  },
-  "Grimaldo|Liga": {
-    "prenom": "Alejandro",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": null
-  },
-  "Mikautadze|Liga": {
-    "prenom": "Georges",
-    "nationalite": "Géorgien",
-    "poste": "A",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": null
-  },
-  "Bernardo Silva|Liga": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": null
-  },
-  "Lee Kang-In|Liga": {
-    "prenom": null,
-    "nationalite": "Sud-Coréen",
-    "poste": "MO",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": null
-  },
-  "Etta Eyong|Liga": {
-    "prenom": "Karl",
-    "nationalite": "Camerounais",
-    "poste": "A",
-    "clubs": [
-      "Levante"
-    ],
-    "photo": null
-  },
-  "Hjulmand|Liga": {
-    "prenom": "Morten",
-    "nationalite": "Danois",
-    "poste": "MD",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": null
-  },
-  "Bellerín|Liga": {
-    "prenom": "Héctor",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": null
-  },
-  "Yeremay Hernández|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": null
-  },
-  "Andrés Martín|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Santander"
-    ],
-    "photo": null
-  },
-  "Boyomo|Liga": {
-    "prenom": "Enzo",
-    "nationalite": "Camerounais",
-    "poste": "DC",
-    "clubs": [
-      "Osasuna"
-    ],
-    "photo": null
-  },
-  "Radu|Liga": {
-    "prenom": "Ionuț",
-    "nationalite": "Roumain",
-    "poste": "G",
-    "clubs": [
-      "Celta"
-    ],
-    "photo": null
-  },
-  "Jon Martín|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Real Sociedad"
-    ],
-    "photo": null
-  },
-  "Aubameyang|Liga": {
-    "prenom": "Pierre-Emerick",
-    "nationalite": "Gabonais",
-    "poste": "A",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": null
-  },
-  "Gordon|Liga": {
-    "prenom": "Anthony",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": null
-  },
-  "Jauregizar|Liga": {
-    "prenom": "Mikel",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": null
-  },
-  "Gavi|Liga": {
-    "prenom": "Pablo",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": null
-  },
-  "Riquelme|Liga": {
-    "prenom": "Rodrigo",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": null
-  },
-  "Angeliño|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": null
+    ]
   },
   "Barrenetxea|Liga": {
     "prenom": "Ander",
@@ -3357,7 +453,6 @@
     "poste": "MO",
     "clubs": [
       "Real Sociedad"
-    ],
-    "photo": null
+    ]
   }
 }
