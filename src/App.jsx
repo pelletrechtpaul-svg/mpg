@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { Lock, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
 const JoueursTab = lazy(() => import('./components/JoueursTab'));
 const EntraineursTab = lazy(() => import('./components/EntraineursTab'));
@@ -43,6 +43,10 @@ const App = () => {
   const { darkMode, setDarkMode } = useDarkMode();
   const { isPlaying, currentTitle, playPause, prevTrack, nextTrack } = useAudioPlayer();
   const { filteredData, joueurs, ligues, championnatsByLigue } = useSeasonData(matchData, selectedSeason);
+  const filteredMercatoData = useMemo(() =>
+    selectedSeason === 'All-Time' ? mercatoData : mercatoData.filter(m => m.saison === selectedSeason),
+    [mercatoData, selectedSeason]
+  );
 
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
   const { statsDetaillees, cleanSheetsStats, scoreDistribution, heureDeGloire, valiseStats, versusStats, versusMatchHistory } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue);
@@ -285,7 +289,7 @@ const App = () => {
         )}
 
         {activeTab === 'joueurs' && (
-          <JoueursTab mercatoData={mercatoData} />
+          <JoueursTab mercatoData={filteredMercatoData} />
         )}
 
         </Suspense>
