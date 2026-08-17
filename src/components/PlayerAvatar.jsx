@@ -17,7 +17,7 @@ const SIZE_CLASS = {
   lg: 'w-16 h-16 text-xl',
   md: 'w-10 h-10 text-sm',
   sm: 'w-8 h-8 text-xs',
-  formation: 'w-9 h-9 sm:w-12 sm:h-12 text-xs',
+  formation: 'w-11 h-11 sm:w-14 sm:h-14 text-xs',
 };
 
 export function InitialsAvatar({ displayName, size = 'lg' }) {
@@ -38,13 +38,12 @@ export function InitialsAvatar({ displayName, size = 'lg' }) {
 // gratuit pour ne charger que la taille réellement affichée.
 export function resizedPhoto(url, px) {
   if (!url) return url;
-  // a=top: la plupart des photos de joueurs (têtes/portraits) ont le visage
-  // dans le tiers supérieur — "attention" (détection heuristique) recadrait
-  // trop souvent sur le torse/maillot.
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
+  // Pré-crop sur les 58% supérieurs de la photo (visage + cou, sans le
+  // maillot/torse), puis recadrage carré ancré en haut sur ce qui reste.
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=58%25&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
 }
 
-const AVATAR_PX = { lg: 128, md: 80, sm: 64, formation: 96 };
+const AVATAR_PX = { lg: 128, md: 80, sm: 64, formation: 112 };
 
 export function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
   const [failed, setFailed] = useState(false);

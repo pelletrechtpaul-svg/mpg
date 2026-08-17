@@ -19,14 +19,14 @@ const SLOT_OFFSET_CLASS = {
 function FormationRow({ group, players, onOpenPlayer, photos }) {
   const slots = FORMATION_SLOTS[group];
   return (
-    <div className="absolute inset-x-0 flex justify-around items-start px-2 sm:px-6" style={{ top: `${FORMATION_ROW_TOP[group]}%`, transform: 'translateY(-50%)' }}>
+    <div className="absolute inset-x-0 flex justify-around items-start px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%`, transform: 'translateY(-50%)' }}>
       {Array.from({ length: slots }).map((_, i) => {
         const m = players[i];
         const offsetClass = SLOT_OFFSET_CLASS[group][i] || '';
         if (!m) {
           return (
-            <div key={i} className={`w-16 sm:w-20 flex flex-col items-center ${offsetClass}`}>
-              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-dashed border-slate-800/50" />
+            <div key={i} className={`w-20 sm:w-28 flex flex-col items-center ${offsetClass}`}>
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 border-dashed border-slate-800/50" />
             </div>
           );
         }
@@ -34,7 +34,7 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
           <button
             key={i}
             onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-            className={`w-16 sm:w-20 flex flex-col items-center group ${offsetClass}`}
+            className={`w-20 sm:w-28 flex flex-col items-center group ${offsetClass}`}
           >
             <div className="ring-2 ring-slate-900/70 rounded-full shadow-lg">
               <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
@@ -50,24 +50,45 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
   );
 }
 
-// Bandes de tonte alternées façon terrain de foot (verts plus sobres, moins flashy)
+// Bandes de tonte alternées façon terrain de foot (verts sobres, à peine plus clairs que la v. précédente)
 const PITCH_STRIPES = {
-  backgroundImage: 'repeating-linear-gradient(0deg, #2f7d47 0px, #2f7d47 36px, #276b3c 36px, #276b3c 72px)',
+  backgroundImage: 'repeating-linear-gradient(0deg, #35894f 0px, #35894f 36px, #2c7642 36px, #2c7642 72px)',
 };
 const LINE = 'border-white/90';
 
+// Assigne les joueurs d'un groupe aux slots d'une ligne en respectant une
+// préférence de poste par slot (ex : DC au centre, DL sur les côtés),
+// avec repli sur n'importe quel joueur du groupe si le poste précis manque.
+function assignSlots(players, slotPrefs) {
+  const used = new Set();
+  const take = (postes) => {
+    for (const poste of postes) {
+      const candidates = poste
+        ? players.filter(m => m.poste === poste && !used.has(m))
+        : players.filter(m => !used.has(m));
+      const best = [...candidates].sort((a, b) => (b.prix || 0) - (a.prix || 0))[0];
+      if (best) { used.add(best); return best; }
+    }
+    return null;
+  };
+  return slotPrefs.map(prefs => take(prefs));
+}
+
 function FormationPitch({ squad, onOpenPlayer, photos }) {
-  const byGroup = { Attaquants: [], Milieux: [], Défenseurs: [], Gardien: [] };
-  squad.forEach(m => { const g = POSTE_GROUP[m.poste] || 'Milieux'; byGroup[g].push(m); });
-  Object.values(byGroup).forEach(arr => arr.sort((a, b) => (b.prix || 0) - (a.prix || 0)));
+  const defenders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Défenseurs');
+  const midfielders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Milieux');
+  const attackers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Attaquants').sort((a, b) => (b.prix || 0) - (a.prix || 0));
+  const keepers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Gardien').sort((a, b) => (b.prix || 0) - (a.prix || 0));
 
   const starters = {
-    Attaquants: byGroup.Attaquants.slice(0, FORMATION_SLOTS.Attaquants),
-    Milieux: byGroup.Milieux.slice(0, FORMATION_SLOTS.Milieux),
-    Défenseurs: byGroup.Défenseurs.slice(0, FORMATION_SLOTS.Défenseurs),
-    Gardien: byGroup.Gardien.slice(0, FORMATION_SLOTS.Gardien),
+    Attaquants: attackers.slice(0, FORMATION_SLOTS.Attaquants),
+    // Milieu axial : priorité aux MD (milieux défensifs) ; ailiers : priorité aux MO
+    Milieux: assignSlots(midfielders, [['MO', null], ['MD', 'MO', null], ['MO', null]]),
+    // Défenseurs axiaux : priorité aux DC ; latéraux : priorité aux DL
+    Défenseurs: assignSlots(defenders, [['DL', null], ['DC', 'DL', null], ['DC', 'DL', null], ['DL', null]]),
+    Gardien: keepers.slice(0, FORMATION_SLOTS.Gardien),
   };
-  const startersSet = new Set(Object.values(starters).flat());
+  const startersSet = new Set(Object.values(starters).flat().filter(Boolean));
   const bench = squad.filter(m => !startersSet.has(m));
 
   return (
