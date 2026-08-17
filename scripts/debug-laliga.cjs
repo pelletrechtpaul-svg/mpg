@@ -26,12 +26,22 @@ function fetchHtml(url) {
 
 async function main() {
   // Essai 1: page joueur LaLiga (Mbappé)
-  const html = await fetchHtml('https://www.laliga.com/en-GB/player/kylian-mbappe');
+  const html = await fetchHtml('https://www.laliga.com/en-GB/player/kylian-mbappe-lottin');
   console.log('LENGTH:', html.length);
+
+  const ogImage = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+  console.log('OG:IMAGE:', ogImage?.[1] || 'none');
+
   const imgMatches = [...html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi)].map(m => m[1]);
   console.log('IMG TAGS FOUND:', imgMatches.length);
   console.log(imgMatches.filter(u => /player|mbapp|headshot|profile/i.test(u)).slice(0, 10));
-  console.log('--- sample of all imgs ---');
-  console.log(imgMatches.slice(0, 15));
+
+  // Cherche toute URL d'image dans le HTML/JSON embarqué (SPA type Next.js)
+  const anyImgUrl = [...html.matchAll(/https?:\/\/[^"'\s\\]+\.(?:png|jpg|jpeg|webp)/gi)].map(m => m[0]);
+  const uniqueImgUrls = [...new Set(anyImgUrl)];
+  console.log('ALL IMAGE URLS IN PAGE (', uniqueImgUrls.length, '):');
+  console.log(uniqueImgUrls.filter(u => /player|mbapp|33812|headshot/i.test(u)).slice(0, 10));
+  console.log('--- sample ---');
+  console.log(uniqueImgUrls.slice(0, 20));
 }
 main();
