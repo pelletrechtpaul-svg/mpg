@@ -76,8 +76,22 @@ function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
   );
 }
 
-function PlayerCard({ player, onClose, photos }) {
+function computeGoalStats(matchData, joueur, ligue) {
+  let buts = 0, csc = 0;
+  (matchData || []).forEach(m => {
+    if (m.ligue !== ligue) return;
+    (m.buteurs || []).forEach(b => {
+      if (b.joueur !== joueur) return;
+      if (b.csc) csc += (b.buts || 1);
+      else buts += (b.buts || 1);
+    });
+  });
+  return { buts, csc };
+}
+
+function PlayerCard({ player, onClose, photos, matchData }) {
   const { entries, displayName, poste, nationalite, joueur, ligue } = player;
+  const { buts, csc } = computeGoalStats(matchData, joueur, ligue);
 
   const byChamp = {};
   entries.forEach(e => {
@@ -113,6 +127,10 @@ function PlayerCard({ player, onClose, photos }) {
               <span><span className="font-semibold text-slate-800 dark:text-slate-200">{entries.length}</span> achat{entries.length > 1 ? 's' : ''}</span>
               <span><span className="font-semibold text-slate-800 dark:text-slate-200">{totalSpent}M</span> total misé</span>
               <span>max <span className="font-semibold text-slate-800 dark:text-slate-200">{prixMax}M</span></span>
+              <span>⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}</span>
+              {csc > 0 && (
+                <span className="text-orange-600 dark:text-orange-400">🙈 <span className="font-semibold">{csc}</span> CSC</span>
+              )}
             </div>
           </div>
         </div>
@@ -211,7 +229,7 @@ const NO_DATA_JOKES = [
   "Motus et bouche cousue sur le mercato de cette saison. Les archives ont brûlé (façon de parler).",
 ];
 
-export default function JoueursTab({ mercatoData }) {
+export default function JoueursTab({ mercatoData, matchData }) {
   const [joke] = useState(() => NO_DATA_JOKES[Math.floor(Math.random() * NO_DATA_JOKES.length)]);
   const photos = usePlayerPhotos();
   const [query, setQuery] = useState('');
@@ -288,7 +306,7 @@ export default function JoueursTab({ mercatoData }) {
       </div>
 
       {/* Player card */}
-      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={() => setSelectedPlayer(null)} photos={photos} />}
+      {selectedPlayer && <PlayerCard player={selectedPlayer} onClose={() => setSelectedPlayer(null)} photos={photos} matchData={matchData} />}
 
       {/* Liste de résultats (inline) */}
       {!selectedPlayer && isSearching && (

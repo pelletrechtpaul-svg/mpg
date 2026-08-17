@@ -303,7 +303,7 @@ const App = () => {
         )}
 
         {activeTab === 'joueurs' && (
-          <JoueursTab mercatoData={filteredMercatoData} />
+          <JoueursTab mercatoData={filteredMercatoData} matchData={filteredData} />
         )}
 
         </Suspense>

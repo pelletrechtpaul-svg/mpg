@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
-import ScorerSection from './AdminScorerSection';
+import CoachPlayerSearch from './AdminScorerSection';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
 
@@ -48,34 +48,87 @@ function getChampStatus(matchData, ligueMetadata, saison, ligue) {
   return { championnat: current, number, isFull, meta };
 }
 
-function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, matchKey, saison, ligue, valiseUsed, mercatoData, autoFilled }) {
+function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligue, championnat, mercatoData }) {
+  const current = buteurs[matchKey] || [];
+  const withIdx = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === coach);
+  const scorers = withIdx.filter(s => !s.csc);
+  const cscEntries = withIdx.filter(s => s.csc);
+  const [cscOpen, setCscOpen] = useState(false);
+
+  const removeEntry = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, i) => i !== idx) }));
+  const incButs = (idx, delta) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: Math.max(1, Math.min(10, s.buts + delta)) } : s) }));
+
+  const addScorer = (player) => {
+    setButeurs(prev => ({
+      ...prev,
+      [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: coach, csc: false }],
+    }));
+  };
+
+  const addCsc = (player) => {
+    setButeurs(prev => ({
+      ...prev,
+      [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: coach, csc: true }],
+    }));
+    setCscOpen(false);
+  };
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div>
+        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Buteurs</p>
+        {scorers.length > 0 && (
+          <div className="space-y-0.5 mb-1.5">
+            {scorers.map(s => (
+              <div key={s.idx} className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 py-0.5">
+                <span className="flex-1 truncate">{s.displayName}</span>
+                <button type="button" onClick={() => incButs(s.idx, -1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">−</button>
+                <span className="w-4 text-center text-xs font-bold">{s.buts}</span>
+                <button type="button" onClick={() => incButs(s.idx, 1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">+</button>
+                <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <CoachPlayerSearch
+          coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
+          onSelect={addScorer} placeholder={`Ajouter un buteur ${coach}…`}
+        />
+      </div>
+
+      <div>
+        <label className="flex items-center gap-1.5 cursor-pointer select-none">
+          <input type="checkbox" checked={cscOpen} onChange={e => setCscOpen(e.target.checked)} className="w-3.5 h-3.5 accent-orange-500" />
+          <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">CSC</span>
+        </label>
+        {cscEntries.length > 0 && (
+          <div className="space-y-0.5 mt-1">
+            {cscEntries.map(s => (
+              <div key={s.idx} className="flex items-center gap-1.5 text-xs text-orange-700 dark:text-orange-400 py-0.5">
+                <span className="flex-1 truncate">{s.displayName} (CSC)</span>
+                <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
+              </div>
+            ))}
+          </div>
+        )}
+        {cscOpen && (
+          <div className="mt-1">
+            <CoachPlayerSearch
+              coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
+              onSelect={addCsc} placeholder={`Qui a marqué contre son camp ?`}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, matchKey, saison, ligue, championnat, valiseUsed, mercatoData, autoFilled }) {
   const available1 = JOUEURS.filter(j => j !== match.joueur2 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const available2 = JOUEURS.filter(j => j !== match.joueur1 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
   const hasResult = match.buts1 !== '' && match.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
-
-  const current = buteurs[matchKey] || [];
-  const scorersJ1 = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === match.joueur1);
-  const scorersJ2 = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === match.joueur2);
-  const scorersOther = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur !== match.joueur1 && s.acheteur !== match.joueur2);
-
-  const removeScorer = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, i) => i !== idx) }));
-  const incButs = (idx, delta) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: Math.max(1, Math.min(10, s.buts + delta)) } : s) }));
-  const toggleCsc = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, csc: !s.csc } : s) }));
-
-  const ScorerList = ({ scorers }) => scorers.map(s => (
-    <div key={s.idx} className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 py-0.5">
-      <span className="flex-1 truncate">{s.displayName}{s.csc ? ' (CSC)' : ''}</span>
-      <button type="button" onClick={() => incButs(s.idx, -1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">−</button>
-      <span className="w-4 text-center text-xs font-bold">{s.buts}</span>
-      <button type="button" onClick={() => incButs(s.idx, 1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">+</button>
-      <label className="flex items-center gap-0.5 cursor-pointer select-none">
-        <input type="checkbox" checked={s.csc} onChange={() => toggleCsc(s.idx)} className="w-3 h-3 accent-orange-500" />
-        <span className={`text-[10px] font-bold ${s.csc ? 'text-orange-500' : 'text-slate-300'}`}>CSC</span>
-      </label>
-      <button type="button" onClick={() => removeScorer(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
-    </div>
-  ));
 
   return (
     <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
@@ -110,11 +163,10 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur1}</label>
               <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
-              {(scorersJ1.length > 0 || scorersOther.filter(s => s.acheteur !== match.joueur2).length > 0) && (
-                <div className="mt-1.5 pl-1 border-l-2 border-blue-300 dark:border-blue-600">
-                  <ScorerList scorers={[...scorersJ1, ...scorersOther.filter(s => s.acheteur !== match.joueur2)]} />
-                </div>
-              )}
+              <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+                <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+                  saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
+              </div>
               {!valiseUsed[match.joueur1] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
@@ -126,11 +178,10 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur2}</label>
               <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
-              {scorersJ2.length > 0 && (
-                <div className="mt-1.5 pl-1 border-l-2 border-emerald-300 dark:border-emerald-600">
-                  <ScorerList scorers={scorersJ2} />
-                </div>
-              )}
+              <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+                <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+                  saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
+              </div>
               {!valiseUsed[match.joueur2] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
@@ -145,17 +196,6 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               {resultLabel(match.joueur1, match.joueur2, b1, b2)}
             </div>
           )}
-
-          <ScorerSection
-            matchKey={matchKey}
-            joueur1={match.joueur1}
-            joueur2={match.joueur2}
-            saison={saison}
-            ligue={ligue}
-            buteurs={buteurs}
-            setButeurs={setButeurs}
-            mercatoData={mercatoData}
-          />
         </>
       )}
     </div>
@@ -442,11 +482,11 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
               buteurs={buteurs} setButeurs={setButeurs} matchKey="m1"
-              saison={selSaison} ligue={selLigue} valiseUsed={valiseUsed}
+              saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
               mercatoData={mercatoData} autoFilled={false} />
             <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
               buteurs={buteurs} setButeurs={setButeurs} matchKey="m2"
-              saison={selSaison} ligue={selLigue} valiseUsed={valiseUsed}
+              saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
               mercatoData={mercatoData} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
           </div>
 
