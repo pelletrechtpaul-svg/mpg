@@ -38,9 +38,9 @@ export function InitialsAvatar({ displayName, size = 'lg' }) {
 // gratuit pour ne charger que la taille réellement affichée.
 export function resizedPhoto(url, px) {
   if (!url) return url;
-  // Pré-crop sur les 58% supérieurs de la photo (visage + cou, sans le
-  // maillot/torse), puis recadrage carré ancré en haut sur ce qui reste.
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=58%25&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
+  // Pré-crop sur les 65% supérieurs de la photo (tête + épaules, sans le
+  // torse), puis recadrage carré centré horizontalement / ancré en haut.
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=65%25&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
 }
 
 const AVATAR_PX = { lg: 128, md: 80, sm: 64, formation: 112 };
