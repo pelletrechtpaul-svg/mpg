@@ -105,7 +105,7 @@ export default function RecordsTab({
       <div className="space-y-6">
 
         {/* Sub-tab navigation */}
-        <div className="flex gap-1 overflow-x-auto pb-1">
+        <div className="grid grid-cols-2 sm:flex gap-1 sm:overflow-x-auto pb-1">
           {[
             { id: 'entraineurs', label: '👤 Entraîneurs' },
             { id: 'exploits', label: '🏆 Exploits' },
@@ -115,7 +115,7 @@ export default function RecordsTab({
             <button
               key={id}
               onClick={() => setActiveSubTab(id)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+              className={`px-2 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base text-center sm:whitespace-nowrap transition-all ${
                 activeSubTab === id
                   ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
