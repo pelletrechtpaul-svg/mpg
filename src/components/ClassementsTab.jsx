@@ -5,17 +5,19 @@ import { playerColorHex, ShareBtn } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 
 const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
+// Hauteur (% depuis le haut du terrain) de chaque ligne — but adverse en haut, notre but en bas
+const FORMATION_ROW_TOP = { Attaquants: 13, Milieux: 46, Défenseurs: 74, Gardien: 90 };
 
 function FormationRow({ group, players, onOpenPlayer, photos }) {
   const slots = FORMATION_SLOTS[group];
   return (
-    <div className="flex justify-around items-start px-1">
+    <div className="absolute inset-x-0 flex justify-around items-start px-2 sm:px-6" style={{ top: `${FORMATION_ROW_TOP[group]}%`, transform: 'translateY(-50%)' }}>
       {Array.from({ length: slots }).map((_, i) => {
         const m = players[i];
         if (!m) {
           return (
-            <div key={i} className="w-10 sm:w-14 flex flex-col items-center">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-dashed border-white/50" />
+            <div key={i} className="w-16 sm:w-20 flex flex-col items-center">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-white/50" />
             </div>
           );
         }
@@ -23,19 +25,27 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
           <button
             key={i}
             onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-            className="w-10 sm:w-14 flex flex-col items-center group"
+            className="w-16 sm:w-20 flex flex-col items-center group"
           >
-            <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
-            <span className="mt-1 text-[9px] sm:text-[11px] font-semibold text-white leading-tight text-center truncate w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:underline">
+            <div className="ring-2 ring-white/80 rounded-full shadow-lg">
+              <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="lg" />
+            </div>
+            <span className="mt-1.5 max-w-full px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center truncate group-hover:underline">
               {m.joueur}
             </span>
-            <span className="text-[8px] sm:text-[10px] text-white/80 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{m.prix}M</span>
+            <span className="mt-0.5 text-[10px] sm:text-xs font-semibold text-white/90 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{m.prix}M</span>
           </button>
         );
       })}
     </div>
   );
 }
+
+// Bandes de tonte alternées façon terrain de foot
+const PITCH_STRIPES = {
+  backgroundImage: 'repeating-linear-gradient(0deg, #4ade80 0px, #4ade80 36px, #22c55e 36px, #22c55e 72px)',
+};
+const LINE = 'border-white/90';
 
 function FormationPitch({ squad, onOpenPlayer, photos }) {
   const byGroup = { Attaquants: [], Milieux: [], Défenseurs: [], Gardien: [] };
@@ -53,18 +63,34 @@ function FormationPitch({ squad, onOpenPlayer, photos }) {
 
   return (
     <div>
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-b from-green-500 to-green-700 border-4 border-white/30 p-3 sm:p-4" style={{ aspectRatio: '3/4' }}>
-        {/* Lignes de terrain */}
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -mt-10 w-28 h-20 border-2 border-white/25 rounded-b-full pointer-events-none" />
-        <div className="absolute inset-x-[18%] bottom-0 h-16 sm:h-20 border-2 border-b-0 border-white/25 pointer-events-none" />
-        <div className="absolute inset-x-[30%] bottom-0 h-8 sm:h-10 border-2 border-b-0 border-white/25 pointer-events-none" />
+      <div className="relative rounded-2xl overflow-hidden border-4 border-white/90" style={{ aspectRatio: '3/4', ...PITCH_STRIPES }}>
+        {/* Ligne médiane + rond central */}
+        <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t-2 ${LINE}`} />
+        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 ${LINE}`} />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/90" />
 
-        <div className="relative h-full flex flex-col justify-between py-2">
-          <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
-          <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
-          <FormationRow group="Défenseurs" players={starters.Défenseurs} onOpenPlayer={onOpenPlayer} photos={photos} />
-          <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} />
-        </div>
+        {/* Surface + petite surface + but, en haut (but adverse) */}
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[62%] h-[16%] border-2 border-t-0 ${LINE}`} />
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[32%] h-[6%] border-2 border-t-0 ${LINE}`} />
+        <div className={`absolute left-1/2 top-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border-2 border-t-0 ${LINE} rounded-b-full`} />
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[14%] h-[2.5%] border-2 border-t-0 ${LINE}`} />
+
+        {/* Surface + petite surface + but, en bas (notre but) */}
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[62%] h-[16%] border-2 border-b-0 ${LINE}`} />
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border-2 border-b-0 ${LINE}`} />
+        <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border-2 border-b-0 ${LINE} rounded-t-full`} />
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border-2 border-b-0 ${LINE}`} />
+
+        {/* Arcs de corner */}
+        <div className={`absolute top-0 left-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-t-0 border-l-0 rounded-br-full`} />
+        <div className={`absolute top-0 right-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-t-0 border-r-0 rounded-bl-full`} />
+        <div className={`absolute bottom-0 left-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-b-0 border-l-0 rounded-tr-full`} />
+        <div className={`absolute bottom-0 right-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-b-0 border-r-0 rounded-tl-full`} />
+
+        <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
+        <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
+        <FormationRow group="Défenseurs" players={starters.Défenseurs} onOpenPlayer={onOpenPlayer} photos={photos} />
+        <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} />
       </div>
 
       {bench.length > 0 && (
