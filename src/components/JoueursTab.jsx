@@ -67,7 +67,10 @@ function InitialsAvatar({ displayName, size = 'lg' }) {
 // gratuit pour ne charger que la taille réellement affichée.
 function resizedPhoto(url, px) {
   if (!url) return url;
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=attention&output=webp&q=80`;
+  // a=top: la plupart des photos de joueurs (têtes/portraits) ont le visage
+  // dans le tiers supérieur — "attention" (détection heuristique) recadrait
+  // trop souvent sur le torse/maillot.
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
 }
 
 const AVATAR_PX = { lg: 128, md: 80, sm: 64 };
