@@ -244,6 +244,7 @@ const App = () => {
             ligueMetadata={ligueMetadata}
             historicalEvolution={historicalEvolution}
             shareContext={shareContext}
+            mercatoData={filteredMercatoData}
           />
         )}
 

@@ -18,11 +18,36 @@ export default function ClassementsTab({
   classementParLigue, statsDetaillees, cleanSheetsStats,
   valiseStats, matchesListForChampionnat,
   ligueMetadata, historicalEvolution, shareContext,
+  mercatoData,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
+  const [ligueView, setLigueView] = useState('classement');
+  const [effectifsChampionnat, setEffectifsChampionnat] = useState(null);
+
+  // Championnats mercato disponibles pour la ligue sélectionnée (indépendant des matchs déjà entrés)
+  const mercatoChampionnatsForLigue = useMemo(() => {
+    if (selectedLigue === 'general') return [];
+    const nums = new Set((mercatoData || []).filter(m => m.ligue === selectedLigue).map(m => m.championnat));
+    return [...nums].sort((a, b) => a - b);
+  }, [mercatoData, selectedLigue]);
+
+  const currentEffectifsChampionnat = effectifsChampionnat ?? mercatoChampionnatsForLigue[mercatoChampionnatsForLigue.length - 1] ?? null;
+
+  // Effectif de chaque coach pour le championnat affiché
+  const effectifsData = useMemo(() => {
+    if (selectedLigue === 'general' || currentEffectifsChampionnat == null) return null;
+    const byCoach = {};
+    joueurs.forEach(j => { byCoach[j] = []; });
+    (mercatoData || []).forEach(m => {
+      if (m.ligue !== selectedLigue || m.championnat !== currentEffectifsChampionnat) return;
+      if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
+      byCoach[m.acheteur].push(m);
+    });
+    return byCoach;
+  }, [mercatoData, selectedLigue, currentEffectifsChampionnat, joueurs]);
 
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
@@ -62,7 +87,7 @@ export default function ClassementsTab({
       <div className="mb-6">
         <div className="flex justify-between sm:justify-start gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] max-w-xl">
           <button
-            onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); }}
+            onClick={() => { setSelectedLigue('general'); setSelectedChampionnat('total'); setLigueView('classement'); }}
             className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
               selectedLigue === 'general'
                 ? 'bg-purple-400 text-white shadow'
@@ -77,6 +102,8 @@ export default function ClassementsTab({
               onClick={() => {
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
+                setLigueView('classement');
+                setEffectifsChampionnat(null);
               }}
               className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
@@ -105,6 +132,24 @@ export default function ClassementsTab({
           </div>
         )}
       </div>
+
+      {/* Toggle Classement/Effectifs */}
+      {selectedLigue !== 'general' && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setLigueView('classement')}
+            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'classement' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+          >
+            📊 Classement
+          </button>
+          <button
+            onClick={() => setLigueView('effectifs')}
+            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+          >
+            👥 Effectifs
+          </button>
+        </div>
+      )}
 
       {/* Toggle Tableau/Graphique + Stats sub-tabs */}
       {selectedLigue === 'general' && (
@@ -152,8 +197,60 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Tableau classement / stats / graphique */}
-      {statsTable ? (
+      {/* Tableau classement / stats / graphique / effectifs */}
+      {selectedLigue !== 'general' && ligueView === 'effectifs' ? (
+        <div className="space-y-4">
+          {mercatoChampionnatsForLigue.length > 0 && (
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Championnat</label>
+              <select
+                value={currentEffectifsChampionnat ?? ''}
+                onChange={(e) => setEffectifsChampionnat(Number(e.target.value))}
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                {mercatoChampionnatsForLigue.map((ch, i) => (
+                  <option key={ch} value={ch} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Championnat {i + 1} ({ch})</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {effectifsData ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {joueurs.map(coach => {
+                const squad = effectifsData[coach] || [];
+                return (
+                  <div key={coach} data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-4">
+                    <ShareBtn contextText={shareContext} />
+                    <div className="flex items-center gap-2 mb-3">
+                      <PlayerBadge joueur={coach} />
+                      <h3 className="font-semibold text-slate-800 dark:text-slate-100">{coach}</h3>
+                    </div>
+                    {squad.length > 0 ? (
+                      <div className="space-y-1.5">
+                        {squad.map((m, i) => (
+                          <div key={i} className="flex items-center justify-between text-sm gap-2">
+                            <span className="text-slate-700 dark:text-slate-200 truncate">{m.joueur}</span>
+                            <span className="flex items-center gap-1.5 flex-shrink-0">
+                              <span className="text-xs text-slate-400 dark:text-slate-500">{m.poste}</span>
+                              <span className="font-semibold text-slate-600 dark:text-slate-300">{m.prix}M</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+              <p className="text-slate-500 dark:text-slate-400">Pas de données mercato pour cette ligue.</p>
+            </div>
+          )}
+        </div>
+      ) : statsTable ? (
         <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
           <ShareBtn contextText={shareContext} />
           {statsTable === 'buteurs' && (
