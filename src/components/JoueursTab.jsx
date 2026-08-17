@@ -169,13 +169,13 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                   const colors = COACH_COLORS[e.acheteur] || { bg: 'bg-slate-500', text: 'text-slate-600', dot: 'bg-slate-500' };
                   return (
                     <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between mb-1 gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
                           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colors.dot}`}></span>
-                          <span className={`text-sm font-semibold ${colors.text}`}>{e.acheteur}</span>
-                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate">{e.equipe_acheteur}</span>}
+                          <span className={`text-sm font-semibold flex-shrink-0 ${colors.text}`}>{e.acheteur}</span>
+                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1">{e.equipe_acheteur}</span>}
                         </div>
-                        <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{e.prix}M</span>
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0 ml-2">{e.prix}M</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mb-1">
                         <span>Tour {e.tour}</span>
