@@ -263,6 +263,7 @@ const App = () => {
             joueurs={joueurs}
             ligues={ligues}
             filteredData={filteredData}
+            mercatoData={filteredMercatoData}
             classementGeneral={classementGeneral}
             advancedStats={advancedStats}
             cleanSheetsStats={cleanSheetsStats}

@@ -40,7 +40,7 @@ const Avatar = ({ joueur, className }) => (
 );
 
 export default function EntraineursTab({
-  joueurs, ligues, filteredData,
+  joueurs, ligues, filteredData, mercatoData,
   classementGeneral, advancedStats, cleanSheetsStats, statsDetaillees,
   heureDeGloire, selectedSeason, shareContext,
 }) {
@@ -116,20 +116,23 @@ export default function EntraineursTab({
   const rankOf = j => classementGeneral.findIndex(c => c.joueur === j) + 1;
   const pointsOf = j => classementGeneral.find(c => c.joueur === j)?.points ?? 0;
 
-  /* Top buteurs / CSC (joueurs mercato), cumul de tous les championnats et
-     toutes les ligues, pour la saison sélectionnée (ou All-Time) */
+  /* Top buteurs / CSC parmi les joueurs recrutés par le coach sélectionné,
+     cumul de tous les championnats et toutes les ligues, saison sélectionnée
+     (ou All-Time) */
   const { topButeurs, topCsc } = useMemo(() => {
+    if (!selectedPlayer) return { topButeurs: [], topCsc: [] };
+    const recrues = new Set((mercatoData || []).filter(m => m.acheteur === selectedPlayer).map(m => m.joueur));
     const buts = {}, csc = {};
     filteredData.forEach(m => {
       (m.buteurs || []).forEach(b => {
-        if (!b.joueur) return;
+        if (!b.joueur || !recrues.has(b.joueur)) return;
         const map = b.csc ? csc : buts;
         map[b.joueur] = (map[b.joueur] || 0) + (b.buts || 1);
       });
     });
     const toSorted = obj => Object.entries(obj).map(([joueur, n]) => ({ joueur, n })).sort((a, b) => b.n - a.n);
     return { topButeurs: toSorted(buts), topCsc: toSorted(csc) };
-  }, [filteredData]);
+  }, [filteredData, mercatoData, selectedPlayer]);
 
   /* Bulle détail signature (partagée entre les deux vues) */
   const sigBubbleEl = sigBubble && (
@@ -256,6 +259,63 @@ export default function EntraineursTab({
             ))}
           </div>
         </div>
+
+        {/* Top buteurs / CSC parmi les recrues du coach */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+            <ShareBtn contextText={shareContext} />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Top buteurs</h3>
+            {topButeurs.length > 0 ? (
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                  <tr>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topButeurs.map((p, index) => (
+                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
+            )}
+          </div>
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+            <ShareBtn contextText={shareContext} />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 Top CSC</h3>
+            {topCsc.length > 0 ? (
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                  <tr>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topCsc.map((p, index) => (
+                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
+            )}
+          </div>
+        </div>
+
         {sigBubbleEl}
       </div>
     );
@@ -263,7 +323,6 @@ export default function EntraineursTab({
 
   /* ---------- Vue grille des cartes ---------- */
   return (
-    <div className="space-y-6">
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {joueurs.map(joueur => {
         const adv = advancedStats[joueur];
@@ -326,65 +385,8 @@ export default function EntraineursTab({
           </div>
         );
       })}
-    </div>
 
-    {/* Top buteurs / CSC — cumul de tous les championnats et ligues, saison sélectionnée */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-        <ShareBtn contextText={shareContext} />
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Top buteurs</h3>
-        {topButeurs.length > 0 ? (
-          <table className="w-full text-xs sm:text-sm">
-            <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-              <tr>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topButeurs.map((p, index) => (
-                <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
-        )}
-      </div>
-      <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-        <ShareBtn contextText={shareContext} />
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 Top CSC</h3>
-        {topCsc.length > 0 ? (
-          <table className="w-full text-xs sm:text-sm">
-            <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-              <tr>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topCsc.map((p, index) => (
-                <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                  <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
-        )}
-      </div>
-    </div>
-
-    {sigBubbleEl}
+      {sigBubbleEl}
     </div>
   );
 }
