@@ -21,7 +21,7 @@ Ne jamais poser de question du type "je merge ?" ou "je push ?" — faire direct
 Quand l'utilisateur envoie un screen (ou des screens) de mercato MPG :
 
 Le script gère déjà automatiquement :
-- **Photos** : recherche TheSportsDB puis repli Wikipedia (aucune action manuelle requise, ~96% de couverture observée). Ne pas relancer les scripts de backfill séparés sauf échec persistant.
+- **Photos** : source unique TheSportsDB (audit du 2026-08-17 : 95% de couverture par nom seul, meilleur que Wikipedia qui n'apportait aucune récupération réelle en plus et renvoyait parfois la mauvaise personne). Aucune action manuelle requise pour les nouveaux joueurs. Vérifier manuellement les correspondances pour les noms très courants (risque d'homonyme sur TheSportsDB, déjà rencontré sur Pedri/Antony/Jon Martín).
 - **Anti-doublon transactions** : bloque l'import si le même joueur/ligue/championnat/tour existe déjà en DB.
 - **Anti-duplication de fiche joueur** : avertit (sans bloquer) si le nom d'un nouveau joueur ressemble fortement (distance de Levenshtein ≤2) à une fiche déjà existante dans `players-registry.json` pour la même ligue — vérifier avant d'importer qu'il ne s'agit pas de la même personne avec une orthographe/prénom différent (sinon deux fiches distinctes pour le même joueur réel). Toujours réutiliser exactement le même `joueur` (chaîne) déjà présent en registre pour un joueur déjà connu, plutôt que d'en écrire une variante.
 
