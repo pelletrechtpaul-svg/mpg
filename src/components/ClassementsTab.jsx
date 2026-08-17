@@ -8,7 +8,7 @@ const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 
 // Position fixe du cercle (haut de l'avatar), % depuis le haut du terrain —
 // but adverse en haut, notre but en bas. Milieux/Défenseurs remontés un peu
 // pour ne pas chevaucher le gardien.
-const FORMATION_ROW_TOP = { Attaquants: 12, Milieux: 36, Défenseurs: 60, Gardien: 78 };
+const FORMATION_ROW_TOP = { Attaquants: 12, Milieux: 36, Défenseurs: 60, Gardien: 82 };
 // Décalage vertical par joueur dans la ligne, pour un placement plus réaliste
 // (ex : les 2 attaquants de côté un peu plus bas que celui du centre)
 const SLOT_OFFSET_CLASS = {
