@@ -6,7 +6,9 @@ const registryPath = path.join(__dirname, 'players-registry.json');
 const photosPath = path.join(__dirname, '../public/players-photos.json');
 const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
 
-function fetchPhoto(playerName) {
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function fetchPhotoOnce(playerName) {
   return new Promise(resolve => {
     const url = `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(playerName)}`;
     const req = https.get(url, res => {
@@ -25,7 +27,16 @@ function fetchPhoto(playerName) {
   });
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// TheSportsDB (clé API gratuite "3") rate-limite autour de ~30 requêtes —
+// au-delà, chaque appel échoue silencieusement (pas de photo trouvée) sans
+// jamais se rétablir dans la même exécution. On retente donc une fois après
+// une pause longue avant d'abandonner sur un joueur.
+async function fetchPhoto(playerName) {
+  const first = await fetchPhotoOnce(playerName);
+  if (first) return first;
+  await sleep(8000);
+  return fetchPhotoOnce(playerName);
+}
 
 async function main() {
   const entries = Object.entries(registry);
@@ -49,7 +60,7 @@ async function main() {
       missing++;
       console.log('❌');
     }
-    await sleep(300); // respect rate limit
+    await sleep(2500); // respect rate limit (TheSportsDB free key throttles well before 300ms spacing)
   }
 
   fs.writeFileSync(registryPath, JSON.stringify(registry, null, 2));
