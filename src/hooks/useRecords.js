@@ -31,7 +31,83 @@ const topN = (arr, scoreFn, tiebreakerFn = null, n = 3) => {
   }).slice(0, n);
 };
 
-export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason) => {
+const POSTE_GROUP = {
+  G: 'Gardien',
+  DC: 'Défenseur', DL: 'Défenseur', DG: 'Défenseur', DD: 'Défenseur', D: 'Défenseur',
+  MC: 'Milieu', MO: 'Milieu', M: 'Milieu',
+  A: 'Attaquant',
+};
+
+const computeMercatoRecords = (mercato, matches) => {
+  if (!mercato || mercato.length === 0) return null;
+
+  // Buts/CSC par joueur mercato (clé joueur|ligue), à partir des buteurs des matchs
+  const goalMap = {};
+  (matches || []).forEach(m => {
+    (m.buteurs || []).forEach(b => {
+      if (!b.joueur) return;
+      const key = `${b.joueur}|${m.ligue}`;
+      if (!goalMap[key]) goalMap[key] = { buts: 0, csc: 0 };
+      if (b.csc) goalMap[key].csc += (b.buts || 1);
+      else goalMap[key].buts += (b.buts || 1);
+    });
+  });
+
+  // Plus grosses enchères
+  const biggestBids = topN(mercato, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
+
+  // Record du prix le plus élevé par poste (regroupé en 4 grandes familles)
+  const byPoste = {};
+  mercato.forEach(m => {
+    const grp = POSTE_GROUP[m.poste] || 'Autre';
+    if (!byPoste[grp]) byPoste[grp] = [];
+    byPoste[grp].push(m);
+  });
+  const recordParPoste = Object.entries(byPoste)
+    .map(([poste, arr]) => { const best = topN(arr, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0), 1)[0]; return best ? { poste, ...best } : null; })
+    .filter(Boolean)
+    .sort((a, b) => (b.prix || 0) - (a.prix || 0));
+
+  // Plus gros flops : joueurs les plus chers n'ayant inscrit aucun but
+  const flopCandidates = mercato.filter(m => (m.prix || 0) > 0 && (goalMap[`${m.joueur}|${m.ligue}`]?.buts || 0) === 0);
+  const biggestFlops = topN(flopCandidates, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
+
+  // Meilleur rapport qualité/prix : buts marqués / prix payé (seuil 2 buts pour éviter le bruit)
+  const ratioCandidates = mercato
+    .filter(m => (m.prix || 0) > 0)
+    .map(m => { const g = goalMap[`${m.joueur}|${m.ligue}`] || { buts: 0 }; return { ...m, buts: g.buts, ratio: g.buts / m.prix }; })
+    .filter(m => m.buts >= 2);
+  const bestValueForMoney = topN(ratioCandidates, m => m.ratio, m => m.buts);
+
+  // CSC le plus cher
+  const cscCandidates = mercato
+    .filter(m => (m.prix || 0) > 0)
+    .map(m => { const g = goalMap[`${m.joueur}|${m.ligue}`] || { csc: 0 }; return { ...m, csc: g.csc }; })
+    .filter(m => m.csc > 0);
+  const priciestCsc = topN(cscCandidates, m => m.prix || 0, m => m.csc);
+
+  // Longévité mercato : plus longue série de championnats consécutifs (même joueur, même ligue, même coach)
+  const longeviteGroups = {};
+  mercato.forEach(m => {
+    const key = `${m.joueur}|${m.ligue}|${m.acheteur}`;
+    if (!longeviteGroups[key]) longeviteGroups[key] = { joueur: m.joueur, ligue: m.ligue, acheteur: m.acheteur, championnats: new Set(), saisons: new Set() };
+    longeviteGroups[key].championnats.add(m.championnat);
+    longeviteGroups[key].saisons.add(m.saison);
+  });
+  const longevite = Object.values(longeviteGroups).map(g => {
+    const sorted = [...g.championnats].sort((a, b) => a - b);
+    let best = 1, cur = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i] === sorted[i - 1] + 1) { cur++; best = Math.max(best, cur); }
+      else cur = 1;
+    }
+    return { joueur: g.joueur, ligue: g.ligue, acheteur: g.acheteur, streak: sorted.length ? best : 0, saisons: [...g.saisons] };
+  }).filter(g => g.streak > 1).sort((a, b) => b.streak - a.streak).slice(0, 3);
+
+  return { biggestBids, recordParPoste, biggestFlops, bestValueForMoney, priciestCsc, longevite };
+};
+
+export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData) => {
   const seasonRecords = useMemo(() => {
     if (filteredData.length === 0) return null;
 
@@ -212,5 +288,11 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     return computeLigueStats(filteredData, 3);
   }, [filteredData, selectedSeason]);
 
-  return { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason };
+  const mercatoRecordsAllTime = useMemo(() => computeMercatoRecords(mercatoData, matchData), [mercatoData, matchData]);
+  const mercatoRecordsSeason = useMemo(() => {
+    if (selectedSeason === 'All-Time') return null;
+    return computeMercatoRecords(filteredMercatoData, filteredData);
+  }, [filteredMercatoData, filteredData, selectedSeason]);
+
+  return { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsAllTime, mercatoRecordsSeason };
 };

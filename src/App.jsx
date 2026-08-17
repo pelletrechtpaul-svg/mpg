@@ -65,7 +65,7 @@ const App = () => {
   const { statsDetaillees, cleanSheetsStats, scoreDistribution, heureDeGloire, valiseStats, versusStats, versusMatchHistory } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue);
   const { evolutionData, matchesListForChampionnat, historicalEvolution, buteursEvolution, loosersEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue, ligueMetadata, matchData, selectedSeason);
   const advancedStats = useAdvancedStats(matchData, joueurs, selectedSeason);
-  const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason);
+  const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsAllTime, mercatoRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData);
 
   const shareContext = [selectedSeason, selectedLigue && selectedLigue !== 'Toutes' ? selectedLigue : null].filter(Boolean).join(' · ');
 
@@ -282,6 +282,9 @@ const App = () => {
             perduUnPoint={perduUnPoint}
             ligueRecordsAllTime={ligueRecordsAllTime}
             ligueRecordsSeason={ligueRecordsSeason}
+            mercatoRecordsAllTime={mercatoRecordsAllTime}
+            mercatoRecordsSeason={mercatoRecordsSeason}
+            shareContext={shareContext}
           />
         )}
 
