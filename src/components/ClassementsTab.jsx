@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
@@ -41,6 +41,20 @@ export default function ClassementsTab({
   };
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
   const [showChampDetail, setShowChampDetail] = useState(null);
+
+  // Classement des buts / CSC par joueur (mercato) pour la ligue/championnat sélectionné
+  const { buteursRanking, cscRanking } = useMemo(() => {
+    const buts = {}, csc = {};
+    matchesListForChampionnat.forEach(m => {
+      (m.buteurs || []).forEach(b => {
+        if (!b.joueur) return;
+        const map = b.csc ? csc : buts;
+        map[b.joueur] = (map[b.joueur] || 0) + (b.buts || 1);
+      });
+    });
+    const toSorted = obj => Object.entries(obj).map(([joueur, n]) => ({ joueur, n })).sort((a, b) => b.n - a.n);
+    return { buteursRanking: toSorted(buts), cscRanking: toSorted(csc) };
+  }, [matchesListForChampionnat]);
 
   return (
     <>
@@ -456,6 +470,59 @@ export default function ClassementsTab({
         </div>
       )}
 
+      {/* Classement buteurs / CSC (joueurs mercato) */}
+      {selectedLigue !== 'general' && (buteursRanking.length > 0 || cscRanking.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          {buteursRanking.length > 0 && (
+            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+              <ShareBtn contextText={shareContext} />
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Buteurs</h3>
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                  <tr>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {buteursRanking.map((p, index) => (
+                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {cscRanking.length > 0 && (
+            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+              <ShareBtn contextText={shareContext} />
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 CSC</h3>
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                  <tr>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cscRanking.map((p, index) => (
+                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Liste des matchs */}
       {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
