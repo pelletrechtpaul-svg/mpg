@@ -2,6 +2,92 @@ import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
+import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
+
+const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
+
+function FormationRow({ group, players, onOpenPlayer, photos }) {
+  const slots = FORMATION_SLOTS[group];
+  return (
+    <div className="flex justify-around items-start px-1">
+      {Array.from({ length: slots }).map((_, i) => {
+        const m = players[i];
+        if (!m) {
+          return (
+            <div key={i} className="w-10 sm:w-14 flex flex-col items-center">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-dashed border-white/50" />
+            </div>
+          );
+        }
+        return (
+          <button
+            key={i}
+            onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
+            className="w-10 sm:w-14 flex flex-col items-center group"
+          >
+            <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
+            <span className="mt-1 text-[9px] sm:text-[11px] font-semibold text-white leading-tight text-center truncate w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] group-hover:underline">
+              {m.joueur}
+            </span>
+            <span className="text-[8px] sm:text-[10px] text-white/80 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{m.prix}M</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function FormationPitch({ squad, onOpenPlayer, photos }) {
+  const byGroup = { Attaquants: [], Milieux: [], Défenseurs: [], Gardien: [] };
+  squad.forEach(m => { const g = POSTE_GROUP[m.poste] || 'Milieux'; byGroup[g].push(m); });
+  Object.values(byGroup).forEach(arr => arr.sort((a, b) => (b.prix || 0) - (a.prix || 0)));
+
+  const starters = {
+    Attaquants: byGroup.Attaquants.slice(0, FORMATION_SLOTS.Attaquants),
+    Milieux: byGroup.Milieux.slice(0, FORMATION_SLOTS.Milieux),
+    Défenseurs: byGroup.Défenseurs.slice(0, FORMATION_SLOTS.Défenseurs),
+    Gardien: byGroup.Gardien.slice(0, FORMATION_SLOTS.Gardien),
+  };
+  const startersSet = new Set(Object.values(starters).flat());
+  const bench = squad.filter(m => !startersSet.has(m));
+
+  return (
+    <div>
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-b from-green-500 to-green-700 border-4 border-white/30 p-3 sm:p-4" style={{ aspectRatio: '3/4' }}>
+        {/* Lignes de terrain */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -mt-10 w-28 h-20 border-2 border-white/25 rounded-b-full pointer-events-none" />
+        <div className="absolute inset-x-[18%] bottom-0 h-16 sm:h-20 border-2 border-b-0 border-white/25 pointer-events-none" />
+        <div className="absolute inset-x-[30%] bottom-0 h-8 sm:h-10 border-2 border-b-0 border-white/25 pointer-events-none" />
+
+        <div className="relative h-full flex flex-col justify-between py-2">
+          <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
+          <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
+          <FormationRow group="Défenseurs" players={starters.Défenseurs} onOpenPlayer={onOpenPlayer} photos={photos} />
+          <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} />
+        </div>
+      </div>
+
+      {bench.length > 0 && (
+        <div className="mt-4">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Remplaçants</h4>
+          <div className="space-y-1">
+            {bench.map((m, i) => (
+              <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
+                <button
+                  onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
+                  className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                >
+                  {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
+                </button>
+                <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const PlayerBadge = ({ joueur, sm = true }) => (
   <div
@@ -34,6 +120,7 @@ export default function ClassementsTab({
   const [statsTable, setStatsTable] = useState(null);
   const [ligueView, setLigueView] = useState('classement');
   const [effectifsCoach, setEffectifsCoach] = useState(null);
+  const photos = usePlayerPhotos();
 
   // Championnat affiché dans Effectifs : réutilise le sélecteur du classement.
   // "Total" n'a pas de sens pour un effectif → on retombe sur le plus récent.
@@ -237,7 +324,6 @@ export default function ClassementsTab({
             {(() => {
               const coach = effectifsCoach ?? joueurs[0];
               const squad = effectifsData[coach] || [];
-              let lastGroup = null;
               return (
                 <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
                   <ShareBtn contextText={shareContext} />
@@ -246,29 +332,7 @@ export default function ClassementsTab({
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100">{coach}</h3>
                   </div>
                   {squad.length > 0 ? (
-                    <div className="space-y-1">
-                      {squad.map((m, i) => {
-                        const group = POSTE_GROUP[m.poste] || 'Milieux';
-                        const showHeader = group !== lastGroup;
-                        lastGroup = group;
-                        return (
-                          <div key={i}>
-                            {showHeader && (
-                              <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mt-3 mb-1 first:mt-0">{group}</h4>
-                            )}
-                            <div className="flex items-center justify-between text-sm gap-2 py-1">
-                              <button
-                                onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-                                className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
-                              >
-                                {m.joueur}
-                              </button>
-                              <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} />
                   ) : (
                     <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
                   )}
