@@ -200,7 +200,7 @@ const NO_DATA_JOKES = [
   "Motus et bouche cousue sur le mercato de cette saison. Les archives ont brûlé (façon de parler).",
 ];
 
-export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, onConsumeInitialPlayer }) {
+export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, onConsumeInitialPlayer, showBackToEffectifs, onBackToEffectifs }) {
   const [joke] = useState(() => NO_DATA_JOKES[Math.floor(Math.random() * NO_DATA_JOKES.length)]);
   const photos = usePlayerPhotos();
   const [query, setQuery] = useState('');
@@ -260,6 +260,14 @@ export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, o
 
   return (
     <div className="space-y-4">
+      {showBackToEffectifs && selectedPlayer && (
+        <button
+          onClick={onBackToEffectifs}
+          className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+        >
+          ← Retour aux effectifs
+        </button>
+      )}
       {/* Search */}
       <div className="relative rounded-xl bg-white dark:bg-slate-800 shadow-sm">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg z-10">🔍</span>

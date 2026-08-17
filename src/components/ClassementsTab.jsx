@@ -7,6 +7,14 @@ import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
 // Hauteur (% depuis le haut du terrain) de chaque ligne — but adverse en haut, notre but en bas
 const FORMATION_ROW_TOP = { Attaquants: 13, Milieux: 46, Défenseurs: 74, Gardien: 90 };
+// Décalage vertical par joueur dans la ligne, pour un placement plus réaliste
+// (ex : les 2 attaquants de côté un peu plus bas que celui du centre)
+const SLOT_OFFSET_CLASS = {
+  Attaquants: ['translate-y-3 sm:translate-y-4', '', 'translate-y-3 sm:translate-y-4'],
+  Milieux: ['', 'translate-y-4 sm:translate-y-5', ''],
+  Défenseurs: ['-translate-y-2 sm:-translate-y-3', 'translate-y-2 sm:translate-y-3', 'translate-y-2 sm:translate-y-3', '-translate-y-2 sm:-translate-y-3'],
+  Gardien: [''],
+};
 
 function FormationRow({ group, players, onOpenPlayer, photos }) {
   const slots = FORMATION_SLOTS[group];
@@ -14,10 +22,11 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
     <div className="absolute inset-x-0 flex justify-around items-start px-2 sm:px-6" style={{ top: `${FORMATION_ROW_TOP[group]}%`, transform: 'translateY(-50%)' }}>
       {Array.from({ length: slots }).map((_, i) => {
         const m = players[i];
+        const offsetClass = SLOT_OFFSET_CLASS[group][i] || '';
         if (!m) {
           return (
-            <div key={i} className="w-16 sm:w-20 flex flex-col items-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-white/50" />
+            <div key={i} className={`w-16 sm:w-20 flex flex-col items-center ${offsetClass}`}>
+              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-dashed border-slate-800/50" />
             </div>
           );
         }
@@ -25,12 +34,12 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
           <button
             key={i}
             onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-            className="w-16 sm:w-20 flex flex-col items-center group"
+            className={`w-16 sm:w-20 flex flex-col items-center group ${offsetClass}`}
           >
-            <div className="ring-2 ring-white/80 rounded-full shadow-lg">
-              <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="lg" />
+            <div className="ring-2 ring-slate-900/70 rounded-full shadow-lg">
+              <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
             </div>
-            <span className="mt-1.5 max-w-full px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center truncate group-hover:underline">
+            <span className="mt-1.5 max-w-full px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center break-words group-hover:underline">
               {m.joueur}
             </span>
             <span className="mt-0.5 text-[10px] sm:text-xs font-semibold text-white/90 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{m.prix}M</span>
@@ -41,9 +50,9 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
   );
 }
 
-// Bandes de tonte alternées façon terrain de foot
+// Bandes de tonte alternées façon terrain de foot (verts plus sobres, moins flashy)
 const PITCH_STRIPES = {
-  backgroundImage: 'repeating-linear-gradient(0deg, #4ade80 0px, #4ade80 36px, #22c55e 36px, #22c55e 72px)',
+  backgroundImage: 'repeating-linear-gradient(0deg, #2f7d47 0px, #2f7d47 36px, #276b3c 36px, #276b3c 72px)',
 };
 const LINE = 'border-white/90';
 
@@ -80,12 +89,6 @@ function FormationPitch({ squad, onOpenPlayer, photos }) {
         <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border-2 border-b-0 ${LINE}`} />
         <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border-2 border-b-0 ${LINE} rounded-t-full`} />
         <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border-2 border-b-0 ${LINE}`} />
-
-        {/* Arcs de corner */}
-        <div className={`absolute top-0 left-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-t-0 border-l-0 rounded-br-full`} />
-        <div className={`absolute top-0 right-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-t-0 border-r-0 rounded-bl-full`} />
-        <div className={`absolute bottom-0 left-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-b-0 border-l-0 rounded-tr-full`} />
-        <div className={`absolute bottom-0 right-0 w-4 h-4 sm:w-5 sm:h-5 border-2 ${LINE} border-b-0 border-r-0 rounded-tl-full`} />
 
         <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
         <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
@@ -139,13 +142,12 @@ export default function ClassementsTab({
   valiseStats, matchesListForChampionnat,
   ligueMetadata, historicalEvolution, shareContext,
   mercatoData, onOpenPlayer,
+  ligueView, setLigueView, effectifsCoach, setEffectifsCoach,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
-  const [ligueView, setLigueView] = useState('classement');
-  const [effectifsCoach, setEffectifsCoach] = useState(null);
   const photos = usePlayerPhotos();
 
   // Championnat affiché dans Effectifs : réutilise le sélecteur du classement.
@@ -689,7 +691,7 @@ export default function ClassementsTab({
       )}
 
       {/* Classement buteurs / CSC (joueurs mercato) */}
-      {selectedLigue !== 'general' && (
+      {selectedLigue !== 'general' && ligueView === 'classement' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
             <ShareBtn contextText={shareContext} />

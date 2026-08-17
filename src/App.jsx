@@ -34,10 +34,19 @@ const App = () => {
   const [selectedValiseTable, setSelectedValiseTable] = useState('stats');
   const [activeVersusTooltip, setActiveVersusTooltip] = useState(null);
   const [pendingPlayerKey, setPendingPlayerKey] = useState(null);
+  const [cameFromEffectifs, setCameFromEffectifs] = useState(false);
+  const [ligueView, setLigueView] = useState('classement');
+  const [effectifsCoach, setEffectifsCoach] = useState(null);
 
   const openPlayer = (joueur, ligue) => {
     setPendingPlayerKey(joueur + '|||' + ligue);
+    setCameFromEffectifs(true);
     setActiveTab('joueurs');
+  };
+
+  const backToEffectifs = () => {
+    setCameFromEffectifs(false);
+    setActiveTab('classements');
   };
 
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
@@ -252,6 +261,10 @@ const App = () => {
             shareContext={shareContext}
             mercatoData={filteredMercatoData}
             onOpenPlayer={openPlayer}
+            ligueView={ligueView}
+            setLigueView={setLigueView}
+            effectifsCoach={effectifsCoach}
+            setEffectifsCoach={setEffectifsCoach}
           />
         )}
 
@@ -302,6 +315,8 @@ const App = () => {
             matchData={filteredData}
             initialPlayerKey={pendingPlayerKey}
             onConsumeInitialPlayer={() => setPendingPlayerKey(null)}
+            showBackToEffectifs={cameFromEffectifs}
+            onBackToEffectifs={backToEffectifs}
           />
         )}
 
