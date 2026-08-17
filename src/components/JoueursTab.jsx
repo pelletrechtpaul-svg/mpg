@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
+import { ShareBtn } from '../shared.jsx';
 
 function usePlayerPhotos() {
   const [photos, setPhotos] = useState({});
@@ -61,6 +62,16 @@ function InitialsAvatar({ displayName, size = 'lg' }) {
   );
 }
 
+// Les photos (TheSportsDB/Wikipedia) sont souvent des fichiers bruts pesant
+// plusieurs centaines de Ko. On les fait passer par un proxy de redimensionnement
+// gratuit pour ne charger que la taille réellement affichée.
+function resizedPhoto(url, px) {
+  if (!url) return url;
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=attention&output=webp&q=80`;
+}
+
+const AVATAR_PX = { lg: 128, md: 80, sm: 64 };
+
 function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
   const [failed, setFailed] = useState(false);
   const photoUrl = photos[`${joueur}|${ligue}`];
@@ -68,8 +79,10 @@ function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }) {
   const sizeClass = size === 'lg' ? 'w-16 h-16' : size === 'md' ? 'w-10 h-10' : 'w-8 h-8';
   return (
     <img
-      src={photoUrl}
+      src={resizedPhoto(photoUrl, AVATAR_PX[size] || 128)}
       alt={displayName}
+      loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
       className={`${sizeClass} rounded-full object-cover flex-shrink-0 bg-slate-200 dark:bg-slate-600`}
     />
@@ -108,7 +121,8 @@ function PlayerCard({ player, onClose, photos, matchData }) {
   const prixMax = player.prixMax;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <ShareBtn contextText={`${displayName} — MesPetitsBavons`} />
       <div className="p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-start gap-4">
           <PlayerAvatar joueur={joueur} ligue={ligue} displayName={displayName} photos={photos} size="lg" />
