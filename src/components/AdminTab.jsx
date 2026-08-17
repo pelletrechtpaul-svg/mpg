@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Lock, Plus, Edit, Settings, RefreshCw } from 'lucide-react';
+import { Lock, Plus, Edit, Settings, RefreshCw, KeyRound } from 'lucide-react';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { db } from '../firebase';
 import { doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
@@ -31,7 +31,45 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
   const [saisonPassword, setSaisonPassword] = useState('');
   const [saisonAuthError, setSaisonAuthError] = useState('');
 
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
   const showToast = (message, type = 'success') => setToast({ message, type });
+
+  const resetPasswordForm = () => {
+    setCurrentPassword(''); setNewPassword(''); setNewPasswordConfirm(''); setPasswordError('');
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    if (newPassword.length < 6) { setPasswordError('Le nouveau mot de passe doit faire au moins 6 caractères.'); return; }
+    if (newPassword !== newPasswordConfirm) { setPasswordError('Les deux mots de passe ne correspondent pas.'); return; }
+
+    setChangingPassword(true);
+    try {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+    } catch {
+      setPasswordError('Mot de passe actuel incorrect.');
+      setChangingPassword(false);
+      return;
+    }
+
+    try {
+      await updatePassword(auth.currentUser, newPassword);
+      showToast('Mot de passe changé avec succès');
+      resetPasswordForm();
+      setView('menu');
+    } catch {
+      setPasswordError('Erreur lors du changement de mot de passe.');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   useEffect(() => {
     getDoc(doc(db, 'config', 'saisons')).then(snap => {
@@ -173,6 +211,38 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
                     <RefreshCw className="w-4 h-4" /> Recalculer métadonnées
                   </button>
                 )}
+                <button onClick={() => { resetPasswordForm(); setView('password'); }} className="px-5 py-2.5 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 inline-flex items-center gap-2">
+                  <KeyRound className="w-4 h-4" /> Changer mon mot de passe
+                </button>
+              </div>
+            )}
+
+            {view === 'password' && (
+              <div>
+                <button onClick={() => setView('menu')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Changer mon mot de passe</h3>
+                <form onSubmit={handleChangePassword} className="max-w-sm space-y-4">
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Mot de passe actuel</label>
+                    <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
+                      autoComplete="current-password" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" autoFocus />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Nouveau mot de passe</label>
+                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                      autoComplete="new-password" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="Au moins 6 caractères" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-500 mb-1">Confirmer le nouveau mot de passe</label>
+                    <input type="password" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)}
+                      autoComplete="new-password" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                  </div>
+                  {passwordError && <p className="text-red-500 text-xs">{passwordError}</p>}
+                  <button type="submit" disabled={changingPassword}
+                    className="w-full px-5 py-2.5 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50">
+                    {changingPassword ? 'Changement...' : 'Changer le mot de passe'}
+                  </button>
+                </form>
               </div>
             )}
 
