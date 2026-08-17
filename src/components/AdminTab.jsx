@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Lock, Plus, Edit, Settings, RefreshCw, KeyRound } from 'lucide-react';
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { db } from '../firebase';
 import { doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
@@ -36,6 +36,22 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+
+  // 'full' = tous les droits, 'matches' = édition de matchs uniquement
+  // (pas de gestion des saisons). Par défaut 'matches' tant que le rôle
+  // n'est pas confirmé, pour ne jamais exposer une action sensible par erreur.
+  const [adminRole, setAdminRole] = useState('matches');
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (!user) { setAdminRole('matches'); return; }
+      getDoc(doc(db, 'config', 'adminRoles')).then(snap => {
+        const roles = snap.exists() ? snap.data() : {};
+        setAdminRole(roles[user.email?.toLowerCase()] === 'full' ? 'full' : 'matches');
+      }).catch(() => setAdminRole('matches'));
+    });
+    return unsub;
+  }, []);
+  const isFullAdmin = adminRole === 'full';
 
   const showToast = (message, type = 'success') => setToast({ message, type });
 
@@ -203,9 +219,11 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
                     <Edit className="w-4 h-4" /> Éditer un match
                   </button>
                 )}
-                <button onClick={() => setView('saisons')} className="px-5 py-2.5 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 inline-flex items-center gap-2">
-                  <Settings className="w-4 h-4" /> Gérer les saisons
-                </button>
+                {isFullAdmin && (
+                  <button onClick={() => setView('saisons')} className="px-5 py-2.5 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 inline-flex items-center gap-2">
+                    <Settings className="w-4 h-4" /> Gérer les saisons
+                  </button>
+                )}
                 {matchData.length > 0 && (
                   <button onClick={handleRecalculateMetadata} className="px-5 py-2.5 bg-slate-600 text-white rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Recalculer métadonnées
@@ -269,7 +287,7 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
               />
             )}
 
-            {view === 'saisons' && (
+            {view === 'saisons' && isFullAdmin && (
               <div>
                 <button onClick={() => setView('menu')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Gérer les saisons</h3>
