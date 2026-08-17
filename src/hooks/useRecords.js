@@ -34,7 +34,7 @@ const topN = (arr, scoreFn, tiebreakerFn = null, n = 3) => {
 const POSTE_GROUP = {
   G: 'Gardien',
   DC: 'Défenseur', DL: 'Défenseur', DG: 'Défenseur', DD: 'Défenseur', D: 'Défenseur',
-  MC: 'Milieu', MO: 'Milieu', M: 'Milieu',
+  MC: 'Milieu', MO: 'Milieu', MD: 'Milieu', M: 'Milieu',
   A: 'Attaquant',
 };
 
