@@ -286,11 +286,11 @@ export default function ClassementsTab({
             <select
               value={selectedChampionnat}
               onChange={(e) => setSelectedChampionnat(e.target.value)}
-              className="w-full md:w-64 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full md:w-64 px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="total">Total</option>
+              <option value="total" className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Total</option>
               {championnatsByLigue[selectedLigue].map((ch, i) => (
-                <option key={ch} value={ch}>Championnat {i + 1} ({ch})</option>
+                <option key={ch} value={ch} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Championnat {i + 1} ({ch})</option>
               ))}
             </select>
           </div>
