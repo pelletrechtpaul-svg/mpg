@@ -70,6 +70,92 @@ function fetchPhotoFromSportsDB(playerName) {
   });
 }
 
+function getJson(url) {
+  return new Promise(resolve => {
+    https.get(url, {
+      headers: {
+        'User-Agent': 'MesPetitsBavons/1.0 (private fantasy football app; contact: n/a)',
+        'Accept': 'application/json',
+      },
+      timeout: 6000,
+    }, res => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+    }).on('error', () => resolve(null)).on('timeout', () => resolve(null));
+  });
+}
+
+async function searchWikipediaTitle(query) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=1&format=json&origin=*`;
+  const json = await getJson(url);
+  return json?.query?.search?.[0]?.title || null;
+}
+
+async function fetchSummaryPhoto(title) {
+  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, '_'))}`;
+  const json = await getJson(url);
+  if (!json || json.type === 'disambiguation') return null;
+  return json.originalimage?.source || json.thumbnail?.source || null;
+}
+
+// Repli Wikipedia si TheSportsDB ne trouve rien (couvre surtout les stars
+// connues, curieusement absentes de TheSportsDB).
+async function fetchPhotoFromWikipedia(name, club) {
+  const queries = [
+    `${name} footballer ${club || ''}`.trim(),
+    `${name} footballer`,
+    name,
+    `${name} (footballer)`,
+  ];
+  const tried = new Set();
+  for (const q of queries) {
+    const title = await searchWikipediaTitle(q);
+    if (!title || tried.has(title)) continue;
+    tried.add(title);
+    const photo = await fetchSummaryPhoto(title);
+    if (photo) return photo;
+  }
+  return null;
+}
+
+async function fetchPlayerPhoto(searchName, club) {
+  const fromSportsDB = await fetchPhotoFromSportsDB(searchName);
+  if (fromSportsDB) return { photo: fromSportsDB, source: 'TheSportsDB' };
+  const fromWikipedia = await fetchPhotoFromWikipedia(searchName, club);
+  if (fromWikipedia) return { photo: fromWikipedia, source: 'Wikipedia' };
+  return null;
+}
+
+// Détecte les noms de joueurs proches d'une fiche déjà existante dans le
+// registre (autre clé) — évite de créer une fiche en double pour le même
+// joueur réel suite à une variante d'orthographe ou de prénom.
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function findSimilarRegistryKeys(joueur, ligue, registry) {
+  const target = joueur.toLowerCase();
+  const exactKey = joueur + '|' + ligue;
+  return Object.keys(registry).filter(key => {
+    if (key === exactKey) return false;
+    const [name, keyLigue] = key.split('|');
+    if (keyLigue !== ligue) return false;
+    const dist = levenshtein(target, name.toLowerCase());
+    return dist > 0 && dist <= 2;
+  });
+}
+
 function writePhotosPublic() {
   const photos = {};
   Object.entries(registry).forEach(([key, val]) => {
@@ -135,18 +221,24 @@ async function main() {
     const prenom = j.prenom || known?.prenom || null;
     if (prenom && !entry.joueur.startsWith(prenom)) entry.prenom = prenom;
 
-    // Photo auto pour les nouveaux joueurs
+    // Photo auto pour les nouveaux joueurs (TheSportsDB puis repli Wikipedia)
     if (!known || !known.photo) {
       const searchName = entry.prenom ? `${entry.prenom} ${j.joueur}` : j.joueur;
-      const photo = await fetchPhotoFromSportsDB(searchName);
+      const result = await fetchPlayerPhoto(searchName, entry.club);
       const regKey2 = j.joueur + '|' + ligue;
       if (!registry[regKey2]) registry[regKey2] = { prenom: entry.prenom || null, nationalite: entry.nationalite, poste: entry.poste, clubs: entry.club ? [entry.club] : [], photo: null };
-      if (photo) { registry[regKey2].photo = photo; console.log(`  📸 Photo trouvée: ${searchName}`); }
+      if (result) { registry[regKey2].photo = result.photo; console.log(`  📸 Photo trouvée (${result.source}): ${searchName}`); }
     }
 
     const dupes = await checkDuplicate(j.joueur, ligue, championnat, tour);
     if (dupes.length > 0) warnings.push(`⚠️  DOUBLON: ${j.joueur} déjà en DB (id: ${dupes[0].id})`);
-    if (!known) warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
+    if (!known) {
+      warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
+      const similar = findSimilarRegistryKeys(j.joueur, ligue, registry);
+      if (similar.length) {
+        warnings.push(`⚠️  NOM PROCHE: "${j.joueur}" ressemble à ${similar.map(k => `"${k.split('|')[0]}"`).join(', ')} déjà en registre — vérifier qu'il ne s'agit pas du même joueur avant d'importer (sinon fiche dupliquée).`);
+      }
+    }
 
     toWrite.push(entry);
     const prenomDisplay = entry.prenom ? entry.prenom + ' ' : '';
