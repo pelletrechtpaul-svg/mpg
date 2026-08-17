@@ -10,6 +10,14 @@ const PlayerBadge = ({ joueur, sm = true }) => (
   />
 );
 
+const POSTE_GROUP = {
+  A: 'Attaquants',
+  MC: 'Milieux', MO: 'Milieux', MD: 'Milieux', M: 'Milieux',
+  DC: 'Défenseurs', DL: 'Défenseurs', DG: 'Défenseurs', DD: 'Défenseurs', D: 'Défenseurs',
+  G: 'Gardien',
+};
+const POSTE_GROUP_ORDER = ['Attaquants', 'Milieux', 'Défenseurs', 'Gardien'];
+
 export default function ClassementsTab({
   joueurs, ligues, saisons, selectedSeason,
   selectedLigue, setSelectedLigue,
@@ -18,25 +26,25 @@ export default function ClassementsTab({
   classementParLigue, statsDetaillees, cleanSheetsStats,
   valiseStats, matchesListForChampionnat,
   ligueMetadata, historicalEvolution, shareContext,
-  mercatoData,
+  mercatoData, onOpenPlayer,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
   const [ligueView, setLigueView] = useState('classement');
-  const [effectifsChampionnat, setEffectifsChampionnat] = useState(null);
+  const [effectifsCoach, setEffectifsCoach] = useState(null);
 
-  // Championnats mercato disponibles pour la ligue sélectionnée (indépendant des matchs déjà entrés)
-  const mercatoChampionnatsForLigue = useMemo(() => {
-    if (selectedLigue === 'general') return [];
-    const nums = new Set((mercatoData || []).filter(m => m.ligue === selectedLigue).map(m => m.championnat));
-    return [...nums].sort((a, b) => a - b);
-  }, [mercatoData, selectedLigue]);
+  // Championnat affiché dans Effectifs : réutilise le sélecteur du classement.
+  // "Total" n'a pas de sens pour un effectif → on retombe sur le plus récent.
+  const currentEffectifsChampionnat = useMemo(() => {
+    if (selectedLigue === 'general') return null;
+    if (selectedChampionnat !== 'total') return Number(selectedChampionnat);
+    const nums = (mercatoData || []).filter(m => m.ligue === selectedLigue).map(m => m.championnat);
+    return nums.length ? Math.max(...nums) : null;
+  }, [mercatoData, selectedLigue, selectedChampionnat]);
 
-  const currentEffectifsChampionnat = effectifsChampionnat ?? mercatoChampionnatsForLigue[mercatoChampionnatsForLigue.length - 1] ?? null;
-
-  // Effectif de chaque coach pour le championnat affiché
+  // Effectif de chaque coach pour le championnat affiché, trié par poste
   const effectifsData = useMemo(() => {
     if (selectedLigue === 'general' || currentEffectifsChampionnat == null) return null;
     const byCoach = {};
@@ -45,6 +53,13 @@ export default function ClassementsTab({
       if (m.ligue !== selectedLigue || m.championnat !== currentEffectifsChampionnat) return;
       if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
       byCoach[m.acheteur].push(m);
+    });
+    Object.values(byCoach).forEach(squad => {
+      squad.sort((a, b) => {
+        const gA = POSTE_GROUP_ORDER.indexOf(POSTE_GROUP[a.poste] || 'Milieux');
+        const gB = POSTE_GROUP_ORDER.indexOf(POSTE_GROUP[b.poste] || 'Milieux');
+        return gA !== gB ? gA - gB : (b.prix || 0) - (a.prix || 0);
+      });
     });
     return byCoach;
   }, [mercatoData, selectedLigue, currentEffectifsChampionnat, joueurs]);
@@ -103,7 +118,7 @@ export default function ClassementsTab({
                 setSelectedLigue(ligue);
                 setSelectedChampionnat('total');
                 setLigueView('classement');
-                setEffectifsChampionnat(null);
+                setEffectifsCoach(null);
               }}
               className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
                 selectedLigue === ligue
@@ -199,57 +214,73 @@ export default function ClassementsTab({
 
       {/* Tableau classement / stats / graphique / effectifs */}
       {selectedLigue !== 'general' && ligueView === 'effectifs' ? (
-        <div className="space-y-4">
-          {mercatoChampionnatsForLigue.length > 0 && (
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Championnat</label>
-              <select
-                value={currentEffectifsChampionnat ?? ''}
-                onChange={(e) => setEffectifsChampionnat(Number(e.target.value))}
-                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                {mercatoChampionnatsForLigue.map((ch, i) => (
-                  <option key={ch} value={ch} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Championnat {i + 1} ({ch})</option>
-                ))}
-              </select>
+        effectifsData ? (
+          <div className="space-y-4">
+            {/* Sous-menu : un bouton par entraîneur */}
+            <div className="flex flex-wrap gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e] max-w-xl">
+              {joueurs.map(coach => (
+                <button
+                  key={coach}
+                  onClick={() => setEffectifsCoach(coach)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-sm sm:text-base whitespace-nowrap ${
+                    (effectifsCoach ?? joueurs[0]) === coach
+                      ? 'bg-purple-400 text-white shadow'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
+                  }`}
+                >
+                  <PlayerBadge joueur={coach} />
+                  {coach}
+                </button>
+              ))}
             </div>
-          )}
-          {effectifsData ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {joueurs.map(coach => {
-                const squad = effectifsData[coach] || [];
-                return (
-                  <div key={coach} data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-4">
-                    <ShareBtn contextText={shareContext} />
-                    <div className="flex items-center gap-2 mb-3">
-                      <PlayerBadge joueur={coach} />
-                      <h3 className="font-semibold text-slate-800 dark:text-slate-100">{coach}</h3>
-                    </div>
-                    {squad.length > 0 ? (
-                      <div className="space-y-1.5">
-                        {squad.map((m, i) => (
-                          <div key={i} className="flex items-center justify-between text-sm gap-2">
-                            <span className="text-slate-700 dark:text-slate-200 truncate">{m.joueur}</span>
-                            <span className="flex items-center gap-1.5 flex-shrink-0">
-                              <span className="text-xs text-slate-400 dark:text-slate-500">{m.poste}</span>
-                              <span className="font-semibold text-slate-600 dark:text-slate-300">{m.prix}M</span>
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
-                    )}
+
+            {(() => {
+              const coach = effectifsCoach ?? joueurs[0];
+              const squad = effectifsData[coach] || [];
+              let lastGroup = null;
+              return (
+                <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+                  <ShareBtn contextText={shareContext} />
+                  <div className="flex items-center gap-2 mb-4">
+                    <PlayerBadge joueur={coach} />
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">{coach}</h3>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
-              <p className="text-slate-500 dark:text-slate-400">Pas de données mercato pour cette ligue.</p>
-            </div>
-          )}
-        </div>
+                  {squad.length > 0 ? (
+                    <div className="space-y-1">
+                      {squad.map((m, i) => {
+                        const group = POSTE_GROUP[m.poste] || 'Milieux';
+                        const showHeader = group !== lastGroup;
+                        lastGroup = group;
+                        return (
+                          <div key={i}>
+                            {showHeader && (
+                              <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mt-3 mb-1 first:mt-0">{group}</h4>
+                            )}
+                            <div className="flex items-center justify-between text-sm gap-2 py-1">
+                              <button
+                                onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
+                                className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                              >
+                                {m.joueur}
+                              </button>
+                              <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+            <p className="text-slate-500 dark:text-slate-400">Pas de données mercato pour cette ligue.</p>
+          </div>
+        )
       ) : statsTable ? (
         <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
           <ShareBtn contextText={shareContext} />

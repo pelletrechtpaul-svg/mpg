@@ -255,7 +255,7 @@ const NO_DATA_JOKES = [
   "Motus et bouche cousue sur le mercato de cette saison. Les archives ont brûlé (façon de parler).",
 ];
 
-export default function JoueursTab({ mercatoData, matchData }) {
+export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, onConsumeInitialPlayer }) {
   const [joke] = useState(() => NO_DATA_JOKES[Math.floor(Math.random() * NO_DATA_JOKES.length)]);
   const photos = usePlayerPhotos();
   const [query, setQuery] = useState('');
@@ -263,6 +263,14 @@ export default function JoueursTab({ mercatoData, matchData }) {
   const inputRef = useRef(null);
 
   const { getSuggestions, getPlayerHistory } = useJoueursSearch(mercatoData);
+
+  // Ouverture directe d'une fiche joueur depuis un autre onglet (ex: Effectifs)
+  useEffect(() => {
+    if (!initialPlayerKey) return;
+    const hist = getPlayerHistory(initialPlayerKey);
+    if (hist) { setSelectedPlayer(hist); setQuery(hist.displayName); }
+    onConsumeInitialPlayer?.();
+  }, [initialPlayerKey]);
 
   const results = getSuggestions(query);
   const isSearching = query.length >= 2;

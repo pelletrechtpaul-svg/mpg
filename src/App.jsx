@@ -33,6 +33,12 @@ const App = () => {
   const [selectedVersusLigue, setSelectedVersusLigue] = useState('all');
   const [selectedValiseTable, setSelectedValiseTable] = useState('stats');
   const [activeVersusTooltip, setActiveVersusTooltip] = useState(null);
+  const [pendingPlayerKey, setPendingPlayerKey] = useState(null);
+
+  const openPlayer = (joueur, ligue) => {
+    setPendingPlayerKey(joueur + '|||' + ligue);
+    setActiveTab('joueurs');
+  };
 
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
 
@@ -245,6 +251,7 @@ const App = () => {
             historicalEvolution={historicalEvolution}
             shareContext={shareContext}
             mercatoData={filteredMercatoData}
+            onOpenPlayer={openPlayer}
           />
         )}
 
@@ -290,7 +297,12 @@ const App = () => {
         )}
 
         {activeTab === 'joueurs' && (
-          <JoueursTab mercatoData={filteredMercatoData} matchData={filteredData} />
+          <JoueursTab
+            mercatoData={filteredMercatoData}
+            matchData={filteredData}
+            initialPlayerKey={pendingPlayerKey}
+            onConsumeInitialPlayer={() => setPendingPlayerKey(null)}
+          />
         )}
 
         </Suspense>
