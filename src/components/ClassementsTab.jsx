@@ -5,8 +5,10 @@ import { playerColorHex, ShareBtn } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 
 const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
-// Hauteur (% depuis le haut du terrain) de chaque ligne — but adverse en haut, notre but en bas
-const FORMATION_ROW_TOP = { Attaquants: 13, Milieux: 46, Défenseurs: 74, Gardien: 90 };
+// Position fixe du cercle (haut de l'avatar), % depuis le haut du terrain —
+// but adverse en haut, notre but en bas. Milieux/Défenseurs remontés un peu
+// pour ne pas chevaucher le gardien.
+const FORMATION_ROW_TOP = { Attaquants: 10, Milieux: 38, Défenseurs: 62, Gardien: 86 };
 // Décalage vertical par joueur dans la ligne, pour un placement plus réaliste
 // (ex : les 2 attaquants de côté un peu plus bas que celui du centre)
 const SLOT_OFFSET_CLASS = {
@@ -19,14 +21,14 @@ const SLOT_OFFSET_CLASS = {
 function FormationRow({ group, players, onOpenPlayer, photos }) {
   const slots = FORMATION_SLOTS[group];
   return (
-    <div className="absolute inset-x-0 flex justify-around items-start px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%`, transform: 'translateY(-50%)' }}>
+    <div className="absolute inset-x-0 flex justify-around px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%` }}>
       {Array.from({ length: slots }).map((_, i) => {
         const m = players[i];
         const offsetClass = SLOT_OFFSET_CLASS[group][i] || '';
         if (!m) {
           return (
-            <div key={i} className={`w-20 sm:w-28 flex flex-col items-center ${offsetClass}`}>
-              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 border-dashed border-slate-800/50" />
+            <div key={i} className={`relative w-11 h-11 sm:w-14 sm:h-14 ${offsetClass}`}>
+              <div className="w-full h-full rounded-full border-2 border-dashed border-slate-800/50" />
             </div>
           );
         }
@@ -34,15 +36,15 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
           <button
             key={i}
             onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-            className={`w-20 sm:w-28 flex flex-col items-center group ${offsetClass}`}
+            className={`relative w-11 h-11 sm:w-14 sm:h-14 group ${offsetClass}`}
           >
-            <div className="ring-2 ring-slate-900/70 rounded-full shadow-lg">
+            <div className="w-full h-full ring-2 ring-slate-900/70 rounded-full shadow-lg">
               <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
             </div>
-            <span className="mt-1.5 max-w-full px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center break-words group-hover:underline">
+            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center whitespace-nowrap group-hover:underline">
               {m.joueur}
             </span>
-            <span className="mt-0.5 text-[10px] sm:text-xs font-semibold text-white/90 leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{m.prix}M</span>
+            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 w-max text-[10px] sm:text-xs font-semibold text-white/90 leading-none whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{m.prix}M</span>
           </button>
         );
       })}
@@ -57,21 +59,32 @@ const PITCH_STRIPES = {
 const LINE = 'border-white/90';
 
 // Assigne les joueurs d'un groupe aux slots d'une ligne en respectant une
-// préférence de poste par slot (ex : DC au centre, DL sur les côtés),
-// avec repli sur n'importe quel joueur du groupe si le poste précis manque.
+// préférence de poste par slot (ex : DC au centre, DL sur les côtés), avec
+// repli sur n'importe quel joueur du groupe si le poste précis manque.
+// Traité rang par rang sur TOUS les slots à la fois, pour qu'un slot moins
+// prioritaire (repli "any") ne pioche jamais dans le vivier d'un poste
+// réservé à un autre slot avant que celui-ci ait eu sa chance.
 function assignSlots(players, slotPrefs) {
   const used = new Set();
-  const take = (postes) => {
-    for (const poste of postes) {
-      const candidates = poste
-        ? players.filter(m => m.poste === poste && !used.has(m))
-        : players.filter(m => !used.has(m));
-      const best = [...candidates].sort((a, b) => (b.prix || 0) - (a.prix || 0))[0];
-      if (best) { used.add(best); return best; }
-    }
-    return null;
+  const n = slotPrefs.length;
+  const result = new Array(n).fill(null);
+  const takeBest = (poste) => {
+    const candidates = poste
+      ? players.filter(m => m.poste === poste && !used.has(m))
+      : players.filter(m => !used.has(m));
+    return [...candidates].sort((a, b) => (b.prix || 0) - (a.prix || 0))[0] || null;
   };
-  return slotPrefs.map(prefs => take(prefs));
+  const maxRank = Math.max(...slotPrefs.map(p => p.length));
+  for (let rank = 0; rank < maxRank; rank++) {
+    for (let i = 0; i < n; i++) {
+      if (result[i]) continue;
+      const poste = slotPrefs[i][rank];
+      if (poste === undefined) continue;
+      const player = takeBest(poste);
+      if (player) { used.add(player); result[i] = player; }
+    }
+  }
+  return result;
 }
 
 function FormationPitch({ squad, onOpenPlayer, photos }) {
@@ -93,23 +106,23 @@ function FormationPitch({ squad, onOpenPlayer, photos }) {
 
   return (
     <div>
-      <div className="relative rounded-2xl overflow-hidden border-4 border-white/90" style={{ aspectRatio: '3/4', ...PITCH_STRIPES }}>
+      <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ aspectRatio: '3/4', ...PITCH_STRIPES }}>
         {/* Ligne médiane + rond central */}
-        <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t-2 ${LINE}`} />
-        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 ${LINE}`} />
+        <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t ${LINE}`} />
+        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border ${LINE}`} />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/90" />
 
         {/* Surface + petite surface + but, en haut (but adverse) */}
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[62%] h-[16%] border-2 border-t-0 ${LINE}`} />
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[32%] h-[6%] border-2 border-t-0 ${LINE}`} />
-        <div className={`absolute left-1/2 top-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border-2 border-t-0 ${LINE} rounded-b-full`} />
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[14%] h-[2.5%] border-2 border-t-0 ${LINE}`} />
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[62%] h-[16%] border border-t-0 ${LINE}`} />
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[32%] h-[6%] border border-t-0 ${LINE}`} />
+        <div className={`absolute left-1/2 top-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-t-0 ${LINE} rounded-b-full`} />
+        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-t-0 ${LINE}`} />
 
         {/* Surface + petite surface + but, en bas (notre but) */}
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[62%] h-[16%] border-2 border-b-0 ${LINE}`} />
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border-2 border-b-0 ${LINE}`} />
-        <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border-2 border-b-0 ${LINE} rounded-t-full`} />
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border-2 border-b-0 ${LINE}`} />
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[62%] h-[16%] border border-b-0 ${LINE}`} />
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border border-b-0 ${LINE}`} />
+        <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-b-0 ${LINE} rounded-t-full`} />
+        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-b-0 ${LINE}`} />
 
         <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
         <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
@@ -120,7 +133,7 @@ function FormationPitch({ squad, onOpenPlayer, photos }) {
       {bench.length > 0 && (
         <div className="mt-4">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Remplaçants</h4>
-          <div className="space-y-1">
+          <div className="grid grid-cols-2 gap-x-4">
             {bench.map((m, i) => (
               <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
                 <button
