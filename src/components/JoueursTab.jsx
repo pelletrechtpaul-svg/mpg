@@ -127,26 +127,26 @@ function PlayerCard({ player, onClose, photos, matchData }) {
     <div data-card className="relative bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
       <ShareBtn contextText={`${displayName} — MesPetitsBavons`} />
       <div className="p-5 border-b border-slate-200 dark:border-slate-700">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start">
           <PlayerAvatar joueur={joueur} ligue={ligue} displayName={displayName} photos={photos} size="lg" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0 ml-4">
+            <div className="flex items-start justify-between">
               <div className="min-w-0">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">{displayName}</h2>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  {poste && <PosteBadge poste={poste} />}
-                  {nationalite && <span className="text-xs text-slate-500 dark:text-slate-400">{nationalite}</span>}
+                <div className="flex items-center mt-1 flex-wrap">
+                  {poste && <span className="mr-2 mb-1"><PosteBadge poste={poste} /></span>}
+                  {nationalite && <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">{nationalite}</span>}
                 </div>
               </div>
-              <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none flex-shrink-0 p-1">✕</button>
+              <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none flex-shrink-0 p-1 ml-2">✕</button>
             </div>
-            <div className="flex gap-4 mt-3 text-sm text-slate-500 dark:text-slate-400 flex-wrap">
-              <span><span className="font-semibold text-slate-800 dark:text-slate-200">{entries.length}</span> achat{entries.length > 1 ? 's' : ''}</span>
-              <span><span className="font-semibold text-slate-800 dark:text-slate-200">{totalSpent}M</span> total misé</span>
-              <span>max <span className="font-semibold text-slate-800 dark:text-slate-200">{prixMax}M</span></span>
-              <span>⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}</span>
+            <div className="flex mt-3 text-sm text-slate-500 dark:text-slate-400 flex-wrap">
+              <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{entries.length}</span> achat{entries.length > 1 ? 's' : ''}</span>
+              <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{totalSpent}M</span> total misé</span>
+              <span className="mr-4 mb-1">max <span className="font-semibold text-slate-800 dark:text-slate-200">{prixMax}M</span></span>
+              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}</span>
               {csc > 0 && (
-                <span className="text-orange-600 dark:text-orange-400">🙈 <span className="font-semibold">{csc}</span> CSC</span>
+                <span className="text-orange-600 dark:text-orange-400 mb-1">🙈 <span className="font-semibold">{csc}</span> CSC</span>
               )}
             </div>
           </div>
@@ -158,7 +158,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
         <div className="space-y-4">
           {champList.map(({ saison, ligue, championnat, tours }) => (
             <div key={`${saison}|${ligue}|${championnat}`} className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-600">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center mb-2">
                 <span className="absolute -left-[9px] w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-500 border-2 border-white dark:border-slate-800"></span>
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                   {LIGUE_SHORT[ligue] || ligue} · Champ. {championnat} · {saison}
@@ -169,29 +169,29 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                   const colors = COACH_COLORS[e.acheteur] || { bg: 'bg-slate-500', text: 'text-slate-600', dot: 'bg-slate-500' };
                   return (
                     <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-1 gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center min-w-0">
                           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colors.dot}`}></span>
-                          <span className={`text-sm font-semibold flex-shrink-0 ${colors.text}`}>{e.acheteur}</span>
-                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1">{e.equipe_acheteur}</span>}
+                          <span className={`text-sm font-semibold flex-shrink-0 ml-2 ${colors.text}`}>{e.acheteur}</span>
+                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1 ml-2">{e.equipe_acheteur}</span>}
                         </div>
                         <span className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0 ml-2">{e.prix}M</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mb-1">
+                      <div className="flex items-center text-xs text-slate-400 dark:text-slate-500 mb-1">
                         <span>Tour {e.tour}</span>
-                        {e.club && <><span>·</span><span>{e.club}</span></>}
+                        {e.club && <><span className="mx-2">·</span><span>{e.club}</span></>}
                       </div>
                       {e.encheres_perdues?.length > 0 && (
                         <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-600">
                           <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">Enchères perdues :</div>
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap">
                             {e.encheres_perdues.map((ep, j) => {
                               const epColors = COACH_COLORS[ep.equipe] || { dot: 'bg-slate-400', text: 'text-slate-500' };
                               return (
-                                <span key={j} className="inline-flex items-center gap-1 text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">
-                                  <span className={`w-1.5 h-1.5 rounded-full ${epColors.dot}`}></span>
-                                  <span className="text-slate-600 dark:text-slate-300">{ep.equipe}</span>
-                                  <span className="text-slate-400">{ep.prix}M</span>
+                                <span key={j} className="inline-flex items-center text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 mr-1.5 mb-1.5">
+                                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${epColors.dot}`}></span>
+                                  <span className="text-slate-600 dark:text-slate-300 ml-1">{ep.equipe}</span>
+                                  <span className="text-slate-400 ml-1">{ep.prix}M</span>
                                 </span>
                               );
                             })}
