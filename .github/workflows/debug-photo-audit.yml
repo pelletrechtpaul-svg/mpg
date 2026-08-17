@@ -1,0 +1,14 @@
+name: debug-photo-audit
+on:
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/debug-photo-audit.cjs
