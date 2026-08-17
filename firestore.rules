@@ -38,10 +38,16 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // Config collection (saisons, settings)
+    // Config collection (saisons, settings, admin roles)
+    // "saisons" et "adminRoles" sont réservés aux admins avec le rôle "full" —
+    // un admin avec le rôle "matches" (édition de matchs uniquement) ne peut
+    // pas y écrire, même en contournant l'UI (ex: console navigateur).
     match /config/{configId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if request.auth != null && (
+        !(configId in ['saisons', 'adminRoles']) ||
+        get(/databases/$(database)/documents/config/adminRoles).data[request.auth.token.email.lower()] == 'full'
+      );
     }
 
     // Deny all other collections by default
