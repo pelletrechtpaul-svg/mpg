@@ -598,107 +598,92 @@ export default function RecordsTab({
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosses enchères</h3>
                   {mercatoData.biggestBids.length > 0 ? (
-                    <>
-                      <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mb-2">{mercatoData.biggestBids[0].prix}M</p>
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.biggestBids.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-amber-700 dark:text-amber-400 ml-1.5">{m.prix}M</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
+
+                  {mercatoData.recordParPoste.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">
+                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Record par poste</h4>
                       <div className="space-y-1.5">
-                        {mercatoData.biggestBids.map((m, i) => (
+                        {mercatoData.recordParPoste.map((m, i) => (
                           <div key={i} className="text-sm">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                            <span className="font-bold text-amber-700 dark:text-amber-400 ml-1.5">{m.prix}M</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                            <span className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{m.poste}</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200 ml-1.5">{m.joueur}</span>
+                            <span className="font-bold text-violet-700 dark:text-violet-400 ml-1.5">{m.prix}M</span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
                           </div>
                         ))}
                       </div>
-                    </>
-                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
+                    </div>
+                  )}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-rose-50 to-red-50 border-rose-200 dark:from-rose-900/30 dark:to-red-900/30 dark:border-rose-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📉 Plus gros flops</h3>
                   {mercatoData.biggestFlops.length > 0 ? (
-                    <>
-                      <p className="text-2xl font-bold text-rose-700 dark:text-rose-400 mb-2">{mercatoData.biggestFlops[0].prix}M, 0 but</p>
-                      <div className="space-y-1.5">
-                        {mercatoData.biggestFlops.map((m, i) => (
-                          <div key={i} className="text-sm">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                            <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">{m.prix}M</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.biggestFlops.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">{m.prix}M</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun flop pour l'instant.</p>}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 dark:from-emerald-900/30 dark:to-green-900/30 dark:border-emerald-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Meilleur rapport qualité/prix</h3>
                   {mercatoData.bestValueForMoney.length > 0 ? (
-                    <>
-                      <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-2">{mercatoData.bestValueForMoney[0].ratio.toFixed(2)} but/M</p>
-                      <div className="space-y-1.5">
-                        {mercatoData.bestValueForMoney.map((m, i) => (
-                          <div key={i} className="text-sm">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                            <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.bestValueForMoney.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas assez de buts pour établir ce classement.</p>}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-900/30 dark:to-amber-900/30 dark:border-orange-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
                   <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🙈 CSC le plus cher</h3>
                   {mercatoData.priciestCsc.length > 0 ? (
-                    <>
-                      <p className="text-2xl font-bold text-orange-700 dark:text-orange-400 mb-2">{mercatoData.priciestCsc[0].prix}M</p>
-                      <div className="space-y-1.5">
-                        {mercatoData.priciestCsc.map((m, i) => (
-                          <div key={i} className="text-sm">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                            <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.prix}M, {m.csc} CSC</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.priciestCsc.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.prix}M, {m.csc} CSC</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun CSC pour l'instant.</p>}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200 dark:from-sky-900/30 dark:to-blue-900/30 dark:border-sky-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏠 Longévité mercato</h3>
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏠 Fidélité</h3>
                   {mercatoData.longevite.length > 0 ? (
-                    <>
-                      <p className="text-2xl font-bold text-sky-700 dark:text-sky-400 mb-2">{mercatoData.longevite[0].streak} championnats d'affilée</p>
-                      <div className="space-y-1.5">
-                        {mercatoData.longevite.map((l, i) => (
-                          <div key={i} className="text-sm">
-                            <span className="font-semibold text-slate-700 dark:text-slate-200">{l.joueur}</span>
-                            <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak} championnats</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur} · {l.ligue}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas encore de fidélité mercato notable.</p>}
-                </RecordCard>
-
-                <RecordCard className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200 dark:from-violet-900/30 dark:to-purple-900/30 dark:border-violet-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏷️ Record par poste</h3>
-                  {mercatoData.recordParPoste.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.recordParPoste.map((m, i) => (
+                      {mercatoData.longevite.map((l, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{m.poste}</span>
-                          <span className="font-semibold text-slate-700 dark:text-slate-200 ml-1.5">{m.joueur}</span>
-                          <span className="font-bold text-violet-700 dark:text-violet-400 ml-1.5">{m.prix}M</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{l.joueur}</span>
+                          <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak} championnats d'affilée</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur} · {l.ligue}</span>
                         </div>
                       ))}
                     </div>
-                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas encore de fidélité mercato notable.</p>}
                 </RecordCard>
               </div>
             )}
