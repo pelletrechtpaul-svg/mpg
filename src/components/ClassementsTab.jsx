@@ -8,7 +8,7 @@ const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 
 // Position fixe du cercle (haut de l'avatar), % depuis le haut du terrain —
 // but adverse en haut, notre but en bas. Milieux/Défenseurs remontés un peu
 // pour ne pas chevaucher le gardien.
-const FORMATION_ROW_TOP = { Attaquants: 10, Milieux: 38, Défenseurs: 62, Gardien: 86 };
+const FORMATION_ROW_TOP = { Attaquants: 12, Milieux: 36, Défenseurs: 60, Gardien: 78 };
 // Décalage vertical par joueur dans la ligne, pour un placement plus réaliste
 // (ex : les 2 attaquants de côté un peu plus bas que celui du centre)
 const SLOT_OFFSET_CLASS = {
@@ -389,10 +389,6 @@ export default function ClassementsTab({
               return (
                 <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
                   <ShareBtn contextText={shareContext} />
-                  <div className="flex items-center gap-2 mb-4">
-                    <PlayerBadge joueur={coach} />
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">{coach}</h3>
-                  </div>
                   {squad.length > 0 ? (
                     <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} />
                   ) : (
