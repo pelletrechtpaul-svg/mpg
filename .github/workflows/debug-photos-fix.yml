@@ -13,4 +13,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/debug-photos-fix.cjs
+      - run: node scripts/debug-photos-fix2.cjs
