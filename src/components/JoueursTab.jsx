@@ -43,7 +43,7 @@ const POSTE_COLORS = {
 
 function PosteBadge({ poste }) {
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${POSTE_COLORS[poste] || 'bg-slate-100 text-slate-700'}`}>
+    <span className={`inline-flex items-center justify-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-semibold leading-none ${POSTE_COLORS[poste] || 'bg-slate-100 text-slate-700'}`}>
       {poste}
     </span>
   );
@@ -131,7 +131,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
           <PlayerAvatar joueur={joueur} ligue={ligue} displayName={displayName} photos={photos} size="lg" />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <div>
+              <div className="min-w-0">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">{displayName}</h2>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   {poste && <PosteBadge poste={poste} />}
