@@ -15,6 +15,15 @@ function usePlayerPhotos() {
   return photos;
 }
 
+// html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
+// ellipsis / overflow:hidden — il peint le texte complet non tronqué, ce qui
+// provoque des chevauchements dans la capture. On tronque donc la chaîne
+// elle-même plutôt que de compter sur le CSS `truncate`.
+function truncateText(str, maxLen) {
+  if (!str) return str;
+  return str.length > maxLen ? str.slice(0, maxLen - 1).trimEnd() + '…' : str;
+}
+
 const COACH_COLORS = {
   Paul:   { bg: 'bg-blue-600',   text: 'text-blue-600 dark:text-blue-400',   dot: 'bg-blue-600' },
   Adrien: { bg: 'bg-green-600',  text: 'text-green-600 dark:text-green-400', dot: 'bg-green-600' },
@@ -173,7 +182,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                         <div className="flex items-center min-w-0">
                           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colors.dot}`}></span>
                           <span className={`text-sm font-semibold flex-shrink-0 ml-2 ${colors.text}`}>{e.acheteur}</span>
-                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1 ml-2">{e.equipe_acheteur}</span>}
+                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1 ml-2" title={e.equipe_acheteur}>{truncateText(e.equipe_acheteur, 18)}</span>}
                         </div>
                         <span className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0 ml-2">{e.prix}M</span>
                       </div>
@@ -190,7 +199,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                               return (
                                 <span key={j} className="inline-flex items-center text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 mr-1.5 mb-1.5">
                                   <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${epColors.dot}`}></span>
-                                  <span className="text-slate-600 dark:text-slate-300 ml-1">{ep.equipe}</span>
+                                  <span className="text-slate-600 dark:text-slate-300 ml-1" title={ep.equipe}>{truncateText(ep.equipe, 16)}</span>
                                   <span className="text-slate-400 ml-1">{ep.prix}M</span>
                                 </span>
                               );
