@@ -471,12 +471,12 @@ export default function ClassementsTab({
       )}
 
       {/* Classement buteurs / CSC (joueurs mercato) */}
-      {selectedLigue !== 'general' && (buteursRanking.length > 0 || cscRanking.length > 0) && (
+      {selectedLigue !== 'general' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          {buteursRanking.length > 0 && (
-            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-              <ShareBtn contextText={shareContext} />
-              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Buteurs</h3>
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+            <ShareBtn contextText={shareContext} />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Buteurs</h3>
+            {buteursRanking.length > 0 ? (
               <table className="w-full text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -495,12 +495,14 @@ export default function ClassementsTab({
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-          {cscRanking.length > 0 && (
-            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-              <ShareBtn contextText={shareContext} />
-              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 CSC</h3>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
+            )}
+          </div>
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+            <ShareBtn contextText={shareContext} />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 CSC</h3>
+            {cscRanking.length > 0 ? (
               <table className="w-full text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -519,8 +521,10 @@ export default function ClassementsTab({
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
+            )}
+          </div>
         </div>
       )}
 
