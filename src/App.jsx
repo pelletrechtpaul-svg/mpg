@@ -24,15 +24,9 @@ const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - sais
 const App = () => {
   const [selectedSeason, setSelectedSeason] = useState(() => mostRecentSeason(['2025/2026', '2024/2025']));
   const [activeTab, setActiveTab] = useState('classements');
-  const [ligueRecordsMode, setLigueRecordsMode] = useState('alltime');
   const [selectedLigue, setSelectedLigue] = useState('general');
   const [selectedChampionnat, setSelectedChampionnat] = useState('total');
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
-  const [selectedVersusPlayer1, setSelectedVersusPlayer1] = useState('Paul');
-  const [selectedVersusPlayer2, setSelectedVersusPlayer2] = useState('Adrien');
-  const [selectedVersusLigue, setSelectedVersusLigue] = useState('all');
-  const [selectedValiseTable, setSelectedValiseTable] = useState('stats');
-  const [activeVersusTooltip, setActiveVersusTooltip] = useState(null);
   const [pendingPlayerKey, setPendingPlayerKey] = useState(null);
   const [cameFromEffectifs, setCameFromEffectifs] = useState(false);
   const [ligueView, setLigueView] = useState('classement');
@@ -77,8 +71,8 @@ const App = () => {
   );
 
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
-  const { statsDetaillees, cleanSheetsStats, scoreDistribution, heureDeGloire, valiseStats, versusStats, versusMatchHistory } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue);
-  const { evolutionData, matchesListForChampionnat, historicalEvolution, buteursEvolution, loosersEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue, ligueMetadata, matchData, selectedSeason);
+  const { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata);
+  const { matchesListForChampionnat, historicalEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, ligueMetadata);
   const advancedStats = useAdvancedStats(matchData, joueurs, selectedSeason);
   const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsAllTime, mercatoRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData);
 

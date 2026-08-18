@@ -24,23 +24,25 @@ function AllPlayersGrid({ data, valueKey = 'count', children }) {
 function Top3List({ entries, renderValue, renderDetail }) {
   if (!entries?.length) return null;
   const medals = ['🥇', '🥈', '🥉'];
-  let rank = 0, prevScore = null;
+  const ranked = entries.reduce((acc, entry, i) => {
+    const score = renderValue(entry);
+    const prevScore = acc.length ? acc[acc.length - 1].score : null;
+    const rank = score === prevScore ? acc[acc.length - 1].rank : i;
+    acc.push({ entry, score, rank });
+    return acc;
+  }, []);
   return (
     <div className="space-y-2 mt-2">
-      {entries.map((entry, i) => {
-        const score = renderValue(entry);
-        if (score !== prevScore) { rank = i; prevScore = score; }
-        return (
-          <div key={i} className="flex items-start gap-2">
-            <span className="text-base w-5 flex-shrink-0">{medals[rank] || ''}</span>
-            <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-0.5 ${playerColors[entry.joueur || entry.champion]}`} />
-            <div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{score}</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 ml-1">— {renderDetail(entry)}</span>
-            </div>
+      {ranked.map(({ entry, score, rank }, i) => (
+        <div key={i} className="flex items-start gap-2">
+          <span className="text-base w-5 flex-shrink-0">{medals[rank] || ''}</span>
+          <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-0.5 ${playerColors[entry.joueur || entry.champion]}`} />
+          <div>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{score}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1">— {renderDetail(entry)}</span>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -59,25 +61,27 @@ function StreakRows({ streakData, joueurs, unit }) {
     .map(j => ({ joueur: j, ...(streakData[j] || { length: 0, startDate: null, endDate: null }) }))
     .sort((a, b) => b.length - a.length);
   const medals = ['🥇', '🥈', '🥉', ''];
-  let rank = 0, prevLen = null;
+  const ranked = sorted.reduce((acc, entry, i) => {
+    const prevLen = acc.length ? acc[acc.length - 1].entry.length : null;
+    const rank = entry.length === prevLen ? acc[acc.length - 1].rank : i;
+    acc.push({ entry, rank });
+    return acc;
+  }, []);
   return (
     <div className="space-y-2 mt-2">
-      {sorted.map((entry, i) => {
-        if (entry.length !== prevLen) { rank = i; prevLen = entry.length; }
-        return (
-          <div key={entry.joueur} className="flex items-center gap-2">
-            <span className="w-5 text-base">{entry.length > 0 ? (medals[rank] || '') : ''}</span>
-            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
-            <div className="flex-1 min-w-0">
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
-              <span className={`ml-2 font-bold ${colorText[entry.joueur]}`}>{entry.length} {unit}</span>
-              {entry.startDate && (
-                <span className="text-xs text-slate-400 dark:text-slate-500 ml-2">{fmt(entry.startDate)} → {fmt(entry.endDate)}</span>
-              )}
-            </div>
+      {ranked.map(({ entry, rank }) => (
+        <div key={entry.joueur} className="flex items-center gap-2">
+          <span className="w-5 text-base">{entry.length > 0 ? (medals[rank] || '') : ''}</span>
+          <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
+            <span className={`ml-2 font-bold ${colorText[entry.joueur]}`}>{entry.length} {unit}</span>
+            {entry.startDate && (
+              <span className="text-xs text-slate-400 dark:text-slate-500 ml-2">{fmt(entry.startDate)} → {fmt(entry.endDate)}</span>
+            )}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -87,7 +91,6 @@ export default function RecordsTab({
   seasonRecords, perduUnPoint,
   ligueRecordsAllTime, ligueRecordsSeason,
   mercatoRecordsAllTime, mercatoRecordsSeason,
-  shareContext,
 }) {
   const [activeSubTab, setActiveSubTab] = useState('entraineurs');
 

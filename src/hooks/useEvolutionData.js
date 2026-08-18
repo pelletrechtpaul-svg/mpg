@@ -1,28 +1,7 @@
 import { useMemo } from 'react';
 import { calculatePlayerStats, groupMatchesByChampionship } from '../shared.jsx';
 
-export const useEvolutionData = (filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue, ligueMetadata, matchData, selectedSeason) => {
-  const evolutionData = useMemo(() => {
-    if (selectedChampionnat !== 'total') return [];
-    let championnats, dataToUse;
-    if (selectedLigue === 'general') { championnats = [...new Set(filteredData.map(d => d.championnat))].sort(); dataToUse = filteredData; }
-    else { championnats = championnatsByLigue[selectedLigue] || []; dataToUse = filteredData.filter(d => d.ligue === selectedLigue); }
-    return championnats.map(championnat => {
-      const dataPoint = { championnat };
-      const championnatsUpToNow = championnats.slice(0, championnats.indexOf(championnat) + 1);
-      const matchesUpToNow = dataToUse.filter(m => championnatsUpToNow.includes(m.championnat));
-      const stats = calculatePlayerStats(matchesUpToNow, joueurs);
-      const victoires = {};
-      joueurs.forEach(j => { victoires[j] = 0; });
-      championnatsUpToNow.forEach(ch => {
-        const ranking = Object.entries(calculatePlayerStats(dataToUse.filter(m => m.championnat === ch), joueurs)).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.points !== a.points ? b.points - a.points : b.ga - a.ga);
-        if (ranking.length > 0 && ranking[0].points > 0) victoires[ranking[0].joueur]++;
-      });
-      joueurs.forEach(joueur => { dataPoint[joueur] = stats[joueur].points + (victoires[joueur] * 3); });
-      return dataPoint;
-    });
-  }, [filteredData, joueurs, selectedLigue, selectedChampionnat, championnatsByLigue]);
-
+export const useEvolutionData = (filteredData, joueurs, selectedLigue, selectedChampionnat, ligueMetadata) => {
   const matchesListForChampionnat = useMemo(() => {
     if (selectedLigue === 'general') return [];
     let matches = filteredData.filter(d => d.ligue === selectedLigue);
@@ -74,27 +53,7 @@ export const useEvolutionData = (filteredData, joueurs, selectedLigue, selectedC
       }
     });
     return evolution;
-  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata, selectedSeason]);
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, ligueMetadata]);
 
-  const { buteursEvolution, loosersEvolution } = useMemo(() => {
-    const sortedMatches = [...matchData.filter(m => selectedSeason === 'All-Time' || m.saison === selectedSeason)].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
-    const goalsEvolution = [], concededEvolution = [];
-    const playerGoals = {}, playerConceded = {};
-    joueurs.forEach(j => { playerGoals[j] = 0; playerConceded[j] = 0; });
-    sortedMatches.forEach((match, index) => {
-      const scored = { [match.joueur1]: match.buts_j1 || 0, [match.joueur2]: match.buts_j2 || 0, [match.joueur3]: match.buts_j3 || 0, [match.joueur4]: match.buts_j4 || 0 };
-      const conceded = { [match.joueur1]: (match.buts_j2||0)+(match.buts_j3||0)+(match.buts_j4||0), [match.joueur2]: (match.buts_j1||0)+(match.buts_j3||0)+(match.buts_j4||0), [match.joueur3]: (match.buts_j1||0)+(match.buts_j2||0)+(match.buts_j4||0), [match.joueur4]: (match.buts_j1||0)+(match.buts_j2||0)+(match.buts_j3||0) };
-      Object.entries(scored).forEach(([j, g]) => { if (j && j !== 'undefined') playerGoals[j] = (playerGoals[j] || 0) + g; });
-      Object.entries(conceded).forEach(([j, g]) => { if (j && j !== 'undefined') playerConceded[j] = (playerConceded[j] || 0) + g; });
-      if (index % Math.max(1, Math.floor(sortedMatches.length / 30)) === 0 || index === sortedMatches.length - 1) {
-        const date = new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-        const goalsPt = { date, matchNumber: index + 1 }, concPt = { date, matchNumber: index + 1 };
-        joueurs.forEach(j => { goalsPt[j] = playerGoals[j] || 0; concPt[j] = playerConceded[j] || 0; });
-        goalsEvolution.push(goalsPt); concededEvolution.push(concPt);
-      }
-    });
-    return { buteursEvolution: goalsEvolution, loosersEvolution: concededEvolution };
-  }, [matchData, selectedSeason, joueurs]);
-
-  return { evolutionData, matchesListForChampionnat, historicalEvolution, buteursEvolution, loosersEvolution };
+  return { matchesListForChampionnat, historicalEvolution };
 };

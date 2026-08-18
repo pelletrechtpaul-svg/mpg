@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { calculatePlayerStats, groupMatchesByChampionship } from '../shared.jsx';
 
-export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue) => {
+export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata) => {
   const statsDetaillees = useMemo(() => {
     const matches = selectedStatsLigue === 'all' ? filteredData : filteredData.filter(d => d.ligue === selectedStatsLigue);
     return calculatePlayerStats(matches, joueurs);
@@ -17,13 +17,6 @@ export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, select
     });
     return Object.entries(stats).map(([joueur, data]) => ({ joueur, ...data }));
   }, [selectedStatsLigue, filteredData, joueurs]);
-
-  const scoreDistribution = useMemo(() => {
-    const matches = selectedStatsLigue === 'all' ? filteredData : filteredData.filter(d => d.ligue === selectedStatsLigue);
-    const scoreCounts = {};
-    matches.forEach(m => { const [hi, lo] = m.buts_j1 >= m.buts_j2 ? [m.buts_j1, m.buts_j2] : [m.buts_j2, m.buts_j1]; const key = `${hi}-${lo}`; scoreCounts[key] = (scoreCounts[key] || 0) + 1; });
-    return Object.entries(scoreCounts).map(([score, count]) => ({ score, count })).sort((a, b) => b.count - a.count).slice(0, 15);
-  }, [selectedStatsLigue, filteredData]);
 
   const heureDeGloire = useMemo(() => {
     const result = {};
@@ -66,42 +59,5 @@ export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, select
     return stats;
   }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
 
-  const versusStats = useMemo(() => {
-    let matches = filteredData.filter(m => (m.joueur1 === selectedVersusPlayer1 && m.joueur2 === selectedVersusPlayer2) || (m.joueur1 === selectedVersusPlayer2 && m.joueur2 === selectedVersusPlayer1));
-    if (selectedVersusLigue !== 'all') matches = matches.filter(m => m.ligue === selectedVersusLigue);
-    const stats = { matchs: matches.length, victoires_j1: 0, victoires_j2: 0, nuls: 0, buts_j1: 0, buts_j2: 0, points_j1: 0, points_j2: 0 };
-    matches.forEach(match => {
-      if (match.joueur1 === selectedVersusPlayer1) {
-        stats.buts_j1 += match.buts_j1; stats.buts_j2 += match.buts_j2; stats.points_j1 += match.points_j1; stats.points_j2 += match.points_j2;
-        if (match.buts_j1 > match.buts_j2) stats.victoires_j1++; else if (match.buts_j1 === match.buts_j2) stats.nuls++; else stats.victoires_j2++;
-      } else {
-        stats.buts_j1 += match.buts_j2; stats.buts_j2 += match.buts_j1; stats.points_j1 += match.points_j2; stats.points_j2 += match.points_j1;
-        if (match.buts_j2 > match.buts_j1) stats.victoires_j1++; else if (match.buts_j1 === match.buts_j2) stats.nuls++; else stats.victoires_j2++;
-      }
-    });
-    stats.ga_j1 = stats.buts_j1 - stats.buts_j2; stats.ga_j2 = stats.buts_j2 - stats.buts_j1;
-    stats.valises_j1 = 0; stats.valises_j1_efficaces = 0; stats.valises_j2 = 0; stats.valises_j2_efficaces = 0;
-    matches.forEach(match => {
-      const j1IsP1 = match.joueur1 === selectedVersusPlayer1;
-      const valP1 = j1IsP1 ? match.valise_j1 : match.valise_j2;
-      const valP2 = j1IsP1 ? match.valise_j2 : match.valise_j1;
-      const diff = Math.abs(match.buts_j1 - match.buts_j2);
-      if (valP1) { stats.valises_j1++; const won = j1IsP1 ? match.resultat === 'victoire_j1' : match.resultat === 'victoire_j2'; if (diff === 0 || (won && diff === 1)) stats.valises_j1_efficaces++; }
-      if (valP2) { stats.valises_j2++; const won = j1IsP1 ? match.resultat === 'victoire_j2' : match.resultat === 'victoire_j1'; if (diff === 0 || (won && diff === 1)) stats.valises_j2_efficaces++; }
-    });
-    return stats;
-  }, [filteredData, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue]);
-
-  const versusMatchHistory = useMemo(() => {
-    let matches = filteredData.filter(m => (m.joueur1 === selectedVersusPlayer1 && m.joueur2 === selectedVersusPlayer2) || (m.joueur1 === selectedVersusPlayer2 && m.joueur2 === selectedVersusPlayer1));
-    if (selectedVersusLigue !== 'all') matches = matches.filter(m => m.ligue === selectedVersusLigue);
-    return [...matches].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch)).map(m => {
-      const j1IsPlayer1 = m.joueur1 === selectedVersusPlayer1;
-      const butsJ1 = j1IsPlayer1 ? m.buts_j1 : m.buts_j2;
-      const butsJ2 = j1IsPlayer1 ? m.buts_j2 : m.buts_j1;
-      return { result: butsJ1 > butsJ2 ? 'W' : butsJ1 < butsJ2 ? 'L' : 'D', butsJ1, butsJ2, date: new Date(m.dateMatch).toLocaleDateString('fr-FR'), ligue: m.ligue, championnat: m.championnat, saison: m.saison };
-    });
-  }, [filteredData, selectedVersusPlayer1, selectedVersusPlayer2, selectedVersusLigue]);
-
-  return { statsDetaillees, cleanSheetsStats, scoreDistribution, heureDeGloire, valiseStats, versusStats, versusMatchHistory };
+  return { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats };
 };

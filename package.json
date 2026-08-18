@@ -12,7 +12,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "dom-to-image-more": "^3.7.2",
     "firebase": "^12.7.0",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.562.0",

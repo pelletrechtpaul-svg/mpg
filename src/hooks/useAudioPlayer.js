@@ -61,13 +61,21 @@ function useLocalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
   const audioRef = useRef(null);
-  if (!audioRef.current) audioRef.current = new Audio(PLAYLIST[0].src);
+  // Créé une seule fois, dans un effet (pas pendant le render) — React peut
+  // techniquement rendre plusieurs fois sans committer, ce qui créerait des
+  // instances Audio jetées à chaque tentative si on le faisait au render.
+  useEffect(() => {
+    if (!audioRef.current) audioRef.current = new Audio(PLAYLIST[0].src);
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
     audio.src = PLAYLIST[currentTrack].src;
     audio.load();
     if (isPlaying) audio.play();
+    // isPlaying volontairement exclu : on ne veut recharger/relancer la
+    // piste que sur un changement de currentTrack, pas à chaque pause/play.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack]);
 
   useEffect(() => {
