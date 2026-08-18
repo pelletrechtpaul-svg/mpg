@@ -31,6 +31,24 @@ export const playerColorHex = {
   Roman: '#ea580c',
 };
 
+// Variantes text-*/border-* dérivées des mêmes teintes que playerColors/
+// playerColorHex ci-dessus — source unique pour éviter que chaque écran
+// recopie sa propre table de couleurs par coach (source de désync si un
+// jour une couleur change).
+export const playerColorText = {
+  Paul: 'text-blue-600 dark:text-blue-400',
+  Adrien: 'text-green-600 dark:text-green-400',
+  Tiago: 'text-purple-600 dark:text-purple-400',
+  Roman: 'text-orange-600 dark:text-orange-400',
+};
+
+export const playerColorBorder = {
+  Paul: 'border-blue-200 dark:border-blue-800',
+  Adrien: 'border-green-200 dark:border-green-800',
+  Tiago: 'border-purple-200 dark:border-purple-800',
+  Roman: 'border-orange-200 dark:border-orange-800',
+};
+
 // Playlist SoundCloud lue par le mini-player (piloté via la Widget API).
 // Laisser '' pour retomber sur les MP3 locaux (PLAYLIST ci-dessous).
 export const SOUNDCLOUD_PLAYLIST_URL = 'https://soundcloud.com/paul-610524335/sets/mpg';

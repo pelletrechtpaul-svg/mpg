@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { playerColors, ShareBtn } from '../shared.jsx';
+import { playerColors, playerColorText, playerColorBorder, ShareBtn } from '../shared.jsx';
 
-const colorText = { Paul: 'text-blue-600 dark:text-blue-400', Adrien: 'text-green-600 dark:text-green-400', Tiago: 'text-purple-600 dark:text-purple-400', Roman: 'text-orange-600 dark:text-orange-400' };
-const colorBorder = { Paul: 'border-blue-200 dark:border-blue-800', Adrien: 'border-green-200 dark:border-green-800', Tiago: 'border-purple-200 dark:border-purple-800', Roman: 'border-orange-200 dark:border-orange-800' };
-const colorBg = { Paul: 'bg-blue-500', Adrien: 'bg-green-500', Tiago: 'bg-purple-500', Roman: 'bg-orange-500' };
+// Couleurs par coach dérivées de la source unique dans shared.jsx.
+const colorText = playerColorText;
+const colorBorder = playerColorBorder;
+const colorBg = playerColors;
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 

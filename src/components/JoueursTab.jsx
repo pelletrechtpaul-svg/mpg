@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
-import { ShareBtn } from '../shared.jsx';
+import { ShareBtn, playerColors, playerColorText } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 
 // html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
@@ -12,12 +12,11 @@ function truncateText(str, maxLen) {
   return str.length > maxLen ? str.slice(0, maxLen - 1).trimEnd() + '…' : str;
 }
 
-const COACH_COLORS = {
-  Paul:   { bg: 'bg-blue-600',   text: 'text-blue-600 dark:text-blue-400',   dot: 'bg-blue-600' },
-  Adrien: { bg: 'bg-green-600',  text: 'text-green-600 dark:text-green-400', dot: 'bg-green-600' },
-  Tiago:  { bg: 'bg-purple-600', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-600' },
-  Roman:  { bg: 'bg-orange-600', text: 'text-orange-600 dark:text-orange-400', dot: 'bg-orange-600' },
-};
+// Couleurs par coach dérivées de la source unique dans shared.jsx (plutôt
+// que recopiées ici — évite la désync si une couleur change un jour).
+const COACH_COLORS = Object.fromEntries(
+  Object.keys(playerColors).map(j => [j, { bg: playerColors[j], text: playerColorText[j], dot: playerColors[j] }])
+);
 
 const LIGUE_SHORT = {
   'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA',
