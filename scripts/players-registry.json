@@ -1,1388 +1,1388 @@
 {
-  "Vargas|Liga": {
-    "prenom": "Rubén",
-    "nationalite": "Suisse",
-    "poste": "MO",
-    "clubs": [
-      "Sevilla"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/j1ztej1578079778.jpg"
-  },
-  "Gordon|Liga": {
-    "prenom": "Anthony",
-    "nationalite": "Anglais",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yleib91770796577.jpg"
-  },
-  "Valverde|Liga": {
-    "prenom": "Federico",
-    "nationalite": "Uruguayen",
-    "poste": "MD",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/38ndp21771266409.jpg"
-  },
-  "Olmo|Liga": {
-    "prenom": "Dani",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/b075cd1786385273.jpg"
-  },
-  "López|Liga": {
-    "prenom": "Fermín",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5z9d271771253844.jpg"
-  },
-  "Lee Kang-In|Liga": {
-    "prenom": null,
-    "nationalite": "Sud-Coréen",
-    "poste": "MO",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n0hew31778972474.jpg"
-  },
-  "Courtois|Liga": {
-    "prenom": "Thibaut",
-    "nationalite": "Belge",
-    "poste": "G",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/54zonn1779039115.jpg"
-  },
-  "Budimir|Liga": {
-    "prenom": "Ante",
-    "nationalite": "Croate",
-    "poste": "A",
-    "clubs": [
-      "Osasuna"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jln8lh1562704806.jpg"
-  },
-  "Riquelme|Liga": {
-    "prenom": "Rodrigo",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8f7i311702564478.jpg"
-  },
-  "Bernardo Silva|Liga": {
-    "prenom": null,
-    "nationalite": "Portugais",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/kv4bed1786031511.jpg"
-  },
-  "Eric García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mc6fd21779730502.jpg"
-  },
-  "Lejeune|Liga": {
-    "prenom": "Florian",
-    "nationalite": "Français",
-    "poste": "DC",
-    "clubs": [
-      "Rayo Vallecano"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uzt3y61509806630.jpg"
-  },
-  "Yeremay Hernández|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knzaeg1735418518.jpg"
-  },
-  "Iglesias|Liga": {
-    "prenom": "Borja",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Celta"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/fm1eos1786386301.jpg"
-  },
-  "Pedri|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t178/p490541/512x556/p490541_t178_2026_0_001_000.png"
-  },
-  "Güler|Liga": {
-    "prenom": "Arda",
-    "nationalite": "Turc",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0saeov1771265107.jpg"
-  },
-  "Gavi|Liga": {
-    "prenom": "Pablo",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Gavi_Argentina_v_Spain_19_July_2026-013.jpg"
-  },
-  "Yan Diomande|Liga": {
-    "prenom": null,
-    "nationalite": "Ivoirien",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/7m6vzs1786031407.jpg"
-  },
-  "Boyomo|Liga": {
-    "prenom": "Enzo",
-    "nationalite": "Camerounais",
-    "poste": "DC",
-    "clubs": [
-      "Osasuna"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jv9e541725091741.jpg"
-  },
-  "Mikautadze|Liga": {
-    "prenom": "Georges",
-    "nationalite": "Géorgien",
-    "poste": "A",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0b6lsq1716622054.jpg"
-  },
-  "Fornals|Liga": {
-    "prenom": "Pablo",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/85zkip1707062348.jpg"
-  },
-  "Sørloth|Liga": {
-    "prenom": "Alexander",
-    "nationalite": "Norvégien",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/slx8ts1724311500.jpg"
-  },
-  "Radu|Liga": {
-    "prenom": "Ionuț",
-    "nationalite": "Roumain",
-    "poste": "G",
-    "clubs": [
-      "Celta"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wnm8sk1546115542.jpg"
-  },
-  "Etta Eyong|Liga": {
-    "prenom": "Karl",
-    "nationalite": "Camerounais",
-    "poste": "A",
-    "clubs": [
-      "Levante"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mht6lv1762462602.jpg"
-  },
-  "Andrés Martín|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Santander"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utuqbx1630065861.jpg"
-  },
-  "Buchanan|Liga": {
-    "prenom": "Tajon",
-    "nationalite": "Canadien",
-    "poste": "MO",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yssum41668624128.jpg"
-  },
-  "Jauregizar|Liga": {
-    "prenom": "Mikel",
-    "nationalite": "Espagnol",
-    "poste": "MD",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n28mz81712489376.jpg"
-  },
-  "Angeliño|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xg2jeu1585495738.jpg"
-  },
-  "Simón|Liga": {
-    "prenom": "Unai",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7mte7u1603316714.jpg"
-  },
-  "Grimaldo|Liga": {
-    "prenom": "Alejandro",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/14eqd51786385517.jpg"
-  },
-  "Bellerín|Liga": {
-    "prenom": "Héctor",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/90fxb01710840449.jpg"
-  },
-  "Antony|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t185/p467169/512x556/p467169_t185_2026_0_001_000.png"
-  },
-  "Rüdiger|Liga": {
-    "prenom": "Antonio",
-    "nationalite": "Allemand",
-    "poste": "DC",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qtv86p1779385132.jpg"
-  },
-  "Adeyemi|Liga": {
-    "prenom": "Karim",
-    "nationalite": "Allemand",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/51zta91784803817.jpg"
-  },
-  "Lamine Yamal|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/cdjnqt1786385175.jpg"
-  },
-  "Bellingham|Liga": {
-    "prenom": "Jude",
-    "nationalite": "Anglais",
-    "poste": "MO",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rfg8xd1771263826.jpg"
-  },
-  "Pape Gueye|Liga": {
-    "prenom": null,
-    "nationalite": "Sénégalais",
-    "poste": "MD",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ncg6ba1609250975.jpg"
-  },
-  "Vinícius Júnior|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lxf1he1771264845.jpg"
-  },
-  "Mbappé|Liga": {
-    "prenom": "Kylian",
-    "nationalite": "Français",
-    "poste": "A",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v08cj31778816426.jpg"
-  },
-  "Lunin|Liga": {
-    "prenom": "Andriy",
-    "nationalite": "Ukrainien",
-    "poste": "G",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ka70iy1771265178.jpg"
-  },
-  "Lookman|Liga": {
-    "prenom": "Ademola",
-    "nationalite": "Nigérian",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t175/p219352/512x556/p219352_t175_2026_0_001_000.png"
-  },
-  "Jon Martín|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Real Sociedad"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t3567/p620617/512x556/p620617_t3567_2026_0_001_000.png"
-  },
-  "Aubameyang|Liga": {
-    "prenom": "Pierre-Emerick",
-    "nationalite": "Gabonais",
-    "poste": "A",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q3gswt1660896483.jpg"
-  },
-  "Simeone|Liga": {
-    "prenom": "Giovanni",
-    "nationalite": "Argentin",
-    "poste": "A",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t175/p482652/512x556/p482652_t175_2026_0_001_000.png"
-  },
-  "Herrera|Liga": {
-    "prenom": "Sergio",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "Osasuna"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yigy401725092209.jpg"
-  },
-  "Cubarsí|Liga": {
-    "prenom": "Pau",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t178/p593110/512x556/p593110_t178_2026_0_001_000.png"
-  },
-  "Isco|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t185/p80209/512x556/p80209_t185_2026_0_001_000.png"
-  },
-  "Oyarzabal|Liga": {
-    "prenom": "Mikel",
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Real Sociedad"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/gbl3zd1786385954.jpg"
-  },
-  "Hjulmand|Liga": {
-    "prenom": "Morten",
-    "nationalite": "Danois",
-    "poste": "MD",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/fip8xr1678970706.jpg"
-  },
-  "Hernández|Liga": {
-    "prenom": "Cucho",
-    "nationalite": "Colombien",
-    "poste": "A",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4d5uuv1730093350.jpg"
-  },
-  "Kubo|Liga": {
-    "prenom": "Takefusa",
-    "nationalite": "Japonais",
-    "poste": "MO",
-    "clubs": [
-      "Real Sociedad"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vfxemz1696610755.jpg"
-  },
-  "Raphinha|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "A",
-    "clubs": [
-      "Barcelona"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t178/p219961/512x556/p219961_t178_2026_0_001_000.png"
-  },
-  "Baena|Liga": {
-    "prenom": "Alex",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/qz8oej1786386371.jpg"
-  },
-  "Nico Williams|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ubc6yn1629190504.jpg"
-  },
-  "Dumfries|Liga": {
-    "prenom": "Denzel",
-    "nationalite": "Néerlandais",
-    "poste": "DL",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7uz0v61544971521.jpg"
-  },
-  "Cucurella|Liga": {
-    "prenom": "Marc",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Real Madrid"
-    ],
-    "photo": "https://www.thesportsdb.com/images/media/player/thumb/2hjwcz1785328531.jpg"
-  },
-  "Barrenetxea|Liga": {
-    "prenom": "Ander",
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Real Sociedad"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkavks1600722048.jpg"
-  },
-  "Vertrouwd|Liga": {
-    "prenom": "Jozhua",
-    "nationalite": "Néerlandais",
-    "poste": "DC",
-    "clubs": [
-      "Rayo Vallecano"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p65vl31762546461.jpg"
-  },
-  "Copete|Liga": {
-    "prenom": "José",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Valencia"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/x39jbq1678829777.jpg"
-  },
-  "Parreño|Liga": {
-    "prenom": "Germán",
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8eiw5l1527937375.jpg"
-  },
-  "Hancko|Liga": {
-    "prenom": "Dávid",
-    "nationalite": "Slovaque",
-    "poste": "DC",
-    "clubs": [
-      "Atlético"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/u9nsy61546426677.jpg"
-  },
-  "Natan|Liga": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Betis"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i3td7p1702563899.jpg"
-  },
-  "Starfelt|Liga": {
-    "prenom": "Carl",
-    "nationalite": "Suédois",
-    "poste": "DC",
-    "clubs": [
-      "Celta"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zb4ki31723545733.jpg"
-  },
-  "Padilla|Liga": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://assets.laliga.com/squad/2026/t174/p564564/512x556/p564564_t174_2026_0_001_000.png"
-  },
-  "Iñaki Williams|Liga": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bjgctf1503241984.jpg"
-  },
-  "Sangante|Liga": {
-    "prenom": "Arouna",
-    "nationalite": "Sénégalais",
-    "poste": "DC",
-    "clubs": [
-      "Sevilla"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/amu2v01702293177.jpg"
-  },
-  "Vivian|Liga": {
-    "prenom": "Dani",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Athletic"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v8xx1629191642.jpg"
-  },
-  "Bigas|Liga": {
-    "prenom": "Pedro",
-    "nationalite": "Espagnol",
-    "poste": "DC",
-    "clubs": [
-      "Elche"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vdklrp1603133119.jpg"
-  },
-  "Chupe|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "A",
-    "clubs": [
-      "Málaga"
-    ],
-    "photo": "https://statics-maker.llt-services.com/mga/images/2025/07/22/large/7cffe454-16fa-443e-a404-beae9739f941-544.png"
-  },
-  "Gabriel Moscardo|Liga": {
-    "prenom": null,
-    "nationalite": "Brésilien",
-    "poste": "MD",
-    "clubs": [
-      "Espanyol"
-    ],
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Moscardo_asse_sr_2425.png"
-  },
-  "Renato Veiga|Liga": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1u0amz1678362097.jpg"
-  },
-  "Álvaro García|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "MO",
-    "clubs": [
-      "Rayo Vallecano"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5j0ud31573336936.jpg"
-  },
-  "Leo Román|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "G",
-    "clubs": [
-      "La Corogne"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utvnys1701170666.jpg"
-  },
-  "Carlos Romero|Liga": {
-    "prenom": null,
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Villarreal"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8blz0b1701165576.jpg"
-  },
-  "Zaid Romero|Liga": {
-    "prenom": null,
-    "nationalite": "Argentin",
-    "poste": "DC",
-    "clubs": [
-      "Getafe"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8sa4cv1716496520.jpg"
-  },
-  "Ratiu|Liga": {
-    "prenom": "Andrei",
-    "nationalite": "Roumain",
-    "poste": "DL",
-    "clubs": [
-      "Rayo Vallecano"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qo4bxk1643235335.jpg"
-  },
-  "Carreira|Liga": {
-    "prenom": "Sergio",
-    "nationalite": "Espagnol",
-    "poste": "DL",
-    "clubs": [
-      "Celta"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p7hl8y1603553273.jpg"
-  },
-  "Lepaul|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qr25kr1765835673.jpg"
-  },
-  "Balogun|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uc8q1x1781348667.jpg"
-  },
-  "Dembélé|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n5804m1548096753.jpg"
-  },
-  "Doué|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Thauvin|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/okvymp1625573781.jpg"
-  },
-  "Akliouche|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/f4nucz1778802906.jpg"
-  },
-  "Igor Paixão|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Marseille"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6vfpwl1679241239.jpg"
-  },
-  "Tolisso|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k7jf3h1660764735.jpg"
-  },
-  "Openda|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jthzmk1623844882.jpg"
-  },
-  "Zaïre-Emery|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6mbhc51778818488.jpg"
-  },
-  "Gboho|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Toulouse"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0wf13k1608995085.jpg"
-  },
-  "Vitinha|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/a0b12b1770218109.jpg"
-  },
-  "Fati|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/cutout/5781384.png"
-  },
-  "Sulc|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/je99gt1624845404.jpg"
-  },
-  "Torres|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bk5d9n1710931499.jpg"
-  },
-  "Godts|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7zxwbr1723380513.jpg"
-  },
-  "Kebbal|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uue0hf1631626009.jpg"
-  },
-  "Godo|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Strasbourg"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1x1mcn1547981706.jpg"
-  },
-  "Nanasi|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Strasbourg"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/c4l61c1632998516.jpg"
-  },
-  "Blas|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lut8xj1531055704.jpg"
-  },
-  "Nuno Mendes|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ocycug1770217690.jpg"
-  },
-  "Cuisance|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rsnqt31679568719.jpg"
-  },
-  "Ganiou|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": null
-  },
-  "Safonov|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6u5q2q1718383125.jpg"
-  },
-  "Niakhaté|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/myny341578227368.jpg"
-  },
-  "Simon|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8yevit1772029876.jpg"
-  },
-  "Haraldsson|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Lille"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ecrf2c1663233424.jpg"
-  },
-  "Risser|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rh7t441778817730.jpg"
-  },
-  "João Neves|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/463f8a1770217760.jpg"
-  },
-  "Reyna|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Strasbourg"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ehkoh41547205020.jpg"
-  },
-  "Teze|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": null
-  },
-  "Thomasson|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Kouassi|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Lorient"
-    ],
-    "photo": null
-  },
-  "Cresswell|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Abner Vinícius|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": null
-  },
-  "Trapp|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": null
-  },
-  "Zabarnyi|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Clauss|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Nice"
-    ],
-    "photo": null
-  },
-  "Ngoy|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Lille"
-    ],
-    "photo": null
-  },
-  "Flávio Nazinho|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": null
-  },
-  "Maitland-Niles|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": null
-  },
-  "Saud Abdulhamid|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": null
-  },
-  "Bombito|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Nice"
-    ],
-    "photo": null
-  },
-  "Raolisoa|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Angers"
-    ],
-    "photo": null
-  },
-  "Coulibaly|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": null
-  },
-  "Mayulu|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Lloris|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Brest"
-    ],
-    "photo": null
-  },
-  "Emerson|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Marseille"
-    ],
-    "photo": null
-  },
-  "Matondo|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": null
-  },
-  "Sima|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": null
-  },
-  "Diomandé|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Auxerre"
-    ],
-    "photo": null
-  },
-  "Nuamah|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": null
-  },
-  "Kluivert|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Lyon"
-    ],
-    "photo": null
-  },
-  "Chevalier|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Frankowski|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Marquinhos|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Alexsandro Ribeiro|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DC",
-    "clubs": [
-      "Lille"
-    ],
-    "photo": null
-  },
-  "Nkambadio|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": null
-  },
-  "Mosengo|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Le Havre"
-    ],
-    "photo": null
-  },
-  "Harit|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Marseille"
-    ],
-    "photo": null
-  },
-  "Belazzoug|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Kvaratskhelia|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Del Castillo|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Brest"
-    ],
-    "photo": null
-  },
-  "Ndiaye|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Le Havre"
-    ],
-    "photo": null
-  },
-  "Gouiri|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Marseille"
-    ],
-    "photo": null
-  },
-  "Ajorque|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Brest"
-    ],
-    "photo": null
-  },
-  "Pagis|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Paris FC"
-    ],
-    "photo": null
-  },
-  "Guela Doué|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Strasbourg"
-    ],
-    "photo": null
-  },
-  "Udol|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Lens"
-    ],
-    "photo": null
-  },
-  "Rongier|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Embolo|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Ruiz|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "MD",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Samba|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  },
-  "Digne|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "DL",
-    "clubs": [
-      "Paris"
-    ],
-    "photo": null
-  },
-  "Biereth|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Monaco"
-    ],
-    "photo": null
-  },
-  "Önal|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Lille"
-    ],
-    "photo": null
-  },
-  "Lemaître|Ligue 1": {
-    "prenom": null,
-    "nationalite": null,
-    "poste": "G",
-    "clubs": [
-      "Rennes"
-    ],
-    "photo": null
-  }
+ "Vargas|Liga": {
+  "prenom": "Rubén",
+  "nationalite": "Suisse",
+  "poste": "MO",
+  "clubs": [
+   "Sevilla"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/j1ztej1578079778.jpg"
+ },
+ "Gordon|Liga": {
+  "prenom": "Anthony",
+  "nationalite": "Anglais",
+  "poste": "A",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yleib91770796577.jpg"
+ },
+ "Valverde|Liga": {
+  "prenom": "Federico",
+  "nationalite": "Uruguayen",
+  "poste": "MD",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/38ndp21771266409.jpg"
+ },
+ "Olmo|Liga": {
+  "prenom": "Dani",
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/b075cd1786385273.jpg"
+ },
+ "López|Liga": {
+  "prenom": "Fermín",
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5z9d271771253844.jpg"
+ },
+ "Lee Kang-In|Liga": {
+  "prenom": null,
+  "nationalite": "Sud-Coréen",
+  "poste": "MO",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n0hew31778972474.jpg"
+ },
+ "Courtois|Liga": {
+  "prenom": "Thibaut",
+  "nationalite": "Belge",
+  "poste": "G",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/54zonn1779039115.jpg"
+ },
+ "Budimir|Liga": {
+  "prenom": "Ante",
+  "nationalite": "Croate",
+  "poste": "A",
+  "clubs": [
+   "Osasuna"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jln8lh1562704806.jpg"
+ },
+ "Riquelme|Liga": {
+  "prenom": "Rodrigo",
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8f7i311702564478.jpg"
+ },
+ "Bernardo Silva|Liga": {
+  "prenom": null,
+  "nationalite": "Portugais",
+  "poste": "MO",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/kv4bed1786031511.jpg"
+ },
+ "Eric García|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mc6fd21779730502.jpg"
+ },
+ "Lejeune|Liga": {
+  "prenom": "Florian",
+  "nationalite": "Français",
+  "poste": "DC",
+  "clubs": [
+   "Rayo Vallecano"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uzt3y61509806630.jpg"
+ },
+ "Yeremay Hernández|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "La Corogne"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knzaeg1735418518.jpg"
+ },
+ "Iglesias|Liga": {
+  "prenom": "Borja",
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Celta"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/fm1eos1786386301.jpg"
+ },
+ "Pedri|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "MD",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t178/p490541/512x556/p490541_t178_2026_0_001_000.png"
+ },
+ "Güler|Liga": {
+  "prenom": "Arda",
+  "nationalite": "Turc",
+  "poste": "MO",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0saeov1771265107.jpg"
+ },
+ "Gavi|Liga": {
+  "prenom": "Pablo",
+  "nationalite": "Espagnol",
+  "poste": "MD",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Gavi_Argentina_v_Spain_19_July_2026-013.jpg"
+ },
+ "Yan Diomande|Liga": {
+  "prenom": null,
+  "nationalite": "Ivoirien",
+  "poste": "MO",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/7m6vzs1786031407.jpg"
+ },
+ "Boyomo|Liga": {
+  "prenom": "Enzo",
+  "nationalite": "Camerounais",
+  "poste": "DC",
+  "clubs": [
+   "Osasuna"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jv9e541725091741.jpg"
+ },
+ "Mikautadze|Liga": {
+  "prenom": "Georges",
+  "nationalite": "Géorgien",
+  "poste": "A",
+  "clubs": [
+   "Villarreal"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0b6lsq1716622054.jpg"
+ },
+ "Fornals|Liga": {
+  "prenom": "Pablo",
+  "nationalite": "Espagnol",
+  "poste": "MD",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/85zkip1707062348.jpg"
+ },
+ "Sørloth|Liga": {
+  "prenom": "Alexander",
+  "nationalite": "Norvégien",
+  "poste": "A",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/slx8ts1724311500.jpg"
+ },
+ "Radu|Liga": {
+  "prenom": "Ionuț",
+  "nationalite": "Roumain",
+  "poste": "G",
+  "clubs": [
+   "Celta"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wnm8sk1546115542.jpg"
+ },
+ "Etta Eyong|Liga": {
+  "prenom": "Karl",
+  "nationalite": "Camerounais",
+  "poste": "A",
+  "clubs": [
+   "Levante"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mht6lv1762462602.jpg"
+ },
+ "Andrés Martín|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Santander"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utuqbx1630065861.jpg"
+ },
+ "Buchanan|Liga": {
+  "prenom": "Tajon",
+  "nationalite": "Canadien",
+  "poste": "MO",
+  "clubs": [
+   "Villarreal"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yssum41668624128.jpg"
+ },
+ "Jauregizar|Liga": {
+  "prenom": "Mikel",
+  "nationalite": "Espagnol",
+  "poste": "MD",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n28mz81712489376.jpg"
+ },
+ "Angeliño|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "La Corogne"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xg2jeu1585495738.jpg"
+ },
+ "Simón|Liga": {
+  "prenom": "Unai",
+  "nationalite": "Espagnol",
+  "poste": "G",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7mte7u1603316714.jpg"
+ },
+ "Grimaldo|Liga": {
+  "prenom": "Alejandro",
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/14eqd51786385517.jpg"
+ },
+ "Bellerín|Liga": {
+  "prenom": "Héctor",
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/90fxb01710840449.jpg"
+ },
+ "Antony|Liga": {
+  "prenom": null,
+  "nationalite": "Brésilien",
+  "poste": "MO",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t185/p467169/512x556/p467169_t185_2026_0_001_000.png"
+ },
+ "Rüdiger|Liga": {
+  "prenom": "Antonio",
+  "nationalite": "Allemand",
+  "poste": "DC",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qtv86p1779385132.jpg"
+ },
+ "Adeyemi|Liga": {
+  "prenom": "Karim",
+  "nationalite": "Allemand",
+  "poste": "A",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/51zta91784803817.jpg"
+ },
+ "Lamine Yamal|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/cdjnqt1786385175.jpg"
+ },
+ "Bellingham|Liga": {
+  "prenom": "Jude",
+  "nationalite": "Anglais",
+  "poste": "MO",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rfg8xd1771263826.jpg"
+ },
+ "Pape Gueye|Liga": {
+  "prenom": null,
+  "nationalite": "Sénégalais",
+  "poste": "MD",
+  "clubs": [
+   "Villarreal"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ncg6ba1609250975.jpg"
+ },
+ "Vinícius Júnior|Liga": {
+  "prenom": null,
+  "nationalite": "Brésilien",
+  "poste": "A",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lxf1he1771264845.jpg"
+ },
+ "Mbappé|Liga": {
+  "prenom": "Kylian",
+  "nationalite": "Français",
+  "poste": "A",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v08cj31778816426.jpg"
+ },
+ "Lunin|Liga": {
+  "prenom": "Andriy",
+  "nationalite": "Ukrainien",
+  "poste": "G",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ka70iy1771265178.jpg"
+ },
+ "Lookman|Liga": {
+  "prenom": "Ademola",
+  "nationalite": "Nigérian",
+  "poste": "A",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t175/p219352/512x556/p219352_t175_2026_0_001_000.png"
+ },
+ "Jon Martín|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "DC",
+  "clubs": [
+   "Real Sociedad"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t3567/p620617/512x556/p620617_t3567_2026_0_001_000.png"
+ },
+ "Aubameyang|Liga": {
+  "prenom": "Pierre-Emerick",
+  "nationalite": "Gabonais",
+  "poste": "A",
+  "clubs": [
+   "La Corogne"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q3gswt1660896483.jpg"
+ },
+ "Simeone|Liga": {
+  "prenom": "Giovanni",
+  "nationalite": "Argentin",
+  "poste": "A",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t175/p482652/512x556/p482652_t175_2026_0_001_000.png"
+ },
+ "Herrera|Liga": {
+  "prenom": "Sergio",
+  "nationalite": "Espagnol",
+  "poste": "G",
+  "clubs": [
+   "Osasuna"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yigy401725092209.jpg"
+ },
+ "Cubarsí|Liga": {
+  "prenom": "Pau",
+  "nationalite": "Espagnol",
+  "poste": "DC",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t178/p593110/512x556/p593110_t178_2026_0_001_000.png"
+ },
+ "Isco|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t185/p80209/512x556/p80209_t185_2026_0_001_000.png"
+ },
+ "Oyarzabal|Liga": {
+  "prenom": "Mikel",
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Real Sociedad"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/gbl3zd1786385954.jpg"
+ },
+ "Hjulmand|Liga": {
+  "prenom": "Morten",
+  "nationalite": "Danois",
+  "poste": "MD",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/fip8xr1678970706.jpg"
+ },
+ "Hernández|Liga": {
+  "prenom": "Cucho",
+  "nationalite": "Colombien",
+  "poste": "A",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4d5uuv1730093350.jpg"
+ },
+ "Kubo|Liga": {
+  "prenom": "Takefusa",
+  "nationalite": "Japonais",
+  "poste": "MO",
+  "clubs": [
+   "Real Sociedad"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vfxemz1696610755.jpg"
+ },
+ "Raphinha|Liga": {
+  "prenom": null,
+  "nationalite": "Brésilien",
+  "poste": "A",
+  "clubs": [
+   "Barcelona"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t178/p219961/512x556/p219961_t178_2026_0_001_000.png"
+ },
+ "Baena|Liga": {
+  "prenom": "Alex",
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/qz8oej1786386371.jpg"
+ },
+ "Nico Williams|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ubc6yn1629190504.jpg"
+ },
+ "Dumfries|Liga": {
+  "prenom": "Denzel",
+  "nationalite": "Néerlandais",
+  "poste": "DL",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7uz0v61544971521.jpg"
+ },
+ "Cucurella|Liga": {
+  "prenom": "Marc",
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Real Madrid"
+  ],
+  "photo": "https://www.thesportsdb.com/images/media/player/thumb/2hjwcz1785328531.jpg"
+ },
+ "Barrenetxea|Liga": {
+  "prenom": "Ander",
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Real Sociedad"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkavks1600722048.jpg"
+ },
+ "Vertrouwd|Liga": {
+  "prenom": "Jozhua",
+  "nationalite": "Néerlandais",
+  "poste": "DC",
+  "clubs": [
+   "Rayo Vallecano"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p65vl31762546461.jpg"
+ },
+ "Copete|Liga": {
+  "prenom": "José",
+  "nationalite": "Espagnol",
+  "poste": "DC",
+  "clubs": [
+   "Valencia"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/x39jbq1678829777.jpg"
+ },
+ "Parreño|Liga": {
+  "prenom": "Germán",
+  "nationalite": "Espagnol",
+  "poste": "G",
+  "clubs": [
+   "La Corogne"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8eiw5l1527937375.jpg"
+ },
+ "Hancko|Liga": {
+  "prenom": "Dávid",
+  "nationalite": "Slovaque",
+  "poste": "DC",
+  "clubs": [
+   "Atlético"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/u9nsy61546426677.jpg"
+ },
+ "Natan|Liga": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Betis"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i3td7p1702563899.jpg"
+ },
+ "Starfelt|Liga": {
+  "prenom": "Carl",
+  "nationalite": "Suédois",
+  "poste": "DC",
+  "clubs": [
+   "Celta"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zb4ki31723545733.jpg"
+ },
+ "Padilla|Liga": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://assets.laliga.com/squad/2026/t174/p564564/512x556/p564564_t174_2026_0_001_000.png"
+ },
+ "Iñaki Williams|Liga": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bjgctf1503241984.jpg"
+ },
+ "Sangante|Liga": {
+  "prenom": "Arouna",
+  "nationalite": "Sénégalais",
+  "poste": "DC",
+  "clubs": [
+   "Sevilla"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/amu2v01702293177.jpg"
+ },
+ "Vivian|Liga": {
+  "prenom": "Dani",
+  "nationalite": "Espagnol",
+  "poste": "DC",
+  "clubs": [
+   "Athletic"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v8xx1629191642.jpg"
+ },
+ "Bigas|Liga": {
+  "prenom": "Pedro",
+  "nationalite": "Espagnol",
+  "poste": "DC",
+  "clubs": [
+   "Elche"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vdklrp1603133119.jpg"
+ },
+ "Chupe|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Málaga"
+  ],
+  "photo": "https://statics-maker.llt-services.com/mga/images/2025/07/22/large/7cffe454-16fa-443e-a404-beae9739f941-544.png"
+ },
+ "Gabriel Moscardo|Liga": {
+  "prenom": null,
+  "nationalite": "Brésilien",
+  "poste": "MD",
+  "clubs": [
+   "Espanyol"
+  ],
+  "photo": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Moscardo_asse_sr_2425.png"
+ },
+ "Renato Veiga|Liga": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Villarreal"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1u0amz1678362097.jpg"
+ },
+ "Álvaro García|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "MO",
+  "clubs": [
+   "Rayo Vallecano"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5j0ud31573336936.jpg"
+ },
+ "Leo Román|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "G",
+  "clubs": [
+   "La Corogne"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utvnys1701170666.jpg"
+ },
+ "Carlos Romero|Liga": {
+  "prenom": null,
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Villarreal"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8blz0b1701165576.jpg"
+ },
+ "Zaid Romero|Liga": {
+  "prenom": null,
+  "nationalite": "Argentin",
+  "poste": "DC",
+  "clubs": [
+   "Getafe"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8sa4cv1716496520.jpg"
+ },
+ "Ratiu|Liga": {
+  "prenom": "Andrei",
+  "nationalite": "Roumain",
+  "poste": "DL",
+  "clubs": [
+   "Rayo Vallecano"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qo4bxk1643235335.jpg"
+ },
+ "Carreira|Liga": {
+  "prenom": "Sergio",
+  "nationalite": "Espagnol",
+  "poste": "DL",
+  "clubs": [
+   "Celta"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p7hl8y1603553273.jpg"
+ },
+ "Lepaul|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qr25kr1765835673.jpg"
+ },
+ "Balogun|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uc8q1x1781348667.jpg"
+ },
+ "Dembélé|Ligue 1": {
+  "prenom": "Ousmane",
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2w39ps1778803599.jpg"
+ },
+ "Doué|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Thauvin|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/okvymp1625573781.jpg"
+ },
+ "Akliouche|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/f4nucz1778802906.jpg"
+ },
+ "Igor Paixão|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Marseille"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6vfpwl1679241239.jpg"
+ },
+ "Tolisso|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k7jf3h1660764735.jpg"
+ },
+ "Openda|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jthzmk1623844882.jpg"
+ },
+ "Zaïre-Emery|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6mbhc51778818488.jpg"
+ },
+ "Gboho|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Toulouse"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0wf13k1608995085.jpg"
+ },
+ "Vitinha|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/a0b12b1770218109.jpg"
+ },
+ "Fati|Ligue 1": {
+  "prenom": "Ansu",
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gtose41659989447.jpg"
+ },
+ "Sulc|Ligue 1": {
+  "prenom": "Pavel",
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h9uwgv1766090368.jpg"
+ },
+ "Torres|Ligue 1": {
+  "prenom": "Ferran",
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ciyw971784511340.jpg"
+ },
+ "Godts|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7zxwbr1723380513.jpg"
+ },
+ "Kebbal|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uue0hf1631626009.jpg"
+ },
+ "Godo|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Strasbourg"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1x1mcn1547981706.jpg"
+ },
+ "Nanasi|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Strasbourg"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/c4l61c1632998516.jpg"
+ },
+ "Blas|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lut8xj1531055704.jpg"
+ },
+ "Nuno Mendes|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ocycug1770217690.jpg"
+ },
+ "Cuisance|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rsnqt31679568719.jpg"
+ },
+ "Ganiou|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": null
+ },
+ "Safonov|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6u5q2q1718383125.jpg"
+ },
+ "Niakhaté|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/myny341578227368.jpg"
+ },
+ "Simon|Ligue 1": {
+  "prenom": "Moses",
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/j18tv41608669053.jpg"
+ },
+ "Haraldsson|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Lille"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ecrf2c1663233424.jpg"
+ },
+ "Risser|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rh7t441778817730.jpg"
+ },
+ "João Neves|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/463f8a1770217760.jpg"
+ },
+ "Reyna|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Strasbourg"
+  ],
+  "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ehkoh41547205020.jpg"
+ },
+ "Teze|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": null
+ },
+ "Thomasson|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Kouassi|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Lorient"
+  ],
+  "photo": null
+ },
+ "Cresswell|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Abner Vinícius|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": null
+ },
+ "Trapp|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": null
+ },
+ "Zabarnyi|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Clauss|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Nice"
+  ],
+  "photo": null
+ },
+ "Ngoy|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Lille"
+  ],
+  "photo": null
+ },
+ "Flávio Nazinho|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": null
+ },
+ "Maitland-Niles|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": null
+ },
+ "Saud Abdulhamid|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": null
+ },
+ "Bombito|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Nice"
+  ],
+  "photo": null
+ },
+ "Raolisoa|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Angers"
+  ],
+  "photo": null
+ },
+ "Coulibaly|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": null
+ },
+ "Mayulu|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Lloris|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Brest"
+  ],
+  "photo": null
+ },
+ "Emerson|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Marseille"
+  ],
+  "photo": null
+ },
+ "Matondo|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": null
+ },
+ "Sima|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": null
+ },
+ "Diomandé|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Auxerre"
+  ],
+  "photo": null
+ },
+ "Nuamah|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": null
+ },
+ "Kluivert|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Lyon"
+  ],
+  "photo": null
+ },
+ "Chevalier|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Frankowski|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Marquinhos|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Alexsandro Ribeiro|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DC",
+  "clubs": [
+   "Lille"
+  ],
+  "photo": null
+ },
+ "Nkambadio|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": null
+ },
+ "Mosengo|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Le Havre"
+  ],
+  "photo": null
+ },
+ "Harit|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MO",
+  "clubs": [
+   "Marseille"
+  ],
+  "photo": null
+ },
+ "Belazzoug|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Kvaratskhelia|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Del Castillo|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Brest"
+  ],
+  "photo": null
+ },
+ "Ndiaye|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Le Havre"
+  ],
+  "photo": null
+ },
+ "Gouiri|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Marseille"
+  ],
+  "photo": null
+ },
+ "Ajorque|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Brest"
+  ],
+  "photo": null
+ },
+ "Pagis|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Paris FC"
+  ],
+  "photo": null
+ },
+ "Guela Doué|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Strasbourg"
+  ],
+  "photo": null
+ },
+ "Udol|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Lens"
+  ],
+  "photo": null
+ },
+ "Rongier|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Embolo|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Ruiz|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "MD",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Samba|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ },
+ "Digne|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "DL",
+  "clubs": [
+   "Paris"
+  ],
+  "photo": null
+ },
+ "Biereth|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Monaco"
+  ],
+  "photo": null
+ },
+ "Önal|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "A",
+  "clubs": [
+   "Lille"
+  ],
+  "photo": null
+ },
+ "Lemaître|Ligue 1": {
+  "prenom": null,
+  "nationalite": null,
+  "poste": "G",
+  "clubs": [
+   "Rennes"
+  ],
+  "photo": null
+ }
 }
