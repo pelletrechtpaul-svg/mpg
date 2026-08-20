@@ -18,7 +18,7 @@ async function search(name) {
 }
 
 async function main() {
-  for (const q of ['Ousmane Dembélé', 'Ansu Fati', 'Moses Simon', 'Simon Moses', 'Ferran Torres']) {
+  for (const q of ['Ousmane Dembélé', 'Ansu Fati', 'Moses Simon', 'Simon Moses', 'Ferran Torres', 'Pavel Sulc']) {
     const results = await search(q);
     console.log(`\n"${q}":`);
     results.forEach(r => console.log(`  - ${r.name} (${r.nat}, ${r.team}) photo=${r.photo}`));
