@@ -1239,7 +1239,7 @@
   "clubs": [
    "Rennes"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/2334320/image"
  },
  "Kvaratskhelia|Ligue 1": {
   "prenom": "Khvicha",
@@ -1266,7 +1266,7 @@
   "clubs": [
    "Le Havre"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/992026/image"
  },
  "Gouiri|Ligue 1": {
   "prenom": "Amine",
