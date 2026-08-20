@@ -21,7 +21,7 @@ jobs:
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccountKey.json
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-      - run: node scripts/debug-check-mercato.cjs
+      - run: node scripts/debug-fix-championnat.cjs
       - name: Remove service account key
         if: always()
         run: rm -f serviceAccountKey.json
