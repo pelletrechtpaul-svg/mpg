@@ -1,0 +1,25 @@
+{
+  "ligue": "Serie A",
+  "championnat": 1,
+  "tour": 2,
+  "saison": "2026/2027",
+  "joueurs": [
+    { "joueur": "Rafael Leão", "poste": "A", "club": "Milan", "prix": 66, "acheteur": "Adrien", "equipe_acheteur": "Les Bolognaise" },
+    { "joueur": "Højlund", "prenom": "Rasmus", "poste": "A", "club": "Napoli", "prix": 65, "acheteur": "Paul", "equipe_acheteur": "Ousmane Lecce" },
+    { "joueur": "Soulé", "prenom": "Matías", "poste": "A", "club": "Roma", "prix": 48, "acheteur": "Adrien", "equipe_acheteur": "Les Bolognaise" },
+    { "joueur": "Douvikas", "prenom": "Anastasios", "poste": "A", "club": "Como", "prix": 34, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Modric", "prenom": "Luka", "poste": "MO", "club": "Milan", "prix": 23, "acheteur": "Roman", "equipe_acheteur": "Il Campione" },
+    { "joueur": "Esposito", "prenom": "Sebastiano", "poste": "A", "club": "Cagliari", "prix": 21, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Éderson", "poste": "MD", "club": "Atalanta", "prix": 20, "acheteur": "Adrien", "equipe_acheteur": "Les Bolognaise" },
+    { "joueur": "Kolo Muani", "prenom": "Randal", "poste": "A", "club": "Juventus", "prix": 17, "acheteur": "Adrien", "equipe_acheteur": "Les Bolognaise" },
+    { "joueur": "Motta", "prenom": "Edoardo", "poste": "G", "club": "Lazio", "prix": 15, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Mastantuono", "prenom": "Franco", "poste": "MO", "club": "Fiorentina", "prix": 15, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Alajbegovic", "prenom": "Kerim", "poste": "MO", "club": "Juventus", "prix": 14, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Mkhitaryan", "prenom": "Henrikh", "poste": "MO", "club": "Inter", "prix": 13, "acheteur": "Roman", "equipe_acheteur": "Il Campione" },
+    { "joueur": "Kalulu", "prenom": "Pierre", "poste": "DL", "club": "Juventus", "prix": 13, "acheteur": "Roman", "equipe_acheteur": "Il Campione" },
+    { "joueur": "Inao Oulaï", "poste": "MD", "club": "Fiorentina", "prix": 12, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" },
+    { "joueur": "Rowe", "prenom": "Jonathan", "poste": "A", "club": "Bologna", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Les Bolognaise" },
+    { "joueur": "Bisseck", "prenom": "Yann", "poste": "DC", "club": "Inter", "prix": 12, "acheteur": "Roman", "equipe_acheteur": "Il Campione" },
+    { "joueur": "Mandas", "prenom": "Christos", "poste": "G", "club": "Lazio", "prix": 7, "acheteur": "Tiago", "equipe_acheteur": "Hélas Verre de Rhum" }
+  ]
+}
