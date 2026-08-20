@@ -1,0 +1,21 @@
+{
+  "ligue": "Premier League",
+  "championnat": 1,
+  "tour": 2,
+  "saison": "2026/2027",
+  "joueurs": [
+    { "joueur": "Gyökeres", "prenom": "Viktor", "poste": "A", "club": "Arsenal", "prix": 62, "acheteur": "Adrien", "equipe_acheteur": "Les Penne Rigate" },
+    { "joueur": "Rashford", "prenom": "Marcus", "poste": "A", "club": "Man United", "prix": 56, "acheteur": "Adrien", "equipe_acheteur": "Les Penne Rigate" },
+    { "joueur": "Mbeumo", "prenom": "Bryan", "poste": "A", "club": "Man United", "prix": 54, "acheteur": "Paul", "equipe_acheteur": "Tout en Miam" },
+    { "joueur": "Anderson", "prenom": "Elliot", "poste": "MD", "club": "Man City", "prix": 35, "acheteur": "Paul", "equipe_acheteur": "Tout en Miam" },
+    { "joueur": "Richarlison", "poste": "A", "club": "Tottenham", "prix": 26, "acheteur": "Tiago", "equipe_acheteur": "Raids Débiles" },
+    { "joueur": "Madjo", "prenom": "Brian", "poste": "A", "club": "Aston Villa", "prix": 18, "acheteur": "Roman", "equipe_acheteur": "The Champion" },
+    { "joueur": "Pickford", "prenom": "Jordan", "poste": "G", "club": "Everton", "prix": 16, "acheteur": "Tiago", "equipe_acheteur": "Raids Débiles" },
+    { "joueur": "Konsa", "prenom": "Ezri", "poste": "DC", "club": "Aston Villa", "prix": 14, "acheteur": "Roman", "equipe_acheteur": "The Champion" },
+    { "joueur": "Shaw", "prenom": "Luke", "poste": "DL", "club": "Man United", "prix": 12, "acheteur": "Adrien", "equipe_acheteur": "Les Penne Rigate" },
+    { "joueur": "Emegha", "prenom": "Emanuel", "poste": "A", "club": "Chelsea", "prix": 11, "acheteur": "Adrien", "equipe_acheteur": "Les Penne Rigate" },
+    { "joueur": "Estêvão", "poste": "A", "club": "Chelsea", "prix": 10, "acheteur": "Tiago", "equipe_acheteur": "Raids Débiles" },
+    { "joueur": "Gabriel Jesus", "poste": "A", "club": "Arsenal", "prix": 8, "acheteur": "Tiago", "equipe_acheteur": "Raids Débiles" },
+    { "joueur": "Travers", "prenom": "Mark", "poste": "G", "club": "Everton", "prix": 7, "acheteur": "Tiago", "equipe_acheteur": "Raids Débiles" }
+  ]
+}
