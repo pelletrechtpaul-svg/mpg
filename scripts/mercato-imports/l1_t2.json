@@ -1,0 +1,24 @@
+{
+  "ligue": "Ligue 1",
+  "championnat": "next",
+  "tour": 2,
+  "saison": "2026/2027",
+  "joueurs": [
+    { "joueur": "Kvaratskhelia", "poste": "A", "club": "Paris", "prix": 94, "acheteur": "Tiago", "equipe_acheteur": "Stade Khéné FC" },
+    { "joueur": "Del Castillo", "poste": "A", "club": "Brest", "prix": 49, "acheteur": "Paul", "equipe_acheteur": "Caen Tâte" },
+    { "joueur": "Ndiaye", "poste": "MD", "club": "Le Havre", "prix": 38, "acheteur": "Paul", "equipe_acheteur": "Caen Tâte" },
+    { "joueur": "Gouiri", "poste": "A", "club": "Marseille", "prix": 33, "acheteur": "Tiago", "equipe_acheteur": "Stade Khéné FC" },
+    { "joueur": "Ajorque", "poste": "A", "club": "Brest", "prix": 33, "acheteur": "Tiago", "equipe_acheteur": "Stade Khéné FC" },
+    { "joueur": "Pagis", "poste": "A", "club": "Paris FC", "prix": 30, "acheteur": "Tiago", "equipe_acheteur": "Stade Khéné FC" },
+    { "joueur": "Guela Doué", "poste": "DL", "club": "Strasbourg", "prix": 24, "acheteur": "Adrien", "equipe_acheteur": "Les Carbonara" },
+    { "joueur": "Udol", "poste": "DL", "club": "Lens", "prix": 24, "acheteur": "Paul", "equipe_acheteur": "Caen Tâte" },
+    { "joueur": "Rongier", "poste": "MD", "club": "Rennes", "prix": 23, "acheteur": "Roman", "equipe_acheteur": "Le Champion" },
+    { "joueur": "Embolo", "poste": "A", "club": "Rennes", "prix": 20, "acheteur": "Adrien", "equipe_acheteur": "Les Carbonara" },
+    { "joueur": "Ruiz", "poste": "MD", "club": "Paris", "prix": 17, "acheteur": "Adrien", "equipe_acheteur": "Les Carbonara" },
+    { "joueur": "Samba", "poste": "G", "club": "Rennes", "prix": 17, "acheteur": "Adrien", "equipe_acheteur": "Les Carbonara" },
+    { "joueur": "Digne", "poste": "DL", "club": "Paris", "prix": 17, "acheteur": "Paul", "equipe_acheteur": "Caen Tâte" },
+    { "joueur": "Biereth", "poste": "A", "club": "Monaco", "prix": 14, "acheteur": "Roman", "equipe_acheteur": "Le Champion" },
+    { "joueur": "Önal", "poste": "A", "club": "Lille", "prix": 11, "acheteur": "Roman", "equipe_acheteur": "Le Champion" },
+    { "joueur": "Lemaître", "poste": "G", "club": "Rennes", "prix": 7, "acheteur": "Adrien", "equipe_acheteur": "Les Carbonara" }
+  ]
+}
