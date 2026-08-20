@@ -16,12 +16,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
-      - name: Write service account key
-        run: echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccountKey.json
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-      - run: node scripts/debug-fix-championnat.cjs
-      - name: Remove service account key
-        if: always()
-        run: rm -f serviceAccountKey.json
+      - run: node scripts/debug-fix-homonyms.cjs
