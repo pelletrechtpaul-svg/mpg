@@ -187,7 +187,7 @@ async function main() {
       warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
       const similar = findSimilarRegistryKeys(j.joueur, ligue, registry);
       if (similar.length) {
-        warnings.push(`⚠️  NOM PROCHE: "${j.joueur}" ressemble à ${similar.map(k => `"${k.split('|')[0]}"`).join(', ')} déjà en registre — vérifier qu'il ne s'agit pas du même joueur avant d'importer (sinon fiche dupliquée).`);
+        warnings.push(`🔎 NOM PROCHE: "${j.joueur}" ressemble à ${similar.map(k => `"${k.split('|')[0]}"`).join(', ')} déjà en registre — vérifier qu'il ne s'agit pas du même joueur avant d'importer (sinon fiche dupliquée).`);
       }
     }
 
