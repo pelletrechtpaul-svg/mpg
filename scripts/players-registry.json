@@ -1987,5 +1987,122 @@
       "Man United"
     ],
     "photo": null
+  },
+  "Gyökeres|Premier League": {
+    "prenom": "Viktor",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Arsenal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/83hsmp1778608876.jpg"
+  },
+  "Rashford|Premier League": {
+    "prenom": "Marcus",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Man United"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rb4hx61669799682.jpg"
+  },
+  "Mbeumo|Premier League": {
+    "prenom": "Bryan",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Man United"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ntsyk71608410198.jpg"
+  },
+  "Anderson|Premier League": {
+    "prenom": "Elliot",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Man City"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q2t9431780012141.jpg"
+  },
+  "Richarlison|Premier League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Tottenham"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9c6sim1770894215.jpg"
+  },
+  "Madjo|Premier League": {
+    "prenom": "Brian",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Aston Villa"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/117pnx1767869819.jpg"
+  },
+  "Pickford|Premier League": {
+    "prenom": "Jordan",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Everton"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m66e5n1771945410.jpg"
+  },
+  "Konsa|Premier League": {
+    "prenom": "Ezri",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Aston Villa"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uc1jmw1770201046.jpg"
+  },
+  "Shaw|Premier League": {
+    "prenom": "Luke",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Man United"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wbet0c1770994226.jpg"
+  },
+  "Emegha|Premier League": {
+    "prenom": "Emanuel",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Chelsea"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vbel4s1705663924.jpg"
+  },
+  "Estêvão|Premier League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Chelsea"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0wmmen1771427233.jpg"
+  },
+  "Gabriel Jesus|Premier League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Arsenal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iwt0021678196502.jpg"
+  },
+  "Travers|Premier League": {
+    "prenom": "Mark",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Everton"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/o7guoj1771945456.jpg"
   }
 }
