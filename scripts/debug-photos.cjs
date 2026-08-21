@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const OUT = path.join(__dirname, '..', 'photo-preview');
-const JP = 'https://images.fotmob.com/image_resources/playerimages/1637671.png';
+// fotmob 1021382 = João Pedro, 24 ans, attaquant brésilien de Chelsea (n°20,
+// ex-Brighton). À ne pas confondre avec 1637671 (milieu de Vasco da Gama).
+const JP = 'https://images.fotmob.com/image_resources/playerimages/1021382.png';
 
 function download(url, dest) {
   return new Promise(resolve => {
@@ -18,10 +20,8 @@ function download(url, dest) {
 
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
-  // fotmob passe-t-il par wsrv (sofascore y est bloqué) et que donne le crop ?
-  console.log('joaopedro brut      :', await download(JP, path.join(OUT, 'zz_joaopedro_raw.png')));
-  console.log('joaopedro via wsrv  :', await download(
+  console.log('joaopedro 1021382 via wsrv :', await download(
     `https://wsrv.nl/?url=${encodeURIComponent(JP)}&w=160&h=160&fit=cover&a=attention&output=png`,
-    path.join(OUT, 'zz_joaopedro_wsrv.png')));
+    path.join(OUT, 'zz_joaopedro_1021382.png')));
 }
 main();
