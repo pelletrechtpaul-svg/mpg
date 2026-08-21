@@ -26,6 +26,16 @@ const FormPills = ({ form, size = 'sm' }) => {
   );
 };
 
+// Abréviations pour la barre de puces "Effectif actuel" : garde une seule
+// ligne à 5 ligues (LDC à venir) sans scroll horizontal.
+const LIGUE_ABBR = {
+  'Ligue 1': 'L1',
+  'Liga': 'Liga',
+  'Premier League': 'PL',
+  'Serie A': 'SA',
+  'Champions League': 'LDC',
+};
+
 const Avatar = ({ joueur, className }) => (
   <div className={`rounded-full overflow-hidden ${className}`} style={{ borderColor: playerColorHex[joueur] }}>
     <img
@@ -252,21 +262,22 @@ export default function EntraineursTab({
               <ShareBtn contextText={shareContext} />
               <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectif actuel</h3>
               {effectifsParLigue.length > 1 && (
-                // flex-nowrap + overflow-x-auto plutôt que flex-wrap : garde
-                // les puces sur une seule ligne même à 5 ligues (LDC à venir),
-                // quitte à scroller horizontalement sur petit écran.
-                <div className="flex flex-nowrap gap-1.5 mb-4 overflow-x-auto -mx-1 px-1 pb-1">
+                // flex-nowrap sans scroll : chaque puce se contracte (flex-1
+                // min-w-0 + libellé abrégé) plutôt que de déborder, pour
+                // tenir sur une seule ligne même à 5 ligues (LDC à venir).
+                <div className="flex flex-nowrap gap-1.5 mb-4">
                   {effectifsParLigue.map(({ ligue, squad }) => (
                     <button
                       key={ligue}
                       onClick={() => setEffectifLigue(ligue)}
-                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                      title={ligue}
+                      className={`flex-1 min-w-0 px-1.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium truncate transition-all ${
                         active.ligue === ligue
                           ? 'bg-violet-500 text-white shadow'
                           : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                       }`}
                     >
-                      {ligue} <span className="opacity-70">({squad.length})</span>
+                      {LIGUE_ABBR[ligue] || ligue} <span className="opacity-70">({squad.length})</span>
                     </button>
                   ))}
                 </div>
