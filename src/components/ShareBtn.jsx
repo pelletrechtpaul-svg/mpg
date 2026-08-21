@@ -1,6 +1,18 @@
 import React from 'react';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import { Share2 } from 'lucide-react';
+
+// Rendu via html-to-image (SVG foreignObject) : c'est le navigateur lui-même
+// qui fait la mise en page, donc la capture est identique à l'écran. L'ancien
+// html2canvas réimplémentait son propre moteur et déformait la carte Effectif
+// (cercles écrasés, libellés décalés, texte des remplaçants coupé).
+const renderBlob = (element) => toBlob(element, {
+  pixelRatio: 2,
+  // Le fond transparent laisserait WhatsApp composer sur du blanc : on reprend
+  // celui de la carte telle qu'elle est affichée (clair ou sombre).
+  backgroundColor: getComputedStyle(element).backgroundColor,
+  cacheBust: true,
+});
 
 export const shareCard = async (element, contextText) => {
   let footer = null;
@@ -10,9 +22,14 @@ export const shareCard = async (element, contextText) => {
     footer.textContent = contextText;
     element.appendChild(footer);
   }
+  // Le bouton de partage ne doit pas se retrouver dans l'image partagée.
+  const hidden = [...element.querySelectorAll('[data-share-hide]')];
+  hidden.forEach(el => { el.style.visibility = 'hidden'; });
   try {
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: null, logging: false });
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    // Premier rendu souvent incomplet (polices/images encore en cours
+    // d'inlining) : on le jette et on garde le second.
+    await renderBlob(element);
+    const blob = await renderBlob(element);
     const file = new File([blob], 'mpg-stats.png', { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], title: 'MPG Stats' });
@@ -25,12 +42,14 @@ export const shareCard = async (element, contextText) => {
   } catch (err) {
     if (err?.name !== 'AbortError') console.error('Share failed:', err);
   } finally {
+    hidden.forEach(el => { el.style.visibility = ''; });
     if (footer?.parentNode) footer.parentNode.removeChild(footer);
   }
 };
 
 const ShareBtn = ({ contextText }) => (
   <button
+    data-share-hide
     onClick={(e) => {
       e.stopPropagation();
       const card = e.currentTarget.closest('[data-card]');
