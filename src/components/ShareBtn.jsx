@@ -12,6 +12,12 @@ const renderBlob = (element) => toBlob(element, {
   // celui de la carte telle qu'elle est affichée (clair ou sombre).
   backgroundColor: getComputedStyle(element).backgroundColor,
   cacheBust: true,
+  // OBLIGATOIRE ici : sans ça, html-to-image calcule sa clé de cache avec
+  // `url.replace(/\?.*/, '')`. Nos avatars passent tous par le proxy
+  // `https://wsrv.nl/?url=...` — seule la query string les distingue — donc
+  // toutes les photos se réduisaient à la clé `https://wsrv.nl/` et la carte
+  // partagée affichait le premier visage téléchargé pour TOUS les joueurs.
+  includeQueryParams: true,
 });
 
 export const shareCard = async (element, contextText) => {
