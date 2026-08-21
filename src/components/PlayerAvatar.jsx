@@ -38,6 +38,10 @@ export function InitialsAvatar({ displayName, size = 'lg' }) {
 // gratuit pour ne charger que la taille réellement affichée.
 export function resizedPhoto(url, px) {
   if (!url) return url;
+  // wsrv.nl refuse le domaine sofascore ("Domain or TLD blocked by policy") :
+  // on sert ces URLs telles quelles. Ce sont déjà des portraits carrés serrés,
+  // le pré-crop à 65% leur couperait le visage de toute façon.
+  if (url.includes('img.sofascore.com')) return url;
   // Pré-crop sur les 65% supérieurs de la photo (tête + épaules, sans le
   // torse), puis recadrage carré centré horizontalement / ancré en haut.
   return `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=65%25&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
@@ -56,6 +60,8 @@ export function PlayerAvatar({ joueur, ligue, displayName, photos, size = 'lg' }
       alt={displayName}
       loading="lazy"
       decoding="async"
+      // Sofascore renvoie 403 dès qu'un Referer est présent (anti-hotlink).
+      referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
       className={`${sizeClass} rounded-full object-cover flex-shrink-0 bg-slate-200 dark:bg-slate-600`}
     />
