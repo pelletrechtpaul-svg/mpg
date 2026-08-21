@@ -32,7 +32,7 @@ const LIGUE_ABBR = {
   'Ligue 1': 'L1',
   'Liga': 'Liga',
   'Premier League': 'PL',
-  'Serie A': 'SA',
+  'Serie A': 'Serie A',
   'Champions League': 'LDC',
 };
 
