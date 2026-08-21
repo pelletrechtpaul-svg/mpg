@@ -16,4 +16,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node scripts/debug-check-urls.cjs
+      - run: node scripts/debug-check-urls2.cjs
