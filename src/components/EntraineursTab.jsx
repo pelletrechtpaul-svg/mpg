@@ -146,7 +146,8 @@ export default function EntraineursTab({
     if (!selectedPlayer) return { topButeurs: [], topCsc: [] };
     const recrues = new Set((mercatoData || []).filter(m => m.acheteur === selectedPlayer).map(m => m.joueur));
     const buts = {}, csc = {};
-    filteredData.forEach(m => {
+    const matches = h2hLigue === 'all' ? filteredData : filteredData.filter(m => m.ligue === h2hLigue);
+    matches.forEach(m => {
       (m.buteurs || []).forEach(b => {
         if (!b.joueur || !recrues.has(b.joueur)) return;
         const map = b.csc ? csc : buts;
@@ -155,7 +156,7 @@ export default function EntraineursTab({
     });
     const toSorted = obj => Object.entries(obj).map(([joueur, n]) => ({ joueur, n })).sort((a, b) => b.n - a.n);
     return { topButeurs: toSorted(buts), topCsc: toSorted(csc) };
-  }, [filteredData, mercatoData, selectedPlayer]);
+  }, [filteredData, mercatoData, selectedPlayer, h2hLigue]);
 
   /* Bulle détail signature (partagée entre les deux vues) */
   const sigBubbleEl = sigBubble && (
@@ -243,10 +244,45 @@ export default function EntraineursTab({
           )}
         </div>
 
-        {/* Head-to-head */}
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
+        {/* Effectif actuel, par ligue */}
+        {effectifsParLigue.length > 0 && (() => {
+          const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
+          return (
+            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+              <ShareBtn contextText={shareContext} />
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectif actuel</h3>
+              {effectifsParLigue.length > 1 && (
+                // flex-nowrap + overflow-x-auto plutôt que flex-wrap : garde
+                // les puces sur une seule ligne même à 5 ligues (LDC à venir),
+                // quitte à scroller horizontalement sur petit écran.
+                <div className="flex flex-nowrap gap-1.5 mb-4 overflow-x-auto -mx-1 px-1 pb-1">
+                  {effectifsParLigue.map(({ ligue, squad }) => (
+                    <button
+                      key={ligue}
+                      onClick={() => setEffectifLigue(ligue)}
+                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                        active.ligue === ligue
+                          ? 'bg-violet-500 text-white shadow'
+                          : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {ligue} <span className="opacity-70">({squad.length})</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} />
+            </div>
+          );
+        })()}
+
+        {/* Confrontations directes + classement des recrues (buteurs/CSC) du
+            coach — un seul sélecteur de ligue pour les trois, pour éviter
+            deux filtres redondants dans la page. */}
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
+          <ShareBtn contextText={shareContext} />
           <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Confrontations directes</h3>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Confrontations & recrues</h3>
             <select
               value={h2hLigue}
               onChange={(e) => setH2hLigue(e.target.value)}
@@ -256,6 +292,8 @@ export default function EntraineursTab({
               {ligues.map(l => <option key={l} value={l} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">{l}</option>)}
             </select>
           </div>
+
+          <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">Confrontations directes</h4>
           <div className="space-y-3">
             {h2h.map(({ opp, w, d, l, bf, ba, matchs, winPct }) => (
               <div key={opp} className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-slate-200 dark:border-slate-700 p-4">
@@ -281,90 +319,58 @@ export default function EntraineursTab({
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Effectif actuel, par ligue */}
-        {effectifsParLigue.length > 0 && (() => {
-          const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
-          return (
-            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
-              <ShareBtn contextText={shareContext} />
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectif actuel</h3>
-              {effectifsParLigue.length > 1 && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {effectifsParLigue.map(({ ligue, squad }) => (
-                    <button
-                      key={ligue}
-                      onClick={() => setEffectifLigue(ligue)}
-                      className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
-                        active.ligue === ligue
-                          ? 'bg-violet-500 text-white shadow'
-                          : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                      }`}
-                    >
-                      {ligue} <span className="opacity-70">({squad.length})</span>
-                    </button>
-                  ))}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t dark:border-slate-700">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">⚽ Top buteurs</h4>
+              {topButeurs.length > 0 ? (
+                <table className="w-full text-xs sm:text-sm">
+                  <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                    <tr>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topButeurs.map((p, index) => (
+                      <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Aucun but marqué pour l'instant.</p>
               )}
-              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} />
             </div>
-          );
-        })()}
-
-        {/* Top buteurs / CSC parmi les recrues du coach */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-            <ShareBtn contextText={shareContext} />
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Top buteurs</h3>
-            {topButeurs.length > 0 ? (
-              <table className="w-full text-xs sm:text-sm">
-                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                  <tr>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topButeurs.map((p, index) => (
-                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">🙈 Top CSC</h4>
+              {topCsc.length > 0 ? (
+                <table className="w-full text-xs sm:text-sm">
+                  <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                    <tr>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
-            )}
-          </div>
-          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-            <ShareBtn contextText={shareContext} />
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 Top CSC</h3>
-            {topCsc.length > 0 ? (
-              <table className="w-full text-xs sm:text-sm">
-                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                  <tr>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topCsc.map((p, index) => (
-                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
-            )}
+                  </thead>
+                  <tbody>
+                    {topCsc.map((p, index) => (
+                      <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Aucun CSC pour l'instant.</p>
+              )}
+            </div>
           </div>
         </div>
 
