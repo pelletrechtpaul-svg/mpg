@@ -42,9 +42,15 @@ export function resizedPhoto(url, px) {
   // on sert ces URLs telles quelles. Ce sont déjà des portraits carrés serrés,
   // le pré-crop à 65% leur couperait le visage de toute façon.
   if (url.includes('img.sofascore.com')) return url;
-  // Pré-crop sur les 65% supérieurs de la photo (tête + épaules, sans le
-  // torse), puis recadrage carré centré horizontalement / ancré en haut.
-  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=65%25&w=${px}&h=${px}&fit=cover&a=top&output=webp&q=80`;
+  // Recadrage carré par saillance (libvips « attention », qui pondère les tons
+  // chair) : il suit le visage quelle que soit la source — portrait posé
+  // TheSportsDB comme photo d'action large.
+  //
+  // Ne PAS revenir à un pré-crop cx/cy/cw/ch : wsrv applique ces paramètres
+  // APRÈS le redimensionnement, donc `ch=65%` renvoyait du 160x104 au lieu du
+  // carré demandé. `object-cover` re-recadrait ensuite ce rectangle, ce qui
+  // zoomait ~1,5x et coupait le haut du crâne.
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=attention&output=webp&q=80`;
 }
 
 const AVATAR_PX = { lg: 128, md: 80, sm: 64, formation: 112 };
