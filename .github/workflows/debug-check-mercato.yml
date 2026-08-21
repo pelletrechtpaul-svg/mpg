@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   debug:
@@ -17,3 +17,14 @@ jobs:
         with:
           node-version: '20'
       - run: node scripts/debug-photos.cjs
+      - name: Commit previews
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add photo-preview/
+          if git diff --cached --quiet; then
+            echo "Rien à committer."
+          else
+            git commit -m "debug: crop previews"
+            git push origin claude/charming-goodall-4nt05x
+          fi

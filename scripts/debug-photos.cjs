@@ -1,52 +1,56 @@
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
-function get(url, headers = {}) {
+const registry = JSON.parse(fs.readFileSync(path.join(__dirname, 'players-registry.json'), 'utf8'));
+
+// Échantillon représentatif : sources et cadrages variés.
+const SAMPLE = [
+  'Mbeumo|Premier League',
+  'Keane|Premier League',
+  'Lacroix|Premier League',
+  'Gibbs-White|Premier League',
+  'Donnarumma|Premier League',
+  'Kadioglu|Premier League',   // Getty (photo d'action large)
+  'Wesley|Serie A',            // Getty (photo d'action large)
+  'Yildiz|Serie A',            // Getty
+  'Douvikas|Serie A',          // Sofascore (servi sans proxy)
+  'Thauvin|Ligue 1',
+  'Chevalier|Ligue 1',
+  'Openda|Ligue 1',
+];
+
+const OUT = path.join(__dirname, '..', 'photo-preview');
+
+function download(url, dest) {
   return new Promise(resolve => {
-    https.get(url, { timeout: 15000, headers }, res => {
+    https.get(url, { timeout: 20000 }, res => {
+      if (res.statusCode !== 200) { res.resume(); return resolve(`HTTP ${res.statusCode}`); }
       const chunks = [];
       res.on('data', c => chunks.push(c));
-      res.on('end', () => {
-        const buf = Buffer.concat(chunks);
-        const ct = res.headers['content-type'] || '';
-        resolve({
-          status: res.statusCode,
-          contentType: ct,
-          bytes: buf.length,
-          body: ct.includes('json') ? buf.toString().slice(0, 400) : undefined,
-        });
-      });
-    }).on('error', e => resolve({ error: e.message })).on('timeout', () => resolve({ error: 'timeout' }));
+      res.on('end', () => { fs.writeFileSync(dest, Buffer.concat(chunks)); resolve('ok'); });
+    }).on('error', e => resolve(e.message)).on('timeout', () => resolve('timeout'));
   });
 }
 
-// --- 1. Sources candidates pour João Pedro (Chelsea) ---
-const joaoPedro = {
-  'fotmob_1637671': 'https://images.fotmob.com/image_resources/playerimages/1637671.png',
-  'sofascore_975079_chelsea': 'https://img.sofascore.com/api/v1/player/975079/image',
-};
-
-// --- 2. Recadrage : comparer le crop actuel (top 65%) et le smart crop ---
-const sample = 'https://r2.thesportsdb.com/images/media/player/thumb/okvymp1625573781.jpg'; // Thauvin
-const currentCrop = `https://wsrv.nl/?url=${encodeURIComponent(sample)}&cx=0&cy=0&cw=100%25&ch=65%25&w=112&h=112&fit=cover&a=top&output=webp&q=80`;
-const attentionCrop = `https://wsrv.nl/?url=${encodeURIComponent(sample)}&w=112&h=112&fit=cover&a=attention&output=webp&q=80`;
-const entropyCrop = `https://wsrv.nl/?url=${encodeURIComponent(sample)}&w=112&h=112&fit=cover&a=entropy&output=webp&q=80`;
-
-// --- 3. Le smart crop marche-t-il aussi sur une photo d'action large (Getty) ? ---
-const gettyWide = 'https://media.gettyimages.com/id/2171889129/fr/photo/lens-abner-vinicius-of-olympique-lyonnais-during-the-french-ligue-1-match-between-rc-lens-and.jpg?s=612x612&w=0&k=20&c=JdwDLrKRrsPodpfaGVCnP1CS704DxLlp26U7dJCvac8=';
-const gettyAttention = `https://wsrv.nl/?url=${encodeURIComponent(gettyWide)}&w=112&h=112&fit=cover&a=attention&output=webp&q=80`;
+// Cadrage actuel : pré-crop sur les 65% du haut, puis carré ancré en haut.
+const cropTop = (url, px) =>
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&cx=0&cy=0&cw=100%25&ch=65%25&w=${px}&h=${px}&fit=cover&a=top&output=png`;
+// Cadrage intelligent libvips (saillance + tons chair).
+const cropAttention = (url, px) =>
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${px}&h=${px}&fit=cover&a=attention&output=png`;
 
 async function main() {
-  console.log('=== JOAO PEDRO ===');
-  for (const [name, url] of Object.entries(joaoPedro)) {
-    console.log(name, JSON.stringify(await get(url)));
+  fs.mkdirSync(OUT, { recursive: true });
+  for (const key of SAMPLE) {
+    const entry = registry[key];
+    if (!entry?.photo) { console.log('SKIP (pas de photo)', key); continue; }
+    const slug = key.replace(/[^A-Za-z0-9]+/g, '_');
+    console.log(key,
+      'top:', await download(cropTop(entry.photo, 160), path.join(OUT, `${slug}__1_top.png`)),
+      '| attention:', await download(cropAttention(entry.photo, 160), path.join(OUT, `${slug}__2_attention.png`)));
+    await new Promise(r => setTimeout(r, 400));
   }
-
-  console.log('\n=== CROP MODES (Thauvin, thesportsdb) ===');
-  console.log('current(top65%)', JSON.stringify(await get(currentCrop)));
-  console.log('attention      ', JSON.stringify(await get(attentionCrop)));
-  console.log('entropy        ', JSON.stringify(await get(entropyCrop)));
-
-  console.log('\n=== SMART CROP SUR PHOTO GETTY LARGE (Abner) ===');
-  console.log('attention', JSON.stringify(await get(gettyAttention)));
+  console.log('\nFichiers écrits :', fs.readdirSync(OUT).length);
 }
 main();
