@@ -1392,7 +1392,7 @@
   "clubs": [
    "Chelsea"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/351734/image"
  },
  "Bruno Fernandes|Premier League": {
   "prenom": null,
@@ -2220,7 +2220,7 @@
   "clubs": [
    "Napoli"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/1122835/image"
  },
  "Laurienté|Serie A": {
   "prenom": "Armand",
@@ -2463,7 +2463,7 @@
   "clubs": [
    "Venezia"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/1124624/image"
  },
  "Jonathan David|Serie A": {
   "prenom": null,
@@ -2724,7 +2724,7 @@
   "clubs": [
    "Como"
   ],
-  "photo": null
+  "photo": "https://img.sofascore.com/api/v1/player/894863/image"
  },
  "Modric|Serie A": {
   "prenom": "Luka",
