@@ -52,10 +52,26 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
   );
 }
 
-// Bandes de tonte alternées façon terrain de foot (verts sobres, à peine plus clairs que la v. précédente)
-const PITCH_STRIPES = {
-  backgroundImage: 'repeating-linear-gradient(0deg, #35894f 0px, #35894f 36px, #2c7642 36px, #2c7642 72px)',
-};
+// Bandes de tonte alternées façon terrain de foot (verts sobres).
+// Rendues en divs pleins plutôt qu'en repeating-linear-gradient : html2canvas
+// (partage WhatsApp) ne sait pas rasteriser les gradients répétés et sortait
+// un terrain noir.
+const PITCH_STRIPE_COUNT = 14;
+const PitchStripes = () => (
+  <div className="absolute inset-0">
+    {Array.from({ length: PITCH_STRIPE_COUNT }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute inset-x-0"
+        style={{
+          top: `${(i * 100) / PITCH_STRIPE_COUNT}%`,
+          height: `${100 / PITCH_STRIPE_COUNT}%`,
+          backgroundColor: i % 2 === 0 ? '#35894f' : '#2c7642',
+        }}
+      />
+    ))}
+  </div>
+);
 const LINE = 'border-white/90';
 
 // Assigne les joueurs d'un groupe aux slots d'une ligne en respectant une
@@ -106,7 +122,10 @@ function FormationPitch({ squad, onOpenPlayer, photos }) {
 
   return (
     <div>
-      <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ aspectRatio: '3/4', ...PITCH_STRIPES }}>
+      {/* paddingBottom plutôt qu'aspect-ratio : html2canvas (partage WhatsApp)
+          ignore aspect-ratio et la hauteur s'effondrait, décalant tout. */}
+      <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
+        <PitchStripes />
         {/* Ligne médiane + rond central */}
         <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t ${LINE}`} />
         <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border ${LINE}`} />
