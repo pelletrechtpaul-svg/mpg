@@ -11,10 +11,10 @@ export const LIGUE_NAT_EXCLUE = {
 export const POSTE_LABEL = { A: 'Attaquants', M: 'Milieux', D: 'Défenseurs', G: 'Gardiens' };
 
 export const playerImages = {
-  'Roman': '/images/1.png',
-  'Adrien': '/images/2.png',
-  'Paul': '/images/3.png',
-  'Tiago': '/images/4.png',
+  'Roman': '/images/Roman.png',
+  'Adrien': '/images/Adrien.png',
+  'Paul': '/images/Paul.png',
+  'Tiago': '/images/Tiago.png',
 };
 
 export const playerColors = {

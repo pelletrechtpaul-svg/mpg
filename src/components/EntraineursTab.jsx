@@ -42,7 +42,6 @@ const Avatar = ({ joueur, className }) => (
       src={playerImages[joueur]}
       alt={joueur}
       className="w-full h-full object-cover"
-      style={{ objectPosition: joueur === 'Paul' ? '65% 15%' : joueur === 'Roman' ? '50% 20%' : 'center' }}
       onError={(e) => {
         e.target.style.display = 'none';
         e.target.parentElement.classList.add(playerColors[joueur] || 'bg-gray-600');
