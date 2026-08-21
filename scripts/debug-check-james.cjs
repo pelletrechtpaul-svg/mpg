@@ -1,5 +1,5 @@
 const https = require('https');
-const url = 'https://img.sofascore.com/api/v1/player/885908/image';
+const url = 'https://images.fotmob.com/image_resources/playerimages/807729.png';
 https.get(url, { timeout: 8000 }, res => {
   let len = 0;
   res.on('data', c => len += c.length);
