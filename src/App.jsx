@@ -286,6 +286,7 @@ const App = () => {
             heureDeGloire={heureDeGloire}
             selectedSeason={selectedSeason}
             shareContext={shareContext}
+            onOpenPlayer={openPlayer}
           />
         )}
 

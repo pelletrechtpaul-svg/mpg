@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { playerImages, playerColors, playerColorHex, ShareBtn } from '../shared.jsx';
+import { usePlayerPhotos } from './PlayerAvatar.jsx';
+import { FormationPitch } from './FormationPitch.jsx';
 
 /* Pastilles de forme V/N/D */
 const FormPills = ({ form, size = 'sm' }) => {
@@ -42,11 +44,32 @@ const Avatar = ({ joueur, className }) => (
 export default function EntraineursTab({
   joueurs, ligues, filteredData, mercatoData,
   classementGeneral, advancedStats, cleanSheetsStats, statsDetaillees,
-  heureDeGloire, selectedSeason, shareContext,
+  heureDeGloire, selectedSeason, shareContext, onOpenPlayer,
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [h2hLigue, setH2hLigue] = useState('all');
   const [sigBubble, setSigBubble] = useState(null);
+  const [effectifLigue, setEffectifLigue] = useState(null);
+  const photos = usePlayerPhotos();
+
+  /* Effectif actuel du coach sélectionné, par ligue (championnat le plus
+     récent connu pour chaque ligue — cohérent avec l'onglet Classements). Un
+     objet par ligue plutôt qu'un seul terrain géant : avec 4-5 ligues et des
+     effectifs de 15-20 joueurs chacune, tout afficher d'un coup serait
+     illisible. On affiche une puce par ligue et un seul terrain à la fois. */
+  const effectifsParLigue = useMemo(() => {
+    if (!selectedPlayer) return [];
+    return ligues
+      .map(ligue => {
+        const champs = (mercatoData || []).filter(m => m.ligue === ligue).map(m => m.championnat);
+        if (!champs.length) return null;
+        const dernier = Math.max(...champs);
+        const squad = (mercatoData || []).filter(m =>
+          m.ligue === ligue && m.championnat === dernier && m.acheteur === selectedPlayer);
+        return squad.length ? { ligue, squad } : null;
+      })
+      .filter(Boolean);
+  }, [ligues, mercatoData, selectedPlayer]);
 
   /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
   const signatures = useMemo(() => {
@@ -260,6 +283,35 @@ export default function EntraineursTab({
           </div>
         </div>
 
+        {/* Effectif actuel, par ligue */}
+        {effectifsParLigue.length > 0 && (() => {
+          const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
+          return (
+            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+              <ShareBtn contextText={shareContext} />
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectif actuel</h3>
+              {effectifsParLigue.length > 1 && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {effectifsParLigue.map(({ ligue, squad }) => (
+                    <button
+                      key={ligue}
+                      onClick={() => setEffectifLigue(ligue)}
+                      className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                        active.ligue === ligue
+                          ? 'bg-violet-500 text-white shadow'
+                          : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {ligue} <span className="opacity-70">({squad.length})</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} />
+            </div>
+          );
+        })()}
+
         {/* Top buteurs / CSC parmi les recrues du coach */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
@@ -334,8 +386,8 @@ export default function EntraineursTab({
             key={joueur}
             role="button"
             tabIndex={0}
-            onClick={() => { setSelectedPlayer(joueur); setH2hLigue('all'); }}
-            onKeyDown={(e) => { if (e.key === 'Enter') { setSelectedPlayer(joueur); setH2hLigue('all'); } }}
+            onClick={() => { setSelectedPlayer(joueur); setH2hLigue('all'); setEffectifLigue(null); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { setSelectedPlayer(joueur); setH2hLigue('all'); setEffectifLigue(null); } }}
             className="group relative cursor-pointer text-left overflow-hidden rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0f0e1a] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
           >
             {/* Halo de couleur en fond */}
