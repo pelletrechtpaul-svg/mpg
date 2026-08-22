@@ -177,7 +177,7 @@ export function FormationPitch({ squad, onOpenPlayer, photos }) {
 
       {bench.length > 0 && (
         <div className="mt-4">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Remplaçants</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
           <div className="grid grid-cols-2 gap-x-4">
             {bench.map((m, i) => (
               <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">

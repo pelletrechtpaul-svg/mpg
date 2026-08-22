@@ -5,7 +5,7 @@ import { Share2 } from 'lucide-react';
 // Rendu via html-to-image (SVG foreignObject) : c'est le navigateur lui-même
 // qui fait la mise en page, donc la capture est identique à l'écran. L'ancien
 // html2canvas réimplémentait son propre moteur et déformait la carte Effectif
-// (cercles écrasés, libellés décalés, texte des remplaçants coupé).
+// (cercles écrasés, libellés décalés, texte du reste de l'effectif coupé).
 const renderBlob = (element) => toBlob(element, {
   pixelRatio: 2,
   // Le fond transparent laisserait WhatsApp composer sur du blanc : on reprend

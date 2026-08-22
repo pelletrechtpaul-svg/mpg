@@ -113,7 +113,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         {bench.length > 0 && (
           <div className="mt-3">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Remplaçants <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
+              Reste de l'effectif <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
             </p>
             <div className="space-y-1.5">
               {bench.map(m => {
