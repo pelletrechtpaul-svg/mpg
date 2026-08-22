@@ -49,13 +49,14 @@ export const playerColorBorder = {
   Roman: 'border-orange-200 dark:border-orange-800',
 };
 
-// Fond très transparent, pour teinter subtilement une ligne/carte selon le
-// coach sans nuire à la lisibilité du texte par-dessus.
+// Fond transparent (opacité sur la teinte vive plutôt qu'une famille
+// pastel-50, sinon trop délavé) pour teinter une ligne/carte selon le coach
+// sans nuire à la lisibilité du texte par-dessus.
 export const playerColorBg = {
-  Paul: 'bg-blue-50 dark:bg-blue-950/30',
-  Adrien: 'bg-green-50 dark:bg-green-950/30',
-  Tiago: 'bg-purple-50 dark:bg-purple-950/30',
-  Roman: 'bg-orange-50 dark:bg-orange-950/30',
+  Paul: 'bg-blue-500/10 dark:bg-blue-400/15',
+  Adrien: 'bg-green-500/10 dark:bg-green-400/15',
+  Tiago: 'bg-purple-500/10 dark:bg-purple-400/15',
+  Roman: 'bg-orange-500/10 dark:bg-orange-400/15',
 };
 
 // Playlist SoundCloud lue par le mini-player (piloté via la Widget API).
