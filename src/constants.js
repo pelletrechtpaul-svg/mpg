@@ -49,6 +49,15 @@ export const playerColorBorder = {
   Roman: 'border-orange-200 dark:border-orange-800',
 };
 
+// Fond très transparent, pour teinter subtilement une ligne/carte selon le
+// coach sans nuire à la lisibilité du texte par-dessus.
+export const playerColorBg = {
+  Paul: 'bg-blue-50 dark:bg-blue-950/30',
+  Adrien: 'bg-green-50 dark:bg-green-950/30',
+  Tiago: 'bg-purple-50 dark:bg-purple-950/30',
+  Roman: 'bg-orange-50 dark:bg-orange-950/30',
+};
+
 // Playlist SoundCloud lue par le mini-player (piloté via la Widget API).
 // Laisser '' pour retomber sur les MP3 locaux (PLAYLIST ci-dessous).
 export const SOUNDCLOUD_PLAYLIST_URL = 'https://soundcloud.com/paul-610524335/sets/mpg';
