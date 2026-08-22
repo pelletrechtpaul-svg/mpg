@@ -113,7 +113,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         {bench.length > 0 && (
           <div className="mt-3">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Remplaçants <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
+              Reste de l'effectif <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
             </p>
             <div className="space-y-1.5">
               {bench.map(m => {
@@ -123,7 +123,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                     <div className="relative w-8 h-8 flex-shrink-0">
                       <button type="button" onClick={() => bumpReal(m)}
                         title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : undefined}
-                        className={`block w-full h-full rounded-full ring-1 ring-slate-400 dark:ring-slate-500 overflow-hidden ${virtuel > 0 ? 'opacity-50' : ''}`}>
+                        className={`block w-full h-full rounded-full overflow-hidden ${virtuel > 0 ? 'opacity-50' : ''} ${real > 0 || virtuel > 0 ? 'ring-2 ring-green-500' : 'ring-1 ring-slate-400 dark:ring-slate-500'}`}>
                         <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
                       </button>
                       {real > 0 && (
@@ -176,7 +176,7 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
           <div key={i} className={`relative w-11 h-11 sm:w-14 sm:h-14 ${offsetClass}`}>
             <button type="button" onClick={() => bumpReal(m)} title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : '+1 but'}
               className={`block w-full h-full ${virtuel > 0 ? 'opacity-50' : ''}`}>
-              <div className="w-full h-full ring-2 ring-slate-900/70 rounded-full shadow-lg">
+              <div className={`w-full h-full rounded-full shadow-lg ${real > 0 || virtuel > 0 ? 'ring-4 ring-green-500' : 'ring-2 ring-slate-900/70'}`}>
                 <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
               </div>
             </button>
