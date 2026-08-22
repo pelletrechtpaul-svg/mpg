@@ -5,9 +5,15 @@ function normalize(str) {
 }
 
 // Le championnat des matchs est stocké "#1", celui du mercato est un nombre (1).
-function champNum(championnat) {
+export function champNum(championnat) {
   const n = parseInt(String(championnat).replace('#', ''), 10);
   return isNaN(n) ? null : n;
+}
+
+// Nom affiché : "Prénom Nom" quand le prénom est connu et pas déjà inclus
+// dans le nom de famille (évite les "Bruno Bruno").
+export function playerDisplayName(p) {
+  return p.prenom && !p.joueur.startsWith(p.prenom) ? `${p.prenom} ${p.joueur}` : p.joueur;
 }
 
 /**
@@ -29,7 +35,7 @@ export default function CoachPlayerSearch({ coach, saison, ligue, championnat, m
       .filter(p => { if (seen.has(p.joueur)) return false; seen.add(p.joueur); return true; })
       .map(p => ({
         joueur: p.joueur,
-        displayName: p.prenom && !p.joueur.startsWith(p.prenom) ? `${p.prenom} ${p.joueur}` : p.joueur,
+        displayName: playerDisplayName(p),
       }))
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
   }, [coach, saison, ligue, cNum, mercatoData]);

@@ -1,13 +1,13 @@
 import { PlayerAvatar } from './PlayerAvatar.jsx';
 
-const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
+export const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
 // Position fixe du cercle (haut de l'avatar), % depuis le haut du terrain —
 // but adverse en haut, notre but en bas. Milieux/Défenseurs remontés un peu
 // pour ne pas chevaucher le gardien.
-const FORMATION_ROW_TOP = { Attaquants: 12, Milieux: 36, Défenseurs: 60, Gardien: 82 };
+export const FORMATION_ROW_TOP = { Attaquants: 12, Milieux: 36, Défenseurs: 60, Gardien: 82 };
 // Décalage vertical par joueur dans la ligne, pour un placement plus réaliste
 // (ex : les 2 attaquants de côté un peu plus bas que celui du centre)
-const SLOT_OFFSET_CLASS = {
+export const SLOT_OFFSET_CLASS = {
   Attaquants: ['translate-y-3 sm:translate-y-4', '', 'translate-y-3 sm:translate-y-4'],
   Milieux: ['', 'translate-y-4 sm:translate-y-5', ''],
   Défenseurs: ['-translate-y-2 sm:-translate-y-3', 'translate-y-2 sm:translate-y-3', 'translate-y-2 sm:translate-y-3', '-translate-y-2 sm:-translate-y-3'],
@@ -68,7 +68,34 @@ const PitchStripes = () => (
     ))}
   </div>
 );
-const LINE = 'border-white/90';
+export const LINE = 'border-white/90';
+
+// Lignes du terrain (bandes de tonte, rond central, surfaces, buts) — partagées
+// entre l'affichage pur (FormationPitch) et la saisie interactive admin
+// (AdminFormationEntry), pour ne pas dupliquer ce balisage purement visuel.
+export function PitchLines() {
+  return (
+    <>
+      <PitchStripes />
+      {/* Ligne médiane + rond central */}
+      <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t ${LINE}`} />
+      <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border ${LINE}`} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/90" />
+
+      {/* Surface + petite surface + but, en haut (but adverse) */}
+      <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[62%] h-[16%] border border-t-0 ${LINE}`} />
+      <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[32%] h-[6%] border border-t-0 ${LINE}`} />
+      <div className={`absolute left-1/2 top-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-t-0 ${LINE} rounded-b-full`} />
+      <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-t-0 ${LINE}`} />
+
+      {/* Surface + petite surface + but, en bas (notre but) */}
+      <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[62%] h-[16%] border border-b-0 ${LINE}`} />
+      <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border border-b-0 ${LINE}`} />
+      <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-b-0 ${LINE} rounded-t-full`} />
+      <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-b-0 ${LINE}`} />
+    </>
+  );
+}
 
 // Assigne les joueurs d'un groupe aux slots d'une ligne en respectant une
 // préférence de poste par slot (ex : DC au centre, DL sur les côtés), avec
@@ -107,7 +134,9 @@ export const POSTE_GROUP = {
 };
 export const POSTE_GROUP_ORDER = ['Attaquants', 'Milieux', 'Défenseurs', 'Gardien'];
 
-export function FormationPitch({ squad, onOpenPlayer, photos }) {
+// Répartit un effectif en onze de départ (par ligne/slot) + banc — logique
+// partagée entre l'affichage (FormationPitch) et la saisie admin.
+export function computeFormation(squad) {
   const defenders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Défenseurs');
   const midfielders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Milieux');
   const attackers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Attaquants').sort((a, b) => (b.prix || 0) - (a.prix || 0));
@@ -123,6 +152,11 @@ export function FormationPitch({ squad, onOpenPlayer, photos }) {
   };
   const startersSet = new Set(Object.values(starters).flat().filter(Boolean));
   const bench = squad.filter(m => !startersSet.has(m));
+  return { starters, bench };
+}
+
+export function FormationPitch({ squad, onOpenPlayer, photos }) {
+  const { starters, bench } = computeFormation(squad);
 
   return (
     <div className="sm:max-w-sm sm:mx-auto">
@@ -133,23 +167,7 @@ export function FormationPitch({ squad, onOpenPlayer, photos }) {
       {/* paddingBottom plutôt qu'aspect-ratio : html2canvas (partage WhatsApp)
           ignore aspect-ratio et la hauteur s'effondrait, décalant tout. */}
       <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
-        <PitchStripes />
-        {/* Ligne médiane + rond central */}
-        <div className={`absolute inset-x-0 top-1/2 -translate-y-1/2 border-t ${LINE}`} />
-        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full border ${LINE}`} />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white/90" />
-
-        {/* Surface + petite surface + but, en haut (but adverse) */}
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[62%] h-[16%] border border-t-0 ${LINE}`} />
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[32%] h-[6%] border border-t-0 ${LINE}`} />
-        <div className={`absolute left-1/2 top-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-t-0 ${LINE} rounded-b-full`} />
-        <div className={`absolute left-1/2 top-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-t-0 ${LINE}`} />
-
-        {/* Surface + petite surface + but, en bas (notre but) */}
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[62%] h-[16%] border border-b-0 ${LINE}`} />
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[32%] h-[6%] border border-b-0 ${LINE}`} />
-        <div className={`absolute left-1/2 bottom-[16%] -translate-x-1/2 w-16 h-6 sm:w-20 sm:h-8 border border-b-0 ${LINE} rounded-t-full`} />
-        <div className={`absolute left-1/2 bottom-0 -translate-x-1/2 w-[14%] h-[2.5%] border border-b-0 ${LINE}`} />
+        <PitchLines />
 
         <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
         <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />

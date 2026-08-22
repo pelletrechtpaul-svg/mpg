@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
 import { TeamButeurs } from './AdminAddMatchForm';
+import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
 const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
@@ -28,6 +29,8 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   const [selChamps, setSelChamps] = useState([]);
   const [editing, setEditing] = useState(null);
   const [buteurs, setButeurs] = useState({ m: [] });
+  const [notes, setNotes] = useState({ m: [] });
+  const photos = usePlayerPhotos();
 
   const championnats = useMemo(() => {
     if (!selSaison || !selLigue) return [];
@@ -48,6 +51,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   const openEdit = (match) => {
     setEditing({ ...match, _buteurs: normalizeLegacyButeurs(match) });
     setButeurs({ m: normalizeLegacyButeurs(match) });
+    setNotes({ m: match.notes || [] });
   };
 
   const handleSave = async (e) => {
@@ -60,6 +64,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
         buts_j2: b2,
         ...calcResult(b1, b2),
         buteurs: buteurs.m,
+        notes: notes.m,
       };
       delete updated._buteurs;
       delete updated.buteurs_j1;
@@ -150,10 +155,6 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
               </select>
               <input type="number" value={editing.buts_j1} onChange={e => setEditing({ ...editing, buts_j1: parseInt(e.target.value) || 0 })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
-              <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
-                <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
-                  saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
-              </div>
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j1 || false} onChange={e => setEditing({ ...editing, valise_j1: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
@@ -167,15 +168,20 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
               </select>
               <input type="number" value={editing.buts_j2} onChange={e => setEditing({ ...editing, buts_j2: parseInt(e.target.value) || 0 })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
-              <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
-                <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
-                  saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
-              </div>
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j2 || false} onChange={e => setEditing({ ...editing, valise_j2: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
             </div>
+          </div>
+
+          <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+            <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+              saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+          </div>
+          <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+            <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+              saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
           </div>
 
           <div className="flex gap-3 pt-2">
