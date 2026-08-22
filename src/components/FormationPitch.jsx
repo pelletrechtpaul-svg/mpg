@@ -180,7 +180,12 @@ export function FormationPitch({ squad, onOpenPlayer, photos, ratingFor, avgNote
           forçant un scroll pour le voir en entier. */}
       {/* paddingBottom plutôt qu'aspect-ratio : html2canvas (partage WhatsApp)
           ignore aspect-ratio et la hauteur s'effondrait, décalant tout. */}
-      <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
+      {/* 148% plutôt que le 133% d'origine : la ligne du gardien (la plus
+          basse) n'avait presque aucune marge sous son étiquette, et le
+          préfixe de note moyenne ("7.2 · 45M") ajouté à l'étiquette la
+          faisait déborder de l'overflow-hidden — surtout visible en desktop
+          où le terrain est plus large donc plus haut en px. */}
+      <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '148%' }}>
         <PitchLines />
 
         <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
