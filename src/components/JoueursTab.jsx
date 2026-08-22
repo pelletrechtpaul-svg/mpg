@@ -265,7 +265,7 @@ export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, o
           onClick={onBackToEffectifs}
           className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
         >
-          ← Retour aux effectifs
+          ← Retour
         </button>
       )}
       {/* Search */}

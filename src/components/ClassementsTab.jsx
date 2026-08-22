@@ -23,11 +23,11 @@ export default function ClassementsTab({
   ligueMetadata, historicalEvolution, shareContext,
   mercatoData, onOpenPlayer,
   ligueView, setLigueView, effectifsCoach, setEffectifsCoach,
+  buteursCscView, setButeursCscView,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
-  const [buteursCscView, setButeursCscView] = useState('buteurs');
   const [statsTable, setStatsTable] = useState(null);
   const photos = usePlayerPhotos();
 
@@ -262,9 +262,13 @@ export default function ClassementsTab({
                     const ButeursList = ({ list }) => list.length > 0 && (
                       <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
                         {list.map((b, i) => (
-                          <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
+                          <button
+                            key={i}
+                            onClick={() => onOpenPlayer?.(b.joueur, match.ligue)}
+                            className={`hover:underline ${b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}`}
+                          >
                             {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
-                          </span>
+                          </button>
                         ))}
                       </span>
                     );
@@ -693,7 +697,11 @@ export default function ClassementsTab({
                   {buteursRanking.map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                          {p.joueur}
+                        </button>
+                      </td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-indigo-600 dark:text-indigo-400 text-xs sm:text-base">{p.virtuels > 0 ? p.virtuels : '—'}</td>
                     </tr>
@@ -717,7 +725,11 @@ export default function ClassementsTab({
                   {cscRanking.map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                          {p.joueur}
+                        </button>
+                      </td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
                     </tr>
                   ))}
