@@ -31,36 +31,22 @@ export default function ClassementsTab({
   const photos = usePlayerPhotos();
 
   // Effectif de chaque coach pour le championnat sélectionné, trié par poste.
-  // Sur "total" : synthèse de tous les championnats de la ligue — union des
-  // joueurs achetés par chaque coach, dédupliqués (un joueur racheté d'un
-  // tour à l'autre ne compte qu'une fois, avec son achat le plus récent).
+  // "Total" n'affiche pas d'effectif (pas de synthèse pour l'instant — à
+  // revoir plus tard) : il faut un championnat #N précis.
   const effectifsData = useMemo(() => {
-    if (selectedLigue === 'general') return null;
+    if (selectedLigue === 'general' || selectedChampionnat === 'total') return null;
     const byCoach = {};
     joueurs.forEach(j => { byCoach[j] = []; });
 
-    if (selectedChampionnat === 'total') {
-      const byCoachByPlayer = {};
-      (mercatoData || []).forEach(m => {
-        if (m.ligue !== selectedLigue) return;
-        const players = byCoachByPlayer[m.acheteur] || (byCoachByPlayer[m.acheteur] = {});
-        const existing = players[m.joueur];
-        if (!existing || m.championnat > existing.championnat) players[m.joueur] = m;
-      });
-      Object.entries(byCoachByPlayer).forEach(([coach, players]) => {
-        byCoach[coach] = Object.values(players);
-      });
-    } else {
-      // Le championnat des matchs (et du sélecteur) est stocké "#N", celui
-      // du mercato est un nombre — sans ce parsing la comparaison échoue
-      // toujours et l'effectif du tour sélectionné ressort vide.
-      const championnatNum = champNum(selectedChampionnat);
-      (mercatoData || []).forEach(m => {
-        if (m.ligue !== selectedLigue || m.championnat !== championnatNum) return;
-        if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
-        byCoach[m.acheteur].push(m);
-      });
-    }
+    // Le championnat des matchs (et du sélecteur) est stocké "#N", celui du
+    // mercato est un nombre — sans ce parsing la comparaison échoue toujours
+    // et l'effectif du tour sélectionné ressort vide.
+    const championnatNum = champNum(selectedChampionnat);
+    (mercatoData || []).forEach(m => {
+      if (m.ligue !== selectedLigue || m.championnat !== championnatNum) return;
+      if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
+      byCoach[m.acheteur].push(m);
+    });
 
     Object.values(byCoach).forEach(squad => {
       squad.sort((a, b) => {
@@ -269,7 +255,9 @@ export default function ClassementsTab({
           </div>
         ) : (
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
-            <p className="text-slate-500 dark:text-slate-400">Pas de données mercato pour cette ligue.</p>
+            <p className="text-slate-500 dark:text-slate-400">
+              {selectedChampionnat === 'total' ? 'Sélectionne un championnat pour afficher l\'effectif.' : 'Pas de données mercato pour cette ligue.'}
+            </p>
           </div>
         )
       ) : statsTable ? (
