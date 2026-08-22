@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
-import { usePlayerPhotos } from './PlayerAvatar.jsx';
+import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { champNum } from './AdminScorerSection.jsx';
 
@@ -698,7 +698,8 @@ export default function ClassementsTab({
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
                           {p.joueur}
                         </button>
                       </td>
@@ -726,7 +727,8 @@ export default function ClassementsTab({
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
                           {p.joueur}
                         </button>
                       </td>
