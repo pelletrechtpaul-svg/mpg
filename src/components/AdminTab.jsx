@@ -20,7 +20,7 @@ function Toast({ message, type, onDismiss }) {
   );
 }
 
-const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAdminAuthenticated }) => {
+const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAdminAuthenticated, initialEditMatch, onConsumeInitialEditMatch, onBackToClassements }) => {
   const [loginError, setLoginError] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -52,6 +52,12 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
     return unsub;
   }, []);
   const isFullAdmin = adminRole === 'full';
+
+  // Arrivée directe depuis "éditer ce match" dans Classements > Matchs :
+  // saute le menu et la sélection saison/ligue/championnat/match.
+  useEffect(() => {
+    if (initialEditMatch) setView('edit');
+  }, [initialEditMatch]);
 
   const showToast = (message, type = 'success') => setToast({ message, type });
 
@@ -284,6 +290,9 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
                 mercatoData={mercatoData}
                 showToast={showToast}
                 onClose={() => setView('menu')}
+                initialMatch={initialEditMatch}
+                onConsumeInitialMatch={onConsumeInitialEditMatch}
+                onBackToClassements={onBackToClassements}
               />
             )}
 

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
 import { TeamButeurs, CscToggle } from './AdminAddMatchForm';
@@ -21,7 +21,7 @@ function calcResult(b1, b2) {
   return { points_j1: 1, points_j2: 1, resultat: 'nul' };
 }
 
-const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, onClose }) => {
+const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, onClose, initialMatch, onConsumeInitialMatch, onBackToClassements }) => {
   const [selSaison, setSelSaison] = useState('');
   const [selLigue, setSelLigue] = useState('');
   const [selChamp, setSelChamp] = useState('');
@@ -30,6 +30,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   const [editing, setEditing] = useState(null);
   const [buteurs, setButeurs] = useState({ m: [] });
   const [notes, setNotes] = useState({ m: [] });
+  const [cameFromExternal, setCameFromExternal] = useState(false);
   const photos = usePlayerPhotos();
 
   const championnats = useMemo(() => {
@@ -54,6 +55,21 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
     setNotes({ m: match.notes || [] });
   };
 
+  // Arrivée directe depuis "éditer ce match" dans Classements > Matchs :
+  // ouvre le match sans passer par la sélection saison/ligue/championnat.
+  useEffect(() => {
+    if (initialMatch) {
+      openEdit(initialMatch);
+      setCameFromExternal(true);
+      onConsumeInitialMatch?.();
+    }
+  }, [initialMatch]);
+
+  // Arrivé directement depuis Classements > Matchs (pas de saison/ligue/
+  // championnat sélectionnés ici) : revenir à la liste de sélection n'aurait
+  // aucun sens, on retourne plutôt à Classements.
+  const goBack = () => cameFromExternal ? onBackToClassements?.() : setEditing(null);
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -72,7 +88,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
       delete updated.firestoreId;
       await setDoc(doc(db, 'matches', editing.firestoreId), updated);
       showToast('Match modifié');
-      setEditing(null);
+      goBack();
     } catch {
       showToast('Erreur lors de la modification', 'error');
     }
@@ -82,7 +98,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
     try {
       await deleteDoc(doc(db, 'matches', firestoreId));
       showToast('Match supprimé');
-      setEditing(null);
+      goBack();
     } catch {
       showToast('Erreur lors de la suppression', 'error');
     }
@@ -112,7 +128,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   if (editing) {
     return (
       <div>
-        <button onClick={() => setEditing(null)} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
+        <button onClick={goBack} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
         <form onSubmit={handleSave} className="space-y-4">
           <p className="text-sm text-slate-500">{editing.saison} · {editing.ligue} · {editing.championnat}</p>
 
@@ -194,7 +210,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
             <button type="submit" className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">Enregistrer</button>
             <button type="button" onClick={() => handleDeleteMatch(editing.firestoreId)}
               className="px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700">Supprimer</button>
-            <button type="button" onClick={() => setEditing(null)}
+            <button type="button" onClick={goBack}
               className="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-lg font-medium">Annuler</button>
           </div>
         </form>
