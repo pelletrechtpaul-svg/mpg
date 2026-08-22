@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
-import { TeamButeurs } from './AdminAddMatchForm';
+import { TeamButeurs, CscToggle } from './AdminAddMatchForm';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
@@ -159,6 +159,8 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
                 <input type="checkbox" checked={editing.valise_j1 || false} onChange={e => setEditing({ ...editing, valise_j1: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
+              <CscToggle coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{editing.joueur2}</label>
@@ -172,6 +174,8 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
                 <input type="checkbox" checked={editing.valise_j2 || false} onChange={e => setEditing({ ...editing, valise_j2: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
+              <CscToggle coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
             </div>
           </div>
 

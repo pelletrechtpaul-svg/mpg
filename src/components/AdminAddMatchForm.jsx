@@ -51,6 +51,20 @@ function getChampStatus(matchData, ligueMetadata, saison, ligue) {
 }
 
 export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, notes, setNotes, saison, ligue, championnat, mercatoData, photos }) {
+  return (
+    <div className="mt-2">
+      <AdminFormationEntry
+        coach={coach} matchKey={matchKey} saison={saison} ligue={ligue} championnat={championnat}
+        mercatoData={mercatoData} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} photos={photos}
+      />
+    </div>
+  );
+}
+
+// Séparé de TeamButeurs pour pouvoir être affiché à côté de la case Valise
+// (juste sous le score) plutôt qu'enterré sous le terrain interactif — trop
+// rare pour justifier de le chercher en bas de la carte à chaque saisie.
+export function CscToggle({ coach, matchKey, buteurs, setButeurs, saison, ligue, championnat, mercatoData }) {
   const current = buteurs[matchKey] || [];
   const cscEntries = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === coach && s.csc);
   const [cscOpen, setCscOpen] = useState(false);
@@ -66,36 +80,29 @@ export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, notes, setNo
   };
 
   return (
-    <div className="mt-2 space-y-2">
-      <AdminFormationEntry
-        coach={coach} matchKey={matchKey} saison={saison} ligue={ligue} championnat={championnat}
-        mercatoData={mercatoData} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} photos={photos}
-      />
-
-      <div>
-        <label className="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" checked={cscOpen} onChange={e => setCscOpen(e.target.checked)} className="w-3.5 h-3.5 accent-orange-500" />
-          <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">CSC</span>
-        </label>
-        {cscEntries.length > 0 && (
-          <div className="space-y-0.5 mt-1">
-            {cscEntries.map(s => (
-              <div key={s.idx} className="flex items-center gap-1.5 text-xs text-orange-700 dark:text-orange-400 py-0.5">
-                <span className="flex-1 truncate">{s.displayName} (CSC)</span>
-                <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
-              </div>
-            ))}
-          </div>
-        )}
-        {cscOpen && (
-          <div className="mt-1">
-            <CoachPlayerSearch
-              coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
-              onSelect={addCsc} placeholder={`Qui a marqué contre son camp ?`}
-            />
-          </div>
-        )}
-      </div>
+    <div className="mt-1.5">
+      <label className="flex items-center gap-1.5 cursor-pointer select-none">
+        <input type="checkbox" checked={cscOpen} onChange={e => setCscOpen(e.target.checked)} className="w-3.5 h-3.5 accent-orange-500" />
+        <span className="text-xs text-orange-600 dark:text-orange-400">CSC</span>
+      </label>
+      {cscEntries.length > 0 && (
+        <div className="space-y-0.5 mt-1">
+          {cscEntries.map(s => (
+            <div key={s.idx} className="flex items-center gap-1.5 text-xs text-orange-700 dark:text-orange-400 py-0.5">
+              <span className="flex-1 truncate">{s.displayName} (CSC)</span>
+              <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {cscOpen && (
+        <div className="mt-1">
+          <CoachPlayerSearch
+            coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
+            onSelect={addCsc} placeholder={`Qui a marqué contre son camp ?`}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -145,6 +152,8 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, n
                   <span className="text-xs text-slate-500">Valise 💼</span>
                 </label>
               )}
+              <CscToggle coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-1">{match.joueur2}</label>
@@ -156,6 +165,8 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, n
                   <span className="text-xs text-slate-500">Valise 💼</span>
                 </label>
               )}
+              <CscToggle coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
             </div>
           </div>
 
