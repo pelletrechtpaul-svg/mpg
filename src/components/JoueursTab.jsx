@@ -59,9 +59,26 @@ function computeGoalStats(matchData, joueur, ligue) {
   return { buts, csc, virtuels };
 }
 
+// Note moyenne tous championnats #x confondus (même ligue) — indépendant du
+// coach propriétaire au moment du match, pour couvrir un joueur revendu
+// d'un tour à l'autre.
+function computeAvgNote(matchData, joueur, ligue) {
+  let sum = 0, count = 0;
+  (matchData || []).forEach(m => {
+    if (m.ligue !== ligue) return;
+    (m.notes || []).forEach(n => {
+      if (n.joueur !== joueur) return;
+      sum += n.note;
+      count += 1;
+    });
+  });
+  return count > 0 ? sum / count : null;
+}
+
 function PlayerCard({ player, onClose, photos, matchData }) {
   const { entries, displayName, poste, nationalite, joueur, ligue } = player;
   const { buts, csc, virtuels } = computeGoalStats(matchData, joueur, ligue);
+  const avgNote = computeAvgNote(matchData, joueur, ligue);
 
   const byChamp = {};
   entries.forEach(e => {
@@ -98,6 +115,9 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{entries.length}</span> achat{entries.length > 1 ? 's' : ''}</span>
               <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{totalSpent}M</span> total misé</span>
               <span className="mr-4 mb-1">max <span className="font-semibold text-slate-800 dark:text-slate-200">{prixMax}M</span></span>
+              {avgNote !== null && (
+                <span className="mr-4 mb-1">⭐ <span className="font-semibold text-slate-800 dark:text-slate-200">{avgNote.toFixed(1)}</span> note moy.</span>
+              )}
               <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-400 dark:text-slate-500"> (dont {virtuels} 🎮)</span>}</span>
               {csc > 0 && (
                 <span className="text-orange-600 dark:text-orange-400 mb-1">🙈 <span className="font-semibold">{csc}</span> CSC</span>
