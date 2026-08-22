@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
-import { Trophy, Medal } from 'lucide-react';
+import { Trophy, Medal, Pencil } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
@@ -23,7 +23,7 @@ export default function ClassementsTab({
   ligueMetadata, historicalEvolution, shareContext,
   mercatoData, onOpenPlayer,
   ligueView, setLigueView, effectifsCoach, setEffectifsCoach,
-  buteursCscView, setButeursCscView,
+  buteursCscView, setButeursCscView, onEditMatch,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
@@ -162,17 +162,19 @@ export default function ClassementsTab({
           >
             📊 Classement
           </button>
-          <button
-            onClick={() => setLigueView('matchs')}
-            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'matchs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
-          >
-            🗓️ Matchs
-          </button>
+          {selectedChampionnat !== 'total' && (
+            <button
+              onClick={() => setLigueView('matchs')}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'matchs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+            >
+              🗓️ Matchs
+            </button>
+          )}
           <button
             onClick={() => setLigueView('effectifs')}
             className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
           >
-            👥 Effectifs
+            {selectedChampionnat === 'total' ? '🏆 Meilleur effectif' : '👥 Effectifs'}
           </button>
         </div>
       )}
@@ -286,6 +288,15 @@ export default function ClassementsTab({
                   })()}
                   {(match.valise_j1 || match.valise_j2) && (
                     <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
+                  )}
+                  {onEditMatch && (
+                    <button
+                      onClick={() => onEditMatch(match)}
+                      title="Éditer ce match"
+                      className="ml-auto flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 flex-shrink-0"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Éditer</span>
+                    </button>
                   )}
                 </div>
               ))}

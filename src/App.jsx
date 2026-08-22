@@ -32,6 +32,7 @@ const App = () => {
   const [ligueView, setLigueView] = useState('classement');
   const [effectifsCoach, setEffectifsCoach] = useState(null);
   const [buteursCscView, setButeursCscView] = useState('buteurs');
+  const [pendingEditMatch, setPendingEditMatch] = useState(null);
 
   const openPlayer = (joueur, ligue) => {
     setPendingPlayerKey(joueur + '|||' + ligue);
@@ -41,6 +42,16 @@ const App = () => {
 
   const backToEffectifs = () => {
     setCameFromEffectifs(false);
+    setActiveTab('classements');
+  };
+
+  const openMatchEdit = (match) => {
+    setPendingEditMatch(match);
+    setActiveTab('admin');
+  };
+
+  const backToClassementsFromEdit = () => {
+    setPendingEditMatch(null);
     setActiveTab('classements');
   };
 
@@ -262,6 +273,7 @@ const App = () => {
             setEffectifsCoach={setEffectifsCoach}
             buteursCscView={buteursCscView}
             setButeursCscView={setButeursCscView}
+            onEditMatch={openMatchEdit}
           />
         )}
 
@@ -273,6 +285,9 @@ const App = () => {
             ligueMetadata={ligueMetadata}
             ligues={ligues}
             isAdminAuthenticated={isAdminAuthenticated}
+            initialEditMatch={pendingEditMatch}
+            onConsumeInitialEditMatch={() => setPendingEditMatch(null)}
+            onBackToClassements={backToClassementsFromEdit}
           />
         )}
 
