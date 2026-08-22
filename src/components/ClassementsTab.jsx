@@ -756,7 +756,7 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {buteursRanking.map((p, index) => (
+                  {buteursRanking.slice(0, 10).map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
@@ -786,7 +786,7 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {noteRanking.map((p, index) => (
+                  {noteRanking.slice(0, 10).map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
