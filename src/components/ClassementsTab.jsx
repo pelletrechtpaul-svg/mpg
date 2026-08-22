@@ -174,7 +174,7 @@ export default function ClassementsTab({
             onClick={() => setLigueView('effectifs')}
             className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
           >
-            {selectedChampionnat === 'total' ? '🏆 Meilleur effectif' : '👥 Effectifs'}
+            {selectedChampionnat === 'total' ? '🏆 Meilleurs effectifs' : '👥 Effectifs'}
           </button>
         </div>
       )}
