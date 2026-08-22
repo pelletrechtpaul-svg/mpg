@@ -126,6 +126,14 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   };
 
   if (editing) {
+    // Fond du score : vert léger pour le gagnant, rouge léger pour le
+    // perdant, gris léger en cas d'égalité.
+    const scoreBg = (mine, other) => {
+      if (typeof mine !== 'number' || typeof other !== 'number' || isNaN(mine) || isNaN(other)) return '';
+      if (mine > other) return 'bg-green-100/70 dark:bg-green-900/25';
+      if (mine < other) return 'bg-red-100/70 dark:bg-red-900/25';
+      return 'bg-slate-200/70 dark:bg-slate-700/40';
+    };
     return (
       <div>
         <button onClick={goBack} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
@@ -170,7 +178,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
                 {JOUEURS.filter(j => j !== editing.joueur2).map(j => <option key={j} value={j}>{j}</option>)}
               </select>
               <input type="number" value={editing.buts_j1} onChange={e => setEditing({ ...editing, buts_j1: parseInt(e.target.value) || 0 })}
-                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+                min="0" className={`w-full px-3 py-2 border-2 border-blue-300 dark:border-blue-600 rounded-lg text-sm text-center font-bold ${scoreBg(editing.buts_j1, editing.buts_j2) || 'bg-white dark:bg-slate-800'}`} />
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j1 || false} onChange={e => setEditing({ ...editing, valise_j1: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
@@ -185,7 +193,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
                 {JOUEURS.filter(j => j !== editing.joueur1).map(j => <option key={j} value={j}>{j}</option>)}
               </select>
               <input type="number" value={editing.buts_j2} onChange={e => setEditing({ ...editing, buts_j2: parseInt(e.target.value) || 0 })}
-                min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+                min="0" className={`w-full px-3 py-2 border-2 border-emerald-300 dark:border-emerald-600 rounded-lg text-sm text-center font-bold ${scoreBg(editing.buts_j2, editing.buts_j1) || 'bg-white dark:bg-slate-800'}`} />
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j2 || false} onChange={e => setEditing({ ...editing, valise_j2: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
