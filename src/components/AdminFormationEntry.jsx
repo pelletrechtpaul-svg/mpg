@@ -7,6 +7,30 @@ function formatNote(n) {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
+// Effectif d'un coach pour un championnat donné, dédupliqué par joueur —
+// exporté pour être réutilisé à la sauvegarde d'un match (backfill des notes
+// par défaut, voir AdminAddMatchForm/AdminEditPanel) sans dupliquer cette
+// logique de filtrage.
+export function buildSquad(mercatoData, coach, saison, ligue, championnat) {
+  const cNum = champNum(championnat);
+  if (!coach || !saison || !ligue || cNum == null) return [];
+  const seen = new Set();
+  return (mercatoData || [])
+    .filter(p => p.saison === saison && p.ligue === ligue && p.championnat === cNum && p.acheteur === coach)
+    .filter(p => { if (seen.has(p.joueur)) return false; seen.add(p.joueur); return true; });
+}
+
+// Complète un tableau de notes avec une note par défaut pour chaque joueur de
+// l'effectif d'un coach qui n'a pas encore été noté explicitement pour ce
+// match — sans ça, un joueur laissé à la valeur par défaut (5, jamais touché
+// au stepper) n'a tout simplement pas d'entrée en base et ne compte pas dans
+// la moyenne du championnat.
+export function withDefaultNotes(notesForMatch, squad, coach, defaultNote = 5) {
+  const already = new Set(notesForMatch.filter(n => n.acheteur === coach).map(n => n.joueur));
+  const additions = squad.filter(m => !already.has(m.joueur)).map(m => ({ joueur: m.joueur, acheteur: coach, note: defaultNote }));
+  return additions.length ? [...notesForMatch, ...additions] : notesForMatch;
+}
+
 // Terrain interactif de saisie admin : reprend le layout visuel de
 // FormationPitch (lecture seule, utilisé pour l'affichage effectifs) mais
 // chaque avatar devient cliquable pour taguer un but réel / virtuel MPG, et
@@ -14,15 +38,7 @@ function formatNote(n) {
 // pas mélanger logique d'affichage et logique de saisie dans le même
 // composant partagé ailleurs en lecture seule.
 export function AdminFormationEntry({ coach, matchKey, saison, ligue, championnat, mercatoData, buteurs, setButeurs, notes, setNotes, photos }) {
-  const cNum = champNum(championnat);
-
-  const squad = useMemo(() => {
-    if (!coach || !saison || !ligue || cNum == null) return [];
-    const seen = new Set();
-    return (mercatoData || [])
-      .filter(p => p.saison === saison && p.ligue === ligue && p.championnat === cNum && p.acheteur === coach)
-      .filter(p => { if (seen.has(p.joueur)) return false; seen.add(p.joueur); return true; });
-  }, [mercatoData, coach, saison, ligue, cNum]);
+  const squad = useMemo(() => buildSquad(mercatoData, coach, saison, ligue, championnat), [mercatoData, coach, saison, ligue, championnat]);
 
   const current = buteurs[matchKey] || [];
   const notesCurrent = notes[matchKey] || [];
