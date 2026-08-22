@@ -170,13 +170,15 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, n
             </div>
           </div>
 
-          <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
-            <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
-          </div>
-          <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
-            <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+            <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+              <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+            </div>
+            <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+              <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+            </div>
           </div>
 
           {hasResult && (

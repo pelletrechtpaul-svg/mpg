@@ -34,9 +34,13 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
 
   const noteFor = (joueur) => notesCurrent.find(n => n.acheteur === coach && n.joueur === joueur)?.note ?? 5;
 
+  // Un but réel et un but virtuel MPG s'excluent mutuellement pour un même
+  // joueur sur un même match : il faut d'abord retirer l'un pour pouvoir
+  // ajouter l'autre, plutôt que de laisser les deux cumuler.
   const bumpReal = (m) => {
     setButeurs(prev => {
       const arr = prev[matchKey] || [];
+      if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel)) return prev;
       const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel);
       if (idx >= 0) return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: Math.min(10, s.buts + 1) } : s) };
       return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false }] };
@@ -61,6 +65,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
       const arr = prev[matchKey] || [];
       const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel);
       if (idx >= 0) return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
+      if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel)) return prev;
       return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, virtuel: true }] };
     });
   };
@@ -116,7 +121,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                 return (
                   <div key={m.joueur} className="flex items-center gap-1.5 text-xs">
                     <div className="relative w-8 h-8 flex-shrink-0">
-                      <button type="button" onClick={() => bumpReal(m)} className="block w-full h-full rounded-full ring-1 ring-slate-400 dark:ring-slate-500 overflow-hidden">
+                      <button type="button" onClick={() => bumpReal(m)}
+                        title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : undefined}
+                        className={`block w-full h-full rounded-full ring-1 ring-slate-400 dark:ring-slate-500 overflow-hidden ${virtuel > 0 ? 'opacity-50' : ''}`}>
                         <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
                       </button>
                       {real > 0 && (
@@ -125,8 +132,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                           {real}
                         </button>
                       )}
-                      <button type="button" onClick={() => toggleVirtuel(m)} title="But virtuel MPG"
-                        className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full text-[8px] leading-[13px] text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'}`}>
+                      <button type="button" onClick={() => toggleVirtuel(m)}
+                        title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
+                        className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full text-[8px] leading-[13px] text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
                         🎮
                       </button>
                     </div>
@@ -138,7 +146,6 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                       <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(noteFor(m.joueur))}</span>
                       <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-3 text-slate-500 dark:text-slate-400 font-bold leading-none">+</button>
                     </span>
-                    <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
                   </div>
                 );
               })}
@@ -167,7 +174,8 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
         const { real, virtuel } = goalsFor(m.joueur);
         return (
           <div key={i} className={`relative w-11 h-11 sm:w-14 sm:h-14 ${offsetClass}`}>
-            <button type="button" onClick={() => bumpReal(m)} title="+1 but" className="block w-full h-full">
+            <button type="button" onClick={() => bumpReal(m)} title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : '+1 but'}
+              className={`block w-full h-full ${virtuel > 0 ? 'opacity-50' : ''}`}>
               <div className="w-full h-full ring-2 ring-slate-900/70 rounded-full shadow-lg">
                 <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
               </div>
@@ -178,8 +186,9 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
                 {real}
               </button>
             )}
-            <button type="button" onClick={() => toggleVirtuel(m)} title="But virtuel MPG"
-              className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] leading-4 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'}`}>
+            <button type="button" onClick={() => toggleVirtuel(m)}
+              title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
+              className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] leading-4 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
               🎮
             </button>
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max max-w-[70px] px-1 py-0.5 rounded bg-black/55 text-[10px] sm:text-xs font-bold text-white leading-tight text-center truncate">
