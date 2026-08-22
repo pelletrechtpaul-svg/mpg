@@ -49,14 +49,20 @@ export const playerColorBorder = {
   Roman: 'border-orange-200 dark:border-orange-800',
 };
 
-// Fond transparent (opacité sur la teinte vive plutôt qu'une famille
-// pastel-50, sinon trop délavé) pour teinter une ligne/carte selon le coach
-// sans nuire à la lisibilité du texte par-dessus.
+// Fond transparent pour teinter une ligne/carte selon le coach, sans nuire à
+// la lisibilité du texte par-dessus. Utilise le même hex que playerColorHex
+// (via la syntaxe Tailwind bg-[#xxxxxx+alpha]) plutôt qu'une teinte de la
+// palette Tailwind standard (bg-blue-500 etc.) pour être visuellement la
+// même couleur que les autres badges coach de l'app, pas une approximation.
+// NB : Tailwind scanne des chaînes de classe statiques dans le code source
+// pour générer le CSS - ces valeurs ne peuvent pas être dérivées de
+// playerColorHex par du JS à l'exécution, elles doivent rester recopiées
+// ici en dur et synchronisées à la main si playerColorHex change.
 export const playerColorBg = {
-  Paul: 'bg-blue-500/10 dark:bg-blue-400/15',
-  Adrien: 'bg-green-500/10 dark:bg-green-400/15',
-  Tiago: 'bg-purple-500/10 dark:bg-purple-400/15',
-  Roman: 'bg-orange-500/10 dark:bg-orange-400/15',
+  Paul: 'bg-[#2563eb40] dark:bg-[#2563eb59]',
+  Adrien: 'bg-[#16a34a40] dark:bg-[#16a34a59]',
+  Tiago: 'bg-[#9333ea40] dark:bg-[#9333ea59]',
+  Roman: 'bg-[#ea580c40] dark:bg-[#ea580c59]',
 };
 
 // Playlist SoundCloud lue par le mini-player (piloté via la Widget API).

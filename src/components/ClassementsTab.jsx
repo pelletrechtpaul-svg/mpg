@@ -31,6 +31,19 @@ export default function ClassementsTab({
   const [statsTable, setStatsTable] = useState(null);
   const photos = usePlayerPhotos();
 
+  // Filtre par coach dans les classements Buteurs/Note/CSC (légende
+  // cliquable/décliquable) — réinitialisé dès qu'on change de ligue ou de
+  // championnat pour éviter un filtre orphelin qui masquerait tout. Ajusté
+  // pendant le rendu (pattern React recommandé) plutôt que dans un effet,
+  // pour ne pas déclencher un rendu superflu après coup.
+  const [coachFilter, setCoachFilter] = useState([]);
+  const filterScopeKey = `${selectedLigue}|${selectedChampionnat}`;
+  const [lastFilterScopeKey, setLastFilterScopeKey] = useState(filterScopeKey);
+  if (filterScopeKey !== lastFilterScopeKey) {
+    setLastFilterScopeKey(filterScopeKey);
+    setCoachFilter([]);
+  }
+
   // Effectif de chaque coach pour le championnat sélectionné, trié par poste.
   // "Total" n'affiche pas d'effectif (pas de synthèse pour l'instant — à
   // revoir plus tard) : il faut un championnat #N précis.
@@ -148,6 +161,14 @@ export default function ClassementsTab({
       .map(([joueur, { sum, count }]) => ({ joueur, avg: sum / count, matchs: count }))
       .sort((a, b) => b.avg - a.avg);
   }, [matchesListForChampionnat]);
+
+  // Classements filtrés par la légende coach cliquable (aucun filtre actif
+  // = tout le monde). coachByPlayer est null sur "Total", donc un joueur y
+  // matche toujours `undefined` — sans effet puisque coachFilter est aussi
+  // remis à zéro dès qu'on quitte un championnat #x (voir plus haut).
+  const filteredButeursRanking = coachFilter.length > 0 ? buteursRanking.filter(p => coachFilter.includes(coachByPlayer?.[p.joueur])) : buteursRanking;
+  const filteredNoteRanking = coachFilter.length > 0 ? noteRanking.filter(p => coachFilter.includes(coachByPlayer?.[p.joueur])) : noteRanking;
+  const filteredCscRanking = coachFilter.length > 0 ? cscRanking.filter(p => coachFilter.includes(coachByPlayer?.[p.joueur])) : cscRanking;
 
   return (
     <>
@@ -760,17 +781,25 @@ export default function ClassementsTab({
 
           {coachByPlayer && (
             <div className="flex flex-wrap gap-2 px-6 pb-2 text-[11px] text-slate-500 dark:text-slate-400">
-              {joueurs.map(coach => (
-                <span key={coach} className="inline-flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: playerColorHex[coach] || '#94a3b8' }} />
-                  {coach}
-                </span>
-              ))}
+              {joueurs.map(coach => {
+                const active = coachFilter.length === 0 || coachFilter.includes(coach);
+                return (
+                  <button
+                    key={coach}
+                    type="button"
+                    onClick={() => setCoachFilter(prev => prev.includes(coach) ? prev.filter(c => c !== coach) : [...prev, coach])}
+                    className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 transition-opacity ${active ? '' : 'opacity-40'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: playerColorHex[coach] || '#94a3b8' }} />
+                    {coach}
+                  </button>
+                );
+              })}
             </div>
           )}
 
           {buteursCscView === 'buteurs' ? (
-            buteursRanking.length > 0 ? (
+            filteredButeursRanking.length > 0 ? (
               <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -781,7 +810,7 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {buteursRanking.slice(0, 10).map((p, index) => {
+                  {filteredButeursRanking.slice(0, 10).map((p, index) => {
                     const coach = coachByPlayer?.[p.joueur];
                     return (
                       <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
@@ -800,10 +829,10 @@ export default function ClassementsTab({
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">{coachFilter.length > 0 ? 'Aucun but pour ce filtre.' : "Aucun but marqué pour l'instant."}</p>
             )
           ) : buteursCscView === 'note' ? (
-            noteRanking.length > 0 ? (
+            filteredNoteRanking.length > 0 ? (
               <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -814,7 +843,7 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {noteRanking.slice(0, 10).map((p, index) => {
+                  {filteredNoteRanking.slice(0, 10).map((p, index) => {
                     const coach = coachByPlayer?.[p.joueur];
                     return (
                       <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
@@ -833,10 +862,10 @@ export default function ClassementsTab({
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucune note saisie pour l'instant.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">{coachFilter.length > 0 ? 'Aucune note pour ce filtre.' : "Aucune note saisie pour l'instant."}</p>
             )
           ) : (
-            cscRanking.length > 0 ? (
+            filteredCscRanking.length > 0 ? (
               <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -846,7 +875,7 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {cscRanking.map((p, index) => {
+                  {filteredCscRanking.map((p, index) => {
                     const coach = coachByPlayer?.[p.joueur];
                     return (
                       <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
@@ -864,7 +893,7 @@ export default function ClassementsTab({
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">{coachFilter.length > 0 ? 'Aucun CSC pour ce filtre.' : "Aucun CSC pour l'instant."}</p>
             )
           )}
         </div>
