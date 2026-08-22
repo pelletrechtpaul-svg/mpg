@@ -221,6 +221,7 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
   const [dateMatch, setDateMatch] = useState(today);
   const [match1, setMatch1] = useState(EMPTY_MATCH);
   const [match2, setMatch2] = useState(EMPTY_MATCH);
+  const [activeMatch, setActiveMatch] = useState('m1');
   const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
   const [notes, setNotes] = useState({ m1: [], m2: [] });
   const [saving, setSaving] = useState(false);
@@ -493,11 +494,24 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
               className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setActiveMatch('m1')}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${activeMatch === 'm1' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}>
+              Match 1
+            </button>
+            <button type="button" onClick={() => setActiveMatch('m2')}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${activeMatch === 'm2' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}>
+              Match 2 (auto)
+            </button>
+          </div>
+
+          <div className={activeMatch === 'm1' ? '' : 'hidden'}>
             <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
               buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m1"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
               mercatoData={mercatoData} photos={photos} autoFilled={false} />
+          </div>
+          <div className={activeMatch === 'm2' ? '' : 'hidden'}>
             <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
               buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m2"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
