@@ -90,15 +90,15 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
     });
   };
 
-  // But MPG (reste de l'effectif) : ici un compteur comme le but réel, pas
-  // une simple bascule — cohérent avec le contrôle texte "But MPG" tapable
-  // plusieurs fois, à la différence du bouton 🎮 des titulaires.
+  // But MPG (reste de l'effectif) : au plus un seul par joueur et par match
+  // (une bonification de note supérieure à 1 par match n'arrive quasiment
+  // jamais) — un second tap une fois taggé est un no-op, on utilise le "×"
+  // pour retirer.
   const bumpVirtuel = (m) => {
     setButeurs(prev => {
       const arr = prev[matchKey] || [];
       if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel)) return prev;
-      const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel);
-      if (idx >= 0) return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: Math.min(10, s.buts + 1) } : s) };
+      if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel)) return prev;
       return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, virtuel: true }] };
     });
   };
@@ -184,9 +184,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                           className="w-6 h-6 rounded-full bg-green-600 text-white text-[11px] font-bold leading-none">×</button>
                       )}
                       <button type="button" onClick={() => bumpVirtuel(m)}
-                        title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : undefined}
-                        className={`px-1.5 h-6 rounded font-semibold ${real > 0 ? 'opacity-40 text-slate-400' : 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 active:bg-indigo-100'}`}>
-                        But MPG{virtuel > 0 && ` ${virtuel}`}
+                        title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : (virtuel > 0 ? 'Un seul but MPG par joueur et par match' : undefined)}
+                        className={`px-1.5 h-6 rounded font-semibold ${real > 0 ? 'opacity-40 text-slate-400' : virtuel > 0 ? 'text-white bg-indigo-600' : 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 active:bg-indigo-100'}`}>
+                        But MPG
                       </button>
                       {virtuel > 0 && (
                         <button type="button" onClick={() => decrementVirtuel(m.joueur)} title="Retirer un but MPG"
