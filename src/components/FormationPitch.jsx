@@ -14,7 +14,7 @@ export const SLOT_OFFSET_CLASS = {
   Gardien: [''],
 };
 
-function FormationRow({ group, players, onOpenPlayer, photos }) {
+function FormationRow({ group, players, onOpenPlayer, photos, avgNoteFor }) {
   const slots = FORMATION_SLOTS[group];
   return (
     <div className="absolute inset-x-0 flex justify-around px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%` }}>
@@ -28,6 +28,7 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
             </div>
           );
         }
+        const avgNote = avgNoteFor?.(m);
         return (
           <button
             key={i}
@@ -40,7 +41,9 @@ function FormationRow({ group, players, onOpenPlayer, photos }) {
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center whitespace-nowrap group-hover:underline">
               {m.joueur}
             </span>
-            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 w-max text-[10px] sm:text-xs font-semibold text-white/90 leading-none whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{m.prix}M</span>
+            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 w-max text-[10px] sm:text-xs font-semibold text-white/90 leading-none whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M
+            </span>
           </button>
         );
       })}
@@ -103,7 +106,7 @@ export function PitchLines() {
 // Traité rang par rang sur TOUS les slots à la fois, pour qu'un slot moins
 // prioritaire (repli "any") ne pioche jamais dans le vivier d'un poste
 // réservé à un autre slot avant que celui-ci ait eu sa chance.
-function assignSlots(players, slotPrefs) {
+function assignSlots(players, slotPrefs, rating) {
   const used = new Set();
   const n = slotPrefs.length;
   const result = new Array(n).fill(null);
@@ -111,7 +114,7 @@ function assignSlots(players, slotPrefs) {
     const candidates = poste
       ? players.filter(m => m.poste === poste && !used.has(m))
       : players.filter(m => !used.has(m));
-    return [...candidates].sort((a, b) => (b.prix || 0) - (a.prix || 0))[0] || null;
+    return [...candidates].sort((a, b) => rating(b) - rating(a))[0] || null;
   };
   const maxRank = Math.max(...slotPrefs.map(p => p.length));
   for (let rank = 0; rank < maxRank; rank++) {
@@ -136,18 +139,21 @@ export const POSTE_GROUP_ORDER = ['Attaquants', 'Milieux', 'Défenseurs', 'Gardi
 
 // Répartit un effectif en onze de départ (par ligne/slot) + banc — logique
 // partagée entre l'affichage (FormationPitch) et la saisie admin.
-export function computeFormation(squad) {
+// `rating` détermine qui est titulaire : prix par défaut, ou note moyenne du
+// championnat une fois qu'au moins un match a été noté (voir ClassementsTab /
+// EntraineursTab, qui passent alors une fonction basée sur les notes).
+export function computeFormation(squad, rating = (m) => m.prix || 0) {
   const defenders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Défenseurs');
   const midfielders = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Milieux');
-  const attackers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Attaquants').sort((a, b) => (b.prix || 0) - (a.prix || 0));
-  const keepers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Gardien').sort((a, b) => (b.prix || 0) - (a.prix || 0));
+  const attackers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Attaquants').sort((a, b) => rating(b) - rating(a));
+  const keepers = squad.filter(m => (POSTE_GROUP[m.poste] || 'Milieux') === 'Gardien').sort((a, b) => rating(b) - rating(a));
 
   const starters = {
     Attaquants: attackers.slice(0, FORMATION_SLOTS.Attaquants),
     // Milieu axial : priorité aux MD (milieux défensifs) ; ailiers : priorité aux MO
-    Milieux: assignSlots(midfielders, [['MO', null], ['MD', 'MO', null], ['MO', null]]),
+    Milieux: assignSlots(midfielders, [['MO', null], ['MD', 'MO', null], ['MO', null]], rating),
     // Défenseurs axiaux : priorité aux DC ; latéraux : priorité aux DL
-    Défenseurs: assignSlots(defenders, [['DL', null], ['DC', 'DL', null], ['DC', 'DL', null], ['DL', null]]),
+    Défenseurs: assignSlots(defenders, [['DL', null], ['DC', 'DL', null], ['DC', 'DL', null], ['DL', null]], rating),
     Gardien: keepers.slice(0, FORMATION_SLOTS.Gardien),
   };
   const startersSet = new Set(Object.values(starters).flat().filter(Boolean));
@@ -157,8 +163,14 @@ export function computeFormation(squad) {
   return { starters, bench };
 }
 
-export function FormationPitch({ squad, onOpenPlayer, photos }) {
-  const { starters, bench } = computeFormation(squad);
+// `ratingFor(m)` : critère de sélection des titulaires (prix par défaut). Sur
+// "Effectifs" (Classements/Entraîneurs), une fois qu'au moins un match du
+// championnat a été noté, l'appelant passe la note moyenne à la place.
+// `avgNoteFor(m)` : note moyenne à afficher à gauche du prix (même
+// info que celle utilisée par `ratingFor`, mais brute — pas de repli à 0 pour
+// un joueur sans note, pour ne pas afficher un "0.0" trompeur).
+export function FormationPitch({ squad, onOpenPlayer, photos, ratingFor, avgNoteFor }) {
+  const { starters, bench } = computeFormation(squad, ratingFor);
 
   return (
     <div className="sm:max-w-sm sm:mx-auto">
@@ -171,27 +183,32 @@ export function FormationPitch({ squad, onOpenPlayer, photos }) {
       <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
         <PitchLines />
 
-        <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} />
-        <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} />
-        <FormationRow group="Défenseurs" players={starters.Défenseurs} onOpenPlayer={onOpenPlayer} photos={photos} />
-        <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} />
+        <FormationRow group="Attaquants" players={starters.Attaquants} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
+        <FormationRow group="Milieux" players={starters.Milieux} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
+        <FormationRow group="Défenseurs" players={starters.Défenseurs} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
+        <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
       </div>
 
       {bench.length > 0 && (
         <div className="mt-4">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
           <div className="grid grid-cols-2 gap-x-4">
-            {bench.map((m, i) => (
-              <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
-                <button
-                  onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-                  className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
-                >
-                  {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
-                </button>
-                <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
-              </div>
-            ))}
+            {bench.map((m, i) => {
+              const avgNote = avgNoteFor?.(m);
+              return (
+                <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
+                  <button
+                    onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
+                    className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                  >
+                    {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
+                  </button>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">
+                    {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

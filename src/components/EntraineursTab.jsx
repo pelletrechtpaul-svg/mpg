@@ -75,10 +75,34 @@ export default function EntraineursTab({
         const dernier = Math.max(...champs);
         const squad = (mercatoData || []).filter(m =>
           m.ligue === ligue && m.championnat === dernier && m.acheteur === selectedPlayer);
-        return squad.length ? { ligue, squad } : null;
+        if (!squad.length) return null;
+
+        // Note moyenne du coach sur ce championnat, si au moins un match y a
+        // été noté — sert à choisir les titulaires par note plutôt que par
+        // prix (comme sur Classements > Effectifs), et à l'afficher.
+        const champMatches = (filteredData || []).filter(m =>
+          m.ligue === ligue && m.championnat === `#${dernier}` && (m.joueur1 === selectedPlayer || m.joueur2 === selectedPlayer));
+        const noteSums = {};
+        champMatches.forEach(m => {
+          (m.notes || []).forEach(n => {
+            if (n.acheteur !== selectedPlayer) return;
+            const entry = noteSums[n.joueur] || (noteSums[n.joueur] = { sum: 0, count: 0 });
+            entry.sum += n.note;
+            entry.count += 1;
+          });
+        });
+        const avgNotes = {};
+        Object.entries(noteSums).forEach(([joueur, { sum, count }]) => { avgNotes[joueur] = sum / count; });
+        const hasNotes = champMatches.length > 0 && Object.keys(avgNotes).length > 0;
+
+        return {
+          ligue, squad,
+          ratingFor: hasNotes ? (m => avgNotes[m.joueur] ?? 0) : undefined,
+          avgNoteFor: hasNotes ? (m => avgNotes[m.joueur]) : undefined,
+        };
       })
       .filter(Boolean);
-  }, [ligues, mercatoData, selectedPlayer]);
+  }, [ligues, mercatoData, filteredData, selectedPlayer]);
 
   /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
   const signatures = useMemo(() => {
@@ -281,7 +305,7 @@ export default function EntraineursTab({
                   ))}
                 </div>
               )}
-              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} />
+              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={active.ratingFor} avgNoteFor={active.avgNoteFor} />
             </div>
           );
         })()}

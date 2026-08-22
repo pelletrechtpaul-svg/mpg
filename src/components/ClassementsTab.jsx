@@ -59,6 +59,28 @@ export default function ClassementsTab({
     return byCoach;
   }, [mercatoData, selectedLigue, selectedChampionnat, joueurs]);
 
+  // Note moyenne par coach/joueur sur le championnat sélectionné, une fois
+  // qu'au moins un match y a été saisi avec des notes — sert à choisir les
+  // titulaires par note plutôt que par prix (voir usage plus bas) et à
+  // l'afficher sur les cartes effectif.
+  const avgNotesByCoach = useMemo(() => {
+    const byCoach = {};
+    matchesListForChampionnat.forEach(m => {
+      (m.notes || []).forEach(n => {
+        const players = byCoach[n.acheteur] || (byCoach[n.acheteur] = {});
+        const entry = players[n.joueur] || (players[n.joueur] = { sum: 0, count: 0 });
+        entry.sum += n.note;
+        entry.count += 1;
+      });
+    });
+    const avg = {};
+    Object.entries(byCoach).forEach(([coach, players]) => {
+      avg[coach] = {};
+      Object.entries(players).forEach(([joueur, { sum, count }]) => { avg[coach][joueur] = sum / count; });
+    });
+    return avg;
+  }, [matchesListForChampionnat]);
+
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
     if (selectedLigue === 'general') {
@@ -333,11 +355,16 @@ export default function ClassementsTab({
             {(() => {
               const coach = effectifsCoach ?? joueurs[0];
               const squad = effectifsData[coach] || [];
+              // Au moins un match du championnat a été noté : les titulaires
+              // sont choisis par note moyenne plutôt que par prix.
+              const coachNotes = matchesListForChampionnat.length > 0 ? avgNotesByCoach[coach] : null;
+              const ratingFor = coachNotes ? (m => coachNotes[m.joueur] ?? 0) : undefined;
+              const avgNoteFor = coachNotes ? (m => coachNotes[m.joueur]) : undefined;
               return (
                 <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
                   <ShareBtn contextText={shareContext} />
                   {squad.length > 0 ? (
-                    <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} />
+                    <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={ratingFor} avgNoteFor={avgNoteFor} />
                   ) : (
                     <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
                   )}
