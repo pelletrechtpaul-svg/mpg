@@ -78,16 +78,20 @@ export default function ClassementsTab({
 
   // Classement des buts / CSC par joueur (mercato) pour la ligue/championnat sélectionné
   const { buteursRanking, cscRanking } = useMemo(() => {
-    const buts = {}, csc = {};
+    const buts = {}, virtuels = {}, csc = {};
     matchesListForChampionnat.forEach(m => {
       (m.buteurs || []).forEach(b => {
         if (!b.joueur) return;
-        const map = b.csc ? csc : buts;
-        map[b.joueur] = (map[b.joueur] || 0) + (b.buts || 1);
+        if (b.csc) { csc[b.joueur] = (csc[b.joueur] || 0) + (b.buts || 1); return; }
+        buts[b.joueur] = (buts[b.joueur] || 0) + (b.buts || 1);
+        if (b.virtuel) virtuels[b.joueur] = (virtuels[b.joueur] || 0) + (b.buts || 1);
       });
     });
     const toSorted = obj => Object.entries(obj).map(([joueur, n]) => ({ joueur, n })).sort((a, b) => b.n - a.n);
-    return { buteursRanking: toSorted(buts), cscRanking: toSorted(csc) };
+    return {
+      buteursRanking: toSorted(buts).map(p => ({ ...p, virtuels: virtuels[p.joueur] || 0 })),
+      cscRanking: toSorted(csc),
+    };
   }, [matchesListForChampionnat]);
 
   return (
@@ -578,6 +582,7 @@ export default function ClassementsTab({
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts virtuels MPG">dont 🎮</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -586,6 +591,7 @@ export default function ClassementsTab({
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-indigo-600 dark:text-indigo-400 text-xs sm:text-base">{p.virtuels > 0 ? p.virtuels : '—'}</td>
                     </tr>
                   ))}
                 </tbody>

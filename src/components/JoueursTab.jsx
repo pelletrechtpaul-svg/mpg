@@ -46,21 +46,22 @@ function PosteBadge({ poste }) {
 }
 
 function computeGoalStats(matchData, joueur, ligue) {
-  let buts = 0, csc = 0;
+  let buts = 0, csc = 0, virtuels = 0;
   (matchData || []).forEach(m => {
     if (m.ligue !== ligue) return;
     (m.buteurs || []).forEach(b => {
       if (b.joueur !== joueur) return;
-      if (b.csc) csc += (b.buts || 1);
-      else buts += (b.buts || 1);
+      if (b.csc) { csc += (b.buts || 1); return; }
+      buts += (b.buts || 1);
+      if (b.virtuel) virtuels += (b.buts || 1);
     });
   });
-  return { buts, csc };
+  return { buts, csc, virtuels };
 }
 
 function PlayerCard({ player, onClose, photos, matchData }) {
   const { entries, displayName, poste, nationalite, joueur, ligue } = player;
-  const { buts, csc } = computeGoalStats(matchData, joueur, ligue);
+  const { buts, csc, virtuels } = computeGoalStats(matchData, joueur, ligue);
 
   const byChamp = {};
   entries.forEach(e => {
@@ -97,7 +98,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{entries.length}</span> achat{entries.length > 1 ? 's' : ''}</span>
               <span className="mr-4 mb-1"><span className="font-semibold text-slate-800 dark:text-slate-200">{totalSpent}M</span> total misé</span>
               <span className="mr-4 mb-1">max <span className="font-semibold text-slate-800 dark:text-slate-200">{prixMax}M</span></span>
-              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}</span>
+              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-400 dark:text-slate-500"> (dont {virtuels} 🎮)</span>}</span>
               {csc > 0 && (
                 <span className="text-orange-600 dark:text-orange-400 mb-1">🙈 <span className="font-semibold">{csc}</span> CSC</span>
               )}
