@@ -117,6 +117,24 @@ export default function ClassementsTab({
     };
   }, [matchesListForChampionnat]);
 
+  // Classement par note moyenne (toutes notes saisies dans le championnat
+  // sélectionné, ou tous championnats confondus sur "Total") — indépendant
+  // du coach, contrairement à avgNotesByCoach qui sert à l'affichage effectif.
+  const noteRanking = useMemo(() => {
+    const acc = {};
+    matchesListForChampionnat.forEach(m => {
+      (m.notes || []).forEach(n => {
+        if (!n.joueur) return;
+        const entry = acc[n.joueur] || (acc[n.joueur] = { sum: 0, count: 0 });
+        entry.sum += n.note;
+        entry.count += 1;
+      });
+    });
+    return Object.entries(acc)
+      .map(([joueur, { sum, count }]) => ({ joueur, avg: sum / count, matchs: count }))
+      .sort((a, b) => b.avg - a.avg);
+  }, [matchesListForChampionnat]);
+
   return (
     <>
       {/* Onglets de ligue */}
@@ -700,10 +718,7 @@ export default function ClassementsTab({
       {selectedLigue !== 'general' && ligueView === 'classement' && (
         <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 mt-6">
           <ShareBtn contextText={shareContext} />
-          <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-2">
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-              {buteursCscView === 'buteurs' ? '⚽ Buteurs' : '🙈 CSC'}
-            </h3>
+          <div className="flex items-center gap-3 px-6 pt-6 pb-2">
             <div className="flex gap-1 bg-slate-100 dark:bg-white/5 rounded-xl p-1 flex-shrink-0">
               <button
                 onClick={() => setButeursCscView('buteurs')}
@@ -712,12 +727,21 @@ export default function ClassementsTab({
                 ⚽
               </button>
               <button
+                onClick={() => setButeursCscView('note')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${buteursCscView === 'note' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                ⭐
+              </button>
+              <button
                 onClick={() => setButeursCscView('csc')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${buteursCscView === 'csc' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
               >
                 🙈
               </button>
             </div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+              {buteursCscView === 'buteurs' ? 'Buteurs' : buteursCscView === 'note' ? 'Note moyenne' : 'CSC'}
+            </h3>
           </div>
 
           {buteursCscView === 'buteurs' ? (
@@ -749,6 +773,36 @@ export default function ClassementsTab({
               </table>
             ) : (
               <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
+            )
+          ) : buteursCscView === 'note' ? (
+            noteRanking.length > 0 ? (
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                  <tr>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Note</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {noteRanking.map((p, index) => (
+                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
+                          {p.joueur}
+                        </button>
+                      </td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-base">{p.avg.toFixed(1)}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-slate-500 dark:text-slate-400 text-xs sm:text-base">{p.matchs}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucune note saisie pour l'instant.</p>
             )
           ) : (
             cscRanking.length > 0 ? (
