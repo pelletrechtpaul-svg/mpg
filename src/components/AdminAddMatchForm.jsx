@@ -3,6 +3,8 @@ import { db } from '../firebase';
 import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
 import CoachPlayerSearch from './AdminScorerSection';
+import { AdminFormationEntry } from './AdminFormationEntry.jsx';
+import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
 
@@ -48,31 +50,12 @@ function getChampStatus(matchData, ligueMetadata, saison, ligue) {
   return { championnat: current, number, isFull, meta };
 }
 
-export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligue, championnat, mercatoData }) {
+export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, notes, setNotes, saison, ligue, championnat, mercatoData, photos }) {
   const current = buteurs[matchKey] || [];
-  const withIdx = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === coach);
-  const scorers = withIdx.filter(s => !s.csc && !s.virtuel);
-  const virtualScorers = withIdx.filter(s => s.virtuel);
-  const cscEntries = withIdx.filter(s => s.csc);
+  const cscEntries = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === coach && s.csc);
   const [cscOpen, setCscOpen] = useState(false);
-  const [virtuelOpen, setVirtuelOpen] = useState(false);
 
   const removeEntry = (idx) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].filter((_, i) => i !== idx) }));
-  const incButs = (idx, delta) => setButeurs(prev => ({ ...prev, [matchKey]: prev[matchKey].map((s, i) => i === idx ? { ...s, buts: Math.max(1, Math.min(10, s.buts + delta)) } : s) }));
-
-  const addScorer = (player) => {
-    setButeurs(prev => ({
-      ...prev,
-      [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: coach, csc: false }],
-    }));
-  };
-
-  const addVirtuel = (player) => {
-    setButeurs(prev => ({
-      ...prev,
-      [matchKey]: [...prev[matchKey], { joueur: player.joueur, displayName: player.displayName, buts: 1, acheteur: coach, csc: false, virtuel: true }],
-    }));
-  };
 
   const addCsc = (player) => {
     setButeurs(prev => ({
@@ -84,54 +67,10 @@ export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligu
 
   return (
     <div className="mt-2 space-y-2">
-      <div>
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Buteurs</p>
-        {scorers.length > 0 && (
-          <div className="space-y-0.5 mb-1.5">
-            {scorers.map(s => (
-              <div key={s.idx} className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 py-0.5">
-                <span className="flex-1 truncate">{s.displayName}</span>
-                <button type="button" onClick={() => incButs(s.idx, -1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">−</button>
-                <span className="w-4 text-center text-xs font-bold">{s.buts}</span>
-                <button type="button" onClick={() => incButs(s.idx, 1)} className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold leading-none hover:bg-slate-300">+</button>
-                <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
-              </div>
-            ))}
-          </div>
-        )}
-        <CoachPlayerSearch
-          coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
-          onSelect={addScorer} placeholder={`Ajouter un buteur ${coach}…`}
-        />
-      </div>
-
-      <div>
-        <label className="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" checked={virtuelOpen} onChange={e => setVirtuelOpen(e.target.checked)} className="w-3.5 h-3.5 accent-indigo-500" />
-          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">But virtuel (MPG)</span>
-        </label>
-        {virtualScorers.length > 0 && (
-          <div className="space-y-0.5 mt-1 mb-1.5">
-            {virtualScorers.map(s => (
-              <div key={s.idx} className="flex items-center gap-1.5 text-xs text-indigo-700 dark:text-indigo-400 py-0.5">
-                <span className="flex-1 truncate">{s.displayName}</span>
-                <button type="button" onClick={() => incButs(s.idx, -1)} className="w-5 h-5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xs font-bold leading-none hover:bg-indigo-200">−</button>
-                <span className="w-4 text-center text-xs font-bold">{s.buts}</span>
-                <button type="button" onClick={() => incButs(s.idx, 1)} className="w-5 h-5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xs font-bold leading-none hover:bg-indigo-200">+</button>
-                <button type="button" onClick={() => removeEntry(s.idx)} className="text-slate-300 hover:text-red-500 leading-none">×</button>
-              </div>
-            ))}
-          </div>
-        )}
-        {virtuelOpen && (
-          <div className="mt-1">
-            <CoachPlayerSearch
-              coach={coach} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData}
-              onSelect={addVirtuel} placeholder={`Ajouter un but virtuel ${coach}…`}
-            />
-          </div>
-        )}
-      </div>
+      <AdminFormationEntry
+        coach={coach} matchKey={matchKey} saison={saison} ligue={ligue} championnat={championnat}
+        mercatoData={mercatoData} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} photos={photos}
+      />
 
       <div>
         <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -161,7 +100,7 @@ export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligu
   );
 }
 
-function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, matchKey, saison, ligue, championnat, valiseUsed, mercatoData, autoFilled }) {
+function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, notes, setNotes, matchKey, saison, ligue, championnat, valiseUsed, mercatoData, photos, autoFilled }) {
   const available1 = JOUEURS.filter(j => j !== match.joueur2 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const available2 = JOUEURS.filter(j => j !== match.joueur1 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
@@ -200,10 +139,6 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur1}</label>
               <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
-              <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
-                <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
-                  saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
-              </div>
               {!valiseUsed[match.joueur1] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
@@ -215,10 +150,6 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
               <label className="block text-xs text-slate-500 mb-1">{match.joueur2}</label>
               <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-xl font-bold bg-white" placeholder="0" />
-              <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
-                <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
-                  saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
-              </div>
               {!valiseUsed[match.joueur2] && (
                 <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                   <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
@@ -226,6 +157,15 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, m
                 </label>
               )}
             </div>
+          </div>
+
+          <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+            <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+              saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+          </div>
+          <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+            <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+              saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
           </div>
 
           {hasResult && (
@@ -260,7 +200,9 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
   const [match1, setMatch1] = useState(EMPTY_MATCH);
   const [match2, setMatch2] = useState(EMPTY_MATCH);
   const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
+  const [notes, setNotes] = useState({ m1: [], m2: [] });
   const [saving, setSaving] = useState(false);
+  const photos = usePlayerPhotos();
 
   // Init selSaison to first saison that has mercato data
   useEffect(() => {
@@ -353,13 +295,13 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
     setSaving(true);
     try {
       const now = new Date().toISOString();
-      const buildMatch = (m, buts) => {
+      const buildMatch = (m, buts, matchNotes) => {
         const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
-        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts };
+        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes };
       };
 
       const batch = writeBatch(db);
-      [buildMatch(match1, buteurs.m1), buildMatch(match2, buteurs.m2)].forEach(m => {
+      [buildMatch(match1, buteurs.m1, notes.m1), buildMatch(match2, buteurs.m2, notes.m2)].forEach(m => {
         const ref = doc(collection(db, 'matches'));
         batch.set(ref, { ...m, id: ref.id });
       });
@@ -378,6 +320,7 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
       setMatch1(EMPTY_MATCH);
       setMatch2(EMPTY_MATCH);
       setButeurs({ m1: [], m2: [] });
+      setNotes({ m1: [], m2: [] });
       setDateMatch(today);
       // Update local champMeta count
       setChampMeta(prev => prev ? { ...prev, matchsEntered: (prev.matchsEntered || 0) + 1 } : null);
@@ -518,13 +461,13 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
-              buteurs={buteurs} setButeurs={setButeurs} matchKey="m1"
+              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m1"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
-              mercatoData={mercatoData} autoFilled={false} />
+              mercatoData={mercatoData} photos={photos} autoFilled={false} />
             <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
-              buteurs={buteurs} setButeurs={setButeurs} matchKey="m2"
+              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m2"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
-              mercatoData={mercatoData} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
+              mercatoData={mercatoData} photos={photos} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
           </div>
 
           <button type="submit" disabled={!isReady || saving}
