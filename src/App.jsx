@@ -207,7 +207,7 @@ const App = () => {
 
         {/* Sub-navigation */}
         {activeTab !== 'admin' && (
-          <div className="mb-6 max-w-xl">
+          <div className="mb-6 max-w-xl sm:w-fit">
             {(() => {
               const tabs = [
                 { key: 'classements', label: 'Classement' },
