@@ -759,10 +759,10 @@ export default function ClassementsTab({
           </div>
 
           {coachByPlayer && (
-            <div className="flex flex-wrap gap-3 px-6 pb-3 text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex flex-wrap gap-2 px-6 pb-2 text-[11px] text-slate-500 dark:text-slate-400">
               {joueurs.map(coach => (
-                <span key={coach} className="inline-flex items-center gap-1.5">
-                  <PlayerBadge joueur={coach} />
+                <span key={coach} className="inline-flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: playerColorHex[coach] || '#94a3b8' }} />
                   {coach}
                 </span>
               ))}
