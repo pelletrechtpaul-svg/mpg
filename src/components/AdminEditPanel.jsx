@@ -179,13 +179,15 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
             </div>
           </div>
 
-          <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
-            <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
-          </div>
-          <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
-            <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+            <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+              <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+            </div>
+            <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+              <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
+                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-2">
