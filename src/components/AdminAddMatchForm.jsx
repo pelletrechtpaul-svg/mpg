@@ -48,7 +48,7 @@ function getChampStatus(matchData, ligueMetadata, saison, ligue) {
   return { championnat: current, number, isFull, meta };
 }
 
-function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligue, championnat, mercatoData }) {
+export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, saison, ligue, championnat, mercatoData }) {
   const current = buteurs[matchKey] || [];
   const withIdx = current.map((s, i) => ({ ...s, idx: i })).filter(s => s.acheteur === coach);
   const scorers = withIdx.filter(s => !s.csc && !s.virtuel);

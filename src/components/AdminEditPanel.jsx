@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
-import ScorerSection from './AdminScorerSection';
+import { TeamButeurs } from './AdminAddMatchForm';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
 const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
@@ -150,6 +150,10 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
               </select>
               <input type="number" value={editing.buts_j1} onChange={e => setEditing({ ...editing, buts_j1: parseInt(e.target.value) || 0 })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+              <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
+                <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                  saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
+              </div>
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j1 || false} onChange={e => setEditing({ ...editing, valise_j1: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
@@ -163,23 +167,16 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
               </select>
               <input type="number" value={editing.buts_j2} onChange={e => setEditing({ ...editing, buts_j2: parseInt(e.target.value) || 0 })}
                 min="0" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center" />
+              <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
+                <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                  saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} />
+              </div>
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
                 <input type="checkbox" checked={editing.valise_j2 || false} onChange={e => setEditing({ ...editing, valise_j2: e.target.checked })} className="w-3.5 h-3.5" />
                 <span className="text-xs text-slate-500">Valise 💼</span>
               </label>
             </div>
           </div>
-
-          <ScorerSection
-            matchKey="m"
-            joueur1={editing.joueur1}
-            joueur2={editing.joueur2}
-            saison={editing.saison}
-            ligue={editing.ligue}
-            buteurs={buteurs}
-            setButeurs={setButeurs}
-            mercatoData={mercatoData}
-          />
 
           <div className="flex gap-3 pt-2">
             <button type="submit" className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">Enregistrer</button>
