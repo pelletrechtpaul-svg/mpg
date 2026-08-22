@@ -27,6 +27,7 @@ export default function ClassementsTab({
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
+  const [buteursCscView, setButeursCscView] = useState('buteurs');
   const [statsTable, setStatsTable] = useState(null);
   const photos = usePlayerPhotos();
 
@@ -577,13 +578,32 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Classement buteurs / CSC (joueurs mercato) */}
+      {/* Classement buteurs / CSC (joueurs mercato), fusionnés dans une seule carte avec toggle */}
       {selectedLigue !== 'general' && ligueView === 'classement' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-            <ShareBtn contextText={shareContext} />
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">⚽ Buteurs</h3>
-            {buteursRanking.length > 0 ? (
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 mt-6">
+          <ShareBtn contextText={shareContext} />
+          <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-2">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+              {buteursCscView === 'buteurs' ? '⚽ Buteurs' : '🙈 CSC'}
+            </h3>
+            <div className="flex gap-1 bg-slate-100 dark:bg-white/5 rounded-xl p-1 flex-shrink-0">
+              <button
+                onClick={() => setButeursCscView('buteurs')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${buteursCscView === 'buteurs' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                ⚽
+              </button>
+              <button
+                onClick={() => setButeursCscView('csc')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${buteursCscView === 'csc' ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                🙈
+              </button>
+            </div>
+          </div>
+
+          {buteursCscView === 'buteurs' ? (
+            buteursRanking.length > 0 ? (
               <table className="w-full text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -606,12 +626,9 @@ export default function ClassementsTab({
               </table>
             ) : (
               <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun but marqué pour l'instant.</p>
-            )}
-          </div>
-          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
-            <ShareBtn contextText={shareContext} />
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-6 pt-6 pb-2">🙈 CSC</h3>
-            {cscRanking.length > 0 ? (
+            )
+          ) : (
+            cscRanking.length > 0 ? (
               <table className="w-full text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -632,8 +649,8 @@ export default function ClassementsTab({
               </table>
             ) : (
               <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucun CSC pour l'instant.</p>
-            )}
-          </div>
+            )
+          )}
         </div>
       )}
 
