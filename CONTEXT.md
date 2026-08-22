@@ -27,7 +27,7 @@ Dashboard privé pour un groupe de 4 amis jouant à MonPetitGazon (MPG), fantasy
   joueur2: 'Roman',
   buts_j1: 3,
   buts_j2: 1,
-  points_j1: 3,                 // inclut la valise (voir règles métier)
+  points_j1: 3,                 // calculé depuis le score seul (voir Valise, règles métier)
   points_j2: 0,
   valise_j1: false,             // true si valise posée par j1
   valise_j2: false,
@@ -53,8 +53,8 @@ Clé Firestore : `${saison}-${ligue}-${championnat}` avec `/` → `_`
 - Nul : 1 pt
 - Défaite : 0 pt
 
-### Valise (mécanique spéciale MPG)
-Un joueur peut poser une "valise" sur son adversaire. Si le joueur qui reçoit la valise perd, il perd des points supplémentaires. Les points_j1/points_j2 dans Firestore incluent déjà cet effet. Le champ `resultat` est la source de vérité pour V/N/D (ne pas recalculer depuis buts_j1 vs buts_j2).
+### Valise
+Un joueur peut poser une "valise" sur son adversaire (`valise_j1`/`valise_j2`). **Contrairement à MPG, c'est purement indicatif dans cette appli** : ça n'affecte ni le résultat ni les points. `calcResult(buts_j1, buts_j2)` calcule `resultat`/`points_j1`/`points_j2` uniquement à partir du score, sans tenir compte de la valise. Le champ `resultat` reste la source de vérité pour V/N/D (ne pas recalculer soi-même depuis buts_j1 vs buts_j2), mais uniquement parce qu'il peut y avoir des championnats saisis manuellement sans matchs détaillés (voir plus bas) — pas à cause d'un effet de la valise.
 
 ### Classement général
 `points_total = points_matchs + (titres × 3) + (médailles × 2)`
