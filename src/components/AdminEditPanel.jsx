@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
 import { TeamButeurs, CscToggle } from './AdminAddMatchForm';
+import { buildSquad, withDefaultNotes } from './AdminFormationEntry.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
@@ -74,13 +75,20 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
     e.preventDefault();
     try {
       const b1 = parseInt(editing.buts_j1), b2 = parseInt(editing.buts_j2);
+      // Un joueur laissé à 5 sans jamais toucher au stepper n'a pas d'entrée
+      // dans notes.m (seuls les +/- explicites en ajoutent) : on complète
+      // avec la note par défaut pour tout l'effectif de chaque coach, sinon
+      // ces joueurs ne comptent jamais dans la moyenne du championnat.
+      const squad1 = buildSquad(mercatoData, editing.joueur1, editing.saison, editing.ligue, editing.championnat);
+      const squad2 = buildSquad(mercatoData, editing.joueur2, editing.saison, editing.ligue, editing.championnat);
+      const filledNotes = withDefaultNotes(withDefaultNotes(notes.m, squad1, editing.joueur1), squad2, editing.joueur2);
       const updated = {
         ...editing,
         buts_j1: b1,
         buts_j2: b2,
         ...calcResult(b1, b2),
         buteurs: buteurs.m,
-        notes: notes.m,
+        notes: filledNotes,
       };
       delete updated._buteurs;
       delete updated.buteurs_j1;

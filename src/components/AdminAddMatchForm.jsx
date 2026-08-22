@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
 import CoachPlayerSearch from './AdminScorerSection';
-import { AdminFormationEntry } from './AdminFormationEntry.jsx';
+import { AdminFormationEntry, buildSquad, withDefaultNotes } from './AdminFormationEntry.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
@@ -322,8 +322,20 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
         return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes };
       };
 
+      // Un joueur laissé à 5 sans jamais toucher au stepper n'a pas d'entrée
+      // dans notes.m1/m2 (seuls les +/- explicites en ajoutent) : on complète
+      // ici avec la note par défaut pour tout l'effectif de chaque coach,
+      // sinon ces joueurs ne comptent jamais dans la moyenne du championnat.
+      const fillNotes = (matchNotes, joueur1, joueur2) => {
+        const squad1 = buildSquad(mercatoData, joueur1, selSaison, selLigue, championnat);
+        const squad2 = buildSquad(mercatoData, joueur2, selSaison, selLigue, championnat);
+        return withDefaultNotes(withDefaultNotes(matchNotes, squad1, joueur1), squad2, joueur2);
+      };
+      const notesM1 = fillNotes(notes.m1, match1.joueur1, match1.joueur2);
+      const notesM2 = fillNotes(notes.m2, match2.joueur1, match2.joueur2);
+
       const batch = writeBatch(db);
-      [buildMatch(match1, buteurs.m1, notes.m1), buildMatch(match2, buteurs.m2, notes.m2)].forEach(m => {
+      [buildMatch(match1, buteurs.m1, notesM1), buildMatch(match2, buteurs.m2, notesM2)].forEach(m => {
         const ref = doc(collection(db, 'matches'));
         batch.set(ref, { ...m, id: ref.id });
       });
