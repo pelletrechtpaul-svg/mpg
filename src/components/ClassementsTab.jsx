@@ -686,22 +686,32 @@ export default function ClassementsTab({
                 <span className="text-slate-600 dark:text-slate-300 min-w-[70px] sm:min-w-0">
                   {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
-                <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
-                <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
-                <span className="text-slate-400">-</span>
-                <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
-                <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
+                {(() => {
+                  const buteurs1 = (match.buteurs || []).filter(b => b.acheteur === match.joueur1);
+                  const buteurs2 = (match.buteurs || []).filter(b => b.acheteur === match.joueur2);
+                  const ButeursList = ({ list }) => list.length > 0 && (
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
+                      {list.map((b, i) => (
+                        <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
+                          {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
+                        </span>
+                      ))}
+                    </span>
+                  );
+                  return (
+                    <>
+                      <ButeursList list={buteurs1} />
+                      <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
+                      <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
+                      <span className="text-slate-400">-</span>
+                      <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
+                      <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
+                      <ButeursList list={buteurs2} />
+                    </>
+                  );
+                })()}
                 {(match.valise_j1 || match.valise_j2) && (
                   <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
-                )}
-                {match.buteurs && match.buteurs.length > 0 && (
-                  <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
-                    {match.buteurs.map((b, i) => (
-                      <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
-                        {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
-                      </span>
-                    ))}
-                  </span>
                 )}
               </div>
             ))}
