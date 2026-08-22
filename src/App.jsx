@@ -31,6 +31,7 @@ const App = () => {
   const [cameFromEffectifs, setCameFromEffectifs] = useState(false);
   const [ligueView, setLigueView] = useState('classement');
   const [effectifsCoach, setEffectifsCoach] = useState(null);
+  const [buteursCscView, setButeursCscView] = useState('buteurs');
 
   const openPlayer = (joueur, ligue) => {
     setPendingPlayerKey(joueur + '|||' + ligue);
@@ -259,6 +260,8 @@ const App = () => {
             setLigueView={setLigueView}
             effectifsCoach={effectifsCoach}
             setEffectifsCoach={setEffectifsCoach}
+            buteursCscView={buteursCscView}
+            setButeursCscView={setButeursCscView}
           />
         )}
 
