@@ -163,6 +163,12 @@ export default function ClassementsTab({
             📊 Classement
           </button>
           <button
+            onClick={() => setLigueView('matchs')}
+            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'matchs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+          >
+            🗓️ Matchs
+          </button>
+          <button
             onClick={() => setLigueView('effectifs')}
             className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
           >
@@ -217,8 +223,78 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Tableau classement / stats / graphique / effectifs */}
-      {selectedLigue !== 'general' && ligueView === 'effectifs' ? (
+      {/* Tableau classement / stats / graphique / effectifs / matchs */}
+      {selectedLigue !== 'general' && ligueView === 'matchs' ? (
+        selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 ? (
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 hover:-translate-y-0.5 transition-all duration-200">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
+              Matchs du championnat {selectedChampionnat}
+            </h3>
+            {(() => {
+              const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
+              const metadata = ligueMetadata[ligueKey];
+              if (metadata && matchesListForChampionnat.length > 0) {
+                const sortedMatches = [...matchesListForChampionnat].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
+                const firstMatchDate = sortedMatches[0]?.dateMatch;
+                const lastMatchDate = sortedMatches[sortedMatches.length - 1]?.dateMatch;
+                const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
+                return (
+                  <div className="mb-4 bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
+                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                      <strong>Commencé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
+                      <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
+                      {isComplete && lastMatchDate && <span className="ml-4"><strong>Terminé le :</strong> {new Date(lastMatchDate).toLocaleDateString('fr-FR')}</span>}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+            <div className="space-y-2">
+              {matchesListForChampionnat.map((match, index) => (
+                <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors text-xs sm:text-base">
+                  <span className="text-slate-600 dark:text-slate-300 min-w-[70px] sm:min-w-0">
+                    {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                  </span>
+                  {(() => {
+                    const buteurs1 = (match.buteurs || []).filter(b => b.acheteur === match.joueur1);
+                    const buteurs2 = (match.buteurs || []).filter(b => b.acheteur === match.joueur2);
+                    const ButeursList = ({ list }) => list.length > 0 && (
+                      <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
+                        {list.map((b, i) => (
+                          <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
+                            {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
+                          </span>
+                        ))}
+                      </span>
+                    );
+                    return (
+                      <>
+                        <ButeursList list={buteurs1} />
+                        <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
+                        <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
+                        <span className="text-slate-400">-</span>
+                        <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
+                        <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
+                        <ButeursList list={buteurs2} />
+                      </>
+                    );
+                  })()}
+                  {(match.valise_j1 || match.valise_j2) && (
+                    <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+            <p className="text-slate-500 dark:text-slate-400">
+              {selectedChampionnat === 'total' ? 'Sélectionne un championnat pour afficher les matchs.' : 'Aucun match saisi pour ce championnat.'}
+            </p>
+          </div>
+        )
+      ) : selectedLigue !== 'general' && ligueView === 'effectifs' ? (
         effectifsData ? (
           <div className="space-y-4">
             {/* Sous-menu : un bouton par entraîneur */}
@@ -654,70 +730,6 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Liste des matchs */}
-      {selectedLigue !== 'general' && selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 && (
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 mt-6 hover:-translate-y-0.5 transition-all duration-200">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
-            Matchs {selectedChampionnat !== 'total' ? `du championnat ${selectedChampionnat}` : 'de tous les championnats'}
-          </h3>
-          {(() => {
-            const ligueKey = `${selectedSeason}-${selectedLigue}-${selectedChampionnat}`;
-            const metadata = ligueMetadata[ligueKey];
-            if (metadata && matchesListForChampionnat.length > 0) {
-              const sortedMatches = [...matchesListForChampionnat].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
-              const firstMatchDate = sortedMatches[0]?.dateMatch;
-              const lastMatchDate = sortedMatches[sortedMatches.length - 1]?.dateMatch;
-              const isComplete = metadata.matchsEntered >= metadata.matchsTotal;
-              return (
-                <div className="mb-4 bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
-                  <p className="text-xs text-slate-600 dark:text-slate-300">
-                    <strong>Commencé le :</strong> {firstMatchDate ? new Date(firstMatchDate).toLocaleDateString('fr-FR') : 'N/A'} •
-                    <strong className="ml-2">Matchs :</strong> {metadata.matchsEntered}/{metadata.matchsTotal}
-                    {isComplete && lastMatchDate && <span className="ml-4"><strong>Terminé le :</strong> {new Date(lastMatchDate).toLocaleDateString('fr-FR')}</span>}
-                  </p>
-                </div>
-              );
-            }
-            return null;
-          })()}
-          <div className="space-y-2">
-            {matchesListForChampionnat.map((match, index) => (
-              <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors text-xs sm:text-base">
-                <span className="text-slate-600 dark:text-slate-300 min-w-[70px] sm:min-w-0">
-                  {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                </span>
-                {(() => {
-                  const buteurs1 = (match.buteurs || []).filter(b => b.acheteur === match.joueur1);
-                  const buteurs2 = (match.buteurs || []).filter(b => b.acheteur === match.joueur2);
-                  const ButeursList = ({ list }) => list.length > 0 && (
-                    <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
-                      {list.map((b, i) => (
-                        <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
-                          {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
-                        </span>
-                      ))}
-                    </span>
-                  );
-                  return (
-                    <>
-                      <ButeursList list={buteurs1} />
-                      <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
-                      <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
-                      <span className="text-slate-400">-</span>
-                      <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
-                      <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
-                      <ButeursList list={buteurs2} />
-                    </>
-                  );
-                })()}
-                {(match.valise_j1 || match.valise_j2) && (
-                  <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }
