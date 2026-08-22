@@ -33,10 +33,14 @@ export function withDefaultNotes(notesForMatch, squad, coach, defaultNote = 5) {
 
 // Terrain interactif de saisie admin : reprend le layout visuel de
 // FormationPitch (lecture seule, utilisé pour l'affichage effectifs) mais
-// chaque avatar devient cliquable pour taguer un but réel / virtuel MPG, et
+// chaque avatar devient cliquable pour taguer un but réel / but MPG, et
 // porte un stepper de note. Volontairement séparé de FormationPitch pour ne
 // pas mélanger logique d'affichage et logique de saisie dans le même
 // composant partagé ailleurs en lecture seule.
+// NB : "but virtuel" et "but MPG" désignent la même chose (bonification de
+// note MPG comptée comme un but) — "MPG" est le terme retenu à l'affichage,
+// le champ interne `virtuel` ne change pas (déjà en base sur les matchs
+// existants).
 export function AdminFormationEntry({ coach, matchKey, saison, ligue, championnat, mercatoData, buteurs, setButeurs, notes, setNotes, photos }) {
   const squad = useMemo(() => buildSquad(mercatoData, coach, saison, ligue, championnat), [mercatoData, coach, saison, ligue, championnat]);
 
@@ -50,9 +54,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
 
   const noteFor = (joueur) => notesCurrent.find(n => n.acheteur === coach && n.joueur === joueur)?.note ?? 5;
 
-  // Un but réel et un but virtuel MPG s'excluent mutuellement pour un même
-  // joueur sur un même match : il faut d'abord retirer l'un pour pouvoir
-  // ajouter l'autre, plutôt que de laisser les deux cumuler.
+  // Un but réel et un but MPG s'excluent mutuellement pour un même joueur
+  // sur un même match : il faut d'abord retirer l'un pour pouvoir ajouter
+  // l'autre, plutôt que de laisser les deux cumuler.
   const bumpReal = (m) => {
     setButeurs(prev => {
       const arr = prev[matchKey] || [];
@@ -73,9 +77,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
     });
   };
 
-  // But virtuel MPG : simple bascule 0/1 (une bonification de note supérieure
-  // à 1 par match n'arrive quasiment jamais) plutôt qu'un compteur — un tap
-  // suffit à taguer/détaguer, pas besoin d'un second geste pour retirer.
+  // But MPG (titulaires) : simple bascule 0/1 (une bonification de note
+  // supérieure à 1 par match n'arrive quasiment jamais) plutôt qu'un
+  // compteur — un tap suffit à taguer/détaguer, pas besoin d'un second geste.
   const toggleVirtuel = (m) => {
     setButeurs(prev => {
       const arr = prev[matchKey] || [];
@@ -83,6 +87,29 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
       if (idx >= 0) return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
       if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel)) return prev;
       return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, virtuel: true }] };
+    });
+  };
+
+  // But MPG (reste de l'effectif) : ici un compteur comme le but réel, pas
+  // une simple bascule — cohérent avec le contrôle texte "But MPG" tapable
+  // plusieurs fois, à la différence du bouton 🎮 des titulaires.
+  const bumpVirtuel = (m) => {
+    setButeurs(prev => {
+      const arr = prev[matchKey] || [];
+      if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel)) return prev;
+      const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel);
+      if (idx >= 0) return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: Math.min(10, s.buts + 1) } : s) };
+      return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, virtuel: true }] };
+    });
+  };
+
+  const decrementVirtuel = (joueur) => {
+    setButeurs(prev => {
+      const arr = prev[matchKey] || [];
+      const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === joueur && !s.csc && s.virtuel);
+      if (idx < 0) return prev;
+      if (arr[idx].buts <= 1) return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
+      return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: s.buts - 1 } : s) };
     });
   };
 
@@ -129,38 +156,47 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         {bench.length > 0 && (
           <div className="mt-3">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Reste de l'effectif <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
+              Reste de l'effectif <span className="normal-case font-normal">(tap sur But / But MPG)</span>
             </p>
             <div className="space-y-1.5">
               {bench.map(m => {
                 const { real, virtuel } = goalsFor(m.joueur);
                 return (
-                  <div key={m.joueur} className="flex items-center gap-1.5 text-xs">
-                    <div className="relative w-8 h-8 flex-shrink-0">
-                      <button type="button" onClick={() => bumpReal(m)}
-                        title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : undefined}
-                        className={`block w-full h-full rounded-full overflow-hidden ${virtuel > 0 ? 'opacity-50' : ''} ${real > 0 || virtuel > 0 ? 'ring-2 ring-green-500' : 'ring-1 ring-slate-400 dark:ring-slate-500'}`}>
-                        <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
-                      </button>
-                      {real > 0 && (
-                        <button type="button" onClick={() => decrementReal(m.joueur)}
-                          className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-0.5 rounded-full bg-green-600 text-white text-[10px] font-bold leading-[18px] text-center">
-                          {real}
-                        </button>
-                      )}
-                      <button type="button" onClick={() => toggleVirtuel(m)}
-                        title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
-                        className={`absolute -bottom-1.5 -right-1.5 w-[18px] h-[18px] rounded-full text-[9px] leading-[17px] text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
-                        🎮
-                      </button>
+                  <div key={m.joueur} className="flex items-center flex-wrap gap-x-1.5 gap-y-1 text-xs">
+                    {/* Photo purement identificatoire ici : plus de tap pour
+                        marquer, ça se fait via les boutons texte "But" /
+                        "But MPG" ci-dessous — trop imprécis au doigt sur un
+                        avatar de 32px, remplacé par des cibles plus larges. */}
+                    <div className={`w-8 h-8 flex-shrink-0 rounded-full overflow-hidden ${real > 0 || virtuel > 0 ? 'ring-2 ring-green-500' : 'ring-1 ring-slate-400 dark:ring-slate-500'}`}>
+                      <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
                     </div>
                     <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
                       {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
                     </span>
+                    <span className="flex items-center gap-1 flex-shrink-0">
+                      <button type="button" onClick={() => bumpReal(m)}
+                        title={virtuel > 0 ? 'Retirer le but MPG avant d\'ajouter un but' : undefined}
+                        className={`px-1.5 h-6 rounded font-semibold ${virtuel > 0 ? 'opacity-40 text-slate-400' : 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 active:bg-green-100'}`}>
+                        But{real > 0 && ` ${real}`}
+                      </button>
+                      {real > 0 && (
+                        <button type="button" onClick={() => decrementReal(m.joueur)} title="Retirer un but"
+                          className="w-6 h-6 rounded-full bg-green-600 text-white text-[11px] font-bold leading-none">×</button>
+                      )}
+                      <button type="button" onClick={() => bumpVirtuel(m)}
+                        title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : undefined}
+                        className={`px-1.5 h-6 rounded font-semibold ${real > 0 ? 'opacity-40 text-slate-400' : 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 active:bg-indigo-100'}`}>
+                        But MPG{virtuel > 0 && ` ${virtuel}`}
+                      </button>
+                      {virtuel > 0 && (
+                        <button type="button" onClick={() => decrementVirtuel(m.joueur)} title="Retirer un but MPG"
+                          className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold leading-none">×</button>
+                      )}
+                    </span>
                     <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
-                      <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-5 h-5 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
+                      <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
                       <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(noteFor(m.joueur))}</span>
-                      <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-5 h-5 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
+                      <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
                     </span>
                   </div>
                 );
@@ -190,7 +226,7 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
         const { real, virtuel } = goalsFor(m.joueur);
         return (
           <div key={i} className={`relative w-11 h-11 sm:w-14 sm:h-14 ${offsetClass}`}>
-            <button type="button" onClick={() => bumpReal(m)} title={virtuel > 0 ? 'Retirer le but virtuel avant d\'ajouter un but réel' : '+1 but'}
+            <button type="button" onClick={() => bumpReal(m)} title={virtuel > 0 ? 'Retirer le but MPG avant d\'ajouter un but réel' : '+1 but'}
               className={`block w-full h-full ${virtuel > 0 ? 'opacity-50' : ''}`}>
               <div className={`w-full h-full rounded-full shadow-lg ${real > 0 || virtuel > 0 ? 'ring-4 ring-green-500' : 'ring-2 ring-slate-900/70'}`}>
                 <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
@@ -203,7 +239,7 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
               </button>
             )}
             <button type="button" onClick={() => toggleVirtuel(m)}
-              title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
+              title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : 'But MPG'}
               className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full text-[10px] leading-5 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
               🎮
             </button>
