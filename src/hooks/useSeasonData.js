@@ -30,7 +30,8 @@ export const useSeasonData = (matchData, selectedSeason) => {
           championnats.add(mc.championnat);
         }
       });
-      map[ligue] = [...championnats].sort();
+      // Tri numérique sur "#N" (pas un tri lexical : "#10" < "#2" en lexical)
+      map[ligue] = [...championnats].sort((a, b) => (parseInt(String(a).replace('#', ''), 10) || 0) - (parseInt(String(b).replace('#', ''), 10) || 0));
     });
     return map;
   }, [filteredData, ligues, selectedSeason]);

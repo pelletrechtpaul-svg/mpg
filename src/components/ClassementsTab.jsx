@@ -4,6 +4,7 @@ import { Trophy, Medal } from 'lucide-react';
 import { playerColorHex, ShareBtn } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
+import { champNum } from './AdminScorerSection.jsx';
 
 const PlayerBadge = ({ joueur, sm = true }) => (
   <div
@@ -29,25 +30,38 @@ export default function ClassementsTab({
   const [statsTable, setStatsTable] = useState(null);
   const photos = usePlayerPhotos();
 
-  // Championnat affiché dans Effectifs : réutilise le sélecteur du classement.
-  // "Total" n'a pas de sens pour un effectif → on retombe sur le plus récent.
-  const currentEffectifsChampionnat = useMemo(() => {
-    if (selectedLigue === 'general') return null;
-    if (selectedChampionnat !== 'total') return Number(selectedChampionnat);
-    const nums = (mercatoData || []).filter(m => m.ligue === selectedLigue).map(m => m.championnat);
-    return nums.length ? Math.max(...nums) : null;
-  }, [mercatoData, selectedLigue, selectedChampionnat]);
-
-  // Effectif de chaque coach pour le championnat affiché, trié par poste
+  // Effectif de chaque coach pour le championnat sélectionné, trié par poste.
+  // Sur "total" : synthèse de tous les championnats de la ligue — union des
+  // joueurs achetés par chaque coach, dédupliqués (un joueur racheté d'un
+  // tour à l'autre ne compte qu'une fois, avec son achat le plus récent).
   const effectifsData = useMemo(() => {
-    if (selectedLigue === 'general' || currentEffectifsChampionnat == null) return null;
+    if (selectedLigue === 'general') return null;
     const byCoach = {};
     joueurs.forEach(j => { byCoach[j] = []; });
-    (mercatoData || []).forEach(m => {
-      if (m.ligue !== selectedLigue || m.championnat !== currentEffectifsChampionnat) return;
-      if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
-      byCoach[m.acheteur].push(m);
-    });
+
+    if (selectedChampionnat === 'total') {
+      const byCoachByPlayer = {};
+      (mercatoData || []).forEach(m => {
+        if (m.ligue !== selectedLigue) return;
+        const players = byCoachByPlayer[m.acheteur] || (byCoachByPlayer[m.acheteur] = {});
+        const existing = players[m.joueur];
+        if (!existing || m.championnat > existing.championnat) players[m.joueur] = m;
+      });
+      Object.entries(byCoachByPlayer).forEach(([coach, players]) => {
+        byCoach[coach] = Object.values(players);
+      });
+    } else {
+      // Le championnat des matchs (et du sélecteur) est stocké "#N", celui
+      // du mercato est un nombre — sans ce parsing la comparaison échoue
+      // toujours et l'effectif du tour sélectionné ressort vide.
+      const championnatNum = champNum(selectedChampionnat);
+      (mercatoData || []).forEach(m => {
+        if (m.ligue !== selectedLigue || m.championnat !== championnatNum) return;
+        if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
+        byCoach[m.acheteur].push(m);
+      });
+    }
+
     Object.values(byCoach).forEach(squad => {
       squad.sort((a, b) => {
         const gA = POSTE_GROUP_ORDER.indexOf(POSTE_GROUP[a.poste] || 'Milieux');
@@ -56,7 +70,7 @@ export default function ClassementsTab({
       });
     });
     return byCoach;
-  }, [mercatoData, selectedLigue, currentEffectifsChampionnat, joueurs]);
+  }, [mercatoData, selectedLigue, selectedChampionnat, joueurs]);
 
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
@@ -114,7 +128,13 @@ export default function ClassementsTab({
               key={ligue}
               onClick={() => {
                 setSelectedLigue(ligue);
-                setSelectedChampionnat('total');
+                // Par défaut sur le championnat #x le plus récent plutôt que
+                // "Total" — championnatsByLigue est trié numériquement, donc
+                // le dernier élément est le plus récent. Pas de notion de
+                // "tour le plus récent" en All-Time (span plusieurs saisons,
+                // le sélecteur de championnat y est d'ailleurs masqué).
+                const champs = selectedSeason !== 'All-Time' ? (championnatsByLigue[ligue] || []) : [];
+                setSelectedChampionnat(champs.length ? champs[champs.length - 1] : 'total');
                 setLigueView('classement');
                 setEffectifsCoach(null);
               }}
