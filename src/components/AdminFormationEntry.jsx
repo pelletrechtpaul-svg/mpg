@@ -89,7 +89,12 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   return (
     <div className="mt-2">
       <div className="sm:max-w-sm sm:mx-auto">
-        <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
+        {/* paddingBottom plus généreux qu'en lecture seule (FormationPitch,
+            133%) : la carte admin ajoute un stepper de note sous chaque
+            titulaire, plus haut que le simple prix affiché en lecture seule.
+            Avec 133%, le gardien (ligne la plus basse) avait sa note coupée
+            par l'overflow-hidden du terrain. */}
+        <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '165%' }}>
           <PitchLines />
           {['Attaquants', 'Milieux', 'Défenseurs', 'Gardien'].map(group => (
             <AdminFormationRow
@@ -105,7 +110,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
               Remplaçants <span className="normal-case font-normal">(clic photo = but, 🎮 = virtuel)</span>
             </p>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+            <div className="space-y-1.5">
               {bench.map(m => {
                 const { real, virtuel } = goalsFor(m.joueur);
                 return (
@@ -127,6 +132,11 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                     </div>
                     <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
                       {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
+                    </span>
+                    <span className="flex items-center gap-1 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-1 py-0.5">
+                      <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-3 text-slate-500 dark:text-slate-400 font-bold leading-none">−</button>
+                      <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(noteFor(m.joueur))}</span>
+                      <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-3 text-slate-500 dark:text-slate-400 font-bold leading-none">+</button>
                     </span>
                     <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">{m.prix}M</span>
                   </div>
