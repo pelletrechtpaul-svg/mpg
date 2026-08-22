@@ -694,6 +694,15 @@ export default function ClassementsTab({
                 {(match.valise_j1 || match.valise_j2) && (
                   <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
                 )}
+                {match.buteurs && match.buteurs.length > 0 && (
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
+                    {match.buteurs.map((b, i) => (
+                      <span key={i} className={b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}>
+                        {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
+                      </span>
+                    ))}
+                  </span>
+                )}
               </div>
             ))}
           </div>
