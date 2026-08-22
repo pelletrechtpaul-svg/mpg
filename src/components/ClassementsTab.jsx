@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
-import { playerColorHex, ShareBtn } from '../shared.jsx';
+import { playerColorHex, playerColorBg, ShareBtn } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { champNum } from './AdminScorerSection.jsx';
@@ -58,6 +58,20 @@ export default function ClassementsTab({
     });
     return byCoach;
   }, [mercatoData, selectedLigue, selectedChampionnat, joueurs]);
+
+  // Coach propriétaire de chaque joueur pour le championnat #x sélectionné
+  // (dérivé du même effectif que ci-dessus) — sert à teinter les lignes des
+  // classements buteurs/note/CSC pour distinguer visuellement les
+  // entraineurs. null sur "Total" comme effectifsData : un joueur peut avoir
+  // changé de coach d'un championnat à l'autre, teinter n'aurait pas de sens.
+  const coachByPlayer = useMemo(() => {
+    if (!effectifsData) return null;
+    const map = {};
+    Object.entries(effectifsData).forEach(([coach, squad]) => {
+      squad.forEach(m => { map[m.joueur] = coach; });
+    });
+    return map;
+  }, [effectifsData]);
 
   // Note moyenne par coach/joueur sur le championnat sélectionné, une fois
   // qu'au moins un match y a été saisi avec des notes — sert à choisir les
@@ -744,6 +758,17 @@ export default function ClassementsTab({
             </h3>
           </div>
 
+          {coachByPlayer && (
+            <div className="flex flex-wrap gap-3 px-6 pb-3 text-xs text-slate-500 dark:text-slate-400">
+              {joueurs.map(coach => (
+                <span key={coach} className="inline-flex items-center gap-1.5">
+                  <PlayerBadge joueur={coach} />
+                  {coach}
+                </span>
+              ))}
+            </div>
+          )}
+
           {buteursCscView === 'buteurs' ? (
             buteursRanking.length > 0 ? (
               <table className="w-full table-fixed text-xs sm:text-sm">
@@ -756,19 +781,22 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {buteursRanking.slice(0, 10).map((p, index) => (
-                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
-                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          <span className="truncate">{p.joueur}</span>
-                        </button>
-                      </td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-indigo-600 dark:text-indigo-400 text-xs sm:text-base">{p.virtuels > 0 ? p.virtuels : '—'}</td>
-                    </tr>
-                  ))}
+                  {buteursRanking.slice(0, 10).map((p, index) => {
+                    const coach = coachByPlayer?.[p.joueur];
+                    return (
+                      <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                          <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
+                            <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
+                            <span className="truncate">{p.joueur}</span>
+                          </button>
+                        </td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-indigo-600 dark:text-indigo-400 text-xs sm:text-base">{p.virtuels > 0 ? p.virtuels : '—'}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
@@ -786,19 +814,22 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {noteRanking.slice(0, 10).map((p, index) => (
-                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
-                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          <span className="truncate">{p.joueur}</span>
-                        </button>
-                      </td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-base">{p.avg.toFixed(1)}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-slate-500 dark:text-slate-400 text-xs sm:text-base">{p.matchs}</td>
-                    </tr>
-                  ))}
+                  {noteRanking.slice(0, 10).map((p, index) => {
+                    const coach = coachByPlayer?.[p.joueur];
+                    return (
+                      <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                          <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
+                            <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
+                            <span className="truncate">{p.joueur}</span>
+                          </button>
+                        </td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-base">{p.avg.toFixed(1)}</td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center text-slate-500 dark:text-slate-400 text-xs sm:text-base">{p.matchs}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
@@ -815,18 +846,21 @@ export default function ClassementsTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {cscRanking.map((p, index) => (
-                    <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
-                          <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          <span className="truncate">{p.joueur}</span>
-                        </button>
-                      </td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
-                    </tr>
-                  ))}
+                  {cscRanking.map((p, index) => {
+                    const coach = coachByPlayer?.[p.joueur];
+                    return (
+                      <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                          <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
+                            <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
+                            <span className="truncate">{p.joueur}</span>
+                          </button>
+                        </td>
+                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
