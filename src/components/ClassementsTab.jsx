@@ -746,23 +746,23 @@ export default function ClassementsTab({
 
           {buteursCscView === 'buteurs' ? (
             buteursRanking.length > 0 ? (
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG">dont 🎮</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG">dont 🎮</th>
                   </tr>
                 </thead>
                 <tbody>
                   {buteursRanking.slice(0, 10).map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
                           <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          {p.joueur}
+                          <span className="truncate">{p.joueur}</span>
                         </button>
                       </td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
@@ -776,23 +776,23 @@ export default function ClassementsTab({
             )
           ) : buteursCscView === 'note' ? (
             noteRanking.length > 0 ? (
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Note</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Note</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
                   </tr>
                 </thead>
                 <tbody>
                   {noteRanking.slice(0, 10).map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
                           <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          {p.joueur}
+                          <span className="truncate">{p.joueur}</span>
                         </button>
                       </td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-base">{p.avg.toFixed(1)}</td>
@@ -806,22 +806,22 @@ export default function ClassementsTab({
             )
           ) : (
             cscRanking.length > 0 ? (
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                    <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cscRanking.map((p, index) => (
                     <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">
-                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left">
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                        <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
                           <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                          {p.joueur}
+                          <span className="truncate">{p.joueur}</span>
                         </button>
                       </td>
                       <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
