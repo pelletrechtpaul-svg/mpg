@@ -115,7 +115,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
             titulaire, plus haut que le simple prix affiché en lecture seule.
             Avec 133%, le gardien (ligne la plus basse) avait sa note coupée
             par l'overflow-hidden du terrain. */}
-        <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '165%' }}>
+        <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '178%' }}>
           <PitchLines />
           {['Attaquants', 'Milieux', 'Défenseurs', 'Gardien'].map(group => (
             <AdminFormationRow
@@ -144,23 +144,23 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                       </button>
                       {real > 0 && (
                         <button type="button" onClick={() => decrementReal(m.joueur)}
-                          className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 rounded-full bg-green-600 text-white text-[9px] font-bold leading-[14px] text-center">
+                          className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-0.5 rounded-full bg-green-600 text-white text-[10px] font-bold leading-[18px] text-center">
                           {real}
                         </button>
                       )}
                       <button type="button" onClick={() => toggleVirtuel(m)}
                         title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
-                        className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full text-[8px] leading-[13px] text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
+                        className={`absolute -bottom-1.5 -right-1.5 w-[18px] h-[18px] rounded-full text-[9px] leading-[17px] text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
                         🎮
                       </button>
                     </div>
                     <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
                       {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
                     </span>
-                    <span className="flex items-center gap-1 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-1 py-0.5">
-                      <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-3 text-slate-500 dark:text-slate-400 font-bold leading-none">−</button>
+                    <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
+                      <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-5 h-5 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
                       <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(noteFor(m.joueur))}</span>
-                      <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-3 text-slate-500 dark:text-slate-400 font-bold leading-none">+</button>
+                      <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-5 h-5 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
                     </span>
                   </div>
                 );
@@ -198,22 +198,22 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
             </button>
             {real > 0 && (
               <button type="button" onClick={() => decrementReal(m.joueur)} title="Retirer un but"
-                className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 rounded-full bg-green-600 text-white text-[10px] font-bold leading-4 text-center">
+                className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-0.5 rounded-full bg-green-600 text-white text-[11px] font-bold leading-5 text-center">
                 {real}
               </button>
             )}
             <button type="button" onClick={() => toggleVirtuel(m)}
               title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but virtuel' : 'But virtuel MPG'}
-              className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] leading-4 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
+              className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full text-[10px] leading-5 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
               🎮
             </button>
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max max-w-[70px] px-1 py-0.5 rounded bg-black/55 text-[10px] sm:text-xs font-bold text-white leading-tight text-center truncate">
               {m.joueur}
             </span>
-            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 flex items-center gap-1 bg-black/55 rounded px-1 py-0.5">
-              <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-3 text-white text-[10px] font-bold leading-none">−</button>
+            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 flex items-center gap-0.5 bg-black/55 rounded px-0.5 py-0.5">
+              <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">−</button>
               <span className="text-white text-[10px] sm:text-xs font-bold leading-none w-5 text-center">{formatNote(noteFor(m.joueur))}</span>
-              <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-3 text-white text-[10px] font-bold leading-none">+</button>
+              <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">+</button>
             </span>
           </div>
         );
