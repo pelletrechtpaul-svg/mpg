@@ -151,7 +151,9 @@ export function computeFormation(squad) {
     Gardien: keepers.slice(0, FORMATION_SLOTS.Gardien),
   };
   const startersSet = new Set(Object.values(starters).flat().filter(Boolean));
-  const bench = squad.filter(m => !startersSet.has(m));
+  const bench = squad
+    .filter(m => !startersSet.has(m))
+    .sort((a, b) => POSTE_GROUP_ORDER.indexOf(POSTE_GROUP[a.poste] || 'Milieux') - POSTE_GROUP_ORDER.indexOf(POSTE_GROUP[b.poste] || 'Milieux'));
   return { starters, bench };
 }
 
