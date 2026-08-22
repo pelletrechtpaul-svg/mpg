@@ -125,7 +125,11 @@ export function FormationPitch({ squad, onOpenPlayer, photos }) {
   const bench = squad.filter(m => !startersSet.has(m));
 
   return (
-    <div>
+    <div className="sm:max-w-sm sm:mx-auto">
+      {/* Largeur plafonnée + centrée à partir de sm : sans ça, la carte
+          s'étire à toute la largeur du conteneur desktop et le terrain
+          (ratio portrait via paddingBottom) devient démesurément haut,
+          forçant un scroll pour le voir en entier. */}
       {/* paddingBottom plutôt qu'aspect-ratio : html2canvas (partage WhatsApp)
           ignore aspect-ratio et la hauteur s'effondrait, décalant tout. */}
       <div className="relative rounded-2xl overflow-hidden border-[3px] border-white/90" style={{ paddingBottom: '133.333%' }}>
