@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
 import CoachPlayerSearch from './AdminScorerSection';
-import { AdminFormationEntry, buildSquad, withDefaultNotes } from './AdminFormationEntry.jsx';
+import { AdminFormationEntry } from './AdminFormationEntry.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
@@ -50,13 +50,12 @@ function getChampStatus(matchData, ligueMetadata, saison, ligue) {
   return { championnat: current, number, isFull, meta };
 }
 
-export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, notes, setNotes, absents, setAbsents, saison, ligue, championnat, mercatoData, photos }) {
+export function TeamButeurs({ coach, matchKey, buteurs, setButeurs, notes, setNotes, saison, ligue, championnat, mercatoData, photos }) {
   return (
     <div className="mt-2">
       <AdminFormationEntry
         coach={coach} matchKey={matchKey} saison={saison} ligue={ligue} championnat={championnat}
-        mercatoData={mercatoData} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-        absents={absents} setAbsents={setAbsents} photos={photos}
+        mercatoData={mercatoData} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} photos={photos}
       />
     </div>
   );
@@ -108,7 +107,7 @@ export function CscToggle({ coach, matchKey, buteurs, setButeurs, saison, ligue,
   );
 }
 
-function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, notes, setNotes, absents, setAbsents, matchKey, saison, ligue, championnat, valiseUsed, mercatoData, photos, autoFilled }) {
+function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, notes, setNotes, matchKey, saison, ligue, championnat, valiseUsed, mercatoData, photos, autoFilled }) {
   const available1 = JOUEURS.filter(j => j !== match.joueur2 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const available2 = JOUEURS.filter(j => j !== match.joueur1 && j !== otherMatch.joueur1 && j !== otherMatch.joueur2);
   const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
@@ -183,11 +182,11 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, n
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
             <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
               <TeamButeurs coach={match.joueur1} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-                absents={absents} setAbsents={setAbsents} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
             </div>
             <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
               <TeamButeurs coach={match.joueur2} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-                absents={absents} setAbsents={setAbsents} saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
+                saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} photos={photos} />
             </div>
           </div>
 
@@ -225,7 +224,6 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
   const [activeMatch, setActiveMatch] = useState('m1');
   const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
   const [notes, setNotes] = useState({ m1: [], m2: [] });
-  const [absents, setAbsents] = useState({ m1: [], m2: [] });
   const [saving, setSaving] = useState(false);
   const photos = usePlayerPhotos();
 
@@ -320,26 +318,13 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
     setSaving(true);
     try {
       const now = new Date().toISOString();
-      const buildMatch = (m, buts, matchNotes, matchAbsents) => {
+      const buildMatch = (m, buts, matchNotes) => {
         const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
-        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes, absents: matchAbsents };
+        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes };
       };
-
-      // Un joueur laissé à 5 sans jamais toucher au stepper n'a pas d'entrée
-      // dans notes.m1/m2 (seuls les +/- explicites en ajoutent) : on complète
-      // ici avec la note par défaut pour tout l'effectif de chaque coach,
-      // sinon ces joueurs ne comptent jamais dans la moyenne du championnat.
-      // Un joueur marqué "non noté" (matchAbsents) est exclu de ce backfill.
-      const fillNotes = (matchNotes, matchAbsents, joueur1, joueur2) => {
-        const squad1 = buildSquad(mercatoData, joueur1, selSaison, selLigue, championnat);
-        const squad2 = buildSquad(mercatoData, joueur2, selSaison, selLigue, championnat);
-        return withDefaultNotes(withDefaultNotes(matchNotes, squad1, joueur1, matchAbsents), squad2, joueur2, matchAbsents);
-      };
-      const notesM1 = fillNotes(notes.m1, absents.m1, match1.joueur1, match1.joueur2);
-      const notesM2 = fillNotes(notes.m2, absents.m2, match2.joueur1, match2.joueur2);
 
       const batch = writeBatch(db);
-      [buildMatch(match1, buteurs.m1, notesM1, absents.m1), buildMatch(match2, buteurs.m2, notesM2, absents.m2)].forEach(m => {
+      [buildMatch(match1, buteurs.m1, notes.m1), buildMatch(match2, buteurs.m2, notes.m2)].forEach(m => {
         const ref = doc(collection(db, 'matches'));
         batch.set(ref, { ...m, id: ref.id });
       });
@@ -359,7 +344,6 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
       setMatch2(EMPTY_MATCH);
       setButeurs({ m1: [], m2: [] });
       setNotes({ m1: [], m2: [] });
-      setAbsents({ m1: [], m2: [] });
       setDateMatch(today);
       // Update local champMeta count
       setChampMeta(prev => prev ? { ...prev, matchsEntered: (prev.matchsEntered || 0) + 1 } : null);
@@ -511,15 +495,13 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
 
           <div className={activeMatch === 'm1' ? '' : 'hidden'}>
             <MatchBlock label="Match 1" match={match1} setMatch={setMatch1} otherMatch={match2}
-              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              absents={absents} setAbsents={setAbsents} matchKey="m1"
+              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m1"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
               mercatoData={mercatoData} photos={photos} autoFilled={false} />
           </div>
           <div className={activeMatch === 'm2' ? '' : 'hidden'}>
             <MatchBlock label="Match 2 (auto)" match={match2} setMatch={setMatch2} otherMatch={match1}
-              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-              absents={absents} setAbsents={setAbsents} matchKey="m2"
+              buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes} matchKey="m2"
               saison={selSaison} ligue={selLigue} championnat={championnat} valiseUsed={valiseUsed}
               mercatoData={mercatoData} photos={photos} autoFilled={!!(match1.joueur1 && match1.joueur2)} />
           </div>
