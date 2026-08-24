@@ -117,6 +117,17 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
     });
   };
 
+  // Retire la note d'un joueur pour revenir à l'état "non noté" (X rouge) -
+  // no-op s'il n'a pas de note (rien à retirer).
+  const resetNote = (joueur) => {
+    setNotes(prev => {
+      const arr = prev[matchKey] || [];
+      const idx = arr.findIndex(n => n.acheteur === coach && n.joueur === joueur);
+      if (idx < 0) return prev;
+      return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
+    });
+  };
+
   if (squad.length === 0) {
     return (
       <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-2">
@@ -141,7 +152,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
             <AdminFormationRow
               key={group} group={group} players={starters[group]} photos={photos}
               goalsFor={goalsFor} noteFor={noteFor} bumpReal={bumpReal} decrementReal={decrementReal}
-              toggleVirtuel={toggleVirtuel} bumpNote={bumpNote}
+              toggleVirtuel={toggleVirtuel} bumpNote={bumpNote} resetNote={resetNote}
             />
           ))}
         </div>
@@ -190,7 +201,11 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                     </span>
                     <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
                       <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
-                      <span className={`w-5 text-center font-semibold ${noted ? 'text-slate-700 dark:text-slate-200' : 'text-red-600 dark:text-red-400'}`}>{noted ? formatNote(note) : 'X'}</span>
+                      <button type="button" onClick={() => resetNote(m.joueur)} disabled={!noted}
+                        title={noted ? 'Remettre à zéro (non noté)' : undefined}
+                        className={`w-5 text-center font-semibold ${noted ? 'text-slate-700 dark:text-slate-200' : 'text-red-600 dark:text-red-400 cursor-default'}`}>
+                        {noted ? formatNote(note) : 'X'}
+                      </button>
                       <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
                     </span>
                   </div>
@@ -204,7 +219,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   );
 }
 
-function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal, decrementReal, toggleVirtuel, bumpNote }) {
+function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal, decrementReal, toggleVirtuel, bumpNote, resetNote }) {
   const slots = FORMATION_SLOTS[group];
   return (
     <div className="absolute inset-x-0 flex justify-around px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%` }}>
@@ -245,7 +260,11 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
             </span>
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 flex items-center gap-0.5 bg-black/55 rounded px-0.5 py-0.5">
               <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">−</button>
-              <span className={`text-[10px] sm:text-xs font-bold leading-none w-5 text-center ${noted ? 'text-white' : 'text-red-400'}`}>{noted ? formatNote(note) : 'X'}</span>
+              <button type="button" onClick={() => resetNote(m.joueur)} disabled={!noted}
+                title={noted ? 'Remettre à zéro (non noté)' : undefined}
+                className={`text-[10px] sm:text-xs font-bold leading-none w-5 text-center ${noted ? 'text-white' : 'text-red-400 cursor-default'}`}>
+                {noted ? formatNote(note) : 'X'}
+              </button>
               <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">+</button>
             </span>
           </div>
