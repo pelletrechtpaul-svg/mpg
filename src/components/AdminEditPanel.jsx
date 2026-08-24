@@ -31,6 +31,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
   const [editing, setEditing] = useState(null);
   const [buteurs, setButeurs] = useState({ m: [] });
   const [notes, setNotes] = useState({ m: [] });
+  const [absents, setAbsents] = useState({ m: [] });
   const [cameFromExternal, setCameFromExternal] = useState(false);
   const photos = usePlayerPhotos();
 
@@ -54,6 +55,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
     setEditing({ ...match, _buteurs: normalizeLegacyButeurs(match) });
     setButeurs({ m: normalizeLegacyButeurs(match) });
     setNotes({ m: match.notes || [] });
+    setAbsents({ m: match.absents || [] });
   };
 
   // Arrivée directe depuis "éditer ce match" dans Classements > Matchs :
@@ -81,7 +83,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
       // ces joueurs ne comptent jamais dans la moyenne du championnat.
       const squad1 = buildSquad(mercatoData, editing.joueur1, editing.saison, editing.ligue, editing.championnat);
       const squad2 = buildSquad(mercatoData, editing.joueur2, editing.saison, editing.ligue, editing.championnat);
-      const filledNotes = withDefaultNotes(withDefaultNotes(notes.m, squad1, editing.joueur1), squad2, editing.joueur2);
+      const filledNotes = withDefaultNotes(withDefaultNotes(notes.m, squad1, editing.joueur1, absents.m), squad2, editing.joueur2, absents.m);
       const updated = {
         ...editing,
         buts_j1: b1,
@@ -89,6 +91,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
         ...calcResult(b1, b2),
         buteurs: buteurs.m,
         notes: filledNotes,
+        absents: absents.m,
       };
       delete updated._buteurs;
       delete updated.buteurs_j1;
@@ -215,11 +218,11 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
             <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-2">
               <TeamButeurs coach={editing.joueur1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+                absents={absents} setAbsents={setAbsents} saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
             </div>
             <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-2">
               <TeamButeurs coach={editing.joueur2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs} notes={notes} setNotes={setNotes}
-                saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
+                absents={absents} setAbsents={setAbsents} saison={editing.saison} ligue={editing.ligue} championnat={editing.championnat} mercatoData={mercatoData} photos={photos} />
             </div>
           </div>
 

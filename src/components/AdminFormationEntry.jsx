@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ArrowDownCircle } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar.jsx';
 import { FORMATION_SLOTS, FORMATION_ROW_TOP, SLOT_OFFSET_CLASS, PitchLines, computeFormation } from './FormationPitch.jsx';
 import { champNum, playerDisplayName } from './AdminScorerSection.jsx';
@@ -24,10 +25,12 @@ export function buildSquad(mercatoData, coach, saison, ligue, championnat) {
 // l'effectif d'un coach qui n'a pas encore été noté explicitement pour ce
 // match — sans ça, un joueur laissé à la valeur par défaut (5, jamais touché
 // au stepper) n'a tout simplement pas d'entrée en base et ne compte pas dans
-// la moyenne du championnat.
-export function withDefaultNotes(notesForMatch, squad, coach, defaultNote = 5) {
+// la moyenne du championnat. Un joueur marqué "non noté" (absentsForMatch)
+// est exclu de ce backfill : lui, on veut justement qu'il ne compte pas.
+export function withDefaultNotes(notesForMatch, squad, coach, absentsForMatch = [], defaultNote = 5) {
   const already = new Set(notesForMatch.filter(n => n.acheteur === coach).map(n => n.joueur));
-  const additions = squad.filter(m => !already.has(m.joueur)).map(m => ({ joueur: m.joueur, acheteur: coach, note: defaultNote }));
+  const absent = new Set(absentsForMatch.filter(a => a.acheteur === coach).map(a => a.joueur));
+  const additions = squad.filter(m => !already.has(m.joueur) && !absent.has(m.joueur)).map(m => ({ joueur: m.joueur, acheteur: coach, note: defaultNote }));
   return additions.length ? [...notesForMatch, ...additions] : notesForMatch;
 }
 
@@ -41,11 +44,12 @@ export function withDefaultNotes(notesForMatch, squad, coach, defaultNote = 5) {
 // note MPG comptée comme un but) — "MPG" est le terme retenu à l'affichage,
 // le champ interne `virtuel` ne change pas (déjà en base sur les matchs
 // existants).
-export function AdminFormationEntry({ coach, matchKey, saison, ligue, championnat, mercatoData, buteurs, setButeurs, notes, setNotes, photos }) {
+export function AdminFormationEntry({ coach, matchKey, saison, ligue, championnat, mercatoData, buteurs, setButeurs, notes, setNotes, absents, setAbsents, photos }) {
   const squad = useMemo(() => buildSquad(mercatoData, coach, saison, ligue, championnat), [mercatoData, coach, saison, ligue, championnat]);
 
   const current = buteurs[matchKey] || [];
   const notesCurrent = notes[matchKey] || [];
+  const absentsCurrent = absents[matchKey] || [];
 
   const goalsFor = (joueur) => ({
     real: current.find(s => s.acheteur === coach && s.joueur === joueur && !s.csc && !s.virtuel)?.buts || 0,
@@ -53,6 +57,26 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   });
 
   const noteFor = (joueur) => notesCurrent.find(n => n.acheteur === coach && n.joueur === joueur)?.note ?? 5;
+  const isAbsent = (joueur) => absentsCurrent.some(a => a.acheteur === coach && a.joueur === joueur);
+
+  // Marque/démarque un joueur comme n'ayant pas joué (donc non noté, exclu
+  // de la moyenne — voir withDefaultNotes). Annulable au reclic. Retire au
+  // passage une éventuelle note déjà saisie : un joueur non noté ne doit pas
+  // en garder une.
+  const toggleAbsent = (joueur) => {
+    setAbsents(prev => {
+      const arr = prev[matchKey] || [];
+      const idx = arr.findIndex(a => a.acheteur === coach && a.joueur === joueur);
+      if (idx >= 0) return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
+      return { ...prev, [matchKey]: [...arr, { joueur, acheteur: coach }] };
+    });
+    setNotes(prev => {
+      const arr = prev[matchKey] || [];
+      const idx = arr.findIndex(n => n.acheteur === coach && n.joueur === joueur);
+      if (idx < 0) return prev;
+      return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
+    });
+  };
 
   // Un but réel et un but MPG s'excluent mutuellement pour un même joueur
   // sur un même match : il faut d'abord retirer l'un pour pouvoir ajouter
@@ -148,7 +172,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
             <AdminFormationRow
               key={group} group={group} players={starters[group]} photos={photos}
               goalsFor={goalsFor} noteFor={noteFor} bumpReal={bumpReal} decrementReal={decrementReal}
-              toggleVirtuel={toggleVirtuel} bumpNote={bumpNote}
+              toggleVirtuel={toggleVirtuel} bumpNote={bumpNote} isAbsent={isAbsent} toggleAbsent={toggleAbsent}
             />
           ))}
         </div>
@@ -156,11 +180,12 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         {bench.length > 0 && (
           <div className="mt-3">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Reste de l'effectif <span className="normal-case font-normal">(tap sur But / But MPG)</span>
+              Reste de l'effectif <span className="normal-case font-normal">(tap sur But / But MPG, flèche = non noté)</span>
             </p>
             <div className="space-y-1.5">
               {bench.map(m => {
                 const { real, virtuel } = goalsFor(m.joueur);
+                const absent = isAbsent(m.joueur);
                 return (
                   <div key={m.joueur} className="flex items-center flex-wrap gap-x-1.5 gap-y-1 text-xs">
                     {/* Photo purement identificatoire ici : plus de tap pour
@@ -170,7 +195,12 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                     <div className={`w-8 h-8 flex-shrink-0 rounded-full overflow-hidden ${real > 0 || virtuel > 0 ? 'ring-2 ring-green-500' : 'ring-1 ring-slate-400 dark:ring-slate-500'}`}>
                       <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
                     </div>
-                    <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
+                    <button type="button" onClick={() => toggleAbsent(m.joueur)}
+                      title={absent ? 'Annuler : le joueur a joué' : "Signaler que le joueur n'a pas joué (non noté)"}
+                      className={`flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full ${absent ? 'bg-red-600' : 'bg-white/90 dark:bg-slate-700/90 border border-red-300 dark:border-red-500'}`}>
+                      <ArrowDownCircle className={`w-3.5 h-3.5 ${absent ? 'text-white' : 'text-red-500'}`} />
+                    </button>
+                    <span className={`min-w-0 flex-1 truncate ${absent ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-700 dark:text-slate-200'}`}>
                       {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
                     </span>
                     <span className="flex items-center gap-1 flex-shrink-0">
@@ -193,9 +223,9 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
                           className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold leading-none">×</button>
                       )}
                     </span>
-                    <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
+                    <span className={`flex items-center gap-0.5 flex-shrink-0 rounded px-0.5 py-0.5 ${absent ? 'bg-slate-100 dark:bg-slate-700 opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700'}`}>
                       <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
-                      <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(noteFor(m.joueur))}</span>
+                      <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{absent ? '–' : formatNote(noteFor(m.joueur))}</span>
                       <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
                     </span>
                   </div>
@@ -209,7 +239,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   );
 }
 
-function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal, decrementReal, toggleVirtuel, bumpNote }) {
+function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal, decrementReal, toggleVirtuel, bumpNote, isAbsent, toggleAbsent }) {
   const slots = FORMATION_SLOTS[group];
   return (
     <div className="absolute inset-x-0 flex justify-around px-1 sm:px-4" style={{ top: `${FORMATION_ROW_TOP[group]}%` }}>
@@ -224,11 +254,12 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
           );
         }
         const { real, virtuel } = goalsFor(m.joueur);
+        const absent = isAbsent(m.joueur);
         return (
           <div key={i} className={`relative w-11 h-11 sm:w-14 sm:h-14 ${offsetClass}`}>
             <button type="button" onClick={() => bumpReal(m)} title={virtuel > 0 ? 'Retirer le but MPG avant d\'ajouter un but réel' : '+1 but'}
               className={`block w-full h-full ${virtuel > 0 ? 'opacity-50' : ''}`}>
-              <div className={`w-full h-full rounded-full shadow-lg ${real > 0 || virtuel > 0 ? 'ring-4 ring-green-500' : 'ring-2 ring-slate-900/70'}`}>
+              <div className={`w-full h-full rounded-full shadow-lg ${absent ? 'ring-4 ring-red-500' : real > 0 || virtuel > 0 ? 'ring-4 ring-green-500' : 'ring-2 ring-slate-900/70'}`}>
                 <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
               </div>
             </button>
@@ -243,12 +274,17 @@ function AdminFormationRow({ group, players, photos, goalsFor, noteFor, bumpReal
               className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full text-[10px] leading-5 text-center ${virtuel ? 'bg-indigo-600' : 'bg-white/90 dark:bg-slate-700/90 border border-indigo-300 dark:border-indigo-500'} ${real > 0 && !virtuel ? 'opacity-40' : ''}`}>
               🎮
             </button>
-            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max max-w-[70px] px-1 py-0.5 rounded bg-black/55 text-[10px] sm:text-xs font-bold text-white leading-tight text-center truncate">
+            <button type="button" onClick={() => toggleAbsent(m.joueur)}
+              title={absent ? 'Annuler : le joueur a joué' : "Signaler que le joueur n'a pas joué (non noté)"}
+              className={`absolute -bottom-1 -left-1 w-5 h-5 flex items-center justify-center rounded-full ${absent ? 'bg-red-600' : 'bg-white/90 dark:bg-slate-700/90 border border-red-300 dark:border-red-500'}`}>
+              <ArrowDownCircle className={`w-3.5 h-3.5 ${absent ? 'text-white' : 'text-red-500'}`} />
+            </button>
+            <span className={`absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max max-w-[70px] px-1 py-0.5 rounded bg-black/55 text-[10px] sm:text-xs font-bold leading-tight text-center truncate ${absent ? 'text-red-400' : 'text-white'}`}>
               {m.joueur}
             </span>
-            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 flex items-center gap-0.5 bg-black/55 rounded px-0.5 py-0.5">
+            <span className={`absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 flex items-center gap-0.5 bg-black/55 rounded px-0.5 py-0.5 ${absent ? 'opacity-40 pointer-events-none' : ''}`}>
               <button type="button" onClick={() => bumpNote(m.joueur, -0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">−</button>
-              <span className="text-white text-[10px] sm:text-xs font-bold leading-none w-5 text-center">{formatNote(noteFor(m.joueur))}</span>
+              <span className="text-white text-[10px] sm:text-xs font-bold leading-none w-5 text-center">{absent ? '–' : formatNote(noteFor(m.joueur))}</span>
               <button type="button" onClick={() => bumpNote(m.joueur, 0.5)} className="w-5 h-5 flex items-center justify-center text-white text-sm font-bold leading-none">+</button>
             </span>
           </div>
