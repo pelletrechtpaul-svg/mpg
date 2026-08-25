@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { playerImages, playerColors, playerColorHex, ShareBtn } from '../shared.jsx';
+import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch } from './FormationPitch.jsx';
 
@@ -84,7 +84,7 @@ export default function EntraineursTab({
           m.ligue === ligue && m.championnat === `#${dernier}` && (m.joueur1 === selectedPlayer || m.joueur2 === selectedPlayer));
         const noteSums = {};
         champMatches.forEach(m => {
-          (m.notes || []).forEach(n => {
+          (m.notes || []).filter(isCompte).forEach(n => {
             if (n.acheteur !== selectedPlayer) return;
             const entry = noteSums[n.joueur] || (noteSums[n.joueur] = { sum: 0, count: 0 });
             entry.sum += n.note;
@@ -181,7 +181,7 @@ export default function EntraineursTab({
     const buts = {}, csc = {};
     const matches = h2hLigue === 'all' ? filteredData : filteredData.filter(m => m.ligue === h2hLigue);
     matches.forEach(m => {
-      (m.buteurs || []).forEach(b => {
+      (m.buteurs || []).filter(isCompte).forEach(b => {
         if (!b.joueur || !recrues.has(b.joueur)) return;
         const map = b.csc ? csc : buts;
         map[b.joueur] = (map[b.joueur] || 0) + (b.buts || 1);

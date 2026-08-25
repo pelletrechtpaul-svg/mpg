@@ -324,9 +324,14 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
     setSaving(true);
     try {
       const now = new Date().toISOString();
+      // Un rotaldo = un titulaire absent non remplacé : ni lui ni personne
+      // d'autre ne "compte" pour ce slot de départ. Dérivé du triage plutôt
+      // que saisi à la main (voir AdminFormationEntry) : 11 titulaires moins
+      // le nombre de joueurs classés "compte" pour ce coach sur ce match.
+      const rotaldosFor = (matchNotes, coach) => Math.max(0, 11 - matchNotes.filter(n => n.acheteur === coach && n.statut === 'compte').length);
       const buildMatch = (m, buts, matchNotes) => {
         const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
-        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes };
+        return { saison: selSaison, ligue: selLigue, championnat, joueur1: m.joueur1, joueur2: m.joueur2, buts_j1: b1, buts_j2: b2, valise_j1: m.valise1, valise_j2: m.valise2, ...calcResult(b1, b2), dateMatch, dateEntree: now, buteurs: buts, notes: matchNotes, rotaldos_j1: rotaldosFor(matchNotes, m.joueur1), rotaldos_j2: rotaldosFor(matchNotes, m.joueur2) };
       };
 
       const batch = writeBatch(db);

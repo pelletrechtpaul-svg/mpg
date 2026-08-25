@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak } from '../shared.jsx';
+import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak, isCompte } from '../shared.jsx';
 
 const computeLigueStats = (matches, minMatchs = 3) => {
   if (!matches || matches.length === 0) return null;
@@ -44,7 +44,7 @@ const computeMercatoRecords = (mercato, matches) => {
   // Buts/CSC par joueur mercato (clé joueur|ligue), à partir des buteurs des matchs
   const goalMap = {};
   (matches || []).forEach(m => {
-    (m.buteurs || []).forEach(b => {
+    (m.buteurs || []).filter(isCompte).forEach(b => {
       if (!b.joueur) return;
       const key = `${b.joueur}|${m.ligue}`;
       if (!goalMap[key]) goalMap[key] = { buts: 0, csc: 0 };

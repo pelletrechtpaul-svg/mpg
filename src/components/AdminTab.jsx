@@ -7,7 +7,6 @@ import { doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 import { encodeFirestoreKey } from '../shared.jsx';
 import AdminAddMatchForm from './AdminAddMatchForm';
 import AdminEditPanel from './AdminEditPanel';
-import AdminSaisieTest from './AdminSaisieTest';
 
 function Toast({ message, type, onDismiss }) {
   useEffect(() => {
@@ -239,9 +238,6 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
                 <button onClick={() => { resetPasswordForm(); setView('password'); }} className="px-5 py-2.5 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 inline-flex items-center gap-2">
                   <KeyRound className="w-4 h-4" /> Changer mon mot de passe
                 </button>
-                <button onClick={() => setView('test-saisie')} className="px-5 py-2.5 bg-fuchsia-600 text-white rounded-lg font-medium hover:bg-fuchsia-700 inline-flex items-center gap-2">
-                  🧪 Test saisie (bêta)
-                </button>
               </div>
             )}
 
@@ -284,14 +280,6 @@ const AdminTab = ({ matchData, mercatoData, joueurs, ligueMetadata, ligues, isAd
                 showToast={showToast}
                 onCancel={() => setView('menu')}
               />
-            )}
-
-            {view === 'test-saisie' && (
-              <div>
-                <button onClick={() => setView('menu')} className="mb-4 text-sm text-blue-600 hover:text-blue-800">← Retour</button>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">🧪 Test saisie (bêta)</h3>
-                <AdminSaisieTest mercatoData={mercatoData} joueurs={joueurs} />
-              </div>
             )}
 
             {view === 'edit' && (

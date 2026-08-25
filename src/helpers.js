@@ -6,6 +6,15 @@ export const getPosteGroupe = (poste) => {
   return null;
 };
 
+// Une entrée buteurs/notes d'un match porte un `statut` ('compte' ou 'banc')
+// depuis la refonte de la saisie (triage titulaire-remplaçant-entré vs
+// remplaçant resté sur le banc) : seules les entrées "compte" alimentent les
+// stats officielles (classements, moyennes) - le "banc" sert uniquement aux
+// stats fun (ex: but marqué en restant sur le banc), jamais aux classements.
+// Une entrée sans `statut` (matchs saisis avant cette refonte) est traitée
+// comme "compte" pour ne pas changer les stats déjà affichées.
+export const isCompte = (entry) => entry.statut !== 'banc';
+
 export const medianFn = (arr) => {
   if (!arr || arr.length === 0) return 0;
   const sorted = [...arr].sort((a, b) => a - b);
