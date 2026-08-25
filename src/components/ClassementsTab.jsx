@@ -588,27 +588,25 @@ export default function ClassementsTab({
         <div data-card className="relative rounded-2xl overflow-hidden bg-white dark:bg-[#0f0e1a] border border-indigo-100 dark:border-[#2d2b5e]">
           <ShareBtn contextText={shareContext} />
           <div className="overflow-x-auto">
-            <table className="w-full table-fixed text-xs sm:text-sm">
+            <table className="w-full text-xs sm:text-sm">
               <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
-                  <th className="w-6 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Rang</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                  <th className="md:w-16 px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 hidden md:table-cell">Matchs</th>
-                  <th className="w-6 sm:w-10 px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">V</th>
-                  <th className="w-6 sm:w-10 px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">N</th>
-                  <th className="w-6 sm:w-10 px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">D</th>
-                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">GA</th>
+                  <th className="px-2 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">V</th>
+                  <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">N</th>
+                  <th className="px-0.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">D</th>
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">GA</th>
                   {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                     <>
-                      {/* Cachées sous sm : avec Rang/V/N/D/GA/Points déjà présents,
-                          il ne reste plus assez de largeur sur mobile pour ces
-                          deux colonnes ET le nom du joueur - celui-ci se
-                          retrouvait entièrement tronqué (cf. capture utilisateur). */}
-                      <th className="hidden sm:table-cell sm:w-16 px-0.5 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-sm">Titres</th>
-                      <th className="hidden sm:table-cell sm:w-16 px-0 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-sm">Médailles</th>
+                      <th className="px-0.5 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Titres</th>
+                      <th className="px-0 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
+                        <span className="hidden sm:inline">Médailles</span><span className="sm:hidden">Méd.</span>
+                      </th>
                     </>
                   )}
-                  <th className="w-10 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
+                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
                     {selectedLigue === 'general' ? 'Points' : selectedChampionnat === 'total' ? 'Points en match' : 'Points'}
                   </th>
                 </tr>
@@ -619,13 +617,13 @@ export default function ClassementsTab({
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center">
                       <span className="font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</span>
                     </td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 truncate">
+                    <td className="px-1 py-2 sm:px-6 sm:py-4">
                       <div className="flex items-center gap-1 sm:gap-3 min-w-0">
                         {getTrophyForRow(index) || <PlayerBadge joueur={player.joueur} />}
                         <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">{player.joueur}</span>
                       </div>
                     </td>
-                    <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-300 hidden md:table-cell">{player.matchs}</td>
+                    <td className="px-2 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-300 text-xs sm:text-base">{player.matchs}</td>
                     <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-green-600 dark:text-green-400 font-semibold text-xs sm:text-base">{player.victoires}</td>
                     <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-slate-600 dark:text-slate-300 text-xs sm:text-base">{player.nuls}</td>
                     <td className="px-0.5 py-2 sm:px-4 sm:py-4 text-center text-red-600 dark:text-red-400 font-semibold text-xs sm:text-base">{player.defaites}</td>
@@ -639,7 +637,7 @@ export default function ClassementsTab({
                     </td>
                     {(selectedChampionnat === 'total' || selectedLigue === 'general') && (
                       <>
-                        <td className="hidden sm:table-cell px-0.5 py-2 sm:px-6 sm:py-4 text-center">
+                        <td className="px-0.5 py-2 sm:px-6 sm:py-4 text-center">
                           <div className="flex items-center justify-center gap-0.5 sm:gap-1">
                             <span className="font-semibold text-yellow-600 dark:text-yellow-400 text-xs sm:text-base">{player.victoiresChampionnat || 0}</span>
                             {selectedLigue === 'general' && (player.victoiresChampionnat || 0) > 0 && (
@@ -647,7 +645,7 @@ export default function ClassementsTab({
                             )}
                           </div>
                         </td>
-                        <td className="hidden sm:table-cell px-0 py-2 sm:px-6 sm:py-4 text-center">
+                        <td className="px-0 py-2 sm:px-6 sm:py-4 text-center">
                           <div className="flex items-center justify-center gap-0.5 sm:gap-1">
                             <span className="font-semibold text-slate-500 dark:text-slate-300 text-xs sm:text-base">{player.medaillesChampionnat || 0}</span>
                             {selectedLigue === 'general' && (player.medaillesChampionnat || 0) > 0 && (
