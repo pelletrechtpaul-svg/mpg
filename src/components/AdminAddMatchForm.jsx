@@ -309,7 +309,13 @@ const AdminAddMatchForm = ({ matchData, saisons, mercatoData, ligueMetadata, sho
     const scores = [parseInt(match1.buts1), parseInt(match1.buts2), parseInt(match2.buts1), parseInt(match2.buts2)];
     if (scores.some(b => isNaN(b) || b < 0 || b > 30)) { showToast('Score invalide (0–30)', 'error'); return; }
 
+    // Sans le filtre saison/ligue, le même duo d'entraineurs saisi le même
+    // jour pour le même championnat "#1" mais dans une AUTRE ligue (chaque
+    // ligue a sa propre numérotation de championnat, donc les collisions de
+    // "#1" entre ligues sont courantes en début de saison) était détecté à
+    // tort comme un doublon.
     const isDup = matchData.some(m =>
+      m.saison === selSaison && m.ligue === selLigue &&
       m.dateMatch === dateMatch && m.championnat === championnat &&
       ((m.joueur1 === match1.joueur1 && m.joueur2 === match1.joueur2) || (m.joueur1 === match1.joueur2 && m.joueur2 === match1.joueur1))
     );
