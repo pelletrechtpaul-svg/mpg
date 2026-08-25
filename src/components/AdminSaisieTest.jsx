@@ -223,6 +223,59 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
   );
 }
 
+const EMPTY_TEST_MATCH = { buts1: '', buts2: '', valise1: false, valise2: false };
+
+function MatchSection({ coachA, coachB, squadA, squadB, matchKey, m, setM, buteurs, setButeurs, stateFor, setStateFor, photos, saison, ligue, championnat, mercatoData }) {
+  const b1 = parseInt(m.buts1), b2 = parseInt(m.buts2);
+  const hasResult = m.buts1 !== '' && m.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
+  const scoreBg = (mine, other) => {
+    if (!hasResult) return '';
+    if (mine > other) return 'bg-green-100/70 dark:bg-green-900/25';
+    if (mine < other) return 'bg-red-100/70 dark:bg-red-900/25';
+    return 'bg-slate-200/70 dark:bg-slate-700/40';
+  };
+  return (
+    <div>
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        <div>
+          <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coachA}</label>
+          <input type="number" value={m.buts1} onChange={e => setM({ ...m, buts1: e.target.value })}
+            min="0" className={`w-full px-3 py-2 border-2 border-blue-300 dark:border-blue-600 rounded-lg text-center text-xl font-bold ${scoreBg(b1, b2) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
+          <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+            <input type="checkbox" checked={m.valise1} onChange={e => setM({ ...m, valise1: e.target.checked })} className="w-3.5 h-3.5" />
+            <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
+          </label>
+          <CscToggle coach={coachA} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+            saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
+        </div>
+        <div>
+          <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coachB}</label>
+          <input type="number" value={m.buts2} onChange={e => setM({ ...m, buts2: e.target.value })}
+            min="0" className={`w-full px-3 py-2 border-2 border-emerald-300 dark:border-emerald-600 rounded-lg text-center text-xl font-bold ${scoreBg(b2, b1) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
+          <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+            <input type="checkbox" checked={m.valise2} onChange={e => setM({ ...m, valise2: e.target.checked })} className="w-3.5 h-3.5" />
+            <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
+          </label>
+          <CscToggle coach={coachB} matchKey={matchKey} buteurs={buteurs} setButeurs={setButeurs}
+            saison={saison} ligue={ligue} championnat={championnat} mercatoData={mercatoData} />
+        </div>
+      </div>
+      <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-4">⚠️ Score / Valise / CSC ci-dessus : rendu identique à la vraie saisie, mais rien n'est sauvegardé.</p>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-3">
+          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2">{coachA}</h4>
+          <CoachColumn coach={coachA} squad={squadA} state={stateFor(coachA)} setState={u => setStateFor(coachA, u)} photos={photos} />
+        </div>
+        <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-3">
+          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2">{coachB}</h4>
+          <CoachColumn coach={coachB} squad={squadB} state={stateFor(coachB)} setState={u => setStateFor(coachB, u)} photos={photos} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminSaisieTest({ mercatoData, joueurs }) {
   const photos = usePlayerPhotos();
   const [selSaison, setSelSaison] = useState('');
@@ -232,17 +285,9 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
   const [coach2, setCoach2] = useState('');
   const [states, setStates] = useState({});
   const [showResult, setShowResult] = useState(false);
-  const [match, setMatch] = useState({ buts1: '', buts2: '', valise1: false, valise2: false });
-  const [buteurs, setButeurs] = useState({ m: [] });
-
-  const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
-  const hasResult = match.buts1 !== '' && match.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
-  const scoreBg = (mine, other) => {
-    if (!hasResult) return '';
-    if (mine > other) return 'bg-green-100/70 dark:bg-green-900/25';
-    if (mine < other) return 'bg-red-100/70 dark:bg-red-900/25';
-    return 'bg-slate-200/70 dark:bg-slate-700/40';
-  };
+  const [activeMatch, setActiveMatch] = useState('m1');
+  const [matches, setMatches] = useState({ m1: EMPTY_TEST_MATCH, m2: EMPTY_TEST_MATCH });
+  const [buteurs, setButeurs] = useState({ m1: [], m2: [] });
 
   const saisons = useMemo(() => [...new Set(mercatoData.map(m => m.saison))].sort().reverse(), [mercatoData]);
   const ligues = useMemo(() => [...new Set(mercatoData.filter(m => m.saison === selSaison).map(m => m.ligue))], [mercatoData, selSaison]);
@@ -251,14 +296,20 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
       .sort((a, b) => a - b).map(n => `#${n}`),
     [mercatoData, selSaison, selLigue]);
 
+  // Match 2 (auto) = les deux entraineurs restants, comme dans la vraie
+  // saisie : sur une journée les 4 entraineurs jouent, répartis en 2 matchs.
+  const [coach3, coach4] = joueurs.filter(j => j !== coach1 && j !== coach2);
+
   const squad1 = useMemo(() => buildSquad(mercatoData, coach1, selSaison, selLigue, selChamp), [mercatoData, coach1, selSaison, selLigue, selChamp]);
   const squad2 = useMemo(() => buildSquad(mercatoData, coach2, selSaison, selLigue, selChamp), [mercatoData, coach2, selSaison, selLigue, selChamp]);
+  const squad3 = useMemo(() => buildSquad(mercatoData, coach3, selSaison, selLigue, selChamp), [mercatoData, coach3, selSaison, selLigue, selChamp]);
+  const squad4 = useMemo(() => buildSquad(mercatoData, coach4, selSaison, selLigue, selChamp), [mercatoData, coach4, selSaison, selLigue, selChamp]);
 
   const stateFor = (coach) => states[coach] || emptyCoachState();
   const setStateFor = (coach, updater) => setStates(prev => ({ ...prev, [coach]: updater(prev[coach] || emptyCoachState()) }));
 
   const ready = coach1 && coach2 && coach1 !== coach2 && selChamp;
-  const bothDone = ready && stateFor(coach1).step === 'notation' && stateFor(coach2).step === 'notation';
+  const allDone = ready && [coach1, coach2, coach3, coach4].every(c => stateFor(c).step === 'notation');
 
   const summaryFor = (coach, squad) => {
     const s = stateFor(coach);
@@ -292,7 +343,7 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-2 mb-1">
         <select value={coach1} onChange={e => setCoach1(e.target.value)}
           className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 dark:text-slate-200">
           <option value="">Entraîneur 1...</option>
@@ -304,61 +355,54 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
           {joueurs.filter(j => j !== coach1).map(j => <option key={j} value={j}>{j}</option>)}
         </select>
       </div>
+      {coach1 && coach2 && (
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-4">Match 2 (auto) : {coach3} vs {coach4}</p>
+      )}
 
       {ready && (
         <>
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <div>
-              <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coach1}</label>
-              <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
-                min="0" className={`w-full px-3 py-2 border-2 border-blue-300 dark:border-blue-600 rounded-lg text-center text-xl font-bold ${scoreBg(b1, b2) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
-              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
-                <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
-                <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
-              </label>
-              <CscToggle coach={coach1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
-                saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
-            </div>
-            <div>
-              <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coach2}</label>
-              <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
-                min="0" className={`w-full px-3 py-2 border-2 border-emerald-300 dark:border-emerald-600 rounded-lg text-center text-xl font-bold ${scoreBg(b2, b1) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
-              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
-                <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
-                <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
-              </label>
-              <CscToggle coach={coach2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
-                saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
-            </div>
-          </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-4">⚠️ Score / Valise / CSC ci-dessus : rendu identique à la vraie saisie, mais rien n'est sauvegardé.</p>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-3">
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2">{coach1}</h4>
-              <CoachColumn coach={coach1} squad={squad1} state={stateFor(coach1)} setState={u => setStateFor(coach1, u)} photos={photos} />
-            </div>
-            <div className="border-l-2 border-emerald-300 dark:border-emerald-600 pl-3">
-              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2">{coach2}</h4>
-              <CoachColumn coach={coach2} squad={squad2} state={stateFor(coach2)} setState={u => setStateFor(coach2, u)} photos={photos} />
-            </div>
+          <div className="flex gap-2 mb-4">
+            <button type="button" onClick={() => setActiveMatch('m1')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg border ${activeMatch === 'm1' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300'}`}>
+              Match 1
+            </button>
+            <button type="button" onClick={() => setActiveMatch('m2')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg border ${activeMatch === 'm2' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300'}`}>
+              Match 2 (auto)
+            </button>
           </div>
 
-          <button type="button" disabled={!bothDone} onClick={() => setShowResult(true)}
-            className={`mt-5 w-full px-6 py-3 rounded-xl font-semibold text-white ${bothDone ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-300 cursor-not-allowed'}`}>
+          <div className={activeMatch === 'm1' ? '' : 'hidden'}>
+            <MatchSection coachA={coach1} coachB={coach2} squadA={squad1} squadB={squad2} matchKey="m1"
+              m={matches.m1} setM={patch => setMatches(prev => ({ ...prev, m1: patch }))}
+              buteurs={buteurs} setButeurs={setButeurs} stateFor={stateFor} setStateFor={setStateFor} photos={photos}
+              saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
+          </div>
+          <div className={activeMatch === 'm2' ? '' : 'hidden'}>
+            <MatchSection coachA={coach3} coachB={coach4} squadA={squad3} squadB={squad4} matchKey="m2"
+              m={matches.m2} setM={patch => setMatches(prev => ({ ...prev, m2: patch }))}
+              buteurs={buteurs} setButeurs={setButeurs} stateFor={stateFor} setStateFor={setStateFor} photos={photos}
+              saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
+          </div>
+
+          <button type="button" disabled={!allDone} onClick={() => setShowResult(true)}
+            className={`mt-5 w-full px-6 py-3 rounded-xl font-semibold text-white ${allDone ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-300 cursor-not-allowed'}`}>
             ✅ Valider (test — aperçu du résultat, rien n'est sauvegardé)
           </button>
 
-          {showResult && bothDone && (
+          {showResult && allDone && (
             <div className="mt-4 bg-slate-50 dark:bg-slate-800 rounded-xl p-4 text-xs space-y-3">
-              <p className="font-semibold text-slate-800 dark:text-slate-100">
-                Score : {coach1} {match.buts1 || 0} - {match.buts2 || 0} {coach2}
-                {(match.valise1 || match.valise2) && ` · Valise : ${match.valise1 ? coach1 : ''}${match.valise1 && match.valise2 ? ' & ' : ''}${match.valise2 ? coach2 : ''}`}
-              </p>
-              {buteurs.m.length > 0 && (
-                <p className="text-slate-600 dark:text-slate-300">CSC : {buteurs.m.map(b => `${b.displayName || b.joueur} (${b.acheteur})`).join(', ')}</p>
-              )}
-              {[summaryFor(coach1, squad1), summaryFor(coach2, squad2)].map(s => (
+              {[
+                { key: 'm1', a: coach1, b: coach2 },
+                { key: 'm2', a: coach3, b: coach4 },
+              ].map(({ key, a, b }) => (
+                <p key={key} className="font-semibold text-slate-800 dark:text-slate-100">
+                  Score : {a} {matches[key].buts1 || 0} - {matches[key].buts2 || 0} {b}
+                  {(matches[key].valise1 || matches[key].valise2) && ` · Valise : ${matches[key].valise1 ? a : ''}${matches[key].valise1 && matches[key].valise2 ? ' & ' : ''}${matches[key].valise2 ? b : ''}`}
+                  {buteurs[key].length > 0 && ` · CSC : ${buteurs[key].map(x => `${x.displayName || x.joueur} (${x.acheteur})`).join(', ')}`}
+                </p>
+              ))}
+              {[summaryFor(coach1, squad1), summaryFor(coach2, squad2), summaryFor(coach3, squad3), summaryFor(coach4, squad4)].map(s => (
                 <div key={s.coach}>
                   <p className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{s.coach} — {s.rotaldos} rotaldo{s.rotaldos > 1 ? 's' : ''}</p>
                   <p className="text-slate-600 dark:text-slate-300">
