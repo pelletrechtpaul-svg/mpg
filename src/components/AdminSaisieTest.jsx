@@ -25,10 +25,10 @@ function sortByPoste(squad) {
 
 const emptyCoachState = () => ({ step: 'triage', statuts: {}, notes: {}, buts: {} });
 
-function StatutButton({ active, onClick, children, className }) {
+function StatutButton({ active, disabled, title, onClick, children, className }) {
   return (
-    <button type="button" onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+    <button type="button" onClick={onClick} title={title}
+      className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${disabled ? 'opacity-40 cursor-not-allowed' : ''} ${
         active ? className : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400'
       }`}>
       {active && <Check className="w-3.5 h-3.5" />} {children}
@@ -36,7 +36,9 @@ function StatutButton({ active, onClick, children, className }) {
   );
 }
 
-function TriageRow({ m, statut, onSetStatut, photos }) {
+function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull }) {
+  const compteDisabled = compteFull && statut !== 'compte';
+  const bancDisabled = bancFull && statut !== 'banc';
   return (
     <div className="flex items-center gap-2 py-1.5">
       <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
@@ -44,11 +46,13 @@ function TriageRow({ m, statut, onSetStatut, photos }) {
         {m.joueur} <span className="text-slate-400 dark:text-slate-500 text-xs">({m.poste})</span>
       </span>
       <div className="flex gap-1 w-40 flex-shrink-0">
-        <StatutButton active={statut === 'compte'} onClick={() => onSetStatut(m.joueur, 'compte')}
+        <StatutButton active={statut === 'compte'} disabled={compteDisabled} title={compteDisabled ? 'Max 11 joueurs qui comptent' : undefined}
+          onClick={() => !compteDisabled && onSetStatut(m.joueur, 'compte')}
           className="bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 text-green-700 dark:text-green-400">
           Compte
         </StatutButton>
-        <StatutButton active={statut === 'banc'} onClick={() => onSetStatut(m.joueur, 'banc')}
+        <StatutButton active={statut === 'banc'} disabled={bancDisabled} title={bancDisabled ? 'Max 7 joueurs sur le banc' : undefined}
+          onClick={() => !bancDisabled && onSetStatut(m.joueur, 'banc')}
           className="bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-400">
           Banc
         </StatutButton>
@@ -57,10 +61,9 @@ function TriageRow({ m, statut, onSetStatut, photos }) {
   );
 }
 
-function NotationRow({ m, note, buts, onBumpNote, onResetNote, onBumpReal, onDecrementReal, onBumpVirtuel, onDecrementVirtuel, allowVirtuel, photos }) {
+function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, onBumpVirtuel, onDecrementVirtuel, allowVirtuel, photos }) {
   const real = buts?.real || 0;
   const virtuel = buts?.virtuel || 0;
-  const noted = note != null;
   return (
     <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1 py-1.5 text-xs">
       <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
@@ -93,11 +96,7 @@ function NotationRow({ m, note, buts, onBumpNote, onResetNote, onBumpReal, onDec
       </span>
       <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
         <button type="button" onClick={() => onBumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
-        <button type="button" onClick={() => onResetNote(m.joueur)} disabled={!noted}
-          title={noted ? 'Remettre à zéro (non noté)' : undefined}
-          className={`w-5 text-center font-semibold ${noted ? 'text-slate-700 dark:text-slate-200' : 'text-red-600 dark:text-red-400 cursor-default'}`}>
-          {noted ? formatNote(note) : 'X'}
-        </button>
+        <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(note ?? 5)}</span>
         <button type="button" onClick={() => onBumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
       </span>
     </div>
@@ -111,20 +110,23 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
   const loftList = sorted.filter(m => !state.statuts[m.joueur]);
   const rotaldos = Math.max(0, 11 - compteList.length);
 
-  const setStatut = (joueur, val) => setState(prev => ({
-    ...prev,
-    statuts: { ...prev.statuts, [joueur]: prev.statuts[joueur] === val ? undefined : val },
-  }));
+  // Max 11 joueurs qui "comptent" (une équipe MPG), max 7 sur le "banc"
+  // (remplaçants au max) - au-delà, le clic est ignoré.
+  const setStatut = (joueur, val) => setState(prev => {
+    const current = prev.statuts[joueur];
+    const next = current === val ? undefined : val;
+    if (next) {
+      const countOthers = Object.entries(prev.statuts).filter(([j, v]) => v === next && j !== joueur).length;
+      const max = next === 'compte' ? 11 : 7;
+      if (countOthers >= max) return prev;
+    }
+    return { ...prev, statuts: { ...prev.statuts, [joueur]: next } };
+  });
 
   const bumpNote = (joueur, delta) => setState(prev => {
     const base = prev.notes[joueur] ?? 5;
     const val = Math.max(0, Math.min(10, Math.round((base + delta) * 2) / 2));
     return { ...prev, notes: { ...prev.notes, [joueur]: val } };
-  });
-  const resetNote = (joueur) => setState(prev => {
-    const notes = { ...prev.notes };
-    delete notes[joueur];
-    return { ...prev, notes };
   });
 
   const bumpReal = (joueur) => setState(prev => {
@@ -154,11 +156,12 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
     return (
       <div>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
-          Coche "Compte" (titulaire non remplacé ou remplaçant entré) ou "Banc" (remplaçant resté sur le banc). Ni l'un ni l'autre = loft / non concerné.
+          Coche "Compte" (titulaire non remplacé ou remplaçant entré) ou "Banc" (remplaçant resté sur le banc ou titulaire remplacé). Ni l'un ni l'autre = loft.
         </p>
         <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {sorted.map(m => (
-            <TriageRow key={m.joueur} m={m} statut={state.statuts[m.joueur]} onSetStatut={setStatut} photos={photos} />
+            <TriageRow key={m.joueur} m={m} statut={state.statuts[m.joueur]} onSetStatut={setStatut} photos={photos}
+              compteFull={compteList.length >= 11} bancFull={bancList.length >= 7} />
           ))}
         </div>
         <button type="button" onClick={() => setState(prev => ({ ...prev, step: 'notation' }))}
@@ -187,7 +190,7 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
         <div className="divide-y divide-slate-100 dark:divide-slate-700 mb-3">
           {compteList.map(m => (
             <NotationRow key={m.joueur} m={m} note={state.notes[m.joueur]} buts={state.buts[m.joueur]}
-              onBumpNote={bumpNote} onResetNote={resetNote} onBumpReal={bumpReal} onDecrementReal={decrementReal}
+              onBumpNote={bumpNote} onBumpReal={bumpReal} onDecrementReal={decrementReal}
               onBumpVirtuel={bumpVirtuel} onDecrementVirtuel={decrementVirtuel} allowVirtuel photos={photos} />
           ))}
         </div>
@@ -200,7 +203,7 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
         <div className="divide-y divide-slate-100 dark:divide-slate-700 mb-3">
           {bancList.map(m => (
             <NotationRow key={m.joueur} m={m} note={state.notes[m.joueur]} buts={state.buts[m.joueur]}
-              onBumpNote={bumpNote} onResetNote={resetNote} onBumpReal={bumpReal} onDecrementReal={decrementReal}
+              onBumpNote={bumpNote} onBumpReal={bumpReal} onDecrementReal={decrementReal}
               onBumpVirtuel={bumpVirtuel} onDecrementVirtuel={decrementVirtuel} allowVirtuel={false} photos={photos} />
           ))}
         </div>
@@ -359,10 +362,10 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
                 <div key={s.coach}>
                   <p className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{s.coach} — {s.rotaldos} rotaldo{s.rotaldos > 1 ? 's' : ''}</p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Comptent : {s.compte.map(m => `${m.joueur} (${s.notes[m.joueur] != null ? formatNote(s.notes[m.joueur]) : 'X'}${s.buts[m.joueur]?.real ? `, ${s.buts[m.joueur].real} but` : ''}${s.buts[m.joueur]?.virtuel ? ', 1 but MPG' : ''})`).join(', ') || '—'}
+                    Comptent : {s.compte.map(m => `${m.joueur} (${formatNote(s.notes[m.joueur] ?? 5)}${s.buts[m.joueur]?.real ? `, ${s.buts[m.joueur].real} but` : ''}${s.buts[m.joueur]?.virtuel ? ', 1 but MPG' : ''})`).join(', ') || '—'}
                   </p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Banc : {s.banc.map(m => `${m.joueur} (${s.notes[m.joueur] != null ? formatNote(s.notes[m.joueur]) : 'X'}${s.buts[m.joueur]?.real ? `, ${s.buts[m.joueur].real} but` : ''})`).join(', ') || '—'}
+                    Banc : {s.banc.map(m => `${m.joueur} (${formatNote(s.notes[m.joueur] ?? 5)}${s.buts[m.joueur]?.real ? `, ${s.buts[m.joueur].real} but` : ''})`).join(', ') || '—'}
                   </p>
                 </div>
               ))}
