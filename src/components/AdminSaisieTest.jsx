@@ -41,7 +41,9 @@ function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull }) {
   const bancDisabled = bancFull && statut !== 'banc';
   return (
     <div className="flex items-center gap-2 py-1.5">
-      <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
+      <div className="hidden sm:block">
+        <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
+      </div>
       <span className="min-w-0 flex-1 truncate text-sm text-slate-700 dark:text-slate-200">
         {m.joueur} <span className="text-slate-400 dark:text-slate-500 text-xs">({m.poste})</span>
       </span>
@@ -66,7 +68,9 @@ function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, o
   const virtuel = buts?.virtuel || 0;
   return (
     <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1 py-1.5 text-xs">
-      <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
+      <div className="hidden sm:block">
+        <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
+      </div>
       <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
         {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
       </span>
@@ -153,6 +157,12 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
   }
 
   if (state.step === 'triage') {
+    // Une équipe MPG a toujours un gardien titulaire et un gardien remplaçant
+    // - sans ça le triage est forcément incomplet, on bloque le passage à la
+    // notation plutôt que de laisser filer une erreur de saisie fréquente.
+    const hasCompteGardien = compteList.some(m => m.poste === 'G');
+    const hasBancGardien = bancList.some(m => m.poste === 'G');
+    const missingGardien = !hasCompteGardien || !hasBancGardien;
     return (
       <div>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
@@ -164,8 +174,13 @@ function CoachColumn({ coach, squad, state, setState, photos }) {
               compteFull={compteList.length >= 11} bancFull={bancList.length >= 7} />
           ))}
         </div>
-        <button type="button" onClick={() => setState(prev => ({ ...prev, step: 'notation' }))}
-          className="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+        {missingGardien && (
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+            ⚠️ Il manque au moins un gardien (G) dans {[!hasCompteGardien && '"Compte"', !hasBancGardien && '"Banc"'].filter(Boolean).join(' et ')}.
+          </p>
+        )}
+        <button type="button" disabled={missingGardien} onClick={() => setState(prev => ({ ...prev, step: 'notation' }))}
+          className={`mt-3 w-full px-4 py-2 rounded-lg text-sm font-medium text-white ${missingGardien ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>
           Suivant →
         </button>
       </div>
