@@ -3,6 +3,7 @@ import { Check } from 'lucide-react';
 import { buildSquad } from './AdminFormationEntry.jsx';
 import { POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
+import { CscToggle } from './AdminAddMatchForm';
 
 // Bac à sable 100% local (aucune lecture/écriture de match, seul l'effectif
 // mercato est lu en base pour avoir des données réalistes) pour tester la
@@ -228,6 +229,17 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
   const [coach2, setCoach2] = useState('');
   const [states, setStates] = useState({});
   const [showResult, setShowResult] = useState(false);
+  const [match, setMatch] = useState({ buts1: '', buts2: '', valise1: false, valise2: false });
+  const [buteurs, setButeurs] = useState({ m: [] });
+
+  const b1 = parseInt(match.buts1), b2 = parseInt(match.buts2);
+  const hasResult = match.buts1 !== '' && match.buts2 !== '' && !isNaN(b1) && !isNaN(b2);
+  const scoreBg = (mine, other) => {
+    if (!hasResult) return '';
+    if (mine > other) return 'bg-green-100/70 dark:bg-green-900/25';
+    if (mine < other) return 'bg-red-100/70 dark:bg-red-900/25';
+    return 'bg-slate-200/70 dark:bg-slate-700/40';
+  };
 
   const saisons = useMemo(() => [...new Set(mercatoData.map(m => m.saison))].sort().reverse(), [mercatoData]);
   const ligues = useMemo(() => [...new Set(mercatoData.filter(m => m.saison === selSaison).map(m => m.ligue))], [mercatoData, selSaison]);
@@ -292,9 +304,31 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
 
       {ready && (
         <>
-          <div className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-3 mb-4 text-xs text-slate-500 dark:text-slate-400">
-            ⚠️ Score / Valise / CSC — inchangé, non interactif dans ce test (on ne teste que la partie effectif ci-dessous).
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coach1}</label>
+              <input type="number" value={match.buts1} onChange={e => setMatch({ ...match, buts1: e.target.value })}
+                min="0" className={`w-full px-3 py-2 border-2 border-blue-300 dark:border-blue-600 rounded-lg text-center text-xl font-bold ${scoreBg(b1, b2) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                <input type="checkbox" checked={match.valise1} onChange={e => setMatch({ ...match, valise1: e.target.checked })} className="w-3.5 h-3.5" />
+                <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
+              </label>
+              <CscToggle coach={coach1} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">{coach2}</label>
+              <input type="number" value={match.buts2} onChange={e => setMatch({ ...match, buts2: e.target.value })}
+                min="0" className={`w-full px-3 py-2 border-2 border-emerald-300 dark:border-emerald-600 rounded-lg text-center text-xl font-bold ${scoreBg(b2, b1) || 'bg-white dark:bg-slate-800'} dark:text-slate-100`} placeholder="0" />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                <input type="checkbox" checked={match.valise2} onChange={e => setMatch({ ...match, valise2: e.target.checked })} className="w-3.5 h-3.5" />
+                <span className="text-xs text-slate-500 dark:text-slate-400">Valise 💼</span>
+              </label>
+              <CscToggle coach={coach2} matchKey="m" buteurs={buteurs} setButeurs={setButeurs}
+                saison={selSaison} ligue={selLigue} championnat={selChamp} mercatoData={mercatoData} />
+            </div>
           </div>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-4">⚠️ Score / Valise / CSC ci-dessus : rendu identique à la vraie saisie, mais rien n'est sauvegardé.</p>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             <div className="border-l-2 border-blue-300 dark:border-blue-600 pl-3">
@@ -314,6 +348,13 @@ export default function AdminSaisieTest({ mercatoData, joueurs }) {
 
           {showResult && bothDone && (
             <div className="mt-4 bg-slate-50 dark:bg-slate-800 rounded-xl p-4 text-xs space-y-3">
+              <p className="font-semibold text-slate-800 dark:text-slate-100">
+                Score : {coach1} {match.buts1 || 0} - {match.buts2 || 0} {coach2}
+                {(match.valise1 || match.valise2) && ` · Valise : ${match.valise1 ? coach1 : ''}${match.valise1 && match.valise2 ? ' & ' : ''}${match.valise2 ? coach2 : ''}`}
+              </p>
+              {buteurs.m.length > 0 && (
+                <p className="text-slate-600 dark:text-slate-300">CSC : {buteurs.m.map(b => `${b.displayName || b.joueur} (${b.acheteur})`).join(', ')}</p>
+              )}
               {[summaryFor(coach1, squad1), summaryFor(coach2, squad2)].map(s => (
                 <div key={s.coach}>
                   <p className="font-semibold text-slate-800 dark:text-slate-100 mb-1">{s.coach} — {s.rotaldos} rotaldo{s.rotaldos > 1 ? 's' : ''}</p>
