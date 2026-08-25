@@ -136,12 +136,12 @@ function MatchBlock({ label, match, setMatch, otherMatch, buteurs, setButeurs, n
           <>
             <select value={match.joueur1} onChange={e => setMatch({ ...match, joueur1: e.target.value })}
               className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
-              <option value="">Joueur 1...</option>
+              <option value="">Entraîneur 1...</option>
               {available1.map(j => <option key={j} value={j}>{j}</option>)}
             </select>
             <select value={match.joueur2} onChange={e => setMatch({ ...match, joueur2: e.target.value })}
               className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
-              <option value="">Joueur 2...</option>
+              <option value="">Entraîneur 2...</option>
               {available2.map(j => <option key={j} value={j}>{j}</option>)}
             </select>
           </>
