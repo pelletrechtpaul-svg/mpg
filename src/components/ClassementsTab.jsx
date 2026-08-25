@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
-import { playerColorHex, playerColorBg, ShareBtn } from '../shared.jsx';
+import { playerColorHex, playerColorBg, ShareBtn, isCompte } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { champNum } from './AdminScorerSection.jsx';
@@ -94,7 +94,7 @@ export default function ClassementsTab({
   const avgNotesByCoach = useMemo(() => {
     const byCoach = {};
     matchesListForChampionnat.forEach(m => {
-      (m.notes || []).forEach(n => {
+      (m.notes || []).filter(isCompte).forEach(n => {
         const players = byCoach[n.acheteur] || (byCoach[n.acheteur] = {});
         const entry = players[n.joueur] || (players[n.joueur] = { sum: 0, count: 0 });
         entry.sum += n.note;
@@ -131,7 +131,7 @@ export default function ClassementsTab({
   const { buteursRanking, cscRanking } = useMemo(() => {
     const buts = {}, virtuels = {}, csc = {};
     matchesListForChampionnat.forEach(m => {
-      (m.buteurs || []).forEach(b => {
+      (m.buteurs || []).filter(isCompte).forEach(b => {
         if (!b.joueur) return;
         if (b.csc) { csc[b.joueur] = (csc[b.joueur] || 0) + (b.buts || 1); return; }
         buts[b.joueur] = (buts[b.joueur] || 0) + (b.buts || 1);
@@ -151,7 +151,7 @@ export default function ClassementsTab({
   const noteRanking = useMemo(() => {
     const acc = {};
     matchesListForChampionnat.forEach(m => {
-      (m.notes || []).forEach(n => {
+      (m.notes || []).filter(isCompte).forEach(n => {
         if (!n.joueur) return;
         const entry = acc[n.joueur] || (acc[n.joueur] = { sum: 0, count: 0 });
         entry.sum += n.note;
@@ -343,9 +343,10 @@ export default function ClassementsTab({
                           <button
                             key={i}
                             onClick={() => onOpenPlayer?.(b.joueur, match.ligue)}
-                            className={`hover:underline ${b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}`}
+                            title={!isCompte(b) ? "Resté sur le banc - ne compte pas dans les classements" : undefined}
+                            className={`hover:underline ${!isCompte(b) ? 'opacity-50' : ''} ${b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}`}
                           >
-                            {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}
+                            {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}{!isCompte(b) ? ' (banc)' : ''}
                           </button>
                         ))}
                       </span>

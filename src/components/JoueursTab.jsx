@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
-import { ShareBtn, playerColors, playerColorText } from '../shared.jsx';
+import { ShareBtn, playerColors, playerColorText, isCompte } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 
 // html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
@@ -49,7 +49,7 @@ function computeGoalStats(matchData, joueur, ligue) {
   let buts = 0, csc = 0, virtuels = 0;
   (matchData || []).forEach(m => {
     if (m.ligue !== ligue) return;
-    (m.buteurs || []).forEach(b => {
+    (m.buteurs || []).filter(isCompte).forEach(b => {
       if (b.joueur !== joueur) return;
       if (b.csc) { csc += (b.buts || 1); return; }
       buts += (b.buts || 1);
@@ -66,7 +66,7 @@ function computeAvgNote(matchData, joueur, ligue) {
   let sum = 0, count = 0;
   (matchData || []).forEach(m => {
     if (m.ligue !== ligue) return;
-    (m.notes || []).forEach(n => {
+    (m.notes || []).filter(isCompte).forEach(n => {
       if (n.joueur !== joueur) return;
       sum += n.note;
       count += 1;
