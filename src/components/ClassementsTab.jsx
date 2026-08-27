@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Trophy, Medal, Pencil } from 'lucide-react';
 import { playerColorHex, playerColorBg, ShareBtn, isCompte } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
+import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { champNum } from './AdminScorerSection.jsx';
 
@@ -346,7 +347,7 @@ export default function ClassementsTab({
                             title={!isCompte(b) ? "Resté sur le banc - ne compte pas dans les classements" : undefined}
                             className={`hover:underline ${!isCompte(b) ? 'opacity-50' : ''} ${b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}`}
                           >
-                            {b.csc ? '🙈' : b.virtuel ? '🎮' : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}{!isCompte(b) ? ' (banc)' : ''}
+                            {b.csc ? '🙈' : b.virtuel ? <VirtualGoalIcon /> : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}{!isCompte(b) ? ' (banc)' : ''}
                           </button>
                         ))}
                       </span>
@@ -808,7 +809,7 @@ export default function ClassementsTab({
                     <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                     <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG">dont 🎮</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG">dont <VirtualGoalIcon /></th>
                   </tr>
                 </thead>
                 <tbody>
