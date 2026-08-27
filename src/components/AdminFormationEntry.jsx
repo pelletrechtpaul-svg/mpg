@@ -39,7 +39,7 @@ function StatutButton({ active, disabled, title, onClick, children, className })
   );
 }
 
-function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull }) {
+function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull, bancMax }) {
   const compteDisabled = compteFull && statut !== 'compte';
   const bancDisabled = bancFull && statut !== 'banc';
   return (
@@ -56,7 +56,7 @@ function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull }) {
           className="bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 text-green-700 dark:text-green-400">
           Compte
         </StatutButton>
-        <StatutButton active={statut === 'banc'} disabled={bancDisabled} title={bancDisabled ? 'Max 7 joueurs sur le banc' : undefined}
+        <StatutButton active={statut === 'banc'} disabled={bancDisabled} title={bancDisabled ? `Max ${bancMax} joueurs sur le banc` : undefined}
           onClick={() => !bancDisabled && onSetStatut(m, 'banc')}
           className="bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-400">
           Banc
@@ -155,15 +155,19 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   const rotaldos = Math.max(0, 11 - compteList.length);
 
   // Classe un joueur "compte" ou "banc" (reclic sur le même statut = retour
-  // au loft). Max 11 "compte", max 7 "banc" - au-delà, no-op. Retour au loft
-  // retire la note et les buts déjà tagués ; passage à "banc" retire un
+  // au loft). Max 11 "compte". Le max "banc" est 7 + rotaldos : un rotaldo
+  // (titulaire absent non remplacé) fait sortir un titulaire de "compte"
+  // sans qu'il rejoigne explicitement le banc dans la liste, donc chaque
+  // rotaldo libère une place supplémentaire côté banc pour garder
+  // compte + banc ≤ 18 (taille max d'un effectif de matchday). Retour au
+  // loft retire la note et les buts déjà tagués ; passage à "banc" retire un
   // éventuel but MPG (incompatible avec ce statut).
   const setStatut = (m, val) => {
     const currentStatut = statutFor(m.joueur);
     const next = currentStatut === val ? undefined : val;
     if (next) {
       const list = next === 'compte' ? compteList : bancList;
-      const max = next === 'compte' ? 11 : 7;
+      const max = next === 'compte' ? 11 : 7 + rotaldos;
       if (!list.some(x => x.joueur === m.joueur) && list.length >= max) return;
     }
     setNotes(prev => {
@@ -270,7 +274,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {sorted.map(m => (
             <TriageRow key={m.joueur} m={m} statut={statutFor(m.joueur)} onSetStatut={setStatut} photos={photos}
-              compteFull={compteList.length >= 11} bancFull={bancList.length >= 7} />
+              compteFull={compteList.length >= 11} bancFull={bancList.length >= 7 + rotaldos} bancMax={7 + rotaldos} />
           ))}
         </div>
         {missingGardien && (
