@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
 import { ShareBtn, playerColors, playerColorText, isCompte } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
+import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 
 // html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
 // ellipsis / overflow:hidden — il peint le texte complet non tronqué, ce qui
@@ -118,7 +119,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               {avgNote !== null && (
                 <span className="mr-4 mb-1">⭐ <span className="font-semibold text-slate-800 dark:text-slate-200">{avgNote.toFixed(1)}</span> note moy.</span>
               )}
-              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-400 dark:text-slate-500"> (dont {virtuels} 🎮)</span>}</span>
+              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-400 dark:text-slate-500"> (dont {virtuels} <VirtualGoalIcon />)</span>}</span>
               {csc > 0 && (
                 <span className="text-orange-600 dark:text-orange-400 mb-1">🙈 <span className="font-semibold">{csc}</span> CSC</span>
               )}
