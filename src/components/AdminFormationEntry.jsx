@@ -66,9 +66,10 @@ function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull, bancM
   );
 }
 
-function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, onBumpVirtuel, onDecrementVirtuel, allowVirtuel, photos }) {
+function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, onBumpVirtuel, onDecrementVirtuel, allowVirtuel, allowNonNote, onToggleNonNote, photos }) {
   const real = buts?.real || 0;
   const virtuel = buts?.virtuel || 0;
+  const nonNote = note === null;
   return (
     <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1 py-1.5 text-xs">
       <div className="hidden sm:block">
@@ -77,35 +78,49 @@ function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, o
       <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
         {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
       </span>
-      <span className="flex items-center gap-1 flex-shrink-0">
-        <button type="button" onClick={() => onBumpReal(m)}
-          title={virtuel > 0 ? 'Retirer le but MPG avant d\'ajouter un but' : undefined}
-          className={`px-1.5 h-6 rounded font-semibold ${virtuel > 0 ? 'opacity-40 text-slate-400' : 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 active:bg-green-100'}`}>
-          But{real > 0 && ` ${real}`}
+      {!nonNote && (
+        <span className="flex items-center gap-1 flex-shrink-0">
+          <button type="button" onClick={() => onBumpReal(m)}
+            title={virtuel > 0 ? 'Retirer le but MPG avant d\'ajouter un but' : undefined}
+            className={`px-1.5 h-6 rounded font-semibold ${virtuel > 0 ? 'opacity-40 text-slate-400' : 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 active:bg-green-100'}`}>
+            But{real > 0 && ` ${real}`}
+          </button>
+          {real > 0 && (
+            <button type="button" onClick={() => onDecrementReal(m.joueur)} title="Retirer un but"
+              className="w-6 h-6 rounded-full bg-green-600 text-white text-[11px] font-bold leading-none">×</button>
+          )}
+          {allowVirtuel && (
+            <>
+              <button type="button" onClick={() => onBumpVirtuel(m)}
+                title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : (virtuel > 0 ? 'Un seul but MPG par joueur et par match' : undefined)}
+                className={`px-1.5 h-6 rounded font-semibold ${real > 0 ? 'opacity-40 text-slate-400' : virtuel > 0 ? 'text-white bg-indigo-600' : 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 active:bg-indigo-100'}`}>
+                But MPG
+              </button>
+              {virtuel > 0 && (
+                <button type="button" onClick={() => onDecrementVirtuel(m.joueur)} title="Retirer un but MPG"
+                  className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold leading-none">×</button>
+              )}
+            </>
+          )}
+        </span>
+      )}
+      {nonNote ? (
+        <span className="flex-shrink-0 italic text-slate-400 dark:text-slate-500 px-1">n'a pas joué</span>
+      ) : (
+        <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
+          <button type="button" onClick={() => onBumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
+          <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(note ?? 5)}</span>
+          <button type="button" onClick={() => onBumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
+        </span>
+      )}
+      {allowNonNote && (
+        <button type="button" onClick={() => onToggleNonNote(m.joueur)} title="N'a pas joué en vrai (resté sur le banc)"
+          className={`flex-shrink-0 px-1.5 h-6 rounded text-[11px] font-medium border ${
+            nonNote ? 'bg-slate-600 dark:bg-slate-500 border-slate-600 dark:border-slate-500 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-500'
+          }`}>
+          Non noté
         </button>
-        {real > 0 && (
-          <button type="button" onClick={() => onDecrementReal(m.joueur)} title="Retirer un but"
-            className="w-6 h-6 rounded-full bg-green-600 text-white text-[11px] font-bold leading-none">×</button>
-        )}
-        {allowVirtuel && (
-          <>
-            <button type="button" onClick={() => onBumpVirtuel(m)}
-              title={real > 0 ? 'Retirer le(s) but(s) réel(s) avant d\'ajouter un but MPG' : (virtuel > 0 ? 'Un seul but MPG par joueur et par match' : undefined)}
-              className={`px-1.5 h-6 rounded font-semibold ${real > 0 ? 'opacity-40 text-slate-400' : virtuel > 0 ? 'text-white bg-indigo-600' : 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 active:bg-indigo-100'}`}>
-              But MPG
-            </button>
-            {virtuel > 0 && (
-              <button type="button" onClick={() => onDecrementVirtuel(m.joueur)} title="Retirer un but MPG"
-                className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] font-bold leading-none">×</button>
-            )}
-          </>
-        )}
-      </span>
-      <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
-        <button type="button" onClick={() => onBumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
-        <span className="w-5 text-center font-semibold text-slate-700 dark:text-slate-200">{formatNote(note ?? 5)}</span>
-        <button type="button" onClick={() => onBumpNote(m.joueur, 0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">+</button>
-      </span>
+      )}
     </div>
   );
 }
@@ -143,7 +158,14 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
     if (!n) return undefined;
     return n.statut === 'banc' ? 'banc' : 'compte';
   };
-  const noteFor = (joueur) => notesCurrent.find(n => n.acheteur === coach && n.joueur === joueur)?.note ?? 5;
+  // `note` peut valoir `null` explicitement ("non noté" - resté sur le banc
+  // et n'a pas joué en vrai), à distinguer d'une entrée absente : ne pas
+  // utiliser `??` ici, ça retomberait aussi sur 5 pour `null`.
+  const noteFor = (joueur) => {
+    const n = notesCurrent.find(n => n.acheteur === coach && n.joueur === joueur);
+    return n ? n.note : 5;
+  };
+  const isNonNote = (joueur) => noteFor(joueur) === null;
   const goalsFor = (joueur) => ({
     real: current.find(s => s.acheteur === coach && s.joueur === joueur && !s.csc && !s.virtuel)?.buts || 0,
     virtuel: current.find(s => s.acheteur === coach && s.joueur === joueur && !s.csc && s.virtuel)?.buts || 0,
@@ -177,7 +199,11 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         if (idx < 0) return prev;
         return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
       }
-      if (idx >= 0) return { ...prev, [matchKey]: arr.map((n, i) => i === idx ? { ...n, statut: next } : n) };
+      // Un joueur "compte" a forcément joué : si on le reclasse depuis
+      // "banc" alors qu'il était marqué "non noté" (note null), on lui
+      // remet la note par défaut plutôt que de laisser un "compte" sans
+      // note (le toggle "non noté" n'existe que côté banc).
+      if (idx >= 0) return { ...prev, [matchKey]: arr.map((n, i) => i === idx ? { ...n, statut: next, note: next === 'compte' && n.note === null ? 5 : n.note } : n) };
       return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, acheteur: coach, note: 5, statut: next }] };
     });
     setButeurs(prev => {
@@ -240,6 +266,28 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
       if (arr[idx].buts <= 1) return { ...prev, [matchKey]: arr.filter((_, i) => i !== idx) };
       return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: s.buts - 1 } : s) };
     });
+  };
+
+  // Un joueur "banc" peut être resté sur le banc de son club en vrai (ou ne
+  // pas avoir joué du tout) : bascule sa note à `null` ("non noté") plutôt
+  // que de forcer une note par défaut qui n'a pas de sens sans match joué.
+  // Repasser en note supprime aussi un éventuel but réel déjà tagué (on ne
+  // peut pas avoir marqué sans avoir joué).
+  const toggleNonNote = (joueur) => {
+    const goingNonNote = !isNonNote(joueur);
+    setNotes(prev => {
+      const arr = prev[matchKey] || [];
+      const idx = arr.findIndex(n => n.acheteur === coach && n.joueur === joueur);
+      if (idx < 0) return prev;
+      return { ...prev, [matchKey]: arr.map((n, i) => i === idx ? { ...n, note: goingNonNote ? null : 5 } : n) };
+    });
+    if (goingNonNote) {
+      setButeurs(prev => {
+        const arr = prev[matchKey] || [];
+        const filtered = arr.filter(s => !(s.acheteur === coach && s.joueur === joueur && !s.csc));
+        return filtered.length === arr.length ? prev : { ...prev, [matchKey]: filtered };
+      });
+    }
   };
 
   const bumpNote = (joueur, delta) => {
@@ -315,7 +363,8 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         {bancList.map(m => (
           <NotationRow key={m.joueur} m={m} note={noteFor(m.joueur)} buts={goalsFor(m.joueur)}
             onBumpNote={bumpNote} onBumpReal={bumpReal} onDecrementReal={decrementReal}
-            onBumpVirtuel={bumpVirtuel} onDecrementVirtuel={decrementVirtuel} allowVirtuel={false} photos={photos} />
+            onBumpVirtuel={bumpVirtuel} onDecrementVirtuel={decrementVirtuel} allowVirtuel={false}
+            allowNonNote onToggleNonNote={toggleNonNote} photos={photos} />
         ))}
       </div>
 
