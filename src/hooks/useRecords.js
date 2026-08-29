@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak, isCompte } from '../shared.jsx';
+import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak, isCompte, rotaldosFor } from '../shared.jsx';
 
 const computeLigueStats = (matches, minMatchs = 3) => {
   if (!matches || matches.length === 0) return null;
@@ -161,8 +161,8 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       }
 
       // Rotaldos subis
-      if (match.joueur1 && rotaldoCounts[match.joueur1] !== undefined) rotaldoCounts[match.joueur1] += match.rotaldos_j1 || 0;
-      if (match.joueur2 && rotaldoCounts[match.joueur2] !== undefined) rotaldoCounts[match.joueur2] += match.rotaldos_j2 || 0;
+      if (match.joueur1 && rotaldoCounts[match.joueur1] !== undefined) rotaldoCounts[match.joueur1] += rotaldosFor(match.notes, match.joueur1);
+      if (match.joueur2 && rotaldoCounts[match.joueur2] !== undefined) rotaldoCounts[match.joueur2] += rotaldosFor(match.notes, match.joueur2);
 
       // Buts gâchés sur le banc (un joueur "banc" a marqué mais ça ne compte pas)
       (match.buteurs || []).forEach(b => {
@@ -301,8 +301,12 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       // Seuil de 3 notes banc pour éviter le bruit d'un coach avec 1 seul cas
       benchVsCompteAvg: joueurs
         .filter(j => benchNoteCounts[j] >= 3 && compteNoteCounts[j] > 0)
-        .map(j => ({ joueur: j, compteAvg: compteNoteSums[j] / compteNoteCounts[j], bancAvg: benchNoteSums[j] / benchNoteCounts[j], bancCount: benchNoteCounts[j] }))
-        .sort((a, b) => (b.bancAvg - b.compteAvg) - (a.bancAvg - a.compteAvg)),
+        .map(j => {
+          const compteAvg = compteNoteSums[j] / compteNoteCounts[j];
+          const bancAvg = benchNoteSums[j] / benchNoteCounts[j];
+          return { joueur: j, compteAvg, bancAvg, diff: bancAvg - compteAvg, bancCount: benchNoteCounts[j] };
+        })
+        .sort((a, b) => b.diff - a.diff),
       longestWinStreak, longestUnbeatenStreak, longestLossStreak,
       longestDrawStreak, longestGoalDrought, longestCleanSheetStreak,
       bestH2HStreak,

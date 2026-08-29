@@ -93,8 +93,10 @@ function champMatchesFor(matchData, saison, ligue, championnat, coach, joueur) {
     });
 }
 
-// Mini-frise de forme pour un championnat #x : courbe reliant les notes
-// (0-10) match par match, avec les buts marqués affichés au-dessus.
+// Mini-frise de forme pour un championnat #x : la courbe relie uniquement
+// les notes (0-10) match par match. Note, date et buts sont affichés sous
+// la courbe pour chaque match (dans cet ordre) - les buts ne sont qu'une
+// indication en plus, ils n'influencent jamais la position de la courbe.
 function FormFrise({ matches }) {
   const n = matches.length;
   if (n === 0) return null;
@@ -114,12 +116,15 @@ function FormFrise({ matches }) {
       <div className="flex mt-0.5">
         {matches.map((m, i) => (
           <div key={i} className="flex-1 min-w-0 flex flex-col items-center">
-            <span className="text-[10px] leading-none h-3.5 flex items-center gap-0.5">
-              {m.real > 0 && <>⚽{m.real > 1 ? m.real : ''}</>}
-              {m.virtuel > 0 && <VirtualGoalIcon className="w-2.5 h-2.5 inline-block" />}
+            <span className="text-[10px] font-semibold text-indigo-500 dark:text-indigo-400 leading-none">
+              {m.note != null ? m.note.toFixed(1) : '—'}
             </span>
-            <span className="text-[9px] text-slate-400 dark:text-slate-500">
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
+            </span>
+            <span className="text-[10px] leading-none h-3.5 flex items-center gap-0.5 mt-0.5">
+              {m.real > 0 && <>⚽{m.real > 1 ? m.real : ''}</>}
+              {m.virtuel > 0 && <VirtualGoalIcon />}
             </span>
           </div>
         ))}
