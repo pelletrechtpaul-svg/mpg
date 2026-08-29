@@ -233,16 +233,15 @@ export default function RecordsTab({
 
               <RecordCard className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-700" contextText={selectedSeason}>
                 <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⭐ Banc vs titulaire</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Moyenne des joueurs restés sur le banc comparée à ceux qui ont compté (min. 3 notes banc)</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Écart entre la note moyenne des joueurs qui ont compté et celle des joueurs restés sur le banc (min. 3 notes banc)</p>
                 {seasonRecords.benchVsCompteAvg.length > 0 ? (
                   <div className="space-y-2 mt-2">
                     {seasonRecords.benchVsCompteAvg.map(e => (
                       <div key={e.joueur} className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[e.joueur]}`} />
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{e.joueur}</span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          banc <span className={`font-bold ${e.bancAvg >= e.compteAvg ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>{e.bancAvg.toFixed(1)}</span>
-                          {' '}vs titulaire <span className="font-bold text-slate-600 dark:text-slate-300">{e.compteAvg.toFixed(1)}</span>
+                        <span className={`font-bold ${e.diff >= 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                          {e.diff >= 0 ? '+' : ''}{e.diff.toFixed(1)}
                         </span>
                       </div>
                     ))}

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
-import { playerColorHex, playerColorBg, ShareBtn, isCompte } from '../shared.jsx';
+import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
@@ -329,52 +329,12 @@ export default function ClassementsTab({
               }
               return null;
             })()}
-            {(() => {
-              const coachesInChamp = [...new Set(matchesListForChampionnat.flatMap(m => [m.joueur1, m.joueur2]))];
-              const rotaldosByCoach = {}, benchGoalsByCoach = {};
-              coachesInChamp.forEach(c => { rotaldosByCoach[c] = 0; benchGoalsByCoach[c] = 0; });
-              matchesListForChampionnat.forEach(match => {
-                if (match.joueur1) rotaldosByCoach[match.joueur1] += match.rotaldos_j1 || 0;
-                if (match.joueur2) rotaldosByCoach[match.joueur2] += match.rotaldos_j2 || 0;
-                (match.buteurs || []).forEach(b => {
-                  if (!b.acheteur || b.csc || b.statut !== 'banc' || benchGoalsByCoach[b.acheteur] === undefined) return;
-                  benchGoalsByCoach[b.acheteur] += b.buts || 1;
-                });
-              });
-              const hasRotaldos = coachesInChamp.some(c => rotaldosByCoach[c] > 0);
-              const hasBenchGoals = coachesInChamp.some(c => benchGoalsByCoach[c] > 0);
-              if (!hasRotaldos && !hasBenchGoals) return null;
-              return (
-                <div className="mb-4 flex flex-wrap gap-3">
-                  {hasRotaldos && (
-                    <div className="flex-1 min-w-[140px] bg-fuchsia-50 dark:bg-fuchsia-900/20 rounded-xl p-3">
-                      <p className="text-[11px] font-semibold text-fuchsia-700 dark:text-fuchsia-400 uppercase tracking-wide mb-1">🎲 Rotaldos</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5">
-                        {coachesInChamp.filter(c => rotaldosByCoach[c] > 0).map(c => (
-                          <span key={c}>{c} <strong>{rotaldosByCoach[c]}</strong></span>
-                        ))}
-                      </p>
-                    </div>
-                  )}
-                  {hasBenchGoals && (
-                    <div className="flex-1 min-w-[140px] bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3">
-                      <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-1">🪑⚽ Buts gâchés sur le banc</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5">
-                        {coachesInChamp.filter(c => benchGoalsByCoach[c] > 0).map(c => (
-                          <span key={c}>{c} <strong>{benchGoalsByCoach[c]}</strong></span>
-                        ))}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
             <div className="space-y-2">
               {matchesListForChampionnat.map((match, index) => {
                 const isWin1 = match.resultat === 'victoire_j1';
                 const isWin2 = match.resultat === 'victoire_j2';
-                const rotaldos1 = match.rotaldos_j1 || 0;
-                const rotaldos2 = match.rotaldos_j2 || 0;
+                const rotaldos1 = rotaldosFor(match.notes, match.joueur1);
+                const rotaldos2 = rotaldosFor(match.notes, match.joueur2);
                 const banc1 = (match.notes || []).filter(n => n.acheteur === match.joueur1 && n.statut === 'banc').length;
                 const banc2 = (match.notes || []).filter(n => n.acheteur === match.joueur2 && n.statut === 'banc').length;
                 const avgFor = (coach) => {

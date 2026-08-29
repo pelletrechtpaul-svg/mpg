@@ -15,6 +15,15 @@ export const getPosteGroupe = (poste) => {
 // comme "compte" pour ne pas changer les stats déjà affichées.
 export const isCompte = (entry) => entry.statut !== 'banc';
 
+// Nombre de rotaldos (titulaires absents non remplacés) subis par un coach
+// sur un match, dérivé à la volée depuis les notes plutôt que lu depuis un
+// champ précalculé au moment de la saisie (rotaldos_j1/rotaldos_j2) : ce
+// champ se désynchronise silencieusement dès qu'un match est réédité sans
+// repasser par le triage (ex. match saisi avant la refonte, notes legacy
+// sans `statut`), les notes restant la seule source de vérité fiable.
+export const rotaldosFor = (notes, coach) =>
+  Math.max(0, 11 - (notes || []).filter(n => n.acheteur === coach && isCompte(n)).length);
+
 export const medianFn = (arr) => {
   if (!arr || arr.length === 0) return 0;
   const sorted = [...arr].sort((a, b) => a - b);

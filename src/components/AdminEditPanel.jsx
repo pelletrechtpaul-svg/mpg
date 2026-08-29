@@ -74,10 +74,6 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
     e.preventDefault();
     try {
       const b1 = parseInt(editing.buts_j1), b2 = parseInt(editing.buts_j2);
-      // Un rotaldo = un titulaire absent non remplacé, dérivé du triage
-      // (voir AdminFormationEntry) : 11 titulaires moins le nombre de
-      // joueurs classés "compte" pour ce coach sur ce match.
-      const rotaldosFor = (coach) => Math.max(0, 11 - notes.m.filter(n => n.acheteur === coach && n.statut === 'compte').length);
       const updated = {
         ...editing,
         buts_j1: b1,
@@ -85,13 +81,16 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
         ...calcResult(b1, b2),
         buteurs: buteurs.m,
         notes: notes.m,
-        rotaldos_j1: rotaldosFor(editing.joueur1),
-        rotaldos_j2: rotaldosFor(editing.joueur2),
       };
       delete updated._buteurs;
       delete updated.buteurs_j1;
       delete updated.buteurs_j2;
       delete updated.firestoreId;
+      // Plus stocké : dérivé à la volée depuis les notes (rotaldosFor dans
+      // helpers.js) pour rester correct même sur un match réédité sans
+      // repasser par le triage - on nettoie l'ancien champ au passage.
+      delete updated.rotaldos_j1;
+      delete updated.rotaldos_j2;
       await setDoc(doc(db, 'matches', editing.firestoreId), updated);
       showToast('Match modifié');
       goBack();
