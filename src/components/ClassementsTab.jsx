@@ -768,7 +768,7 @@ export default function ClassementsTab({
                           <span className="truncate text-slate-700 dark:text-slate-200">{row.joueur}</span>
                           <span className="flex items-center gap-1 flex-shrink-0 text-slate-600 dark:text-slate-300">
                             {row.real > 0 && <span>⚽{row.real > 1 ? row.real : ''}</span>}
-                            {row.virtuel > 0 && <VirtualGoalIcon className="w-3 h-3 inline-block" />}
+                            {row.virtuel > 0 && <VirtualGoalIcon />}
                             {row.csc > 0 && <span>🙈{row.csc > 1 ? row.csc : ''}</span>}
                             {row.note != null && <span className="font-semibold">{row.note.toFixed(1)}</span>}
                           </span>
