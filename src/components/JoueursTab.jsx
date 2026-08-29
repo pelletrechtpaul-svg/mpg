@@ -93,40 +93,51 @@ function champMatchesFor(matchData, saison, ligue, championnat, coach, joueur) {
     });
 }
 
-// Couleur de la barre/du badge selon la note (vert = bon, olive = moyen,
-// rouge = faible) - mêmes seuils que le reste de l'app pour une note /10.
-function noteColors(note) {
-  if (note >= 7) return { bar: '#16a34a', badge: '#15803d' };
-  if (note >= 5) return { bar: '#ca8a04', badge: '#a16207' };
-  return { bar: '#dc2626', badge: '#b91c1c' };
+// Couleur de la barre selon la note (vert = bon, olive = moyen, rouge =
+// faible) - mêmes seuils que le reste de l'app pour une note /10.
+function noteBarColor(note) {
+  if (note >= 7) return '#16a34a';
+  if (note >= 5) return '#ca8a04';
+  return '#dc2626';
 }
 
-// Mini-frise de forme pour un championnat #x : une barre par match, hauteur
-// et couleur pilotées uniquement par la note (0-10), avec la valeur affichée
-// dans un badge au-dessus. Les buts ne sont qu'une indication en plus dans
-// le bas de la barre, ils n'influencent jamais sa hauteur ni sa couleur.
+const FRISE_SLOTS = 6; // un championnat #x = mini-saison de ≤6 matchs
+const FRISE_BAR_W = 34, FRISE_MIN_H = 20, FRISE_MAX_H = 56;
+
+// Mini-frise de forme pour un championnat #x : une barre à taille fixe par
+// match (jamais étirée à toute la largeur), hauteur et couleur pilotées
+// uniquement par la note. Note et logos ballon (autant que de buts) sont
+// affichés côte à côte à l'intérieur de la barre - les buts n'influencent
+// jamais sa hauteur ni sa couleur. 6 emplacements toujours réservés,
+// remplis chronologiquement de gauche à droite ; les matchs pas encore
+// joués (championnat en cours) laissent leur emplacement vide.
 function FormFrise({ matches }) {
   if (matches.length === 0) return null;
-  const maxBarH = 40;
+  const slots = matches.slice(0, FRISE_SLOTS);
+  while (slots.length < FRISE_SLOTS) slots.push(null);
   return (
-    <div className="mt-2 flex items-end gap-1.5" style={{ height: maxBarH + 30 }}>
-      {matches.map((m, i) => {
+    <div className="mt-2 flex items-end gap-2">
+      {slots.map((m, i) => {
+        if (!m) return <div key={i} className="flex-shrink-0" style={{ width: FRISE_BAR_W }} />;
         const hasNote = m.note != null;
-        const colors = hasNote ? noteColors(m.note) : null;
-        const barH = hasNote ? Math.max(5, (m.note / 10) * maxBarH) : 0;
+        const barH = hasNote ? Math.max(FRISE_MIN_H, (m.note / 10) * FRISE_MAX_H) : FRISE_MIN_H;
         return (
-          <div key={i} className="flex-1 min-w-0 flex flex-col items-center justify-end h-full">
-            {hasNote && (
-              <span className="text-[9px] font-bold text-white rounded px-1 mb-0.5 leading-tight" style={{ backgroundColor: colors.badge }}>
-                {m.note % 1 === 0 ? m.note : m.note.toFixed(1)}
-              </span>
-            )}
+          <div key={i} className="flex-shrink-0 flex flex-col items-center" style={{ width: FRISE_BAR_W }}>
             <div
-              className="w-full rounded-t flex flex-col items-center justify-end pb-0.5 gap-0.5"
-              style={{ height: barH, backgroundColor: hasNote ? colors.bar : 'transparent' }}
+              className="w-full rounded flex items-center justify-center gap-0.5 px-0.5"
+              style={{ height: barH, backgroundColor: hasNote ? noteBarColor(m.note) : '#e2e8f0' }}
             >
-              {m.real > 0 && <span className="text-[8px] leading-none">⚽</span>}
-              {m.virtuel > 0 && <VirtualGoalIcon className="w-2 h-2 inline-block" />}
+              {hasNote && (
+                <>
+                  <span className="text-[9px] font-bold text-white leading-none">{m.note % 1 === 0 ? m.note : m.note.toFixed(1)}</span>
+                  {Array.from({ length: m.real || 0 }).map((_, gi) => (
+                    <span key={`r${gi}`} className="text-[8px] leading-none flex-shrink-0">⚽</span>
+                  ))}
+                  {Array.from({ length: m.virtuel || 0 }).map((_, gi) => (
+                    <VirtualGoalIcon key={`v${gi}`} className="w-2 h-2 inline-block flex-shrink-0" />
+                  ))}
+                </>
+              )}
             </div>
             <span className="text-[8px] text-slate-400 dark:text-slate-500 mt-0.5 whitespace-nowrap">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
