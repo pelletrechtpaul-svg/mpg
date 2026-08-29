@@ -329,6 +329,46 @@ export default function ClassementsTab({
               }
               return null;
             })()}
+            {(() => {
+              const coachesInChamp = [...new Set(matchesListForChampionnat.flatMap(m => [m.joueur1, m.joueur2]))];
+              const rotaldosByCoach = {}, benchGoalsByCoach = {};
+              coachesInChamp.forEach(c => { rotaldosByCoach[c] = 0; benchGoalsByCoach[c] = 0; });
+              matchesListForChampionnat.forEach(match => {
+                if (match.joueur1) rotaldosByCoach[match.joueur1] += match.rotaldos_j1 || 0;
+                if (match.joueur2) rotaldosByCoach[match.joueur2] += match.rotaldos_j2 || 0;
+                (match.buteurs || []).forEach(b => {
+                  if (!b.acheteur || b.csc || b.statut !== 'banc' || benchGoalsByCoach[b.acheteur] === undefined) return;
+                  benchGoalsByCoach[b.acheteur] += b.buts || 1;
+                });
+              });
+              const hasRotaldos = coachesInChamp.some(c => rotaldosByCoach[c] > 0);
+              const hasBenchGoals = coachesInChamp.some(c => benchGoalsByCoach[c] > 0);
+              if (!hasRotaldos && !hasBenchGoals) return null;
+              return (
+                <div className="mb-4 flex flex-wrap gap-3">
+                  {hasRotaldos && (
+                    <div className="flex-1 min-w-[140px] bg-fuchsia-50 dark:bg-fuchsia-900/20 rounded-xl p-3">
+                      <p className="text-[11px] font-semibold text-fuchsia-700 dark:text-fuchsia-400 uppercase tracking-wide mb-1">🎲 Rotaldos</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {coachesInChamp.filter(c => rotaldosByCoach[c] > 0).map(c => (
+                          <span key={c}>{c} <strong>{rotaldosByCoach[c]}</strong></span>
+                        ))}
+                      </p>
+                    </div>
+                  )}
+                  {hasBenchGoals && (
+                    <div className="flex-1 min-w-[140px] bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3">
+                      <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-1">🪑⚽ Buts gâchés sur le banc</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {coachesInChamp.filter(c => benchGoalsByCoach[c] > 0).map(c => (
+                          <span key={c}>{c} <strong>{benchGoalsByCoach[c]}</strong></span>
+                        ))}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             <div className="space-y-2">
               {matchesListForChampionnat.map((match, index) => {
                 const isWin1 = match.resultat === 'victoire_j1';
