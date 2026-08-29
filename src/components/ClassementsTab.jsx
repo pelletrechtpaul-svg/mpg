@@ -128,22 +128,17 @@ export default function ClassementsTab({
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
   const [showChampDetail, setShowChampDetail] = useState(null);
 
-  // Classement des buts / CSC par joueur (mercato) pour la ligue/championnat sélectionné
-  const { buteursRanking, cscRanking } = useMemo(() => {
-    const buts = {}, virtuels = {}, csc = {};
+  // Classement des buts par joueur (mercato) pour la ligue/championnat sélectionné
+  const buteursRanking = useMemo(() => {
+    const buts = {}, virtuels = {};
     matchesListForChampionnat.forEach(m => {
       (m.buteurs || []).filter(isCompte).forEach(b => {
-        if (!b.joueur) return;
-        if (b.csc) { csc[b.joueur] = (csc[b.joueur] || 0) + (b.buts || 1); return; }
+        if (!b.joueur || b.csc) return;
         buts[b.joueur] = (buts[b.joueur] || 0) + (b.buts || 1);
         if (b.virtuel) virtuels[b.joueur] = (virtuels[b.joueur] || 0) + (b.buts || 1);
       });
     });
-    const toSorted = obj => Object.entries(obj).map(([joueur, n]) => ({ joueur, n })).sort((a, b) => b.n - a.n);
-    return {
-      buteursRanking: toSorted(buts).map(p => ({ ...p, virtuels: virtuels[p.joueur] || 0 })),
-      cscRanking: toSorted(csc),
-    };
+    return Object.entries(buts).map(([joueur, n]) => ({ joueur, n, virtuels: virtuels[joueur] || 0 })).sort((a, b) => b.n - a.n);
   }, [matchesListForChampionnat]);
 
   // Classement par note moyenne (toutes notes saisies dans le championnat
@@ -164,13 +159,33 @@ export default function ClassementsTab({
       .sort((a, b) => b.avg - a.avg);
   }, [matchesListForChampionnat]);
 
+  // CSC, rotaldos et buts gâchés sur le banc, par entraîneur (pas par
+  // joueur mercato) : contrairement au CSC, les rotaldos ne sont pas
+  // rattachés à un joueur précis (juste au coach - impossible de savoir
+  // quel titulaire précis était absent), donc cette vue bascule en lignes
+  // par entraîneur plutôt que par joueur.
+  const cscBancRotaldoByCoach = useMemo(() => {
+    const stats = {};
+    joueurs.forEach(j => { stats[j] = { csc: 0, rotaldos: 0, bancGoals: 0 }; });
+    matchesListForChampionnat.forEach(match => {
+      if (match.joueur1 && stats[match.joueur1]) stats[match.joueur1].rotaldos += rotaldosFor(match.notes, match.joueur1);
+      if (match.joueur2 && stats[match.joueur2]) stats[match.joueur2].rotaldos += rotaldosFor(match.notes, match.joueur2);
+      (match.buteurs || []).forEach(b => {
+        if (!b.acheteur || !stats[b.acheteur]) return;
+        if (b.csc) { if (isCompte(b)) stats[b.acheteur].csc += (b.buts || 1); return; }
+        if (b.statut === 'banc') stats[b.acheteur].bancGoals += (b.buts || 1);
+      });
+    });
+    return Object.entries(stats).map(([joueur, s]) => ({ joueur, ...s })).sort((a, b) => b.csc - a.csc);
+  }, [matchesListForChampionnat, joueurs]);
+
   // Classements filtrés par la légende coach cliquable (pas de filtre actif
   // = tout le monde). coachByPlayer est null sur "Total", donc un joueur y
   // matche toujours `undefined` — sans effet puisque coachFilter est aussi
   // remis à zéro dès qu'on quitte un championnat #x (voir plus haut).
   const filteredButeursRanking = coachFilter ? buteursRanking.filter(p => coachByPlayer?.[p.joueur] === coachFilter) : buteursRanking;
   const filteredNoteRanking = coachFilter ? noteRanking.filter(p => coachByPlayer?.[p.joueur] === coachFilter) : noteRanking;
-  const filteredCscRanking = coachFilter ? cscRanking.filter(p => coachByPlayer?.[p.joueur] === coachFilter) : cscRanking;
+  const filteredCscBancRotaldo = coachFilter ? cscBancRotaldoByCoach.filter(p => p.joueur === coachFilter) : cscBancRotaldoByCoach;
 
   return (
     <>
@@ -875,35 +890,34 @@ export default function ClassementsTab({
               <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">{coachFilter ? 'Aucune note pour ce filtre.' : "Aucune note saisie pour l'instant."}</p>
             )
           ) : (
-            filteredCscRanking.length > 0 ? (
+            filteredCscBancRotaldo.length > 0 ? (
               <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
-                    <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                    <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">🙈 CSC</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">🎲 Rotaldos</th>
+                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="But réel marqué par un joueur resté sur le banc - ne compte pas">🪑⚽ Banc</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredCscRanking.map((p, index) => {
-                    const coach = coachByPlayer?.[p.joueur];
-                    return (
-                      <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${coach ? playerColorBg[coach] : ''}`}>
-                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                        <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
-                          <button onClick={() => onOpenPlayer?.(p.joueur, selectedLigue)} className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 hover:underline text-left min-w-0">
-                            <PlayerAvatar joueur={p.joueur} ligue={selectedLigue} displayName={p.joueur} photos={photos} size="sm" />
-                            <span className="truncate">{p.joueur}</span>
-                          </button>
-                        </td>
-                        <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
-                      </tr>
-                    );
-                  })}
+                  {filteredCscBancRotaldo.map(p => (
+                    <tr key={p.joueur} className={`border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors ${playerColorBg[p.joueur] || ''}`}>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: playerColorHex[p.joueur] || '#94a3b8' }} />
+                          <span className="truncate">{p.joueur}</span>
+                        </span>
+                      </td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.csc || '—'}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-fuchsia-600 dark:text-fuchsia-400 text-xs sm:text-base">{p.rotaldos || '—'}</td>
+                      <td className="px-1 py-2 sm:px-6 sm:py-3 text-center font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-base">{p.bancGoals || '—'}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">{coachFilter ? 'Aucun CSC pour ce filtre.' : "Aucun CSC pour l'instant."}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-6 pb-6">Aucune donnée pour l'instant.</p>
             )
           )}
         </div>
