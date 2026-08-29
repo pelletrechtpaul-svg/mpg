@@ -106,11 +106,12 @@ const FRISE_BAR_W = 34, FRISE_MIN_H = 20, FRISE_MAX_H = 56;
 
 // Mini-frise de forme pour un championnat #x : une barre à taille fixe par
 // match (jamais étirée à toute la largeur), hauteur et couleur pilotées
-// uniquement par la note. Note et logos ballon (autant que de buts) sont
-// affichés côte à côte à l'intérieur de la barre - les buts n'influencent
-// jamais sa hauteur ni sa couleur. 6 emplacements toujours réservés,
-// remplis chronologiquement de gauche à droite ; les matchs pas encore
-// joués (championnat en cours) laissent leur emplacement vide.
+// uniquement par la note - la note reste seule, centrée, dans la barre.
+// 6 emplacements toujours réservés, remplis chronologiquement de gauche à
+// droite ; les matchs pas encore joués (championnat en cours) laissent
+// leur emplacement vide. Les logos but (autant que de buts marqués, réel
+// ou virtuel) sont sous la date, légèrement superposés entre eux plutôt
+// qu'espacés.
 function FormFrise({ matches }) {
   if (matches.length === 0) return null;
   const slots = matches.slice(0, FRISE_SLOTS);
@@ -121,27 +122,32 @@ function FormFrise({ matches }) {
         if (!m) return <div key={i} className="flex-shrink-0" style={{ width: FRISE_BAR_W }} />;
         const hasNote = m.note != null;
         const barH = hasNote ? Math.max(FRISE_MIN_H, (m.note / 10) * FRISE_MAX_H) : FRISE_MIN_H;
+        const goals = [
+          ...Array.from({ length: m.real || 0 }, () => 'real'),
+          ...Array.from({ length: m.virtuel || 0 }, () => 'virtuel'),
+        ];
         return (
           <div key={i} className="flex-shrink-0 flex flex-col items-center" style={{ width: FRISE_BAR_W }}>
             <div
-              className="w-full rounded flex items-center justify-center gap-0.5 px-0.5"
+              className="w-full rounded flex items-center justify-center"
               style={{ height: barH, backgroundColor: hasNote ? noteBarColor(m.note) : '#e2e8f0' }}
             >
               {hasNote && (
-                <>
-                  <span className="text-[9px] font-bold text-white leading-none">{m.note % 1 === 0 ? m.note : m.note.toFixed(1)}</span>
-                  {Array.from({ length: m.real || 0 }).map((_, gi) => (
-                    <span key={`r${gi}`} className="text-[8px] leading-none flex-shrink-0">⚽</span>
-                  ))}
-                  {Array.from({ length: m.virtuel || 0 }).map((_, gi) => (
-                    <VirtualGoalIcon key={`v${gi}`} className="w-2 h-2 inline-block flex-shrink-0" />
-                  ))}
-                </>
+                <span className="text-[9px] font-bold text-white leading-none">{m.note % 1 === 0 ? m.note : m.note.toFixed(1)}</span>
               )}
             </div>
             <span className="text-[8px] text-slate-400 dark:text-slate-500 mt-0.5 whitespace-nowrap">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
             </span>
+            {goals.length > 0 && (
+              <div className="flex items-center mt-0.5">
+                {goals.map((type, gi) => type === 'virtuel' ? (
+                  <VirtualGoalIcon key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`} />
+                ) : (
+                  <span key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`}>⚽</span>
+                ))}
+              </div>
+            )}
           </div>
         );
       })}
