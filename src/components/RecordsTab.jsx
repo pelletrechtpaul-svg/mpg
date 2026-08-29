@@ -214,13 +214,13 @@ export default function RecordsTab({
             </div>
           </div>
 
-          {/* Bilan banc & rotaldos */}
+          {/* Étude de banc */}
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎲 Bilan banc &amp; rotaldos</h2>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎲 Étude de banc</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <RecordCard className="bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Élu au tirage</h3>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Rotaldos</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Titulaires absents non remplacés (rotaldos subis)</p>
                 <AllPlayersGrid data={seasonRecords.rotaldoKing} valueKey="count" />
               </RecordCard>
@@ -240,7 +240,7 @@ export default function RecordsTab({
                       <div key={e.joueur} className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[e.joueur]}`} />
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{e.joueur}</span>
-                        <span className={`font-bold ${e.diff >= 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                        <span className={`font-bold ${e.diff <= 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
                           {e.diff >= 0 ? '+' : ''}{e.diff.toFixed(1)}
                         </span>
                       </div>
