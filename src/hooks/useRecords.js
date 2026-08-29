@@ -126,6 +126,11 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     const closeWinsCounts = {}, berserkCounts = {}, clutchCounts = {};
     joueurs.forEach(j => { closeWinsCounts[j] = 0; berserkCounts[j] = 0; clutchCounts[j] = 0; });
 
+    // Bilan banc/rotaldos : all players
+    const rotaldoCounts = {}, benchGoalsCounts = {};
+    const benchNoteSums = {}, benchNoteCounts = {}, compteNoteSums = {}, compteNoteCounts = {};
+    joueurs.forEach(j => { rotaldoCounts[j] = 0; benchGoalsCounts[j] = 0; benchNoteSums[j] = 0; benchNoteCounts[j] = 0; compteNoteSums[j] = 0; compteNoteCounts[j] = 0; });
+
     // Per-player best H2H streak
     const bestH2HStreak = {};
     joueurs.forEach(j => { bestH2HStreak[j] = null; });
@@ -154,6 +159,24 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
         if (margin === 1) closeWinsCounts[winner]++;
         if (margin >= 5) berserkCounts[winner]++;
       }
+
+      // Rotaldos subis
+      if (match.joueur1 && rotaldoCounts[match.joueur1] !== undefined) rotaldoCounts[match.joueur1] += match.rotaldos_j1 || 0;
+      if (match.joueur2 && rotaldoCounts[match.joueur2] !== undefined) rotaldoCounts[match.joueur2] += match.rotaldos_j2 || 0;
+
+      // Buts gâchés sur le banc (un joueur "banc" a marqué mais ça ne compte pas)
+      (match.buteurs || []).forEach(b => {
+        if (!b.acheteur || b.csc || b.statut !== 'banc' || benchGoalsCounts[b.acheteur] === undefined) return;
+        benchGoalsCounts[b.acheteur] += b.buts || 1;
+      });
+
+      // Moyenne banc vs compte : compare la performance des joueurs restés
+      // sur le banc (quand notés) à celle des joueurs qui ont compté
+      (match.notes || []).forEach(n => {
+        if (!n.acheteur || n.note == null || benchNoteSums[n.acheteur] === undefined) return;
+        if (n.statut === 'banc') { benchNoteSums[n.acheteur] += n.note; benchNoteCounts[n.acheteur]++; }
+        else { compteNoteSums[n.acheteur] += n.note; compteNoteCounts[n.acheteur]++; }
+      });
     });
 
     const sortedMatches = [...filteredData].sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch));
@@ -273,6 +296,13 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       closeWinsKing: Object.entries(closeWinsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       berserkKing: Object.entries(berserkCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       clutchChampion: Object.entries(clutchCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
+      rotaldoKing: Object.entries(rotaldoCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
+      benchGoalsKing: Object.entries(benchGoalsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
+      // Seuil de 3 notes banc pour éviter le bruit d'un coach avec 1 seul cas
+      benchVsCompteAvg: joueurs
+        .filter(j => benchNoteCounts[j] >= 3 && compteNoteCounts[j] > 0)
+        .map(j => ({ joueur: j, compteAvg: compteNoteSums[j] / compteNoteCounts[j], bancAvg: benchNoteSums[j] / benchNoteCounts[j], bancCount: benchNoteCounts[j] }))
+        .sort((a, b) => (b.bancAvg - b.compteAvg) - (a.bancAvg - a.compteAvg)),
       longestWinStreak, longestUnbeatenStreak, longestLossStreak,
       longestDrawStreak, longestGoalDrought, longestCleanSheetStreak,
       bestH2HStreak,

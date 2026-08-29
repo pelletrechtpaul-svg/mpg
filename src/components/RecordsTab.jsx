@@ -214,6 +214,47 @@ export default function RecordsTab({
             </div>
           </div>
 
+          {/* Bilan banc & rotaldos */}
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎲 Bilan banc &amp; rotaldos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <RecordCard className="bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Élu au tirage</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Titulaires absents non remplacés (rotaldos subis)</p>
+                <AllPlayersGrid data={seasonRecords.rotaldoKing} valueKey="count" />
+              </RecordCard>
+
+              <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🪑⚽ Buts gâchés sur le banc</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Buts marqués par des joueurs restés sur le banc - ne comptent pas</p>
+                <AllPlayersGrid data={seasonRecords.benchGoalsKing} valueKey="count" />
+              </RecordCard>
+
+              <RecordCard className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⭐ Banc vs titulaire</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Moyenne des joueurs restés sur le banc comparée à ceux qui ont compté (min. 3 notes banc)</p>
+                {seasonRecords.benchVsCompteAvg.length > 0 ? (
+                  <div className="space-y-2 mt-2">
+                    {seasonRecords.benchVsCompteAvg.map(e => (
+                      <div key={e.joueur} className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[e.joueur]}`} />
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{e.joueur}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          banc <span className={`font-bold ${e.bancAvg >= e.compteAvg ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>{e.bancAvg.toFixed(1)}</span>
+                          {' '}vs titulaire <span className="font-bold text-slate-600 dark:text-slate-300">{e.compteAvg.toFixed(1)}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">Pas encore assez de données.</p>
+                )}
+              </RecordCard>
+
+            </div>
+          </div>
+
           {/* Séries remarquables */}
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
