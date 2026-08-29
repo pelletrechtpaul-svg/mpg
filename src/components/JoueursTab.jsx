@@ -3,6 +3,7 @@ import { useJoueursSearch } from '../hooks/useJoueursSearch';
 import { ShareBtn, playerColors, playerColorText, isCompte } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
+import { champNum } from './AdminScorerSection.jsx';
 
 // html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
 // ellipsis / overflow:hidden — il peint le texte complet non tronqué, ce qui
@@ -76,6 +77,57 @@ function computeAvgNote(matchData, joueur, ligue) {
   return count > 0 ? sum / count : null;
 }
 
+// Matchs d'un championnat #x précis où un joueur a été possédé par un coach
+// donné (un même joueur peut changer de coach d'un tour à l'autre au sein du
+// même championnat, d'où le filtre par acheteur en plus du triplet
+// saison/ligue/championnat).
+function champMatchesFor(matchData, saison, ligue, championnat, coach, joueur) {
+  return (matchData || [])
+    .filter(m => m.saison === saison && m.ligue === ligue && champNum(m.championnat) === championnat && (m.joueur1 === coach || m.joueur2 === coach))
+    .sort((a, b) => new Date(a.dateMatch) - new Date(b.dateMatch))
+    .map(m => {
+      const real = (m.buteurs || []).filter(b => b.acheteur === coach && b.joueur === joueur && !b.csc && !b.virtuel).reduce((s, b) => s + (b.buts || 1), 0);
+      const virtuel = (m.buteurs || []).filter(b => b.acheteur === coach && b.joueur === joueur && !b.csc && b.virtuel).reduce((s, b) => s + (b.buts || 1), 0);
+      const note = (m.notes || []).find(n => n.acheteur === coach && n.joueur === joueur)?.note ?? null;
+      return { date: m.dateMatch, real, virtuel, note };
+    });
+}
+
+// Mini-frise de forme pour un championnat #x : courbe reliant les notes
+// (0-10) match par match, avec les buts marqués affichés au-dessus.
+function FormFrise({ matches }) {
+  const n = matches.length;
+  if (n === 0) return null;
+  const w = 100, h = 26, pad = 6;
+  const xAt = i => n > 1 ? pad + (i * (w - 2 * pad)) / (n - 1) : w / 2;
+  const yAt = note => h - pad - (note / 10) * (h - 2 * pad);
+  const points = matches.map((m, i) => m.note != null ? { x: xAt(i), y: yAt(m.note) } : null);
+  const segments = points.slice(0, -1).map((p, i) => p && points[i + 1] ? [p, points[i + 1]] : null).filter(Boolean);
+  return (
+    <div className="mt-2">
+      <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-6">
+        {segments.map(([a, b], i) => (
+          <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#818cf8" strokeWidth="1.5" />
+        ))}
+        {points.map((p, i) => p && <circle key={i} cx={p.x} cy={p.y} r="1.6" fill="#6366f1" />)}
+      </svg>
+      <div className="flex mt-0.5">
+        {matches.map((m, i) => (
+          <div key={i} className="flex-1 min-w-0 flex flex-col items-center">
+            <span className="text-[10px] leading-none h-3.5 flex items-center gap-0.5">
+              {m.real > 0 && <>⚽{m.real > 1 ? m.real : ''}</>}
+              {m.virtuel > 0 && <VirtualGoalIcon className="w-2.5 h-2.5 inline-block" />}
+            </span>
+            <span className="text-[9px] text-slate-400 dark:text-slate-500">
+              {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PlayerCard({ player, onClose, photos, matchData }) {
   const { entries, displayName, poste, nationalite, joueur, ligue } = player;
   const { buts, csc, virtuels } = computeGoalStats(matchData, joueur, ligue);
@@ -142,6 +194,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               <div className="space-y-2 ml-1">
                 {tours.map((e, i) => {
                   const colors = COACH_COLORS[e.acheteur] || { bg: 'bg-slate-500', text: 'text-slate-600', dot: 'bg-slate-500' };
+                  const champMatches = champMatchesFor(matchData, saison, ligue, championnat, e.acheteur, joueur);
                   return (
                     <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-1">
@@ -173,6 +226,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                           </div>
                         </div>
                       )}
+                      <FormFrise matches={champMatches} />
                     </div>
                   );
                 })}
