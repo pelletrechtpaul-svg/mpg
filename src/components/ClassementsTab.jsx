@@ -330,54 +330,61 @@ export default function ClassementsTab({
               return null;
             })()}
             <div className="space-y-2">
-              {matchesListForChampionnat.map((match, index) => (
-                <div key={index} className="flex flex-wrap items-center gap-1.5 sm:gap-4 p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors text-xs sm:text-base">
-                  <span className="text-slate-600 dark:text-slate-300 min-w-[70px] sm:min-w-0">
-                    {match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+              {matchesListForChampionnat.map((match, index) => {
+                const isWin1 = match.resultat === 'victoire_j1';
+                const isWin2 = match.resultat === 'victoire_j2';
+                const rotaldos1 = match.rotaldos_j1 || 0;
+                const rotaldos2 = match.rotaldos_j2 || 0;
+                const banc1 = (match.notes || []).filter(n => n.acheteur === match.joueur1 && n.statut === 'banc').length;
+                const banc2 = (match.notes || []).filter(n => n.acheteur === match.joueur2 && n.statut === 'banc').length;
+                const avgFor = (coach) => {
+                  const notes = (match.notes || []).filter(n => n.acheteur === coach && isCompte(n) && n.note != null);
+                  return notes.length > 0 ? notes.reduce((s, n) => s + n.note, 0) / notes.length : null;
+                };
+                const avg1 = avgFor(match.joueur1);
+                const avg2 = avgFor(match.joueur2);
+                const CoachBadges = ({ avg, rotaldos, banc, align }) => (avg != null || rotaldos > 0 || banc > 0) && (
+                  <span className={`flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 ${align === 'right' ? 'justify-end' : ''}`}>
+                    {avg != null && <span title="Note moyenne">⭐ {avg.toFixed(1)}</span>}
+                    {rotaldos > 0 && <span title="Rotaldos" className="text-fuchsia-600 dark:text-fuchsia-400">🎲 {rotaldos}</span>}
+                    {banc > 0 && <span title="Joueurs sur le banc">🪑 {banc}</span>}
                   </span>
-                  {(() => {
-                    const buteurs1 = (match.buteurs || []).filter(b => b.acheteur === match.joueur1);
-                    const buteurs2 = (match.buteurs || []).filter(b => b.acheteur === match.joueur2);
-                    const ButeursList = ({ list }) => list.length > 0 && (
-                      <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-sm">
-                        {list.map((b, i) => (
-                          <button
-                            key={i}
-                            onClick={() => onOpenPlayer?.(b.joueur, match.ligue)}
-                            title={!isCompte(b) ? "Resté sur le banc - ne compte pas dans les classements" : undefined}
-                            className={`hover:underline ${!isCompte(b) ? 'opacity-50' : ''} ${b.csc ? 'text-orange-600 dark:text-orange-400' : b.virtuel ? 'text-indigo-600 dark:text-indigo-400' : 'text-green-600 dark:text-green-400'}`}
-                          >
-                            {b.csc ? '🙈' : b.virtuel ? <VirtualGoalIcon /> : '⚽'} {b.displayName || b.joueur}{b.buts > 1 ? ` (${b.buts})` : ''}{!isCompte(b) ? ' (banc)' : ''}
-                          </button>
-                        ))}
-                      </span>
-                    );
-                    return (
-                      <>
-                        <ButeursList list={buteurs1} />
-                        <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur1}</span>
-                        <span className="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">{match.buts_j1}</span>
-                        <span className="text-slate-400">-</span>
-                        <span className="text-sm sm:text-lg font-bold text-purple-600 dark:text-purple-400">{match.buts_j2}</span>
-                        <span className="font-medium text-slate-800 dark:text-slate-100">{match.joueur2}</span>
-                        <ButeursList list={buteurs2} />
-                      </>
-                    );
-                  })()}
-                  {(match.valise_j1 || match.valise_j2) && (
-                    <span className="text-xs sm:text-sm">{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
-                  )}
-                  {onEditMatch && (
-                    <button
-                      onClick={() => onEditMatch(match)}
-                      title="Éditer ce match"
-                      className="ml-auto flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 flex-shrink-0"
-                    >
-                      <Pencil className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Éditer</span>
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+                return (
+                  <div key={index} className="p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <div className="flex items-center gap-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+                      <span>{match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                      {(match.valise_j1 || match.valise_j2) && (
+                        <span>{match.valise_j1 && match.valise_j2 ? '💼💼' : '💼'}</span>
+                      )}
+                      {onEditMatch && (
+                        <button
+                          onClick={() => onEditMatch(match)}
+                          title="Éditer ce match"
+                          className="ml-auto flex items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 flex-shrink-0"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Éditer</span>
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="flex-1 min-w-0 text-right">
+                        <span className={`font-medium text-sm sm:text-base ${isWin1 ? 'text-green-700 dark:text-green-400' : isWin2 ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>{match.joueur1}</span>
+                        <CoachBadges avg={avg1} rotaldos={rotaldos1} banc={banc1} align="right" />
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className={`text-base sm:text-xl font-bold ${isWin1 ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>{match.buts_j1}</span>
+                        <span className="text-slate-300 dark:text-slate-600">-</span>
+                        <span className={`text-base sm:text-xl font-bold ${isWin2 ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>{match.buts_j2}</span>
+                      </div>
+                      <div className="flex-1 min-w-0 text-left">
+                        <span className={`font-medium text-sm sm:text-base ${isWin2 ? 'text-green-700 dark:text-green-400' : isWin1 ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>{match.joueur2}</span>
+                        <CoachBadges avg={avg2} rotaldos={rotaldos2} banc={banc2} align="left" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (
