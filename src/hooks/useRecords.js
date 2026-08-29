@@ -298,15 +298,18 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       clutchChampion: Object.entries(clutchCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       rotaldoKing: Object.entries(rotaldoCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       benchGoalsKing: Object.entries(benchGoalsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
-      // Seuil de 3 notes banc pour éviter le bruit d'un coach avec 1 seul cas
+      // Seuil de 3 notes banc pour éviter le bruit d'un coach avec 1 seul cas.
+      // diff = titulaire - banc (positif = titulaires meilleurs, l'attendu ;
+      // négatif = le banc a fait mieux, la surprise) - tri du plus surprenant
+      // (banc au-dessus) au moins surprenant.
       benchVsCompteAvg: joueurs
         .filter(j => benchNoteCounts[j] >= 3 && compteNoteCounts[j] > 0)
         .map(j => {
           const compteAvg = compteNoteSums[j] / compteNoteCounts[j];
           const bancAvg = benchNoteSums[j] / benchNoteCounts[j];
-          return { joueur: j, compteAvg, bancAvg, diff: bancAvg - compteAvg, bancCount: benchNoteCounts[j] };
+          return { joueur: j, compteAvg, bancAvg, diff: compteAvg - bancAvg, bancCount: benchNoteCounts[j] };
         })
-        .sort((a, b) => b.diff - a.diff),
+        .sort((a, b) => a.diff - b.diff),
       longestWinStreak, longestUnbeatenStreak, longestLossStreak,
       longestDrawStreak, longestGoalDrought, longestCleanSheetStreak,
       bestH2HStreak,

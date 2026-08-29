@@ -800,7 +800,7 @@ export default function ClassementsTab({
               </button>
             </div>
             <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-              {buteursCscView === 'buteurs' ? 'Buteurs' : buteursCscView === 'note' ? 'Note moyenne' : 'CSC'}
+              {buteursCscView === 'buteurs' ? 'Buteurs' : buteursCscView === 'note' ? 'Note moyenne' : 'Étude de banc'}
             </h3>
           </div>
 

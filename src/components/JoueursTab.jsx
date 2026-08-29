@@ -101,8 +101,15 @@ function FormFrise({ matches }) {
   const n = matches.length;
   if (n === 0) return null;
   const w = 100, h = 26, pad = 6;
+  // Échelle Y basée sur le min/max réel des notes de cette frise plutôt que
+  // sur l'échelle absolue 0-10 : les notes réelles varient rarement sur
+  // toute l'amplitude, une échelle 0-10 fixe aplatissait la courbe en un
+  // quasi-trait droit même quand la forme du joueur variait vraiment.
+  const noteValues = matches.map(m => m.note).filter(v => v != null);
+  const minNote = noteValues.length ? Math.min(...noteValues) : 0;
+  const maxNote = noteValues.length ? Math.max(...noteValues) : 10;
   const xAt = i => n > 1 ? pad + (i * (w - 2 * pad)) / (n - 1) : w / 2;
-  const yAt = note => h - pad - (note / 10) * (h - 2 * pad);
+  const yAt = note => maxNote === minNote ? h / 2 : h - pad - ((note - minNote) / (maxNote - minNote)) * (h - 2 * pad);
   const points = matches.map((m, i) => m.note != null ? { x: xAt(i), y: yAt(m.note) } : null);
   const segments = points.slice(0, -1).map((p, i) => p && points[i + 1] ? [p, points[i + 1]] : null).filter(Boolean);
   return (
@@ -124,7 +131,7 @@ function FormFrise({ matches }) {
             </span>
             <span className="text-[10px] leading-none h-3.5 flex items-center gap-0.5 mt-0.5">
               {m.real > 0 && <>⚽{m.real > 1 ? m.real : ''}</>}
-              {m.virtuel > 0 && <VirtualGoalIcon />}
+              {m.virtuel > 0 && <VirtualGoalIcon className="w-2.5 h-2.5 inline-block" />}
             </span>
           </div>
         ))}
