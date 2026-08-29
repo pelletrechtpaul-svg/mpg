@@ -14,6 +14,26 @@ const PlayerBadge = ({ joueur, sm = true }) => (
   />
 );
 
+// Détail joueur par joueur d'un match pour un coach donné (popup détail
+// match) : fusionne notes et buteurs par joueur, compte en premier puis banc.
+function matchPlayerRows(match, coach) {
+  const rows = {};
+  (match.notes || []).filter(n => n.acheteur === coach).forEach(n => {
+    rows[n.joueur] = { joueur: n.joueur, statut: n.statut === 'banc' ? 'banc' : 'compte', note: n.note, real: 0, virtuel: 0, csc: 0 };
+  });
+  (match.buteurs || []).filter(b => b.acheteur === coach).forEach(b => {
+    if (!rows[b.joueur]) rows[b.joueur] = { joueur: b.joueur, statut: b.statut === 'banc' ? 'banc' : 'compte', note: null, real: 0, virtuel: 0, csc: 0 };
+    const row = rows[b.joueur];
+    if (b.csc) row.csc += (b.buts || 1);
+    else if (b.virtuel) row.virtuel += (b.buts || 1);
+    else row.real += (b.buts || 1);
+  });
+  return Object.values(rows).sort((a, b) => {
+    if (a.statut !== b.statut) return a.statut === 'compte' ? -1 : 1;
+    return (b.real + b.virtuel + b.csc) - (a.real + a.virtuel + a.csc);
+  });
+}
+
 export default function ClassementsTab({
   joueurs, ligues, saisons, selectedSeason,
   selectedLigue, setSelectedLigue,
@@ -127,6 +147,7 @@ export default function ClassementsTab({
   };
   const [showGoalsDetail, setShowGoalsDetail] = useState(null);
   const [showChampDetail, setShowChampDetail] = useState(null);
+  const [showMatchDetail, setShowMatchDetail] = useState(null);
 
   // Classement des buts par joueur (mercato) pour la ligue/championnat sélectionné
   const buteursRanking = useMemo(() => {
@@ -350,23 +371,27 @@ export default function ClassementsTab({
                 const isWin2 = match.resultat === 'victoire_j2';
                 const rotaldos1 = rotaldosFor(match.notes, match.joueur1);
                 const rotaldos2 = rotaldosFor(match.notes, match.joueur2);
-                const banc1 = (match.notes || []).filter(n => n.acheteur === match.joueur1 && n.statut === 'banc').length;
-                const banc2 = (match.notes || []).filter(n => n.acheteur === match.joueur2 && n.statut === 'banc').length;
-                const avgFor = (coach) => {
-                  const notes = (match.notes || []).filter(n => n.acheteur === coach && isCompte(n) && n.note != null);
+                const avgFor = (coach, banc = false) => {
+                  const notes = (match.notes || []).filter(n => n.acheteur === coach && (banc ? n.statut === 'banc' : isCompte(n)) && n.note != null);
                   return notes.length > 0 ? notes.reduce((s, n) => s + n.note, 0) / notes.length : null;
                 };
                 const avg1 = avgFor(match.joueur1);
                 const avg2 = avgFor(match.joueur2);
-                const CoachBadges = ({ avg, rotaldos, banc, align }) => (avg != null || rotaldos > 0 || banc > 0) && (
+                const bancAvg1 = avgFor(match.joueur1, true);
+                const bancAvg2 = avgFor(match.joueur2, true);
+                const CoachBadges = ({ avg, rotaldos, bancAvg, align }) => (avg != null || rotaldos > 0 || bancAvg != null) && (
                   <span className={`flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 ${align === 'right' ? 'justify-end' : ''}`}>
-                    {avg != null && <span title="Note moyenne">⭐ {avg.toFixed(1)}</span>}
+                    {avg != null && <span title="Note moyenne des joueurs qui comptent">⭐ {avg.toFixed(1)}</span>}
                     {rotaldos > 0 && <span title="Rotaldos" className="text-fuchsia-600 dark:text-fuchsia-400">🎲 {rotaldos}</span>}
-                    {banc > 0 && <span title="Joueurs sur le banc">🪑 {banc}</span>}
+                    {bancAvg != null && <span title="Note moyenne des joueurs sur le banc">🪑 {bancAvg.toFixed(1)}</span>}
                   </span>
                 );
                 return (
-                  <div key={index} className="p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                  <div
+                    key={index}
+                    onClick={() => setShowMatchDetail(match)}
+                    className="p-2 sm:p-3 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+                  >
                     <div className="flex items-center gap-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-1.5">
                       <span>{match.dateMatch ? new Date(match.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : new Date(match.dateEntree).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
                       {(match.valise_j1 || match.valise_j2) && (
@@ -374,7 +399,7 @@ export default function ClassementsTab({
                       )}
                       {onEditMatch && (
                         <button
-                          onClick={() => onEditMatch(match)}
+                          onClick={(e) => { e.stopPropagation(); onEditMatch(match); }}
                           title="Éditer ce match"
                           className="ml-auto flex items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 flex-shrink-0"
                         >
@@ -385,7 +410,7 @@ export default function ClassementsTab({
                     <div className="flex items-center gap-2 sm:gap-4">
                       <div className="flex-1 min-w-0 text-right">
                         <span className={`font-medium text-sm sm:text-base ${isWin1 ? 'text-green-700 dark:text-green-400' : isWin2 ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>{match.joueur1}</span>
-                        <CoachBadges avg={avg1} rotaldos={rotaldos1} banc={banc1} align="right" />
+                        <CoachBadges avg={avg1} rotaldos={rotaldos1} bancAvg={bancAvg1} align="right" />
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <span className={`text-base sm:text-xl font-bold ${isWin1 ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>{match.buts_j1}</span>
@@ -394,7 +419,7 @@ export default function ClassementsTab({
                       </div>
                       <div className="flex-1 min-w-0 text-left">
                         <span className={`font-medium text-sm sm:text-base ${isWin2 ? 'text-green-700 dark:text-green-400' : isWin1 ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>{match.joueur2}</span>
-                        <CoachBadges avg={avg2} rotaldos={rotaldos2} banc={banc2} align="left" />
+                        <CoachBadges avg={avg2} rotaldos={rotaldos2} bancAvg={bancAvg2} align="left" />
                       </div>
                     </div>
                   </div>
@@ -715,6 +740,52 @@ export default function ClassementsTab({
           ) : (
             <div className="text-center text-slate-600 dark:text-slate-300 py-12"><p>Pas assez de données pour afficher l'évolution</p></div>
           )}
+        </div>
+      )}
+
+      {/* Popup détail d'un match */}
+      {showMatchDetail && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowMatchDetail(null)}>
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-1">
+              <h3 className="text-sm text-slate-500 dark:text-slate-400">
+                {showMatchDetail.dateMatch ? new Date(showMatchDetail.dateMatch).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+              </h3>
+              <button onClick={() => setShowMatchDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
+            </div>
+            <p className="text-center text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+              {showMatchDetail.buts_j1} - {showMatchDetail.buts_j2}
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {[showMatchDetail.joueur1, showMatchDetail.joueur2].map(coach => {
+                const rotaldos = rotaldosFor(showMatchDetail.notes, coach);
+                return (
+                  <div key={coach} className="min-w-0">
+                    <h4 className="text-sm font-semibold mb-2 truncate" style={{ color: playerColorHex[coach] || undefined }}>{coach}</h4>
+                    <div className="space-y-1.5">
+                      {matchPlayerRows(showMatchDetail, coach).map(row => (
+                        <div key={row.joueur} className={`flex items-center justify-between gap-1 text-xs ${row.statut === 'banc' ? 'opacity-60' : ''}`}>
+                          <span className="truncate text-slate-700 dark:text-slate-200">{row.joueur}</span>
+                          <span className="flex items-center gap-1 flex-shrink-0 text-slate-600 dark:text-slate-300">
+                            {row.real > 0 && <span>⚽{row.real > 1 ? row.real : ''}</span>}
+                            {row.virtuel > 0 && <VirtualGoalIcon className="w-3 h-3 inline-block" />}
+                            {row.csc > 0 && <span>🙈{row.csc > 1 ? row.csc : ''}</span>}
+                            {row.note != null && <span className="font-semibold">{row.note.toFixed(1)}</span>}
+                          </span>
+                        </div>
+                      ))}
+                      {matchPlayerRows(showMatchDetail, coach).length === 0 && (
+                        <p className="text-xs text-slate-400 dark:text-slate-500 italic">Aucun joueur noté.</p>
+                      )}
+                    </div>
+                    {rotaldos > 0 && (
+                      <p className="text-[11px] text-fuchsia-600 dark:text-fuchsia-400 mt-2">🎲 {rotaldos} rotaldo{rotaldos > 1 ? 's' : ''}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 

@@ -93,49 +93,47 @@ function champMatchesFor(matchData, saison, ligue, championnat, coach, joueur) {
     });
 }
 
-// Mini-frise de forme pour un championnat #x : la courbe relie uniquement
-// les notes (0-10) match par match. Note, date et buts sont affichés sous
-// la courbe pour chaque match (dans cet ordre) - les buts ne sont qu'une
-// indication en plus, ils n'influencent jamais la position de la courbe.
+// Couleur de la barre/du badge selon la note (vert = bon, olive = moyen,
+// rouge = faible) - mêmes seuils que le reste de l'app pour une note /10.
+function noteColors(note) {
+  if (note >= 7) return { bar: '#16a34a', badge: '#15803d' };
+  if (note >= 5) return { bar: '#ca8a04', badge: '#a16207' };
+  return { bar: '#dc2626', badge: '#b91c1c' };
+}
+
+// Mini-frise de forme pour un championnat #x : une barre par match, hauteur
+// et couleur pilotées uniquement par la note (0-10), avec la valeur affichée
+// dans un badge au-dessus. Les buts ne sont qu'une indication en plus dans
+// le bas de la barre, ils n'influencent jamais sa hauteur ni sa couleur.
 function FormFrise({ matches }) {
-  const n = matches.length;
-  if (n === 0) return null;
-  const w = 100, h = 26, pad = 6;
-  // Échelle Y basée sur le min/max réel des notes de cette frise plutôt que
-  // sur l'échelle absolue 0-10 : les notes réelles varient rarement sur
-  // toute l'amplitude, une échelle 0-10 fixe aplatissait la courbe en un
-  // quasi-trait droit même quand la forme du joueur variait vraiment.
-  const noteValues = matches.map(m => m.note).filter(v => v != null);
-  const minNote = noteValues.length ? Math.min(...noteValues) : 0;
-  const maxNote = noteValues.length ? Math.max(...noteValues) : 10;
-  const xAt = i => n > 1 ? pad + (i * (w - 2 * pad)) / (n - 1) : w / 2;
-  const yAt = note => maxNote === minNote ? h / 2 : h - pad - ((note - minNote) / (maxNote - minNote)) * (h - 2 * pad);
-  const points = matches.map((m, i) => m.note != null ? { x: xAt(i), y: yAt(m.note) } : null);
-  const segments = points.slice(0, -1).map((p, i) => p && points[i + 1] ? [p, points[i + 1]] : null).filter(Boolean);
+  if (matches.length === 0) return null;
+  const maxBarH = 40;
   return (
-    <div className="mt-2">
-      <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-6">
-        {segments.map(([a, b], i) => (
-          <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#818cf8" strokeWidth="1.5" />
-        ))}
-        {points.map((p, i) => p && <circle key={i} cx={p.x} cy={p.y} r="1.6" fill="#6366f1" />)}
-      </svg>
-      <div className="flex mt-0.5">
-        {matches.map((m, i) => (
-          <div key={i} className="flex-1 min-w-0 flex flex-col items-center">
-            <span className="text-[10px] font-semibold text-indigo-500 dark:text-indigo-400 leading-none">
-              {m.note != null ? m.note.toFixed(1) : '—'}
-            </span>
-            <span className="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5">
+    <div className="mt-2 flex items-end gap-1.5" style={{ height: maxBarH + 30 }}>
+      {matches.map((m, i) => {
+        const hasNote = m.note != null;
+        const colors = hasNote ? noteColors(m.note) : null;
+        const barH = hasNote ? Math.max(5, (m.note / 10) * maxBarH) : 0;
+        return (
+          <div key={i} className="flex-1 min-w-0 flex flex-col items-center justify-end h-full">
+            {hasNote && (
+              <span className="text-[9px] font-bold text-white rounded px-1 mb-0.5 leading-tight" style={{ backgroundColor: colors.badge }}>
+                {m.note % 1 === 0 ? m.note : m.note.toFixed(1)}
+              </span>
+            )}
+            <div
+              className="w-full rounded-t flex flex-col items-center justify-end pb-0.5 gap-0.5"
+              style={{ height: barH, backgroundColor: hasNote ? colors.bar : 'transparent' }}
+            >
+              {m.real > 0 && <span className="text-[8px] leading-none">⚽</span>}
+              {m.virtuel > 0 && <VirtualGoalIcon className="w-2 h-2 inline-block" />}
+            </div>
+            <span className="text-[8px] text-slate-400 dark:text-slate-500 mt-0.5 whitespace-nowrap">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
             </span>
-            <span className="text-[10px] leading-none h-3.5 flex items-center gap-0.5 mt-0.5">
-              {m.real > 0 && <>⚽{m.real > 1 ? m.real : ''}</>}
-              {m.virtuel > 0 && <VirtualGoalIcon className="w-2.5 h-2.5 inline-block" />}
-            </span>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
