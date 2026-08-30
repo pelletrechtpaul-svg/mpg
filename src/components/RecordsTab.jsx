@@ -220,7 +220,7 @@ export default function RecordsTab({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <RecordCard className="bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Rotaldos</h3>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Rotaldinho</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Titulaires absents non remplacés (rotaldos subis)</p>
                 <AllPlayersGrid data={seasonRecords.rotaldoKing} valueKey="count" />
               </RecordCard>
