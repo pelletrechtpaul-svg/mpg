@@ -498,8 +498,8 @@ export default function ClassementsTab({
                       )}
                       {loftAvg != null && (
                         <div className="flex-1 min-w-[140px] bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
-                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">📦 Moyenne au loft</p>
-                          <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{loftAvg.toFixed(1)}</p>
+                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">📦 Nombre moyen de joueurs au loft</p>
+                          <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{Math.round(loftAvg)}</p>
                         </div>
                       )}
                     </div>
