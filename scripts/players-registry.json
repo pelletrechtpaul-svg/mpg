@@ -2842,5 +2842,14 @@
    "Lazio"
   ],
   "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q1ik991698227933.jpg"
+ },
+ "Garcia|Premier League": {
+  "prenom": "Gonzalo",
+  "nationalite": "Espagnol",
+  "poste": "A",
+  "clubs": [
+   "Fulham"
+  ],
+  "photo": null
  }
 }
