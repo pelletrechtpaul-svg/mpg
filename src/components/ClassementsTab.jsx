@@ -463,9 +463,47 @@ export default function ClassementsTab({
               const coachNotes = matchesListForChampionnat.length > 0 ? avgNotesByCoach[coach] : null;
               const ratingFor = coachNotes ? (m => coachNotes[m.joueur] ?? 0) : undefined;
               const avgNoteFor = coachNotes ? (m => coachNotes[m.joueur]) : undefined;
+
+              // Moyenne d'équipe (toutes les notes "compte" du coach sur le
+              // championnat, pas une moyenne des moyennes par joueur) et
+              // nombre moyen de joueurs au loft par match (effectif recruté
+              // moins les joueurs classés compte/banc ce match-là) - propre à
+              // un championnat #x précis, pas de sens agrégé sur "Total".
+              let teamAvg = null, loftAvg = null;
+              if (selectedChampionnat !== 'total') {
+                let noteSum = 0, noteCount = 0, loftSum = 0, matchCount = 0;
+                matchesListForChampionnat.forEach(match => {
+                  if (match.joueur1 !== coach && match.joueur2 !== coach) return;
+                  (match.notes || []).filter(n => n.acheteur === coach).forEach(n => {
+                    if (isCompte(n) && n.note != null) { noteSum += n.note; noteCount++; }
+                  });
+                  const classified = (match.notes || []).filter(n => n.acheteur === coach).length;
+                  loftSum += Math.max(0, squad.length - classified);
+                  matchCount++;
+                });
+                teamAvg = noteCount > 0 ? noteSum / noteCount : null;
+                loftAvg = matchCount > 0 ? loftSum / matchCount : null;
+              }
+
               return (
                 <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
                   <ShareBtn contextText={shareContext} />
+                  {(teamAvg != null || loftAvg != null) && (
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {teamAvg != null && (
+                        <div className="flex-1 min-w-[140px] bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">⭐ Moyenne d'équipe</p>
+                          <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{teamAvg.toFixed(1)}</p>
+                        </div>
+                      )}
+                      {loftAvg != null && (
+                        <div className="flex-1 min-w-[140px] bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">📦 Moyenne au loft</p>
+                          <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{loftAvg.toFixed(1)}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {squad.length > 0 ? (
                     <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={ratingFor} avgNoteFor={avgNoteFor} />
                   ) : (
