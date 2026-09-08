@@ -9,12 +9,12 @@ La webapp déploie depuis `claude/charming-goodall-4nt05x` (branche de productio
 
 Opère en **mode entièrement autonome** pour ce repo :
 
-- **Push** : pusher sans demander après chaque tâche terminée.
-- **PR** : créer la PR immédiatement après le push, sans demander.
-- **Merge** : merger la PR dans `claude/fantasy-football-dashboard-89253` immédiatement après création, sans demander.
+- **Push** : pusher sans demander après chaque tâche terminée, directement sur `claude/charming-goodall-4nt05x`.
 - **Commits** : committer sans demander de confirmation.
 
-Ne jamais poser de question du type "je merge ?" ou "je push ?" — faire directement.
+Ne jamais poser de question du type "je push ?" — faire directement.
+
+*(Note du 2026-09-08 : la branche `claude/fantasy-football-dashboard-89253` — ancien default branch du repo — a divergé de `charming-goodall-4nt05x` au point d'avoir chacune ~200-400 commits que l'autre n'a pas. Ce n'est plus une branche liée au déploiement actif ; l'étape "PR + merge dedans après chaque push" a été retirée du protocole pour cette raison, plutôt que risquer un merge massif et non maîtrisé sur une branche potentiellement obsolète.)*
 
 ## Import mercato depuis un screen
 
