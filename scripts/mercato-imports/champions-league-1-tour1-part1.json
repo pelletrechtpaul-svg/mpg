@@ -1,0 +1,181 @@
+{
+  "ligue": "Champions League",
+  "championnat": 1,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Kane",
+      "prenom": "Harry",
+      "poste": "A",
+      "club": "Bayern",
+      "prix": 133,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 115 },
+        { "equipe": "Dracarys", "prix": 82 },
+        { "equipe": "Sparta Praia", "prix": 55 }
+      ]
+    },
+    {
+      "joueur": "Lamine Yamal",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 102,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Raphinha",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 94,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Sparta Praia", "prix": 55 }
+      ]
+    },
+    {
+      "joueur": "Olise",
+      "prenom": "Michael",
+      "poste": "MO",
+      "club": "Bayern",
+      "prix": 72,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Sparta Praia", "prix": 35 }
+      ]
+    },
+    {
+      "joueur": "Mbappé",
+      "prenom": "Kylian",
+      "poste": "A",
+      "club": "Real Madrid",
+      "prix": 55,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Haaland",
+      "prenom": "Erling",
+      "poste": "A",
+      "club": "Man City",
+      "prix": 50,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 45 },
+        { "equipe": "Dracarys", "prix": 42 }
+      ]
+    },
+    {
+      "joueur": "Lautaro Martínez",
+      "poste": "A",
+      "club": "Inter",
+      "prix": 48,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Guirassy",
+      "prenom": "Serhou",
+      "poste": "A",
+      "club": "Dortmund",
+      "prix": 46,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Bellingham",
+      "prenom": "Jude",
+      "poste": "MO",
+      "club": "Real Madrid",
+      "prix": 33,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": [
+        { "equipe": "Dracarys", "prix": 27 }
+      ]
+    },
+    {
+      "joueur": "Osimhen",
+      "prenom": "Victor",
+      "poste": "A",
+      "club": "Galatasaray",
+      "prix": 31,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Kvaratskhelia",
+      "prenom": "Khvicha",
+      "poste": "A",
+      "club": "Paris",
+      "prix": 27,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Tzolis",
+      "prenom": "Christos",
+      "poste": "MO",
+      "club": "Arsenal",
+      "prix": 27,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Dimarco",
+      "prenom": "Federico",
+      "poste": "DL",
+      "club": "Inter",
+      "prix": 27,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": [
+        { "equipe": "Dracarys", "prix": 21 }
+      ]
+    },
+    {
+      "joueur": "Bruno Fernandes",
+      "poste": "MO",
+      "club": "Man United",
+      "prix": 27,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Pacho",
+      "prenom": "Willian",
+      "poste": "DC",
+      "club": "Paris",
+      "prix": 26,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "López",
+      "prenom": "Fermín",
+      "poste": "MO",
+      "club": "Barcelona",
+      "prix": 24,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 20 }
+      ]
+    }
+  ]
+}
