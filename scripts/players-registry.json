@@ -3508,5 +3508,59 @@
       "Fenerbahçe"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knn8491704623903.jpg"
+  },
+  "Torres|Champions League": {
+    "prenom": "Ferran",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Paris"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ciyw971784511340.jpg"
+  },
+  "Pedri|Champions League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vvvc1w1626791033.jpg"
+  },
+  "Malen|Champions League": {
+    "prenom": "Donyell",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Roma"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y6zoqt1770201257.jpg"
+  },
+  "Barcola|Champions League": {
+    "prenom": "Bradley",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Liverpool"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y3v68c1778803099.jpg"
+  },
+  "Kimmich|Champions League": {
+    "prenom": "Joshua",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Bayern"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7r22gx1779383592.jpg"
+  },
+  "David|Champions League": {
+    "prenom": "Jonathan",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
   }
 }
