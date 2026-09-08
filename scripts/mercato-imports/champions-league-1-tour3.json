@@ -1,0 +1,67 @@
+{
+  "ligue": "Champions League",
+  "championnat": 1,
+  "tour": 3,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Torres",
+      "prenom": "Ferran",
+      "poste": "A",
+      "club": "Paris",
+      "prix": 27,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Pedri",
+      "poste": "MD",
+      "club": "Barcelona",
+      "prix": 26,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Malen",
+      "prenom": "Donyell",
+      "poste": "A",
+      "club": "Roma",
+      "prix": 22,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Barcola",
+      "prenom": "Bradley",
+      "poste": "A",
+      "club": "Liverpool",
+      "prix": 19,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Kimmich",
+      "prenom": "Joshua",
+      "poste": "MD",
+      "club": "Bayern",
+      "prix": 17,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "David",
+      "prenom": "Jonathan",
+      "poste": "A",
+      "club": "Atlético",
+      "prix": 11,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    }
+  ]
+}
