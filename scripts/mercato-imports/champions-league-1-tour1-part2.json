@@ -1,0 +1,326 @@
+{
+  "ligue": "Champions League",
+  "championnat": 1,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Saka",
+      "prenom": "Bukayo",
+      "poste": "MO",
+      "club": "Arsenal",
+      "prix": 24,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "McTominay",
+      "prenom": "Scott",
+      "poste": "MD",
+      "club": "Napoli",
+      "prix": 24,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Matheus Cunha",
+      "poste": "MO",
+      "club": "Man United",
+      "prix": 23,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 21 }
+      ]
+    },
+    {
+      "joueur": "Cubarsí",
+      "prenom": "Pau",
+      "poste": "DC",
+      "club": "Barcelona",
+      "prix": 22,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": [
+        { "equipe": "Dracarys", "prix": 19 }
+      ]
+    },
+    {
+      "joueur": "Bastoni",
+      "prenom": "Alessandro",
+      "poste": "DC",
+      "club": "Inter",
+      "prix": 22,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Cherki",
+      "prenom": "Rayan",
+      "poste": "MO",
+      "club": "Man City",
+      "prix": 21,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Nuno Mendes",
+      "poste": "DL",
+      "club": "Paris",
+      "prix": 21,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Wirtz",
+      "prenom": "Florian",
+      "poste": "MO",
+      "club": "Liverpool",
+      "prix": 19,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Schlotterbeck",
+      "prenom": "Nico",
+      "poste": "DC",
+      "club": "Dortmund",
+      "prix": 19,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Undav",
+      "prenom": "Deniz",
+      "poste": "A",
+      "club": "Stuttgart",
+      "prix": 19,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Antony",
+      "poste": "MO",
+      "club": "Betis",
+      "prix": 18,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Safonov",
+      "prenom": "Matvey",
+      "poste": "G",
+      "club": "Paris",
+      "prix": 18,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Upamecano",
+      "prenom": "Dayot",
+      "poste": "DC",
+      "club": "Bayern",
+      "prix": 18,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Baena",
+      "prenom": "Alex",
+      "poste": "MO",
+      "club": "Atlético",
+      "prix": 17,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Josep Martínez",
+      "poste": "G",
+      "club": "Inter",
+      "prix": 17,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Bensebaini",
+      "prenom": "Ramy",
+      "poste": "DL",
+      "club": "Dortmund",
+      "prix": 17,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Alisson Becker",
+      "poste": "G",
+      "club": "Liverpool",
+      "prix": 17,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Mancini",
+      "prenom": "Gianluca",
+      "poste": "DC",
+      "club": "Roma",
+      "prix": 15,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Llorente",
+      "prenom": "Marcos",
+      "poste": "DL",
+      "club": "Atlético",
+      "prix": 15,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Zielinski",
+      "prenom": "Piotr",
+      "poste": "MO",
+      "club": "Inter",
+      "prix": 15,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Wesley",
+      "poste": "DL",
+      "club": "Roma",
+      "prix": 14,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Güler",
+      "prenom": "Arda",
+      "poste": "MO",
+      "club": "Real Madrid",
+      "prix": 14,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Gravenberch",
+      "prenom": "Ryan",
+      "poste": "MD",
+      "club": "Liverpool",
+      "prix": 14,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Suzuki",
+      "prenom": "Zion",
+      "poste": "G",
+      "club": "Aston Villa",
+      "prix": 14,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Akanji",
+      "prenom": "Manuel",
+      "poste": "DC",
+      "club": "Inter",
+      "prix": 14,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Konaté",
+      "prenom": "Ibrahima",
+      "poste": "DC",
+      "club": "Real Madrid",
+      "prix": 14,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Ruiz",
+      "prenom": "Fabián",
+      "poste": "MD",
+      "club": "Paris",
+      "prix": 14,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Zaïre-Emery",
+      "prenom": "Warren",
+      "poste": "MD",
+      "club": "Paris",
+      "prix": 13,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Natan",
+      "poste": "DC",
+      "club": "Betis",
+      "prix": 13,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Davies",
+      "prenom": "Alphonso",
+      "poste": "DL",
+      "club": "Bayern",
+      "prix": 13,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Ndicka",
+      "prenom": "Evan",
+      "poste": "DC",
+      "club": "Roma",
+      "prix": 13,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Marquinhos",
+      "poste": "DC",
+      "club": "Paris",
+      "prix": 13,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 13 }
+      ]
+    }
+  ]
+}
