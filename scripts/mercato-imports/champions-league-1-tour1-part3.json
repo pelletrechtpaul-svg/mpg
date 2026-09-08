@@ -1,0 +1,129 @@
+{
+  "ligue": "Champions League",
+  "championnat": 1,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Lewis-Skelly",
+      "prenom": "Myles",
+      "poste": "MD",
+      "club": "Arsenal",
+      "prix": 10,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Saud Abdulhamid",
+      "poste": "DL",
+      "club": "Lens",
+      "prix": 10,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Ndiaye",
+      "prenom": "Iliman",
+      "poste": "MO",
+      "club": "Man City",
+      "prix": 10,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Havertz",
+      "prenom": "Kai",
+      "poste": "A",
+      "club": "Arsenal",
+      "prix": 9,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 8 }
+      ]
+    },
+    {
+      "joueur": "Ganiou",
+      "prenom": "Ismaëlo",
+      "poste": "DC",
+      "club": "Lens",
+      "prix": 8,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Mainoo",
+      "prenom": "Kobbie",
+      "poste": "MD",
+      "club": "Man United",
+      "prix": 8,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Mamardashvili",
+      "prenom": "Giorgi",
+      "poste": "G",
+      "club": "Liverpool",
+      "prix": 7,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Provedel",
+      "prenom": "Ivan",
+      "poste": "G",
+      "club": "Inter",
+      "prix": 7,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Bartra",
+      "prenom": "Marc",
+      "poste": "DC",
+      "club": "Betis",
+      "prix": 3,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Espart",
+      "prenom": "Xavi",
+      "poste": "DL",
+      "club": "Barcelona",
+      "prix": 2,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Funk",
+      "prenom": "Marius",
+      "poste": "G",
+      "club": "Stuttgart",
+      "prix": 1,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Woodman",
+      "prenom": "Freddie",
+      "poste": "G",
+      "club": "Liverpool",
+      "prix": 1,
+      "acheteur": "Paul",
+      "equipe_acheteur": "DOUBLES CHAMPIONS",
+      "encheres_perdues": []
+    }
+  ]
+}
