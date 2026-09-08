@@ -3283,5 +3283,113 @@
       "Paris"
     ],
     "photo": null
+  },
+  "Lewis-Skelly|Champions League": {
+    "prenom": "Myles",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Arsenal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qcyg7j1769332374.jpg"
+  },
+  "Saud Abdulhamid|Champions League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Lens"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/opcqpo1668712724.jpg"
+  },
+  "Ndiaye|Champions League": {
+    "prenom": "Iliman",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Man City"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mewy8h1628334209.jpg"
+  },
+  "Havertz|Champions League": {
+    "prenom": "Kai",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Arsenal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5c3h061780160105.jpg"
+  },
+  "Ganiou|Champions League": {
+    "prenom": "Ismaëlo",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Lens"
+    ],
+    "photo": null
+  },
+  "Mainoo|Champions League": {
+    "prenom": "Kobbie",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Man United"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h66a4l1696149845.jpg"
+  },
+  "Mamardashvili|Champions League": {
+    "prenom": "Giorgi",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Liverpool"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkstyo1716611290.jpg"
+  },
+  "Provedel|Champions League": {
+    "prenom": "Ivan",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Inter"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/abhqpq1546699343.jpg"
+  },
+  "Bartra|Champions League": {
+    "prenom": "Marc",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/87ldtd1531053841.jpg"
+  },
+  "Espart|Champions League": {
+    "prenom": "Xavi",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wwbwky1782654294.jpg"
+  },
+  "Funk|Champions League": {
+    "prenom": "Marius",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Stuttgart"
+    ],
+    "photo": null
+  },
+  "Woodman|Champions League": {
+    "prenom": "Freddie",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Liverpool"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jb5l201509807510.jpg"
   }
 }
