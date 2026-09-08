@@ -1,0 +1,142 @@
+{
+  "ligue": "Champions League",
+  "championnat": 1,
+  "tour": 2,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Isak",
+      "prenom": "Alexander",
+      "poste": "A",
+      "club": "Liverpool",
+      "prix": 60,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Doué",
+      "prenom": "Désiré",
+      "poste": "MO",
+      "club": "Paris",
+      "prix": 58,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Díaz",
+      "prenom": "Luis",
+      "poste": "A",
+      "club": "Bayern",
+      "prix": 52,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": [
+        { "equipe": "Dracarys", "prix": 48 }
+      ]
+    },
+    {
+      "joueur": "Semenyo",
+      "prenom": "Antoine",
+      "poste": "MO",
+      "club": "Man City",
+      "prix": 51,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Dembélé",
+      "prenom": "Ousmane",
+      "poste": "A",
+      "club": "Paris",
+      "prix": 48,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 31 }
+      ]
+    },
+    {
+      "joueur": "Vinícius Júnior",
+      "poste": "A",
+      "club": "Real Madrid",
+      "prix": 47,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": [
+        { "equipe": "Pasta de la Mama", "prix": 43 }
+      ]
+    },
+    {
+      "joueur": "Brown",
+      "prenom": "Nathaniel",
+      "poste": "DL",
+      "club": "Bayern",
+      "prix": 19,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Rodri",
+      "poste": "MD",
+      "club": "Barcelona",
+      "prix": 19,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "van Dijk",
+      "prenom": "Virgil",
+      "poste": "DC",
+      "club": "Liverpool",
+      "prix": 18,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Pasta de la Mama",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Donnarumma",
+      "prenom": "Gianluigi",
+      "poste": "G",
+      "club": "Man City",
+      "prix": 18,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Gordon",
+      "prenom": "Anthony",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 17,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Sparta Praia",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Ødegaard",
+      "prenom": "Martin",
+      "poste": "MO",
+      "club": "Arsenal",
+      "prix": 17,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Skriniar",
+      "prenom": "Milan",
+      "poste": "DC",
+      "club": "Fenerbahçe",
+      "prix": 12,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Dracarys",
+      "encheres_perdues": []
+    }
+  ]
+}
