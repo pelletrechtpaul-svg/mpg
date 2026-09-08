@@ -3391,5 +3391,122 @@
       "Liverpool"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jb5l201509807510.jpg"
+  },
+  "Isak|Champions League": {
+    "prenom": "Alexander",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Liverpool"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/537p7s1778608689.jpg"
+  },
+  "Doué|Champions League": {
+    "prenom": "Désiré",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Paris"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/70imvk1770216646.jpg"
+  },
+  "Díaz|Champions League": {
+    "prenom": "Luis",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Bayern"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qkw97r1779753703.jpg"
+  },
+  "Semenyo|Champions League": {
+    "prenom": "Antoine",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Man City"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mbv2q31767953143.jpg"
+  },
+  "Dembélé|Champions League": {
+    "prenom": "Ousmane",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Paris"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2w39ps1778803599.jpg"
+  },
+  "Vinícius Júnior|Champions League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lxf1he1771264845.jpg"
+  },
+  "Brown|Champions League": {
+    "prenom": "Nathaniel",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Bayern"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gc4moq1779382831.jpg"
+  },
+  "Rodri|Champions League": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/r6vlwa1545242094.jpg"
+  },
+  "van Dijk|Champions League": {
+    "prenom": "Virgil",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Liverpool"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9fe0tn1720452118.jpg"
+  },
+  "Donnarumma|Champions League": {
+    "prenom": "Gianluigi",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Man City"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7kahd81704447713.jpg"
+  },
+  "Gordon|Champions League": {
+    "prenom": "Anthony",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yleib91770796577.jpg"
+  },
+  "Ødegaard|Champions League": {
+    "prenom": "Martin",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Arsenal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ttlff21727415365.jpg"
+  },
+  "Skriniar|Champions League": {
+    "prenom": "Milan",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Fenerbahçe"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knn8491704623903.jpg"
   }
 }
