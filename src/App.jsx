@@ -22,38 +22,89 @@ const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1
 const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - saisonYear(a))[0];
 
 const TABS = ['classements', 'entraineurs', 'records', 'joueurs', 'admin'];
-const tabFromHash = () => {
-  const tab = window.location.hash.slice(1);
-  return TABS.includes(tab) ? tab : 'classements';
-};
+const NAV_DEFAULTS = { tab: 'classements', saison: null, ligue: 'general', championnat: 'total', vue: 'classement', coach: null, csc: 'buteurs' };
+
+// Toute la position dans la nav (onglet, saison, ligue, championnat, sous-vue,
+// entraîneur sélectionné...) est encodée dans le hash de l'URL sous forme de
+// query string (#classements?ligue=Ligue+1&championnat=%233). Un routeur
+// classique changerait le chemin par écran ; ici un seul hash suffit car tout
+// vit dans le même composant App — pas de config serveur nécessaire (le hash
+// ne part jamais au serveur) et ça donne gratuitement le bouton "précédent"
+// du navigateur + la persistance de la position sur un F5.
+function parseNavFromHash() {
+  const raw = window.location.hash.slice(1);
+  const qIndex = raw.indexOf('?');
+  const tabPart = qIndex === -1 ? raw : raw.slice(0, qIndex);
+  const params = new URLSearchParams(qIndex === -1 ? '' : raw.slice(qIndex + 1));
+  return {
+    tab: TABS.includes(tabPart) ? tabPart : NAV_DEFAULTS.tab,
+    saison: params.get('saison'),
+    ligue: params.get('ligue') || NAV_DEFAULTS.ligue,
+    championnat: params.get('championnat') || NAV_DEFAULTS.championnat,
+    vue: params.get('vue') || NAV_DEFAULTS.vue,
+    coach: params.get('coach'),
+    csc: params.get('csc') || NAV_DEFAULTS.csc,
+  };
+}
+
+function serializeNav(nav) {
+  const params = new URLSearchParams();
+  if (nav.saison) params.set('saison', nav.saison);
+  if (nav.ligue !== NAV_DEFAULTS.ligue) params.set('ligue', nav.ligue);
+  if (nav.championnat !== NAV_DEFAULTS.championnat) params.set('championnat', nav.championnat);
+  if (nav.vue !== NAV_DEFAULTS.vue) params.set('vue', nav.vue);
+  if (nav.coach) params.set('coach', nav.coach);
+  if (nav.csc !== NAV_DEFAULTS.csc) params.set('csc', nav.csc);
+  const qs = params.toString();
+  return nav.tab + (qs ? '?' + qs : '');
+}
 
 const App = () => {
-  const [selectedSeason, setSelectedSeason] = useState(() => mostRecentSeason(['2025/2026', '2024/2025']));
-  const [activeTab, setActiveTab] = useState(tabFromHash);
+  const initialNav = parseNavFromHash();
+  const [selectedSeason, setSelectedSeason] = useState(() => initialNav.saison || mostRecentSeason(['2025/2026', '2024/2025']));
+  const [activeTab, setActiveTab] = useState(() => initialNav.tab);
+  const [selectedLigue, setSelectedLigue] = useState(() => initialNav.ligue);
+  const [selectedChampionnat, setSelectedChampionnat] = useState(() => initialNav.championnat);
+  const [ligueView, setLigueView] = useState(() => initialNav.vue);
+  const [effectifsCoach, setEffectifsCoach] = useState(() => initialNav.coach);
+  const [buteursCscView, setButeursCscView] = useState(() => initialNav.csc);
 
-  // Reflète l'onglet actif dans le hash de l'URL (#records, #joueurs...) :
-  // pas besoin d'un vrai routeur ni de config serveur (le hash ne part jamais
-  // au serveur), et ça donne gratuitement le bouton "précédent" du navigateur
-  // + la persistance de l'onglet sur un F5.
+  // true dès qu'une saison est fixée explicitement (choix manuel ou déjà
+  // présente dans l'URL au chargement) — jamais sur un simple événement de
+  // synchro Firestore, qui peut d'abord renvoyer une version en cache périmée
+  // avant la vraie donnée serveur.
+  const hasUserPickedSeason = useRef(!!initialNav.saison);
+
+  // Réécrit le hash dès qu'un de ces morceaux d'état change (React groupe les
+  // mises à jour déclenchées dans un même clic, donc un clic qui change 3
+  // états d'un coup ne crée qu'UNE seule entrée d'historique).
   useEffect(() => {
-    if (window.location.hash.slice(1) !== activeTab) {
-      window.location.hash = activeTab;
+    const target = serializeNav({ tab: activeTab, saison: selectedSeason, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView });
+    if (window.location.hash.slice(1) !== target) {
+      window.location.hash = target;
     }
-  }, [activeTab]);
+  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView]);
 
+  // Bouton précédent/suivant du navigateur : relit le hash et réapplique tout.
   useEffect(() => {
-    const onHashChange = () => setActiveTab(tabFromHash());
+    const onHashChange = () => {
+      const nav = parseNavFromHash();
+      if (nav.saison) hasUserPickedSeason.current = true;
+      setActiveTab(nav.tab);
+      setSelectedSeason(prev => nav.saison || prev);
+      setSelectedLigue(nav.ligue);
+      setSelectedChampionnat(nav.championnat);
+      setLigueView(nav.vue);
+      setEffectifsCoach(nav.coach);
+      setButeursCscView(nav.csc);
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
-  const [selectedLigue, setSelectedLigue] = useState('general');
-  const [selectedChampionnat, setSelectedChampionnat] = useState('total');
+
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
   const [pendingPlayerKey, setPendingPlayerKey] = useState(null);
   const [cameFromEffectifs, setCameFromEffectifs] = useState(false);
-  const [ligueView, setLigueView] = useState('classement');
-  const [effectifsCoach, setEffectifsCoach] = useState(null);
-  const [buteursCscView, setButeursCscView] = useState('buteurs');
   const [pendingEditMatch, setPendingEditMatch] = useState(null);
 
   const openPlayer = (joueur, ligue) => {
@@ -80,10 +131,6 @@ const App = () => {
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
 
   const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
-  // true seulement après un choix manuel de saison par l'utilisateur (jamais
-  // sur un simple événement de synchro — Firestore peut renvoyer d'abord une
-  // version en cache périmée avant la vraie donnée serveur)
-  const hasUserPickedSeason = useRef(false);
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'saisons'), snap => {
       if (snap.exists()) {
