@@ -21,9 +21,31 @@ import { useRecords } from './hooks/useRecords';
 const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
 const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - saisonYear(a))[0];
 
+const TABS = ['classements', 'entraineurs', 'records', 'joueurs', 'admin'];
+const tabFromHash = () => {
+  const tab = window.location.hash.slice(1);
+  return TABS.includes(tab) ? tab : 'classements';
+};
+
 const App = () => {
   const [selectedSeason, setSelectedSeason] = useState(() => mostRecentSeason(['2025/2026', '2024/2025']));
-  const [activeTab, setActiveTab] = useState('classements');
+  const [activeTab, setActiveTab] = useState(tabFromHash);
+
+  // Reflète l'onglet actif dans le hash de l'URL (#records, #joueurs...) :
+  // pas besoin d'un vrai routeur ni de config serveur (le hash ne part jamais
+  // au serveur), et ça donne gratuitement le bouton "précédent" du navigateur
+  // + la persistance de l'onglet sur un F5.
+  useEffect(() => {
+    if (window.location.hash.slice(1) !== activeTab) {
+      window.location.hash = activeTab;
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const onHashChange = () => setActiveTab(tabFromHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
   const [selectedLigue, setSelectedLigue] = useState('general');
   const [selectedChampionnat, setSelectedChampionnat] = useState('total');
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
