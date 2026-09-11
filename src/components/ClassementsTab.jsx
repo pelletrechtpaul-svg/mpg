@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
-import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor } from '../shared.jsx';
+import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDetailedData } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
@@ -283,12 +283,14 @@ export default function ClassementsTab({
               🗓️ Matchs
             </button>
           )}
-          <button
-            onClick={() => setLigueView('effectifs')}
-            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
-          >
-            {selectedChampionnat === 'total' ? '🏆 Meilleurs effectifs' : '👥 Effectifs'}
-          </button>
+          {hasDetailedData(selectedSeason) && (
+            <button
+              onClick={() => setLigueView('effectifs')}
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${ligueView === 'effectifs' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+            >
+              {selectedChampionnat === 'total' ? '🏆 Meilleurs effectifs' : '👥 Effectifs'}
+            </button>
+          )}
         </div>
       )}
 
@@ -434,7 +436,7 @@ export default function ClassementsTab({
             </p>
           </div>
         )
-      ) : selectedLigue !== 'general' && ligueView === 'effectifs' ? (
+      ) : selectedLigue !== 'general' && ligueView === 'effectifs' && hasDetailedData(selectedSeason) ? (
         effectifsData ? (
           <div className="space-y-4">
             {/* Sous-menu : un bouton par entraîneur */}
@@ -883,8 +885,10 @@ export default function ClassementsTab({
         </div>
       )}
 
-      {/* Classement buteurs / CSC (joueurs mercato), fusionnés dans une seule carte avec toggle */}
-      {selectedLigue !== 'general' && ligueView === 'classement' && (
+      {/* Classement buteurs / CSC (joueurs mercato), fusionnés dans une seule carte avec toggle —
+          nécessite le mercato + les notes/buteurs par match, pas saisis sur
+          2024/2025 et 2025/2026 */}
+      {selectedLigue !== 'general' && ligueView === 'classement' && hasDetailedData(selectedSeason) && (
         <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 mt-6">
           <ShareBtn contextText={shareContext} />
           <div className="flex items-center gap-3 px-6 pt-6 pb-2">

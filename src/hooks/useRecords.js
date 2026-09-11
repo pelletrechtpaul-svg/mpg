@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak, isCompte, rotaldosFor } from '../shared.jsx';
+import { calculatePlayerStats, groupMatchesByChampionship, calculateLongestStreak, isCompte, rotaldosFor, hasDetailedData } from '../shared.jsx';
 
 const computeLigueStats = (matches, minMatchs = 3) => {
   if (!matches || matches.length === 0) return null;
@@ -325,11 +325,13 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     return computeLigueStats(filteredData, 3);
   }, [filteredData, selectedSeason]);
 
-  const mercatoRecordsAllTime = useMemo(() => computeMercatoRecords(mercatoData, matchData), [mercatoData, matchData]);
+  // Records mercato : jamais dispo tant qu'une saison sans mercato importé
+  // (2024/2025, 2025/2026) fait partie de la période affichée — y compris
+  // All-Time, qui les inclut toujours.
   const mercatoRecordsSeason = useMemo(() => {
-    if (selectedSeason === 'All-Time') return null;
+    if (!hasDetailedData(selectedSeason)) return null;
     return computeMercatoRecords(filteredMercatoData, filteredData);
   }, [filteredMercatoData, filteredData, selectedSeason]);
 
-  return { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsAllTime, mercatoRecordsSeason };
+  return { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsSeason };
 };

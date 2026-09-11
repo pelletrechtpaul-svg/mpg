@@ -1,5 +1,14 @@
 export const JOUEURS_MERCATO = ['Roman', 'Paul', 'Adrien', 'Tiago'];
 
+// Saisons jouées avant qu'on ne se mette à saisir les données détaillées par
+// match (buteurs, notes, valises) et le mercato : les stats qui en dépendent
+// (étude de banc, buteurs/CSC par joueur, effectifs, records mercato...)
+// seraient vides ou trompeuses sur ces saisons, donc masquées plutôt
+// qu'affichées à 0 comme si la donnée existait et valait zéro.
+export const SEASONS_SANS_DONNEES_DETAILLEES = ['2024/2025', '2025/2026'];
+export const hasDetailedData = (selectedSeason) =>
+  selectedSeason !== 'All-Time' && !SEASONS_SANS_DONNEES_DETAILLEES.includes(selectedSeason);
+
 export const LIGUE_NAT_EXCLUE = {
   'Ligue 1': 'Français',
   'Liga': 'Espagnol',

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte } from '../shared.jsx';
+import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch } from './FormationPitch.jsx';
 
@@ -67,7 +67,7 @@ export default function EntraineursTab({
      effectifs de 15-20 joueurs chacune, tout afficher d'un coup serait
      illisible. On affiche une puce par ligue et un seul terrain à la fois. */
   const effectifsParLigue = useMemo(() => {
-    if (!selectedPlayer) return [];
+    if (!selectedPlayer || !hasDetailedData(selectedSeason)) return [];
     return ligues
       .map(ligue => {
         const champs = (mercatoData || []).filter(m => m.ligue === ligue).map(m => m.championnat);
@@ -102,7 +102,7 @@ export default function EntraineursTab({
         };
       })
       .filter(Boolean);
-  }, [ligues, mercatoData, filteredData, selectedPlayer]);
+  }, [ligues, mercatoData, filteredData, selectedPlayer, selectedSeason]);
 
   /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
   const signatures = useMemo(() => {
@@ -354,6 +354,7 @@ export default function EntraineursTab({
             ))}
           </div>
 
+          {hasDetailedData(selectedSeason) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t dark:border-slate-700">
             <div>
               <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">⚽ Top buteurs</h4>
@@ -406,6 +407,7 @@ export default function EntraineursTab({
               )}
             </div>
           </div>
+          )}
         </div>
 
         {sigBubbleEl}

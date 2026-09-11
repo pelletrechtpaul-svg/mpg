@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { calculatePlayerStats, groupMatchesByChampionship } from '../shared.jsx';
+import { calculatePlayerStats, groupMatchesByChampionship, hasDetailedData } from '../shared.jsx';
 
-export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata) => {
+export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedSeason) => {
   const statsDetaillees = useMemo(() => {
     const matches = selectedStatsLigue === 'all' ? filteredData : filteredData.filter(d => d.ligue === selectedStatsLigue);
     return calculatePlayerStats(matches, joueurs);
@@ -39,6 +39,7 @@ export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, select
 
   const valiseStats = useMemo(() => {
     if (selectedLigue !== 'general' && selectedChampionnat !== 'total') return null;
+    if (!hasDetailedData(selectedSeason)) return null;
     const matchesToAnalyze = selectedLigue === 'general' ? filteredData : filteredData.filter(m => m.ligue === selectedLigue);
     const stats = {};
     joueurs.forEach(j => { stats[j] = { utilisees: 0, recues: 0, efficaces: 0, efficacesRecues: 0 }; });
@@ -57,7 +58,7 @@ export const usePlayerStats = (filteredData, joueurs, selectedStatsLigue, select
       }
     });
     return stats;
-  }, [filteredData, selectedLigue, selectedChampionnat, joueurs]);
+  }, [filteredData, selectedLigue, selectedChampionnat, joueurs, selectedSeason]);
 
   return { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats };
 };

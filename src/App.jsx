@@ -158,10 +158,10 @@ const App = () => {
   );
 
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
-  const { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata);
+  const { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedSeason);
   const { matchesListForChampionnat, historicalEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, ligueMetadata);
   const advancedStats = useAdvancedStats(matchData, joueurs, selectedSeason);
-  const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsAllTime, mercatoRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData);
+  const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData);
 
   const shareContext = [selectedSeason, selectedLigue && selectedLigue !== 'Toutes' ? selectedLigue : null].filter(Boolean).join(' · ');
 
@@ -391,7 +391,6 @@ const App = () => {
             perduUnPoint={perduUnPoint}
             ligueRecordsAllTime={ligueRecordsAllTime}
             ligueRecordsSeason={ligueRecordsSeason}
-            mercatoRecordsAllTime={mercatoRecordsAllTime}
             mercatoRecordsSeason={mercatoRecordsSeason}
             shareContext={shareContext}
           />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { playerColors, playerColorText, playerColorBorder, ShareBtn } from '../shared.jsx';
+import { playerColors, playerColorText, playerColorBorder, ShareBtn, hasDetailedData } from '../shared.jsx';
 
 // Couleurs par coach dérivées de la source unique dans shared.jsx.
 const colorText = playerColorText;
@@ -91,12 +91,14 @@ export default function RecordsTab({
   joueurs, selectedSeason,
   seasonRecords, perduUnPoint,
   ligueRecordsAllTime, ligueRecordsSeason,
-  mercatoRecordsAllTime, mercatoRecordsSeason,
+  mercatoRecordsSeason,
 }) {
   const [activeSubTab, setActiveSubTab] = useState('entraineurs');
 
   const ligueData = selectedSeason === 'All-Time' ? ligueRecordsAllTime : ligueRecordsSeason;
-  const mercatoData = selectedSeason === 'All-Time' ? mercatoRecordsAllTime : mercatoRecordsSeason;
+  // mercatoRecordsSeason est déjà null tant qu'une saison sans mercato importé
+  // (y compris All-Time, qui les mélange toutes) fait partie de la période.
+  const mercatoData = mercatoRecordsSeason;
 
   const unbeatenCountPerPlayer = joueurs.map(j => ({
     joueur: j,
@@ -214,7 +216,10 @@ export default function RecordsTab({
             </div>
           </div>
 
-          {/* Étude de banc */}
+          {/* Étude de banc — nécessite les notes/buteurs par match, pas
+              saisis sur 2024/2025 et 2025/2026 (ni sur All-Time, qui les
+              mélange) */}
+          {hasDetailedData(selectedSeason) && (
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎲 Étude de banc</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,6 +258,7 @@ export default function RecordsTab({
 
             </div>
           </div>
+          )}
 
           {/* Séries remarquables */}
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
