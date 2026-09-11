@@ -48,6 +48,8 @@ Le script gère déjà automatiquement :
 4. **Dry-run puis écriture** : `node scripts/import-mercato.cjs <fichier.json>` pour vérifier, puis `DRY_RUN=false node scripts/import-mercato.cjs <fichier.json>` — ou déposer le JSON dans `scripts/mercato-imports/` et pousser sur la branche (déclenche l'import automatique via GitHub Actions, écrit direct en DB **sans repasser par un dry-run manuel** : l'étape 2 doit impérativement être faite avant ce push, pas après).
 5. Le registre `scripts/players-registry.json` est mis à jour automatiquement.
 
-Ligues valides : `"Ligue 1"`, `"Liga"`, `"Premier League"`, `"Serie A"`, `"Champions League"`  
+Ligues valides : `"Ligue 1"`, `"Liga"`, `"Premier League"`, `"Serie A"`, `"Ligue des Champions"`  
 `"championnat": "next"` = auto-incrémente le dernier championnat connu pour cette ligue.  
 Chaque championnat = mini-saison de ≤6 matchs. Les numéros sont indépendants par ligue.
+
+**⚠️ Le nom exact compte** : `import-mercato.cjs` n'a aucune liste de validation, donc une faute de nom (ex. l'ancien `"Champions League"` utilisé ici par erreur du 2026-09-08 au 2026-09-11) passe l'import sans erreur mais désynchronise silencieusement des données de tout le reste de l'appli, qui utilise partout la chaîne `"Ligue des Champions"` en dur (`AdminAddMatchForm.jsx` `LIGUE_CONFIG`, `AdminEditPanel.jsx` `LIGUES`, `constants.js` `MANUAL_CHAMPIONSHIPS`, `useSeasonData.js`). Symptôme vécu : la page d'ajout de match affichait "Aucun joueur recruté" pour tous les coachs sur cette ligue malgré un mercato déjà importé (`AdminScorerSection.jsx` filtre `p.ligue === ligue` en égalité stricte). En cas de doute sur le nom exact d'une ligue, vérifier dans `AdminAddMatchForm.jsx` plutôt que de faire confiance à cette liste seule.
