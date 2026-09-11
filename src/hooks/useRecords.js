@@ -96,6 +96,18 @@ const computeMercatoRecords = (mercato, matches) => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 3);
 
+  // Même record, décliné par grande famille de poste (réutilise le
+  // regroupement byPoste ci-dessus).
+  const cumulativeSpendParPoste = Object.entries(byPoste)
+    .map(([poste, arr]) => {
+      const sums = {};
+      arr.forEach(m => { if (!m.joueur) return; sums[m.joueur] = (sums[m.joueur] || 0) + (m.prix || 0); });
+      const [joueur, total] = Object.entries(sums).sort((a, b) => b[1] - a[1])[0] || [];
+      return joueur ? { joueur, total, poste } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.total - a.total);
+
   // Plus gros flops : joueurs les plus chers n'ayant inscrit aucun but,
   // à partir de 3 matchs joués (sinon un seul match sans but suffirait à
   // qualifier n'importe quelle recrue tout juste arrivée)
@@ -130,7 +142,7 @@ const computeMercatoRecords = (mercato, matches) => {
     return { joueur: g.joueur, ligue: g.ligue, acheteur: g.acheteur, streak: sorted.length ? best : 0, saisons: [...g.saisons] };
   }).filter(g => g.streak > 1).sort((a, b) => b.streak - a.streak).slice(0, 3);
 
-  return { biggestBids, recordParPoste, biggestCumulativeSpend, biggestFlops, bestValueForMoney, longevite };
+  return { biggestBids, recordParPoste, biggestCumulativeSpend, cumulativeSpendParPoste, biggestFlops, bestValueForMoney, longevite };
 };
 
 export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData) => {

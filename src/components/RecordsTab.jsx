@@ -725,6 +725,21 @@ export default function RecordsTab({
                       ))}
                     </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
+
+                  {mercatoData.cumulativeSpendParPoste.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
+                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Par poste</h4>
+                      <div className="space-y-1.5">
+                        {mercatoData.cumulativeSpendParPoste.map((m, i) => (
+                          <div key={i} className="text-sm">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{m.poste}</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200 ml-1.5">{m.joueur}</span>
+                            <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.total}M</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200 dark:from-sky-900/30 dark:to-blue-900/30 dark:border-sky-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
