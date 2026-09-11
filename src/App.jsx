@@ -61,7 +61,8 @@ function serializeNav(nav) {
 
 const App = () => {
   const initialNav = parseNavFromHash();
-  const [selectedSeason, setSelectedSeason] = useState(() => initialNav.saison || mostRecentSeason(['2025/2026', '2024/2025']));
+  const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
+  const [selectedSeason, setSelectedSeason] = useState(() => initialNav.saison || mostRecentSeason(saisons));
   const [activeTab, setActiveTab] = useState(() => initialNav.tab);
   const [selectedLigue, setSelectedLigue] = useState(() => initialNav.ligue);
   const [selectedChampionnat, setSelectedChampionnat] = useState(() => initialNav.championnat);
@@ -78,12 +79,18 @@ const App = () => {
   // Réécrit le hash dès qu'un de ces morceaux d'état change (React groupe les
   // mises à jour déclenchées dans un même clic, donc un clic qui change 3
   // états d'un coup ne crée qu'UNE seule entrée d'historique).
+  //
+  // La saison n'est écrite dans le hash que si elle diffère de la saison la
+  // plus récente : sinon une URL restée ouverte (onglet, favori...) se
+  // fige sur "la saison la plus récente au moment où ce lien a été créé"
+  // au lieu de suivre la vraie saison en cours à chaque nouvelle visite.
   useEffect(() => {
-    const target = serializeNav({ tab: activeTab, saison: selectedSeason, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView });
+    const saisonForHash = selectedSeason === mostRecentSeason(saisons) ? null : selectedSeason;
+    const target = serializeNav({ tab: activeTab, saison: saisonForHash, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView });
     if (window.location.hash.slice(1) !== target) {
       window.location.hash = target;
     }
-  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView]);
+  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView, saisons]);
 
   // Bouton précédent/suivant du navigateur : relit le hash et réapplique tout.
   useEffect(() => {
@@ -91,7 +98,7 @@ const App = () => {
       const nav = parseNavFromHash();
       if (nav.saison) hasUserPickedSeason.current = true;
       setActiveTab(nav.tab);
-      setSelectedSeason(prev => nav.saison || prev);
+      setSelectedSeason(nav.saison || mostRecentSeason(saisons));
       setSelectedLigue(nav.ligue);
       setSelectedChampionnat(nav.championnat);
       setLigueView(nav.vue);
@@ -100,7 +107,7 @@ const App = () => {
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
+  }, [saisons]);
 
   const [selectedStatsLigue, setSelectedStatsLigue] = useState('all');
   const [pendingPlayerKey, setPendingPlayerKey] = useState(null);
@@ -130,7 +137,6 @@ const App = () => {
 
   const { matchData, mercatoData, ligueMetadata, isLoading, isOnline, lastSyncTime, syncError, setSyncError, isAdminAuthenticated } = useFirestoreSync();
 
-  const [saisons, setSaisons] = useState(['2025/2026', '2024/2025']);
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'saisons'), snap => {
       if (snap.exists()) {
