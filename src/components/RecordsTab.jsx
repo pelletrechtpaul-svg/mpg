@@ -236,6 +236,12 @@ export default function RecordsTab({
                 <AllPlayersGrid data={seasonRecords.benchGoalsKing} valueKey="count" />
               </RecordCard>
 
+              <RecordCard className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:to-red-900/30 dark:border-orange-700" contextText={selectedSeason}>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🙈 CSC</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Buts contre son camp inscrits par les recrues de chaque entraîneur</p>
+                <AllPlayersGrid data={seasonRecords.cscKing} valueKey="count" />
+              </RecordCard>
+
               <RecordCard className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-700" contextText={selectedSeason}>
                 <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⭐ Banc vs titulaire</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Écart entre la note moyenne des joueurs qui ont compté et celle des joueurs restés sur le banc (min. 3 notes banc)</p>
@@ -707,18 +713,18 @@ export default function RecordsTab({
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-900/30 dark:to-amber-900/30 dark:border-orange-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🙈 CSC le plus cher</h3>
-                  {mercatoData.priciestCsc.length > 0 ? (
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💰 Plus grosse mise cumulée</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Total dépensé sur un même joueur, tous mercatos et toutes ligues confondus</p>
+                  {mercatoData.biggestCumulativeSpend.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.priciestCsc.map((m, i) => (
+                      {mercatoData.biggestCumulativeSpend.map((m, i) => (
                         <div key={i} className="text-sm">
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.prix}M, {m.csc} CSC</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.total}M</span>
                         </div>
                       ))}
                     </div>
-                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun CSC pour l'instant.</p>}
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
                 </RecordCard>
 
                 <RecordCard className="bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200 dark:from-sky-900/30 dark:to-blue-900/30 dark:border-sky-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>

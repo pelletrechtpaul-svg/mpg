@@ -31,17 +31,21 @@ const topN = (arr, scoreFn, tiebreakerFn = null, n = 3) => {
   }).slice(0, n);
 };
 
+// Regroupement en 4 grandes familles de postes (noms au pluriel pour
+// l'affichage - distinct du POSTE_GROUP de FormationPitch.jsx qui sert à
+// l'agencement du terrain, pas seulement à l'affichage).
 const POSTE_GROUP = {
-  G: 'Gardien',
-  DC: 'Défenseur', DL: 'Défenseur', DG: 'Défenseur', DD: 'Défenseur', D: 'Défenseur',
-  MC: 'Milieu', MO: 'Milieu', MD: 'Milieu', M: 'Milieu',
-  A: 'Attaquant',
+  G: 'Gardiens',
+  DC: 'Défenseurs', DL: 'Défenseurs', DG: 'Défenseurs', DD: 'Défenseurs', D: 'Défenseurs',
+  MC: 'Milieux', MO: 'Milieux', MD: 'Milieux', M: 'Milieux',
+  A: 'Attaquants',
 };
 
 const computeMercatoRecords = (mercato, matches) => {
   if (!mercato || mercato.length === 0) return null;
 
-  // Buts/CSC par joueur mercato (clé joueur|ligue), à partir des buteurs des matchs
+  // Buts/CSC/matchs joués par joueur mercato (clé joueur|ligue), à partir
+  // des buteurs et notes des matchs.
   const goalMap = {};
   (matches || []).forEach(m => {
     (m.buteurs || []).filter(isCompte).forEach(b => {
@@ -52,11 +56,22 @@ const computeMercatoRecords = (mercato, matches) => {
       else goalMap[key].buts += (b.buts || 1);
     });
   });
+  const matchesPlayedMap = {};
+  (matches || []).forEach(m => {
+    (m.notes || []).filter(isCompte).forEach(n => {
+      if (!n.joueur) return;
+      const key = `${n.joueur}|${m.ligue}`;
+      matchesPlayedMap[key] = (matchesPlayedMap[key] || 0) + 1;
+    });
+  });
 
   // Plus grosses enchères
   const biggestBids = topN(mercato, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
 
-  // Record du prix le plus élevé par poste (regroupé en 4 grandes familles)
+  // Record du prix le plus élevé par grande famille de poste (Attaquants/
+  // Milieux/Défenseurs/Gardiens) — le spread de `best` doit passer APRÈS
+  // `poste` sinon le poste précis du joueur (ex. "MO") écrase le nom du
+  // groupe qu'on veut afficher.
   const byPoste = {};
   mercato.forEach(m => {
     const grp = POSTE_GROUP[m.poste] || 'Autre';
@@ -64,12 +79,30 @@ const computeMercatoRecords = (mercato, matches) => {
     byPoste[grp].push(m);
   });
   const recordParPoste = Object.entries(byPoste)
-    .map(([poste, arr]) => { const best = topN(arr, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0), 1)[0]; return best ? { poste, ...best } : null; })
+    .map(([poste, arr]) => { const best = topN(arr, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0), 1)[0]; return best ? { ...best, poste } : null; })
     .filter(Boolean)
     .sort((a, b) => (b.prix || 0) - (a.prix || 0));
 
-  // Plus gros flops : joueurs les plus chers n'ayant inscrit aucun but
-  const flopCandidates = mercato.filter(m => (m.prix || 0) > 0 && (goalMap[`${m.joueur}|${m.ligue}`]?.buts || 0) === 0);
+  // Plus grosse mise cumulée sur un même joueur, tous mercatos confondus -
+  // y compris s'il a été recruté dans plusieurs ligues différentes (on
+  // cumule par nom de joueur seul, pas par clé joueur|ligue).
+  const cumulByPlayer = {};
+  mercato.forEach(m => {
+    if (!m.joueur) return;
+    cumulByPlayer[m.joueur] = (cumulByPlayer[m.joueur] || 0) + (m.prix || 0);
+  });
+  const biggestCumulativeSpend = Object.entries(cumulByPlayer)
+    .map(([joueur, total]) => ({ joueur, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 3);
+
+  // Plus gros flops : joueurs les plus chers n'ayant inscrit aucun but,
+  // à partir de 3 matchs joués (sinon un seul match sans but suffirait à
+  // qualifier n'importe quelle recrue tout juste arrivée)
+  const flopCandidates = mercato.filter(m =>
+    (m.prix || 0) > 0 &&
+    (goalMap[`${m.joueur}|${m.ligue}`]?.buts || 0) === 0 &&
+    (matchesPlayedMap[`${m.joueur}|${m.ligue}`] || 0) >= 3);
   const biggestFlops = topN(flopCandidates, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
 
   // Meilleur rapport qualité/prix : buts marqués / prix payé (seuil 2 buts pour éviter le bruit)
@@ -78,13 +111,6 @@ const computeMercatoRecords = (mercato, matches) => {
     .map(m => { const g = goalMap[`${m.joueur}|${m.ligue}`] || { buts: 0 }; return { ...m, buts: g.buts, ratio: g.buts / m.prix }; })
     .filter(m => m.buts >= 2);
   const bestValueForMoney = topN(ratioCandidates, m => m.ratio, m => m.buts);
-
-  // CSC le plus cher
-  const cscCandidates = mercato
-    .filter(m => (m.prix || 0) > 0)
-    .map(m => { const g = goalMap[`${m.joueur}|${m.ligue}`] || { csc: 0 }; return { ...m, csc: g.csc }; })
-    .filter(m => m.csc > 0);
-  const priciestCsc = topN(cscCandidates, m => m.prix || 0, m => m.csc);
 
   // Longévité mercato : plus longue série de championnats consécutifs (même joueur, même ligue, même coach)
   const longeviteGroups = {};
@@ -104,7 +130,7 @@ const computeMercatoRecords = (mercato, matches) => {
     return { joueur: g.joueur, ligue: g.ligue, acheteur: g.acheteur, streak: sorted.length ? best : 0, saisons: [...g.saisons] };
   }).filter(g => g.streak > 1).sort((a, b) => b.streak - a.streak).slice(0, 3);
 
-  return { biggestBids, recordParPoste, biggestFlops, bestValueForMoney, priciestCsc, longevite };
+  return { biggestBids, recordParPoste, biggestCumulativeSpend, biggestFlops, bestValueForMoney, longevite };
 };
 
 export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData) => {
@@ -126,10 +152,10 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     const closeWinsCounts = {}, berserkCounts = {}, clutchCounts = {};
     joueurs.forEach(j => { closeWinsCounts[j] = 0; berserkCounts[j] = 0; clutchCounts[j] = 0; });
 
-    // Bilan banc/rotaldos : all players
-    const rotaldoCounts = {}, benchGoalsCounts = {};
+    // Bilan banc/rotaldos/CSC : all players
+    const rotaldoCounts = {}, benchGoalsCounts = {}, cscCounts = {};
     const benchNoteSums = {}, benchNoteCounts = {}, compteNoteSums = {}, compteNoteCounts = {};
-    joueurs.forEach(j => { rotaldoCounts[j] = 0; benchGoalsCounts[j] = 0; benchNoteSums[j] = 0; benchNoteCounts[j] = 0; compteNoteSums[j] = 0; compteNoteCounts[j] = 0; });
+    joueurs.forEach(j => { rotaldoCounts[j] = 0; benchGoalsCounts[j] = 0; cscCounts[j] = 0; benchNoteSums[j] = 0; benchNoteCounts[j] = 0; compteNoteSums[j] = 0; compteNoteCounts[j] = 0; });
 
     // Per-player best H2H streak
     const bestH2HStreak = {};
@@ -164,10 +190,13 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       if (match.joueur1 && rotaldoCounts[match.joueur1] !== undefined) rotaldoCounts[match.joueur1] += rotaldosFor(match.notes, match.joueur1);
       if (match.joueur2 && rotaldoCounts[match.joueur2] !== undefined) rotaldoCounts[match.joueur2] += rotaldosFor(match.notes, match.joueur2);
 
-      // Buts gâchés sur le banc (un joueur "banc" a marqué mais ça ne compte pas)
+      // Buts gâchés sur le banc (un joueur "banc" a marqué mais ça ne compte
+      // pas) + CSC (uniquement ceux d'un joueur qui comptait, comme dans
+      // l'étude de banc par ligue de ClassementsTab)
       (match.buteurs || []).forEach(b => {
-        if (!b.acheteur || b.csc || b.statut !== 'banc' || benchGoalsCounts[b.acheteur] === undefined) return;
-        benchGoalsCounts[b.acheteur] += b.buts || 1;
+        if (!b.acheteur) return;
+        if (b.csc) { if (isCompte(b) && cscCounts[b.acheteur] !== undefined) cscCounts[b.acheteur] += b.buts || 1; return; }
+        if (b.statut === 'banc' && benchGoalsCounts[b.acheteur] !== undefined) benchGoalsCounts[b.acheteur] += b.buts || 1;
       });
 
       // Moyenne banc vs compte : compare la performance des joueurs restés
@@ -298,6 +327,7 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       clutchChampion: Object.entries(clutchCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       rotaldoKing: Object.entries(rotaldoCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       benchGoalsKing: Object.entries(benchGoalsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
+      cscKing: Object.entries(cscCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       // Seuil de 3 notes banc pour éviter le bruit d'un coach avec 1 seul cas.
       // diff = titulaire - banc (positif = titulaires meilleurs, l'attendu ;
       // négatif = le banc a fait mieux, la surprise) - tri du plus surprenant
