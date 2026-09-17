@@ -309,15 +309,19 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
   }
 
   if (step === 'triage') {
-    // Une équipe MPG a toujours un gardien titulaire et un gardien
-    // remplaçant - sans les deux le triage est forcément incomplet.
-    const hasCompteGardien = compteList.some(m => m.poste === 'G');
-    const hasBancGardien = bancList.some(m => m.poste === 'G');
-    const missingGardien = !hasCompteGardien || !hasBancGardien;
+    // Un seul gardien peut compter à la fois (un seul joue) : s'il y en a
+    // un, il faut un gardien "Banc" en face (le remplaçant qui n'a pas
+    // joué, ou le titulaire remplacé). Mais si aucun des deux gardiens du
+    // coach n'a joué en vrai, aucun ne doit être classé : ça reste un
+    // rotaldo (le décompte 11 - compte ne dépend pas du poste), pas une
+    // paire compte/banc forcée.
+    const gardienCompteCount = compteList.filter(m => m.poste === 'G').length;
+    const gardienBancCount = bancList.filter(m => m.poste === 'G').length;
+    const missingGardien = gardienCompteCount > 1 || (gardienCompteCount === 1 && gardienBancCount === 0);
     return (
       <div className="mt-2">
         <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
-          Coche "Compte" (titulaire non remplacé ou remplaçant entré) ou "Banc" (remplaçant resté sur le banc ou titulaire remplacé). Ni l'un ni l'autre = loft.
+          Coche "Compte" (titulaire non remplacé ou remplaçant entré) ou "Banc" (remplaçant resté sur le banc ou titulaire remplacé). Ni l'un ni l'autre = loft (rotaldo si aucun gardien n'a joué).
         </p>
         <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {sorted.map(m => (
@@ -327,7 +331,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
         </div>
         {missingGardien && (
           <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-            ⚠️ Il manque au moins un gardien (G) dans {[!hasCompteGardien && '"Compte"', !hasBancGardien && '"Banc"'].filter(Boolean).join(' et ')}.
+            ⚠️ {gardienCompteCount > 1 ? 'Un seul gardien peut être "Compte" à la fois.' : 'Il manque le gardien "Banc" en face du gardien "Compte".'}
           </p>
         )}
         <button type="button" disabled={missingGardien} onClick={() => setStep('notation')}
