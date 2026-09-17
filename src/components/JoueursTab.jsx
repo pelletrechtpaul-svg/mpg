@@ -139,15 +139,17 @@ function FormFrise({ matches }) {
             <span className="text-[8px] text-slate-400 dark:text-slate-500 mt-0.5 whitespace-nowrap">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
             </span>
-            {goals.length > 0 && (
-              <div className="flex items-center mt-0.5">
-                {goals.map((type, gi) => type === 'virtuel' ? (
-                  <VirtualGoalIcon key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`} />
-                ) : (
-                  <span key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`}>⚽</span>
-                ))}
-              </div>
-            )}
+            {/* Toujours rendue (même vide) et à hauteur fixe : sinon les
+                colonnes sans but sont plus basses que celles avec but, et
+                items-end (alignement bas de la rangée) décale leurs barres
+                vers le haut au lieu de garder toutes les notes alignées. */}
+            <div className="flex items-center mt-0.5" style={{ height: 8 }}>
+              {goals.map((type, gi) => type === 'virtuel' ? (
+                <VirtualGoalIcon key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`} />
+              ) : (
+                <span key={gi} className={`text-[8px] leading-none flex-shrink-0 ${gi > 0 ? '-ml-1' : ''}`}>⚽</span>
+              ))}
+            </div>
           </div>
         );
       })}
