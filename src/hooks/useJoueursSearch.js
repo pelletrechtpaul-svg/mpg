@@ -4,14 +4,18 @@ export function useJoueursSearch(mercatoData) {
   const playerIndex = useMemo(() => {
     if (!mercatoData?.length) return {};
     const index = {};
+    // Clé = nom du joueur seul (plus joueur+ligue) : un même joueur réel
+    // recruté dans plusieurs ligues (ex. Liga et Ligue des Champions) n'a
+    // qu'une seule fiche, avec tout son historique dedans plutôt que des
+    // fiches distinctes par ligue.
     mercatoData.forEach(d => {
       if (!d.joueur) return;
-      const key = d.joueur + '|||' + d.ligue;
+      const key = d.joueur;
       if (!index[key]) {
         index[key] = {
           key,
           joueur: d.joueur,
-          ligue: d.ligue,
+          ligues: new Set(),
           prenom: d.prenom || null,
           poste: d.poste,
           nationalite: d.nationalite,
@@ -23,6 +27,7 @@ export function useJoueursSearch(mercatoData) {
         };
       }
       if (!index[key].prenom && d.prenom) index[key].prenom = d.prenom;
+      index[key].ligues.add(d.ligue);
       index[key].entries.push(d);
       if (d.acheteur) index[key].acheteurs.add(d.acheteur);
     });
@@ -34,6 +39,9 @@ export function useJoueursSearch(mercatoData) {
       });
       p.prixMax = Math.max(...p.entries.map(e => e.prix || 0));
       p.nbAchats = p.entries.length;
+      // Ligue de l'achat le plus récent — sert de ligue par défaut pour la
+      // photo et le badge dans la liste de résultats.
+      p.ligue = p.entries[p.entries.length - 1].ligue;
       // Acheteur le plus fréquent
       const freq = {};
       p.entries.forEach(e => { if (e.acheteur) freq[e.acheteur] = (freq[e.acheteur] || 0) + 1; });

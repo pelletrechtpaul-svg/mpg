@@ -114,8 +114,10 @@ const App = () => {
   const [cameFromEffectifs, setCameFromEffectifs] = useState(false);
   const [pendingEditMatch, setPendingEditMatch] = useState(null);
 
-  const openPlayer = (joueur, ligue) => {
-    setPendingPlayerKey(joueur + '|||' + ligue);
+  const openPlayer = (joueur) => {
+    // Clé = nom du joueur seul (voir useJoueursSearch) : la fiche joueur
+    // est unique tous ligues confondues, pas besoin de préciser laquelle.
+    setPendingPlayerKey(joueur);
     setCameFromEffectifs(true);
     setActiveTab('joueurs');
   };

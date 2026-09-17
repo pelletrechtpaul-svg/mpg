@@ -47,10 +47,20 @@ function PosteBadge({ poste }) {
   );
 }
 
-function computeGoalStats(matchData, joueur, ligue) {
+// Le registre photo est indexé par joueur+ligue : une fiche joueur qui
+// cumule plusieurs ligues doit choisir laquelle regarder, en partant de
+// l'achat le plus récent (les entries sont déjà triées chronologiquement).
+function resolvePhotoLigue(entries, joueur, photos) {
+  return [...entries].reverse().map(e => e.ligue).find(l => photos[`${joueur}|${l}`]) || entries[entries.length - 1]?.ligue;
+}
+
+// `ligues` : Set/tableau des ligues où ce joueur a été recruté — un même
+// joueur réel peut avoir été acheté dans plusieurs ligues (ex. Liga et
+// Ligue des Champions), la fiche est unique et cumule tout.
+function computeGoalStats(matchData, joueur, ligues) {
   let buts = 0, csc = 0, virtuels = 0;
   (matchData || []).forEach(m => {
-    if (m.ligue !== ligue) return;
+    if (!ligues.has(m.ligue)) return;
     (m.buteurs || []).filter(isCompte).forEach(b => {
       if (b.joueur !== joueur) return;
       if (b.csc) { csc += (b.buts || 1); return; }
@@ -61,13 +71,13 @@ function computeGoalStats(matchData, joueur, ligue) {
   return { buts, csc, virtuels };
 }
 
-// Note moyenne tous championnats #x confondus (même ligue) — indépendant du
-// coach propriétaire au moment du match, pour couvrir un joueur revendu
-// d'un tour à l'autre.
-function computeAvgNote(matchData, joueur, ligue) {
+// Note moyenne tous championnats #x et toutes ligues confondues —
+// indépendant du coach propriétaire au moment du match, pour couvrir un
+// joueur revendu d'un tour à l'autre.
+function computeAvgNote(matchData, joueur, ligues) {
   let sum = 0, count = 0;
   (matchData || []).forEach(m => {
-    if (m.ligue !== ligue) return;
+    if (!ligues.has(m.ligue)) return;
     (m.notes || []).filter(isCompte).forEach(n => {
       if (n.joueur !== joueur) return;
       sum += n.note;
@@ -158,9 +168,10 @@ function FormFrise({ matches }) {
 }
 
 function PlayerCard({ player, onClose, photos, matchData }) {
-  const { entries, displayName, poste, nationalite, joueur, ligue } = player;
-  const { buts, csc, virtuels } = computeGoalStats(matchData, joueur, ligue);
-  const avgNote = computeAvgNote(matchData, joueur, ligue);
+  const { entries, displayName, poste, nationalite, joueur, ligues } = player;
+  const { buts, csc, virtuels } = computeGoalStats(matchData, joueur, ligues);
+  const avgNote = computeAvgNote(matchData, joueur, ligues);
+  const photoLigue = resolvePhotoLigue(entries, joueur, photos);
 
   const byChamp = {};
   entries.forEach(e => {
@@ -181,7 +192,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
       <ShareBtn contextText={`${displayName} — MesPetitsBavons`} />
       <div className="p-5 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-start">
-          <PlayerAvatar joueur={joueur} ligue={ligue} displayName={displayName} photos={photos} size="lg" />
+          <PlayerAvatar joueur={joueur} ligue={photoLigue} displayName={displayName} photos={photos} size="lg" />
           <div className="flex-1 min-w-0 ml-4">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
@@ -272,17 +283,19 @@ const LIGUE_SHORT_LABEL = { 'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': '
 
 function ResultRow({ s, onClick, photos }) {
   const coachColor = COACH_COLORS[s.acheteurPrincipal];
+  const photoLigue = resolvePhotoLigue(s.entries, s.joueur, photos);
+  const liguesLabel = [...s.ligues].map(l => LIGUE_SHORT_LABEL[l] || l).join(' · ');
   return (
     <button
       onClick={onClick}
       className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <PlayerAvatar joueur={s.joueur} ligue={s.ligue} displayName={s.displayName} photos={photos} size="md" />
+        <PlayerAvatar joueur={s.joueur} ligue={photoLigue} displayName={s.displayName} photos={photos} size="md" />
         <div className="min-w-0">
           <div className="font-medium text-slate-900 dark:text-slate-100 text-sm truncate">{s.displayName}</div>
           <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-            <span>{LIGUE_SHORT_LABEL[s.ligue] || s.ligue}</span>
+            <span>{liguesLabel}</span>
             {s.nbAchats > 1 && <><span>·</span><span>{s.nbAchats} achats</span></>}
             {s.acheteurPrincipal && coachColor && (<><span>·</span><span className={coachColor.text}>{s.acheteurPrincipal}</span></>)}
           </div>
