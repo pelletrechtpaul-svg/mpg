@@ -152,13 +152,19 @@ const computeMercatoRecords = (mercato, matches) => {
     .sort((a, b) => b.total - a.total)
     .slice(0, 3);
 
-  // Plus grand nombre d'enchères remportées cumulées sur un même joueur
-  // (toutes ligues/championnats/tours) — combien de fois il a été racheté.
-  const purchaseCountByPlayer = {};
-  mercato.forEach(m => { if (!m.joueur) return; purchaseCountByPlayer[m.joueur] = (purchaseCountByPlayer[m.joueur] || 0) + 1; });
-  const mostBidsCumulees = Object.entries(purchaseCountByPlayer)
+  // Plus grand nombre de mises cumulées sur un même joueur (toutes ligues/
+  // championnats/tours confondus) — total des enchères reçues, gagnantes ET
+  // perdantes (ex. 3 coachs enchérissent sur Mbappé en Liga + 3 en Ligue des
+  // Champions = 6, même s'il n'a été remporté que 2 fois sur les 2 enchères
+  // gagnantes).
+  const totalBidsByPlayer = {};
+  mercato.forEach(m => {
+    if (!m.joueur) return;
+    const bids = 1 + (m.encheres_perdues || []).length;
+    totalBidsByPlayer[m.joueur] = (totalBidsByPlayer[m.joueur] || 0) + bids;
+  });
+  const mostBidsCumulees = Object.entries(totalBidsByPlayer)
     .map(([joueur, count]) => ({ joueur, count }))
-    .filter(m => m.count > 1)
     .sort((a, b) => b.count - a.count)
     .slice(0, 3);
 

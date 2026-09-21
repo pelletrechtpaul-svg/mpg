@@ -660,6 +660,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestBids.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-amber-700 dark:text-amber-400 ml-1.5">{m.prix}M</span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
@@ -690,6 +691,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.bestValueForMoney.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
@@ -704,6 +706,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestFlops.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">0 but / {m.prix}M</span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
@@ -723,6 +726,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestCumulativeSpend.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.total}M</span>
                         </div>
@@ -750,6 +754,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.bestValueForMoneyCumule.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.total}M</span>
                         </div>
@@ -758,11 +763,11 @@ export default function RecordsTab({
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas assez de buts pour établir ce classement.</p>}
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">📉 Plus gros flop cumulé</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">À partir de 3 matchs joués au total</p>
                   {mercatoData.biggestFlopsCumule.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestFlopsCumule.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">0 but / {m.total}M</span>
                         </div>
@@ -770,18 +775,19 @@ export default function RecordsTab({
                     </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun flop pour l'instant.</p>}
 
-                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🔂 Plus grand nombre d'enchères cumulées</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Sur un même joueur, toutes ligues confondues</p>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🔂 Plus grand nombre de mises cumulées</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Total des enchères reçues (gagnées + perdues) sur un même joueur, toutes ligues confondues</p>
                   {mercatoData.mostBidsCumulees.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.mostBidsCumulees.map((m, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.count} enchères remportées</span>
+                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.count} mises</span>
                         </div>
                       ))}
                     </div>
-                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun joueur racheté plusieurs fois pour l'instant.</p>}
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
                 </RecordCard>
 
                 {/* ── DIVERS ── */}
@@ -793,6 +799,7 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.longevite.map((l, i) => (
                         <div key={i} className="text-sm">
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{l.joueur}</span>
                           <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak} championnats d'affilée</span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur} · {l.ligue}</span>
