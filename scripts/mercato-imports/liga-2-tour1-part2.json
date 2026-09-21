@@ -1,0 +1,321 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Hancko",
+      "poste": "DC",
+      "club": "Atlético",
+      "prix": 18,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 13 }
+      ]
+    },
+    {
+      "joueur": "Díaz",
+      "prenom": "Mariano",
+      "poste": "A",
+      "club": "Alavés",
+      "prix": 18,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Grimaldo",
+      "poste": "DL",
+      "club": "Atlético",
+      "prix": 18,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Vicente",
+      "prenom": "Iñigo",
+      "poste": "MO",
+      "club": "Santander",
+      "prix": 17,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Pérez",
+      "prenom": "Ángel",
+      "poste": "MO",
+      "club": "Alavés",
+      "prix": 16,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Simón",
+      "poste": "G",
+      "club": "Athletic",
+      "prix": 16,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Dumfries",
+      "poste": "DL",
+      "club": "Real Madrid",
+      "prix": 16,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Huijsen",
+      "prenom": "Dean",
+      "poste": "DC",
+      "club": "Real Madrid",
+      "prix": 15,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Valles",
+      "prenom": "Álvaro",
+      "poste": "G",
+      "club": "Betis",
+      "prix": 15,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Agirrezabala",
+      "prenom": "Julen",
+      "poste": "G",
+      "club": "Santander",
+      "prix": 15,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Buchanan",
+      "poste": "MO",
+      "club": "Villarreal",
+      "prix": 15,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Espart",
+      "prenom": "Xavi",
+      "poste": "DL",
+      "club": "Barcelona",
+      "prix": 14,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 7 }
+      ]
+    },
+    {
+      "joueur": "Terrats",
+      "prenom": "Ramón",
+      "poste": "MD",
+      "club": "Getafe",
+      "prix": 14,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Eric García",
+      "poste": "DL",
+      "club": "Barcelona",
+      "prix": 14,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "David",
+      "prenom": "Jonathan",
+      "poste": "A",
+      "club": "Atlético",
+      "prix": 14,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Romero",
+      "prenom": "Cristian",
+      "poste": "DC",
+      "club": "Atlético",
+      "prix": 14,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Otto",
+      "prenom": "Jonny",
+      "poste": "DL",
+      "club": "Alavés",
+      "prix": 14,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Zabiri",
+      "prenom": "Yassir",
+      "poste": "A",
+      "club": "Santander",
+      "prix": 13,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Soriano",
+      "prenom": "Mario",
+      "poste": "MO",
+      "club": "La Corogne",
+      "prix": 13,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Carlos Romero",
+      "poste": "DL",
+      "club": "Villarreal",
+      "prix": 12,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Nico Williams",
+      "poste": "A",
+      "club": "Athletic",
+      "prix": 12,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Agoumé",
+      "prenom": "Lucien",
+      "poste": "MD",
+      "club": "Sevilla",
+      "prix": 12,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Carreras",
+      "prenom": "Álvaro",
+      "poste": "DL",
+      "club": "Real Madrid",
+      "prix": 11,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 11 }
+      ]
+    },
+    {
+      "joueur": "Iñaki Williams",
+      "poste": "A",
+      "club": "Athletic",
+      "prix": 11,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Bellerín",
+      "poste": "DL",
+      "club": "Betis",
+      "prix": 10,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "El Hilali",
+      "prenom": "Omar",
+      "poste": "DL",
+      "club": "Espanyol",
+      "prix": 9,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Natan",
+      "poste": "DC",
+      "club": "Betis",
+      "prix": 9,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Paredes",
+      "prenom": "Aitor",
+      "poste": "DC",
+      "club": "Athletic",
+      "prix": 9,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Le Normand",
+      "prenom": "Robin",
+      "poste": "DC",
+      "club": "Atlético",
+      "prix": 9,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Padilla",
+      "poste": "G",
+      "club": "Athletic",
+      "prix": 7,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Conde",
+      "prenom": "Diego",
+      "poste": "G",
+      "club": "Betis",
+      "prix": 7,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Vivian",
+      "poste": "DC",
+      "club": "Athletic",
+      "prix": 7,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    }
+  ]
+}
