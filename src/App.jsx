@@ -22,7 +22,7 @@ const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1
 const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - saisonYear(a))[0];
 
 const TABS = ['classements', 'entraineurs', 'records', 'joueurs', 'admin'];
-const NAV_DEFAULTS = { tab: 'classements', saison: null, ligue: 'general', championnat: 'total', vue: 'classement', coach: null, csc: 'buteurs' };
+const NAV_DEFAULTS = { tab: 'classements', saison: null, ligue: 'general', championnat: 'total', vue: 'classement', coach: null, csc: 'buteurs', entraineur: null };
 
 // Toute la position dans la nav (onglet, saison, ligue, championnat, sous-vue,
 // entraîneur sélectionné...) est encodée dans le hash de l'URL sous forme de
@@ -44,6 +44,7 @@ function parseNavFromHash() {
     vue: params.get('vue') || NAV_DEFAULTS.vue,
     coach: params.get('coach'),
     csc: params.get('csc') || NAV_DEFAULTS.csc,
+    entraineur: params.get('entraineur'),
   };
 }
 
@@ -55,6 +56,7 @@ function serializeNav(nav) {
   if (nav.vue !== NAV_DEFAULTS.vue) params.set('vue', nav.vue);
   if (nav.coach) params.set('coach', nav.coach);
   if (nav.csc !== NAV_DEFAULTS.csc) params.set('csc', nav.csc);
+  if (nav.entraineur) params.set('entraineur', nav.entraineur);
   const qs = params.toString();
   return nav.tab + (qs ? '?' + qs : '');
 }
@@ -69,6 +71,7 @@ const App = () => {
   const [ligueView, setLigueView] = useState(() => initialNav.vue);
   const [effectifsCoach, setEffectifsCoach] = useState(() => initialNav.coach);
   const [buteursCscView, setButeursCscView] = useState(() => initialNav.csc);
+  const [selectedEntraineur, setSelectedEntraineur] = useState(() => initialNav.entraineur);
 
   // true dès qu'une saison est fixée explicitement (choix manuel ou déjà
   // présente dans l'URL au chargement) — jamais sur un simple événement de
@@ -86,11 +89,11 @@ const App = () => {
   // au lieu de suivre la vraie saison en cours à chaque nouvelle visite.
   useEffect(() => {
     const saisonForHash = selectedSeason === mostRecentSeason(saisons) ? null : selectedSeason;
-    const target = serializeNav({ tab: activeTab, saison: saisonForHash, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView });
+    const target = serializeNav({ tab: activeTab, saison: saisonForHash, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView, entraineur: selectedEntraineur });
     if (window.location.hash.slice(1) !== target) {
       window.location.hash = target;
     }
-  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView, saisons]);
+  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView, selectedEntraineur, saisons]);
 
   // Bouton précédent/suivant du navigateur : relit le hash et réapplique tout.
   useEffect(() => {
@@ -104,6 +107,7 @@ const App = () => {
       setLigueView(nav.vue);
       setEffectifsCoach(nav.coach);
       setButeursCscView(nav.csc);
+      setSelectedEntraineur(nav.entraineur);
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
@@ -160,7 +164,7 @@ const App = () => {
   );
 
   const { victoiresChampionnat, medaillesChampionnat, victoiresDetail, medaillesDetail, perduUnPoint, classementGeneral, classementParLigue } = useChampionshipStats(filteredData, joueurs, ligueMetadata, selectedSeason, selectedLigue, selectedChampionnat);
-  const { statsDetaillees, cleanSheetsStats, heureDeGloire, valiseStats } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedSeason);
+  const { statsDetaillees, cleanSheetsStats, valiseStats } = usePlayerStats(filteredData, joueurs, selectedStatsLigue, selectedLigue, selectedChampionnat, ligueMetadata, selectedSeason);
   const { matchesListForChampionnat, historicalEvolution } = useEvolutionData(filteredData, joueurs, selectedLigue, selectedChampionnat, ligueMetadata);
   const advancedStats = useAdvancedStats(matchData, joueurs, selectedSeason);
   const { seasonRecords, ligueRecordsAllTime, ligueRecordsSeason, mercatoRecordsSeason } = useRecords(filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData);
@@ -378,10 +382,11 @@ const App = () => {
             advancedStats={advancedStats}
             cleanSheetsStats={cleanSheetsStats}
             statsDetaillees={statsDetaillees}
-            heureDeGloire={heureDeGloire}
             selectedSeason={selectedSeason}
             shareContext={shareContext}
             onOpenPlayer={openPlayer}
+            selectedPlayer={selectedEntraineur}
+            onSelectPlayer={setSelectedEntraineur}
           />
         )}
 

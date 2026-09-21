@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
-import { FormationPitch } from './FormationPitch.jsx';
+import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 
 /* Pastilles de forme V/N/D */
 const FormPills = ({ form, size = 'sm' }) => {
@@ -26,7 +26,7 @@ const FormPills = ({ form, size = 'sm' }) => {
   );
 };
 
-// Abréviations pour la barre de puces "Effectif actuel" : garde une seule
+// Abréviations pour la barre de puces "Effectifs actuels" : garde une seule
 // ligne à 5 ligues (LDC à venir) sans scroll horizontal.
 const LIGUE_ABBR = {
   'Ligue 1': 'L1',
@@ -50,22 +50,56 @@ const Avatar = ({ joueur, className }) => (
   </div>
 );
 
+const SUB_TABS = [
+  { key: 'effectifs', label: 'Effectifs actuels' },
+  { key: 'confrontations', label: 'Confrontations' },
+  { key: 'tops', label: 'Tops joueurs' },
+  { key: 'records', label: 'Records détenus' },
+];
+
+const PillTabs = ({ tabs, active, onChange }) => (
+  <div className="flex flex-wrap gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+    {tabs.map(t => (
+      <button
+        key={t.key}
+        onClick={() => onChange(t.key)}
+        className={`flex-1 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${
+          active === t.key
+            ? 'bg-violet-500 text-white shadow'
+            : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
+        }`}
+      >
+        {t.label}
+      </button>
+    ))}
+  </div>
+);
+
 export default function EntraineursTab({
   joueurs, ligues, filteredData, mercatoData,
   classementGeneral, advancedStats, cleanSheetsStats, statsDetaillees,
-  heureDeGloire, selectedSeason, shareContext, onOpenPlayer,
+  selectedSeason, shareContext, onOpenPlayer,
+  selectedPlayer, onSelectPlayer,
 }) {
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [h2hLigue, setH2hLigue] = useState('all');
-  const [sigBubble, setSigBubble] = useState(null);
   const [effectifLigue, setEffectifLigue] = useState(null);
+  const [subTab, setSubTab] = useState('effectifs');
   const photos = usePlayerPhotos();
 
+  const selectPlayer = (joueur) => {
+    onSelectPlayer(joueur);
+    setH2hLigue('all');
+    setEffectifLigue(null);
+    setSubTab('effectifs');
+  };
+
   /* Effectif actuel du coach sélectionné, par ligue (championnat le plus
-     récent connu pour chaque ligue — cohérent avec l'onglet Classements). Un
-     objet par ligue plutôt qu'un seul terrain géant : avec 4-5 ligues et des
-     effectifs de 15-20 joueurs chacune, tout afficher d'un coup serait
-     illisible. On affiche une puce par ligue et un seul terrain à la fois. */
+     récent connu pour chaque ligue — cohérent avec l'onglet Classements),
+     enrichi des moyennes d'équipe / par ligne / joueurs au loft une fois
+     qu'au moins un match du championnat a été noté. Un objet par ligue
+     plutôt qu'un seul terrain géant : avec 4-5 ligues et des effectifs de
+     15-20 joueurs chacune, tout afficher d'un coup serait illisible. On
+     affiche une puce par ligue et un seul terrain à la fois. */
   const effectifsParLigue = useMemo(() => {
     if (!selectedPlayer || !hasDetailedData(selectedSeason)) return [];
     return ligues
@@ -77,35 +111,61 @@ export default function EntraineursTab({
           m.ligue === ligue && m.championnat === dernier && m.acheteur === selectedPlayer);
         if (!squad.length) return null;
 
-        // Note moyenne du coach sur ce championnat, si au moins un match y a
-        // été noté — sert à choisir les titulaires par note plutôt que par
-        // prix (comme sur Classements > Effectifs), et à l'afficher.
         const champMatches = (filteredData || []).filter(m =>
           m.ligue === ligue && m.championnat === `#${dernier}` && (m.joueur1 === selectedPlayer || m.joueur2 === selectedPlayer));
+
+        const posteOf = {};
+        squad.forEach(m => { posteOf[m.joueur] = m.poste; });
+
+        // Note moyenne du coach sur ce championnat (choisit les titulaires
+        // par note plutôt que par prix, comme sur Classements > Effectifs),
+        // moyenne d'équipe (toutes les notes "compte"), moyenne par ligne de
+        // poste, et nombre moyen de joueurs au loft par match (effectif
+        // recruté moins les joueurs classés compte/banc ce match-là).
         const noteSums = {};
+        let teamSum = 0, teamCount = 0, loftSum = 0, matchCount = 0;
+        const lineSums = {};
+        POSTE_GROUP_ORDER.forEach(g => { lineSums[g] = { sum: 0, count: 0 }; });
         champMatches.forEach(m => {
-          (m.notes || []).filter(isCompte).forEach(n => {
-            if (n.acheteur !== selectedPlayer) return;
+          const coachNotes = (m.notes || []).filter(n => n.acheteur === selectedPlayer);
+          coachNotes.filter(isCompte).forEach(n => {
+            if (n.note == null) return;
             const entry = noteSums[n.joueur] || (noteSums[n.joueur] = { sum: 0, count: 0 });
             entry.sum += n.note;
             entry.count += 1;
+            teamSum += n.note;
+            teamCount += 1;
+            const group = POSTE_GROUP[posteOf[n.joueur]] || 'Milieux';
+            lineSums[group].sum += n.note;
+            lineSums[group].count += 1;
           });
+          loftSum += Math.max(0, squad.length - coachNotes.length);
+          matchCount += 1;
         });
         const avgNotes = {};
         Object.entries(noteSums).forEach(([joueur, { sum, count }]) => { avgNotes[joueur] = sum / count; });
         const hasNotes = champMatches.length > 0 && Object.keys(avgNotes).length > 0;
 
+        const lineAvgs = {};
+        POSTE_GROUP_ORDER.forEach(g => { lineAvgs[g] = lineSums[g].count > 0 ? lineSums[g].sum / lineSums[g].count : null; });
+
         return {
-          ligue, squad,
+          ligue, championnat: dernier, squad,
           ratingFor: hasNotes ? (m => avgNotes[m.joueur] ?? 0) : undefined,
           avgNoteFor: hasNotes ? (m => avgNotes[m.joueur]) : undefined,
+          teamAvg: hasNotes && teamCount > 0 ? teamSum / teamCount : null,
+          loftAvg: hasNotes && matchCount > 0 ? loftSum / matchCount : null,
+          lineAvgs: hasNotes ? lineAvgs : null,
         };
       })
       .filter(Boolean);
   }, [ligues, mercatoData, filteredData, selectedPlayer, selectedSeason]);
 
-  /* Stat signature : chaque joueur reçoit un titre distinct (assignation gloutonne) */
-  const signatures = useMemo(() => {
+  /* Records détenus par chaque coach : tout leader UNIQUE (valeur > 0,
+     strictement supérieure au 2e) sur une métrique, sans limite à un seul
+     titre par coach (contrairement à l'ancien système de "signature" —
+     un coach peut légitimement détenir plusieurs records à la fois). */
+  const recordsDetenus = useMemo(() => {
     const cs = {};
     cleanSheetsStats.forEach(c => { cs[c.joueur] = c.cleanSheets; });
     const cl = j => classementGeneral.find(c => c.joueur === j);
@@ -121,30 +181,16 @@ export default function EntraineursTab({
       { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; }, detail: v => `${v.toFixed(2)} buts marqués par match en moyenne` },
     ];
 
-    // Pour chaque métrique, déterminer le LEADER UNIQUE (valeur max strictement supérieure aux autres)
-    const leaders = []; // { metric, joueur, value, margin } — uniquement les vrais 1ers
+    const result = {};
+    joueurs.forEach(j => { result[j] = []; });
     metrics.forEach(m => {
       const ordered = [...joueurs].map(j => ({ j, v: m.get(j) })).sort((a, b) => b.v - a.v);
       const best = ordered[0];
       const second = ordered[1];
-      // Leader réel : valeur > 0 et strictement supérieur au 2e (pas d'ex æquo)
       if (best && best.v > 0 && (!second || best.v > second.v)) {
-        leaders.push({ metric: m, joueur: best.j, value: best.v, margin: best.v - (second ? second.v : 0) });
+        result[best.j].push({ label: m.label, detail: m.detail(best.v) });
       }
     });
-
-    // Assignation : chaque joueur reçoit au plus un titre, chaque titre va à son vrai leader.
-    // En cas de joueur leader de plusieurs titres, on lui donne celui où sa marge est la plus nette.
-    const result = {};
-    const usedPlayers = new Set();
-    const usedMetrics = new Set();
-    [...leaders].sort((a, b) => b.margin - a.margin).forEach(c => {
-      if (usedPlayers.has(c.joueur) || usedMetrics.has(c.metric.key)) return;
-      result[c.joueur] = { label: c.metric.label, detail: c.metric.detail(c.value) };
-      usedPlayers.add(c.joueur);
-      usedMetrics.add(c.metric.key);
-    });
-    joueurs.forEach(j => { if (!result[j]) result[j] = null; });
     return result;
   }, [joueurs, classementGeneral, statsDetaillees, cleanSheetsStats, advancedStats]);
 
@@ -171,18 +217,25 @@ export default function EntraineursTab({
 
   const rankOf = j => classementGeneral.findIndex(c => c.joueur === j) + 1;
   const pointsOf = j => classementGeneral.find(c => c.joueur === j)?.points ?? 0;
+  const rankedJoueurs = useMemo(() =>
+    [...joueurs].sort((a, b) => classementGeneral.findIndex(c => c.joueur === a) - classementGeneral.findIndex(c => c.joueur === b)),
+    [joueurs, classementGeneral]);
 
   /* Top buteurs / CSC parmi les joueurs recrutés par le coach sélectionné,
-     cumul de tous les championnats et toutes les ligues, saison sélectionnée
-     (ou All-Time) */
+     comptés uniquement sur les championnats/ligues où le joueur appartenait
+     RÉELLEMENT à ce coach (pas tout l'historique du coach ni tous les
+     coachs) — sinon un but marqué après un transfert vers un autre coach
+     se retrouvait crédité à l'ancien acheteur. */
   const { topButeurs, topCsc } = useMemo(() => {
     if (!selectedPlayer) return { topButeurs: [], topCsc: [] };
-    const recrues = new Set((mercatoData || []).filter(m => m.acheteur === selectedPlayer).map(m => m.joueur));
+    const owned = new Set((mercatoData || [])
+      .filter(m => m.acheteur === selectedPlayer)
+      .map(m => `${m.joueur}|${m.ligue}|#${m.championnat}`));
     const buts = {}, csc = {};
     const matches = h2hLigue === 'all' ? filteredData : filteredData.filter(m => m.ligue === h2hLigue);
     matches.forEach(m => {
       (m.buteurs || []).filter(isCompte).forEach(b => {
-        if (!b.joueur || !recrues.has(b.joueur)) return;
+        if (!b.joueur || !owned.has(`${b.joueur}|${m.ligue}|${m.championnat}`)) return;
         const map = b.csc ? csc : buts;
         map[b.joueur] = (map[b.joueur] || 0) + (b.buts || 1);
       });
@@ -191,39 +244,27 @@ export default function EntraineursTab({
     return { topButeurs: toSorted(buts), topCsc: toSorted(csc) };
   }, [filteredData, mercatoData, selectedPlayer, h2hLigue]);
 
-  /* Bulle détail signature (partagée entre les deux vues) */
-  const sigBubbleEl = sigBubble && (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
-      onClick={() => setSigBubble(null)}
+  const LigueSelect = () => (
+    <select
+      value={h2hLigue}
+      onChange={(e) => setH2hLigue(e.target.value)}
+      className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-violet-500"
     >
-      <div
-        className="bg-white dark:bg-[#15131f] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-xs w-full text-center shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <p className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">{sigBubble.label}</p>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">{sigBubble.joueur}</p>
-        <p className="text-sm text-slate-600 dark:text-slate-300">{sigBubble.detail}</p>
-        <button
-          onClick={() => setSigBubble(null)}
-          className="mt-4 px-4 py-1.5 rounded-lg bg-violet-600 text-white text-sm font-medium hover:bg-violet-700 transition-colors"
-        >
-          Fermer
-        </button>
-      </div>
-    </div>
+      <option value="all" className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Toutes les ligues</option>
+      {ligues.map(l => <option key={l} value={l} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">{l}</option>)}
+    </select>
   );
 
   /* ---------- Vue profil détaillé ---------- */
   if (selectedPlayer) {
     const stats = classementGeneral.find(c => c.joueur === selectedPlayer);
     const adv = advancedStats[selectedPlayer];
-    const gloire = heureDeGloire[selectedPlayer];
     const fullForm = adv?.recentForm?.map(m => m.result) || [];
+    const myRecords = recordsDetenus[selectedPlayer] || [];
     return (
       <div className="space-y-6">
         <button
-          onClick={() => setSelectedPlayer(null)}
+          onClick={() => onSelectPlayer(null)}
           className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Retour aux entraîneurs
@@ -246,19 +287,11 @@ export default function EntraineursTab({
                   <span className="text-xs text-slate-500 dark:text-slate-400 ml-1">pts</span>
                 </div>
               </div>
-              {signatures[selectedPlayer] && (
-                <button
-                  onClick={() => setSigBubble({ joueur: selectedPlayer, label: signatures[selectedPlayer].label, detail: signatures[selectedPlayer].detail })}
-                  className="mt-2 inline-block text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
-                >
-                  {signatures[selectedPlayer].label}
-                </button>
-              )}
             </div>
           </div>
 
-          {/* Bilan + forme */}
-          <div className="grid grid-cols-4 gap-2 mt-6 pt-6 border-t dark:border-slate-700 text-center">
+          {/* Bilan + forme, centrés plutôt qu'étalés sur toute la largeur */}
+          <div className="grid grid-cols-4 gap-2 mt-6 pt-6 border-t dark:border-slate-700 text-center max-w-sm mx-auto">
             <div><div className="text-xl font-bold text-slate-700 dark:text-slate-200">{stats?.matchs ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Matchs</div></div>
             <div><div className="text-xl font-bold text-green-600 dark:text-green-400">{stats?.victoires ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Victoires</div></div>
             <div><div className="text-xl font-bold text-slate-400">{stats?.nuls ?? 0}</div><div className="text-xs text-slate-500 dark:text-slate-400">Nuls</div></div>
@@ -268,168 +301,226 @@ export default function EntraineursTab({
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 text-center">Forme récente</p>
             <FormPills form={fullForm} size="lg" />
           </div>
-          {gloire && (
-            <div className="mt-5 pt-5 border-t dark:border-slate-700 text-center">
-              <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">⭐ Heure de gloire</p>
-              <p className="text-sm text-slate-600 dark:text-slate-300">{gloire.ligue} {gloire.championnat} — {gloire.avg} pts/match</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500">{gloire.saison}</p>
-            </div>
-          )}
         </div>
 
-        {/* Effectif actuel, par ligue */}
-        {effectifsParLigue.length > 0 && (() => {
-          const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
-          return (
-            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
-              <ShareBtn contextText={shareContext} />
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectif actuel</h3>
-              {effectifsParLigue.length > 1 && (
-                // flex-nowrap sans scroll : chaque puce se contracte (flex-1
-                // min-w-0 + libellé abrégé) plutôt que de déborder, pour
-                // tenir sur une seule ligne même à 5 ligues (LDC à venir).
-                <div className="flex flex-nowrap gap-1.5 mb-4">
-                  {effectifsParLigue.map(({ ligue, squad }) => (
-                    <button
-                      key={ligue}
-                      onClick={() => setEffectifLigue(ligue)}
-                      title={ligue}
-                      className={`flex-1 min-w-0 px-1.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium truncate transition-all ${
-                        active.ligue === ligue
-                          ? 'bg-violet-500 text-white shadow'
-                          : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                      }`}
-                    >
-                      {LIGUE_ABBR[ligue] || ligue} <span className="opacity-70">({squad.length})</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-              <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={active.ratingFor} avgNoteFor={active.avgNoteFor} />
-            </div>
-          );
-        })()}
+        <PillTabs tabs={SUB_TABS} active={subTab} onChange={setSubTab} />
 
-        {/* Confrontations directes + classement des recrues (buteurs/CSC) du
-            coach — un seul sélecteur de ligue pour les trois, pour éviter
-            deux filtres redondants dans la page. */}
-        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
-          <ShareBtn contextText={shareContext} />
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Confrontations & recrues</h3>
-            <select
-              value={h2hLigue}
-              onChange={(e) => setH2hLigue(e.target.value)}
-              className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-violet-500"
-            >
-              <option value="all" className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">Toutes les ligues</option>
-              {ligues.map(l => <option key={l} value={l} className="text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">{l}</option>)}
-            </select>
-          </div>
-
-          <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">Confrontations directes</h4>
-          <div className="space-y-3">
-            {h2h.map(({ opp, w, d, l, bf, ba, matchs, winPct }) => (
-              <div key={opp} className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-                <div className="flex items-center gap-3">
-                  <Avatar joueur={opp} className="w-10 h-10 border-2 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-slate-800 dark:text-slate-100">vs {opp}</span>
-                    {matchs > 0 && (
-                      <span className="block text-xs text-slate-500 dark:text-slate-400">{Math.round(winPct * 100)}% de victoires • {matchs} match{matchs > 1 ? 's' : ''}</span>
-                    )}
+        {/* Effectifs actuels */}
+        {subTab === 'effectifs' && (
+          effectifsParLigue.length > 0 ? (() => {
+            const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
+            const { bench } = computeFormation(active.squad, active.ratingFor);
+            return (
+              <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+                <ShareBtn contextText={shareContext} />
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectifs actuels</h3>
+                {effectifsParLigue.length > 1 && (
+                  // flex-nowrap sans scroll : chaque puce se contracte (flex-1
+                  // min-w-0 + libellé abrégé) plutôt que de déborder, pour
+                  // tenir sur une seule ligne même à 5 ligues (LDC à venir).
+                  <div className="flex flex-nowrap gap-1.5 mb-4">
+                    {effectifsParLigue.map(({ ligue, championnat, squad }) => (
+                      <button
+                        key={ligue}
+                        onClick={() => setEffectifLigue(ligue)}
+                        title={ligue}
+                        className={`flex-1 min-w-0 px-1.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium truncate transition-all ${
+                          active.ligue === ligue
+                            ? 'bg-violet-500 text-white shadow'
+                            : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        {LIGUE_ABBR[ligue] || ligue} #{championnat} <span className="opacity-70">({squad.length})</span>
+                      </button>
+                    ))}
                   </div>
-                </div>
-                {matchs > 0 ? (
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="font-bold text-green-600 dark:text-green-400">{w}V</span>
-                    <span className="font-bold text-slate-400">{d}N</span>
-                    <span className="font-bold text-red-600 dark:text-red-400">{l}D</span>
-                    <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
-                  </div>
-                ) : (
-                  <span className="text-sm text-slate-400">Aucune confrontation</span>
                 )}
+                {/* Terrain à gauche / stats à droite à partir du desktop ; empilé en mobile */}
+                <div className="lg:flex lg:gap-6 lg:items-start">
+                  <div className="lg:w-[340px] lg:flex-shrink-0">
+                    <FormationPitch squad={active.squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={active.ratingFor} avgNoteFor={active.avgNoteFor} hideBench />
+                  </div>
+                  <div className="mt-4 lg:mt-0 lg:flex-1 space-y-4">
+                    {(active.teamAvg != null || active.loftAvg != null) && (
+                      <div className="flex flex-wrap gap-3">
+                        {active.teamAvg != null && (
+                          <div className="flex-1 min-w-[140px] bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">⭐ Moyenne d'équipe</p>
+                            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{active.teamAvg.toFixed(1)}</p>
+                          </div>
+                        )}
+                        {active.loftAvg != null && (
+                          <div className="flex-1 min-w-[140px] bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">📦 Joueurs au loft (moy.)</p>
+                            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{Math.round(active.loftAvg)}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {active.lineAvgs && (
+                      <div className="grid grid-cols-2 gap-3">
+                        {POSTE_GROUP_ORDER.filter(g => active.lineAvgs[g] != null).map(g => (
+                          <div key={g} className="bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">{g}</p>
+                            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{active.lineAvgs[g].toFixed(1)}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <SquadBench bench={bench} onOpenPlayer={onOpenPlayer} avgNoteFor={active.avgNoteFor} />
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-
-          {hasDetailedData(selectedSeason) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t dark:border-slate-700">
-            <div>
-              <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">⚽ Top buteurs</h4>
-              {topButeurs.length > 0 ? (
-                <table className="w-full text-xs sm:text-sm">
-                  <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                    <tr>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topButeurs.map((p, index) => (
-                      <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Aucun but marqué pour l'instant.</p>
-              )}
+            );
+          })() : (
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+              <p className="text-slate-500 dark:text-slate-400">Pas de données mercato pour cette période.</p>
             </div>
-            <div>
-              <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">🙈 Top CSC</h4>
-              {topCsc.length > 0 ? (
-                <table className="w-full text-xs sm:text-sm">
-                  <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                    <tr>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
-                      <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topCsc.map((p, index) => (
-                      <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
-                        <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Aucun CSC pour l'instant.</p>
-              )}
+          )
+        )}
+
+        {/* Confrontations directes */}
+        {subTab === 'confrontations' && (
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
+            <ShareBtn contextText={shareContext} />
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Confrontations directes</h3>
+              <LigueSelect />
+            </div>
+            <div className="space-y-3">
+              {h2h.map(({ opp, w, d, l, bf, ba, matchs, winPct }) => (
+                <div key={opp} className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar joueur={opp} className="w-10 h-10 border-2 flex-shrink-0" />
+                    <div>
+                      <span className="font-semibold text-slate-800 dark:text-slate-100">vs {opp}</span>
+                      {matchs > 0 && (
+                        <span className="block text-xs text-slate-500 dark:text-slate-400">{Math.round(winPct * 100)}% de victoires • {matchs} match{matchs > 1 ? 's' : ''}</span>
+                      )}
+                    </div>
+                  </div>
+                  {matchs > 0 ? (
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="font-bold text-green-600 dark:text-green-400">{w}V</span>
+                      <span className="font-bold text-slate-400">{d}N</span>
+                      <span className="font-bold text-red-600 dark:text-red-400">{l}D</span>
+                      <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-slate-400">Aucune confrontation</span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
-          )}
-        </div>
+        )}
 
-        {sigBubbleEl}
+        {/* Tops joueurs (buteurs / CSC parmi les recrues du coach) */}
+        {subTab === 'tops' && (
+          hasDetailedData(selectedSeason) ? (
+            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
+              <ShareBtn contextText={shareContext} />
+              <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tops joueurs</h3>
+                <LigueSelect />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">⚽ Top buteurs</h4>
+                  {topButeurs.length > 0 ? (
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                        <tr>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topButeurs.map((p, index) => (
+                          <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{p.n}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucun but marqué pour l'instant.</p>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2">🙈 Top CSC</h4>
+                  {topCsc.length > 0 ? (
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead className="bg-indigo-50/50 dark:bg-[#151228]">
+                        <tr>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
+                          <th className="px-1 py-2 sm:px-4 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topCsc.map((p, index) => (
+                          <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
+                            <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{p.n}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucun CSC pour l'instant.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
+              <p className="text-slate-500 dark:text-slate-400">Pas de données détaillées pour cette période.</p>
+            </div>
+          )
+        )}
+
+        {/* Records détenus */}
+        {subTab === 'records' && (
+          <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6">
+            <ShareBtn contextText={shareContext} />
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Records détenus</h3>
+            {myRecords.length > 0 ? (
+              <div className="space-y-3">
+                {myRecords.map((r, i) => (
+                  <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                    <p className="font-semibold text-slate-800 dark:text-slate-100">{r.label}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{r.detail}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400">Aucun record détenu pour l'instant.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   }
 
-  /* ---------- Vue grille des cartes ---------- */
+  /* ---------- Vue grille des cartes, triée par classement (leader à gauche) ---------- */
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      {joueurs.map(joueur => {
+      {rankedJoueurs.map(joueur => {
         const adv = advancedStats[joueur];
         const form = adv?.recentForm?.map(m => m.result).slice(-5) || [];
-        const sig = signatures[joueur];
         const color = playerColorHex[joueur];
         return (
           <div
             key={joueur}
             role="button"
             tabIndex={0}
-            onClick={() => { setSelectedPlayer(joueur); setH2hLigue('all'); setEffectifLigue(null); }}
-            onKeyDown={(e) => { if (e.key === 'Enter') { setSelectedPlayer(joueur); setH2hLigue('all'); setEffectifLigue(null); } }}
+            onClick={() => selectPlayer(joueur)}
+            onKeyDown={(e) => { if (e.key === 'Enter') selectPlayer(joueur); }}
             className="group relative cursor-pointer text-left overflow-hidden rounded-3xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0f0e1a] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
           >
             {/* Halo de couleur en fond */}
@@ -462,16 +553,6 @@ export default function EntraineursTab({
                 <FormPills form={form} />
               </div>
 
-              {/* Signature en chip cliquable */}
-              {sig && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setSigBubble({ joueur, label: sig.label, detail: sig.detail }); }}
-                  className="mt-3 inline-block px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 leading-tight hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
-                >
-                  {sig.label}
-                </button>
-              )}
-
               <span className="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
                 Voir le profil →
               </span>
@@ -479,8 +560,6 @@ export default function EntraineursTab({
           </div>
         );
       })}
-
-      {sigBubbleEl}
     </div>
   );
 }

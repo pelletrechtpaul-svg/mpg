@@ -163,13 +163,68 @@ export function computeFormation(squad, rating = (m) => m.prix || 0) {
   return { starters, bench };
 }
 
+function median(arr) {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+// Teinte subtile du rapport note/prix par rapport à la médiane du banc (vert
+// = sur-performe nettement son prix, rouge = sous-performe nettement) —
+// seuil à ±10% pour ne pas colorer le moindre écart, et seulement quand il y
+// a au moins 2 joueurs notés à comparer entre eux.
+function valueTint(ratio, med) {
+  if (ratio == null || med == null) return '';
+  if (ratio > med * 1.1) return 'text-emerald-600 dark:text-emerald-400';
+  if (ratio < med * 0.9) return 'text-rose-600 dark:text-rose-400';
+  return '';
+}
+
+// Liste "Reste de l'effectif" (banc), extraite de FormationPitch pour être
+// affichable séparément du terrain (voir EntraineursTab, layout desktop
+// terrain à gauche / stats à droite).
+export function SquadBench({ bench, onOpenPlayer, avgNoteFor }) {
+  if (!bench.length) return null;
+  const ratios = bench
+    .map(m => { const n = avgNoteFor?.(m); return typeof n === 'number' && m.prix ? n / m.prix : null; })
+    .filter(r => r != null);
+  const med = ratios.length >= 2 ? median(ratios) : null;
+  return (
+    <div>
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
+      <div className="grid grid-cols-2 gap-x-4">
+        {bench.map((m, i) => {
+          const avgNote = avgNoteFor?.(m);
+          const ratio = typeof avgNote === 'number' && m.prix ? avgNote / m.prix : null;
+          const tint = valueTint(ratio, med);
+          return (
+            <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
+              <button
+                onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
+                className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+              >
+                {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
+              </button>
+              <span className={`font-semibold flex-shrink-0 ${tint || 'text-slate-600 dark:text-slate-300'}`}>
+                {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // `ratingFor(m)` : critère de sélection des titulaires (prix par défaut). Sur
 // "Effectifs" (Classements/Entraîneurs), une fois qu'au moins un match du
 // championnat a été noté, l'appelant passe la note moyenne à la place.
 // `avgNoteFor(m)` : note moyenne à afficher à gauche du prix (même
 // info que celle utilisée par `ratingFor`, mais brute — pas de repli à 0 pour
 // un joueur sans note, pour ne pas afficher un "0.0" trompeur).
-export function FormationPitch({ squad, onOpenPlayer, photos, ratingFor, avgNoteFor }) {
+// `hideBench` : ne pas afficher "Reste de l'effectif" ici (l'appelant le fait
+// lui-même via <SquadBench>, pour un layout desktop terrain/stats séparés).
+export function FormationPitch({ squad, onOpenPlayer, photos, ratingFor, avgNoteFor, hideBench = false }) {
   const { starters, bench } = computeFormation(squad, ratingFor);
 
   return (
@@ -194,27 +249,9 @@ export function FormationPitch({ squad, onOpenPlayer, photos, ratingFor, avgNote
         <FormationRow group="Gardien" players={starters.Gardien} onOpenPlayer={onOpenPlayer} photos={photos} avgNoteFor={avgNoteFor} />
       </div>
 
-      {bench.length > 0 && (
+      {!hideBench && bench.length > 0 && (
         <div className="mt-4">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
-          <div className="grid grid-cols-2 gap-x-4">
-            {bench.map((m, i) => {
-              const avgNote = avgNoteFor?.(m);
-              return (
-                <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
-                  <button
-                    onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
-                    className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
-                  >
-                    {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
-                  </button>
-                  <span className="font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">
-                    {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <SquadBench bench={bench} onOpenPlayer={onOpenPlayer} avgNoteFor={avgNoteFor} />
         </div>
       )}
     </div>
