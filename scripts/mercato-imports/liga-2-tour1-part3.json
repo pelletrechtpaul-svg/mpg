@@ -1,0 +1,88 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Isco",
+      "poste": "MO",
+      "club": "Betis",
+      "prix": 5,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 4 }
+      ]
+    },
+    {
+      "joueur": "Lemar",
+      "prenom": "Thomas",
+      "poste": "MO",
+      "club": "Elche",
+      "prix": 5,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Szczesny",
+      "prenom": "Wojciech",
+      "poste": "G",
+      "club": "Barcelona",
+      "prix": 3,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Rivero",
+      "prenom": "Cristian",
+      "poste": "G",
+      "club": "Valencia",
+      "prix": 3,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Parreño",
+      "poste": "G",
+      "club": "La Corogne",
+      "prix": 3,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Beitia",
+      "prenom": "Luken",
+      "poste": "DC",
+      "club": "Real Sociedad",
+      "prix": 1,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Oláiz",
+      "prenom": "Xanet",
+      "poste": "DC",
+      "club": "Alavés",
+      "prix": 1,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Fidalgo",
+      "prenom": "Álvaro",
+      "poste": "MD",
+      "club": "Betis",
+      "prix": 1,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    }
+  ]
+}
