@@ -6,6 +6,18 @@ const colorText = playerColorText;
 const colorBorder = playerColorBorder;
 const colorBg = playerColors;
 
+// Couleurs par grande famille de poste (records mercato "par poste") -
+// mêmes familles chromatiques que POSTE_COLORS dans JoueursTab.jsx
+// (gardien/jaune, défenseur/bleu, milieu/vert, attaquant/rouge) pour rester
+// cohérent avec le reste de l'appli, en version texte plutôt que badge.
+const POSTE_GROUP_COLORS = {
+  Gardiens: 'text-yellow-600 dark:text-yellow-400',
+  Défenseurs: 'text-blue-600 dark:text-blue-400',
+  Milieux: 'text-emerald-600 dark:text-emerald-400',
+  Attaquants: 'text-red-600 dark:text-red-400',
+};
+const posteGroupColor = poste => POSTE_GROUP_COLORS[poste] || 'text-violet-600 dark:text-violet-400';
+
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 
 function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl font-bold', children }) {
@@ -650,7 +662,7 @@ export default function RecordsTab({
             {!mercatoData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
                   <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🎯 One shots</h3>
@@ -660,10 +672,12 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestBids.map((m, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
-                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                          <span className="font-bold text-amber-700 dark:text-amber-400 ml-1.5">{m.prix}M</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                          <div className="flex flex-wrap items-baseline gap-x-1.5">
+                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                            <span className="font-bold text-amber-700 dark:text-amber-400">{m.prix}M</span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</div>
                         </div>
                       ))}
                     </div>
@@ -675,10 +689,12 @@ export default function RecordsTab({
                       <div className="space-y-1.5">
                         {mercatoData.recordParPoste.map((m, i) => (
                           <div key={i} className="text-sm">
-                            <span className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{m.poste}</span>
-                            <span className="font-semibold text-slate-700 dark:text-slate-200 ml-1.5">{m.joueur}</span>
-                            <span className="font-bold text-violet-700 dark:text-violet-400 ml-1.5">{m.prix}M</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                            <div className="flex flex-wrap items-baseline gap-x-1.5">
+                              <span className={`text-xs font-semibold uppercase tracking-wide ${posteGroupColor(m.poste)}`}>{m.poste}</span>
+                              <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                              <span className="font-bold text-violet-700 dark:text-violet-400">{m.prix}M</span>
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</div>
                           </div>
                         ))}
                       </div>
@@ -691,10 +707,12 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.bestValueForMoney.map((m, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
-                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                          <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                          <div className="flex flex-wrap items-baseline gap-x-1.5">
+                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                            <span className="font-bold text-emerald-700 dark:text-emerald-400">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</div>
                         </div>
                       ))}
                     </div>
@@ -706,10 +724,12 @@ export default function RecordsTab({
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestFlops.map((m, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
-                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
-                          <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">0 but / {m.prix}M</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</span>
+                          <div className="flex flex-wrap items-baseline gap-x-1.5">
+                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                            <span className="font-bold text-rose-700 dark:text-rose-400">0 but / {m.prix}M</span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">{m.acheteur} · {m.ligue} · Champ. {m.championnat}{selectedSeason === 'All-Time' ? ` · ${m.saison}` : ''}</div>
                         </div>
                       ))}
                     </div>
@@ -740,7 +760,7 @@ export default function RecordsTab({
                       <div className="space-y-1.5">
                         {mercatoData.cumulativeSpendParPoste.map((m, i) => (
                           <div key={i} className="text-sm">
-                            <span className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">{m.poste}</span>
+                            <span className={`text-xs font-semibold uppercase tracking-wide ${posteGroupColor(m.poste)}`}>{m.poste}</span>
                             <span className="font-semibold text-slate-700 dark:text-slate-200 ml-1.5">{m.joueur}</span>
                             <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.total}M</span>
                           </div>
