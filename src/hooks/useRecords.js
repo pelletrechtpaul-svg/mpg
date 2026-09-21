@@ -94,20 +94,43 @@ const computeMercatoRecords = (mercato, matches) => {
     });
   });
 
-  // Nombre de "gros transferts" par ligue, pour plusieurs seuils au choix
-  // (budget fixe de 500M pour tout le monde => le prix MOYEN par ligue est
-  // peu discriminant, mais le nombre de très grosses enchères l'est).
-  // Toutes les ligues connues du mercato apparaissent, même à 0, pour
-  // rester comparables entre elles quel que soit le seuil choisi.
+  // Nombre de fenêtres de mercato distinctes par ligue (saison|championnat|
+  // tour) - certaines ligues ont eu plus de tours importés que d'autres,
+  // donc un compteur brut les avantagerait artificiellement. Tous les
+  // comptages "par ligue" ci-dessous sont ramenés à une moyenne par fenêtre
+  // pour rester comparables.
+  const windowsByLigue = {};
+  mercato.forEach(m => {
+    if (!m.ligue) return;
+    if (!windowsByLigue[m.ligue]) windowsByLigue[m.ligue] = new Set();
+    windowsByLigue[m.ligue].add(`${m.saison}|${m.championnat}|${m.tour}`);
+  });
+  const ligueSet = Object.keys(windowsByLigue);
+
+  // Nombre moyen de "gros transferts" par fenêtre de mercato, par ligue,
+  // pour plusieurs seuils au choix (budget fixe de 500M pour tout le monde
+  // => le prix MOYEN par joueur est peu discriminant, mais le nombre de
+  // très grosses enchères l'est). Toutes les ligues connues du mercato
+  // apparaissent, même à 0.
   const BIG_TRANSFER_THRESHOLDS = [20, 40, 60, 80, 100];
-  const ligueSet = [...new Set(mercato.map(m => m.ligue).filter(Boolean))];
   const bigTransfersByLigue = {};
   BIG_TRANSFER_THRESHOLDS.forEach(threshold => {
     const counts = {};
     ligueSet.forEach(l => { counts[l] = 0; });
     mercato.forEach(m => { if (m.ligue && (m.prix || 0) >= threshold) counts[m.ligue]++; });
-    bigTransfersByLigue[threshold] = Object.entries(counts).map(([ligue, count]) => ({ ligue, count })).sort((a, b) => b.count - a.count);
+    bigTransfersByLigue[threshold] = ligueSet
+      .map(ligue => { const windows = windowsByLigue[ligue].size; return { ligue, count: counts[ligue], windows, avg: counts[ligue] / windows }; })
+      .sort((a, b) => b.avg - a.avg);
   });
+
+  // Nombre moyen de batailles d'enchères (au moins une offre perdante) par
+  // fenêtre de mercato, par ligue.
+  const bidWarsCounts = {};
+  ligueSet.forEach(l => { bidWarsCounts[l] = 0; });
+  mercato.forEach(m => { if (m.ligue && (m.encheres_perdues || []).length > 0) bidWarsCounts[m.ligue]++; });
+  const bidWarsByLigue = ligueSet
+    .map(ligue => { const windows = windowsByLigue[ligue].size; return { ligue, count: bidWarsCounts[ligue], windows, avg: bidWarsCounts[ligue] / windows }; })
+    .sort((a, b) => b.avg - a.avg);
 
   // Plus grosses enchères
   const biggestBids = topN(mercato, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
@@ -265,7 +288,7 @@ const computeMercatoRecords = (mercato, matches) => {
     // Divers
     longevite, recruitsCountByCoach, bidWarsWonCoach, medianBidCoach,
     // Par ligue
-    bigTransfersByLigue, BIG_TRANSFER_THRESHOLDS,
+    bigTransfersByLigue, BIG_TRANSFER_THRESHOLDS, bidWarsByLigue,
   };
 };
 

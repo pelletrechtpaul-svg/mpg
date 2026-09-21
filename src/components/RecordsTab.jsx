@@ -638,13 +638,32 @@ export default function RecordsTab({
                         ))}
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Budget fixe pour tout le monde, donc le prix moyen ne dit pas grand-chose - ici le nombre d'enchères à {bigTransferThreshold}M ou plus.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Budget fixe pour tout le monde, donc le prix moyen ne dit pas grand-chose - moyenne par fenêtre de mercato pour rester comparable entre ligues, à {bigTransferThreshold}M ou plus.</p>
                     <div className="space-y-1">
                       {mercatoData.bigTransfersByLigue[bigTransferThreshold].map((l, i) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm w-5">{['🥇', '🥈', '🥉'][i] || `${i + 1}.`}</span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
-                          <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count} joueur{l.count > 1 ? 's' : ''}</span>
+                          <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.avg.toFixed(2)} / fenêtre</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">({l.count} sur {l.windows} fenêtre{l.windows > 1 ? 's' : ''})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {mercatoData && (
+                  <div data-card className="relative bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:to-red-900/30 dark:border-orange-700 rounded-lg p-4 border-2 mt-4">
+                    <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⚔️ Ligues avec le plus de batailles d'enchères</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Enchères ayant reçu au moins une offre perdante, en moyenne par fenêtre de mercato</p>
+                    <div className="space-y-1">
+                      {mercatoData.bidWarsByLigue.map((l, i) => (
+                        <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm w-5">{['🥇', '🥈', '🥉'][i] || `${i + 1}.`}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                          <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.avg.toFixed(2)} / fenêtre</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">({l.count} sur {l.windows} fenêtre{l.windows > 1 ? 's' : ''})</span>
                         </div>
                       ))}
                     </div>
