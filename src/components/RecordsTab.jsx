@@ -362,7 +362,7 @@ export default function RecordsTab({
         {activeSubTab === 'exploits' && seasonRecords && (
           <div className="space-y-6">
 
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">🎬 Les exploits (et les boulettes)</h2>
+            <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">La puissance ne respecte que la puissance</h2>
 
             {/* Records de match */}
             <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
@@ -404,7 +404,7 @@ export default function RecordsTab({
 
                 {seasonRecords.mostProlificDraw.length > 0 && (
                   <RecordCard className="bg-gradient-to-br from-slate-50 to-zinc-50 border-slate-300 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🤝 Nul le plus prolifique</h3>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🤝 Match nul le plus prolifique</h3>
                     <Top3List
                       entries={seasonRecords.mostProlificDraw}
                       renderValue={e => `${e.totalGoals} buts`}
@@ -421,20 +421,16 @@ export default function RecordsTab({
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {seasonRecords.mostGoalsInChampionship.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 dark:from-green-900/30 dark:border-green-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⚽ Plus de buts en 1 championnat</h3>
+                {(seasonRecords.mostGoalsInChampionship.length > 0 || seasonRecords.mostConcededInChampionship.length > 0) && (
+                  <RecordCard className="bg-gradient-to-br from-green-50 to-rose-50 border-green-200 dark:from-green-900/30 dark:to-rose-900/30 dark:border-green-700" contextText={selectedSeason}>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 text-center">⚽🥅 Attaque / Défense en 1 championnat</h3>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Plus de buts marqués</h4>
                     <Top3List
                       entries={seasonRecords.mostGoalsInChampionship}
                       renderValue={e => `${e.goals} buts`}
                       renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
                     />
-                  </RecordCard>
-                )}
-
-                {seasonRecords.mostConcededInChampionship.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-red-50 to-rose-100 border-red-200 dark:from-red-900/30 dark:border-red-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🥅 Plus de buts encaissés en 1 championnat</h3>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">Plus de buts encaissés</h4>
                     <Top3List
                       entries={seasonRecords.mostConcededInChampionship}
                       renderValue={e => `${e.goals} buts`}
@@ -443,20 +439,16 @@ export default function RecordsTab({
                   </RecordCard>
                 )}
 
-                {seasonRecords.bestGAChampionship.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200 dark:from-emerald-900/30 dark:border-emerald-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📈 Meilleur goal average en 1 championnat</h3>
+                {(seasonRecords.bestGAChampionship.length > 0 || seasonRecords.worstGAChampionship.length > 0) && (
+                  <RecordCard className="bg-gradient-to-br from-emerald-50 to-red-50 border-emerald-200 dark:from-emerald-900/30 dark:to-red-900/30 dark:border-emerald-700" contextText={selectedSeason}>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 text-center">📈📉 Goal average en 1 championnat</h3>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Meilleur</h4>
                     <Top3List
                       entries={seasonRecords.bestGAChampionship}
                       renderValue={e => `${e.ga > 0 ? '+' : ''}${e.ga}`}
                       renderDetail={e => `${e.joueur} · ${e.ligue} ${e.championnat} · ${e.saison}`}
                     />
-                  </RecordCard>
-                )}
-
-                {seasonRecords.worstGAChampionship.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-rose-50 to-red-100 border-rose-200 dark:from-rose-900/30 dark:border-rose-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📉 Pire goal average en 1 championnat</h3>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1 mt-4 pt-4 border-t border-emerald-200 dark:border-emerald-800">Pire</h4>
                     <Top3List
                       entries={seasonRecords.worstGAChampionship}
                       renderValue={e => `${e.ga}`}
@@ -469,9 +461,9 @@ export default function RecordsTab({
                   <RecordCard className="bg-gradient-to-br from-slate-50 to-zinc-50 border-slate-200 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
                     <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Championnat le plus serré</h3>
                     <div className="space-y-3 mt-2">
-                      {seasonRecords.tightestChampionship.map((entry, i) => (
+                      {withRankLabels(seasonRecords.tightestChampionship, e => e.sigma).map(({ item: entry, label }, i) => (
                         <div key={i} className={i > 0 ? 'pt-2 border-t border-slate-200 dark:border-slate-700' : ''}>
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}. </span>
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{label} </span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{entry.ligue} #{entry.championnat} · {entry.saison} · σ={entry.sigma}</span>
                           <div className="mt-1">
                             {entry.ranking.map((p, j) => (
@@ -484,39 +476,6 @@ export default function RecordsTab({
                         </div>
                       ))}
                     </div>
-                  </RecordCard>
-                )}
-
-                {seasonRecords.mostExplosive.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:border-orange-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💥 Championnat le plus explosif</h3>
-                    <Top3List
-                      entries={seasonRecords.mostExplosive}
-                      renderValue={e => `${e.totalGoals} buts`}
-                      renderDetail={e => `${e.avgGoals.toFixed(1)} buts/match · ${e.ligue} ${e.championnat} · ${e.saison}`}
-                    />
-                  </RecordCard>
-                )}
-
-                {seasonRecords.leastExplosive.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🥱 Championnat le moins explosif</h3>
-                    <Top3List
-                      entries={seasonRecords.leastExplosive}
-                      renderValue={e => `${e.totalGoals} buts`}
-                      renderDetail={e => `${e.avgGoals.toFixed(1)} buts/match · ${e.ligue} ${e.championnat} · ${e.saison}`}
-                    />
-                  </RecordCard>
-                )}
-
-                {seasonRecords.mostDrawsChampionship.length > 0 && (
-                  <RecordCard className="bg-gradient-to-br from-zinc-50 to-slate-50 border-zinc-300 dark:from-zinc-800/50 dark:border-zinc-600" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🤝 Championnat avec le plus de nuls</h3>
-                    <Top3List
-                      entries={seasonRecords.mostDrawsChampionship}
-                      renderValue={e => `${e.count} nuls`}
-                      renderDetail={e => `sur ${e.total} matchs (${Math.round(e.count / e.total * 100)}%) · ${e.ligue} ${e.championnat} · ${e.saison}`}
-                    />
                   </RecordCard>
                 )}
 
