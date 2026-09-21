@@ -811,14 +811,7 @@ export default function RecordsTab({
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">👥 Joueurs recrutés (distincts)</h4>
                   {mercatoData.recruitsCountByCoach.length > 0 ? (
-                    <>
-                      <AllPlayersGrid data={mercatoData.recruitsCountByCoach} valueKey="count" />
-                      {(() => {
-                        const min = Math.min(...mercatoData.recruitsCountByCoach.map(c => c.count));
-                        const fewest = mercatoData.recruitsCountByCoach.filter(c => c.count === min).map(c => c.joueur).join(', ');
-                        return <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Le moins de recrues : {fewest} ({min})</p>;
-                      })()}
-                    </>
+                    <AllPlayersGrid data={mercatoData.recruitsCountByCoach} valueKey="count" />
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">⚔️ Batailles d'enchères remportées</h4>
