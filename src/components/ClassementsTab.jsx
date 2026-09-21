@@ -29,10 +29,10 @@ const EvolutionTooltip = ({ active, payload, label }) => {
 // valiseSortKey) — remplace les deux anciens tableaux séparés "Valises" /
 // "Valises efficaces" qui partageaient déjà la même donnée valiseStats[j].
 const VALISE_COLUMNS = [
-  { key: 'utilisees', label: 'Utilisées', title: 'Valises utilisées', color: 'text-blue-600 dark:text-blue-400' },
-  { key: 'recues', label: 'Reçues', title: 'Valises reçues', color: 'text-red-600 dark:text-red-400' },
-  { key: 'efficaces', label: 'Effic.', title: 'Valises efficaces infligées', color: 'text-green-600 dark:text-green-400' },
-  { key: 'efficacesRecues', label: 'Eff. reçues', title: 'Valises efficaces reçues', color: 'text-orange-600 dark:text-orange-400' },
+  { key: 'utilisees', label: 'Utilisées', title: 'Valises utilisées', color: 'text-blue-600 dark:text-blue-400', width: 'w-16 sm:w-24' },
+  { key: 'recues', label: 'Reçues', title: 'Valises reçues', color: 'text-red-600 dark:text-red-400', width: 'w-12 sm:w-24' },
+  { key: 'efficaces', label: 'Effic.', title: 'Valises efficaces infligées', color: 'text-green-600 dark:text-green-400', width: 'w-11 sm:w-24' },
+  { key: 'efficacesRecues', label: 'Eff. reçues', title: 'Valises efficaces reçues', color: 'text-orange-600 dark:text-orange-400', width: 'w-24 sm:w-28' },
 ];
 
 const PlayerBadge = ({ joueur, sm = true }) => (
@@ -582,10 +582,10 @@ export default function ClassementsTab({
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
-                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="w-6 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
-                  <th className="w-12 sm:w-16 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
+                  <th className="w-10 sm:w-16 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
                     <button
                       type="button"
                       onClick={() => setButsSortKey('buts_pour')}
@@ -594,17 +594,17 @@ export default function ClassementsTab({
                       Buts{butsSortKey === 'buts_pour' ? ' ▾' : ''}
                     </button>
                   </th>
-                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
-                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                  <th className="w-10 sm:w-20 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
                     <button
                       type="button"
                       onClick={() => setButsSortKey('buts_contre')}
                       className={`whitespace-nowrap ${butsSortKey === 'buts_contre' ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
                     >
-                      Buts enc.{butsSortKey === 'buts_contre' ? ' ▾' : ''}
+                      <span className="sm:hidden">Enc.</span><span className="hidden sm:inline">Buts enc.</span>{butsSortKey === 'buts_contre' ? ' ▾' : ''}
                     </button>
                   </th>
-                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                  <th className="w-16 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
                 </tr>
               </thead>
               <tbody>
@@ -648,7 +648,7 @@ export default function ClassementsTab({
           )}
           {statsTable === 'pannes' && (
             <>
-              <table className="w-full table-fixed text-xs sm:text-sm mt-2">
+              <table className="w-full table-fixed text-xs sm:text-sm">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
                     <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
@@ -680,7 +680,7 @@ export default function ClassementsTab({
                   <th className="w-6 sm:w-10 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
                   {VALISE_COLUMNS.map(col => (
-                    <th key={col.key} className="w-14 sm:w-24 px-1.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                    <th key={col.key} className={`${col.width} px-1.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm`}>
                       <button
                         type="button"
                         title={col.title}
@@ -1044,9 +1044,9 @@ export default function ClassementsTab({
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">Rotaldos</th>
-                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm whitespace-nowrap" title="But réel marqué par un joueur resté sur le banc - ne compte pas">Buts sur le banc</th>
+                    <th className="w-10 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                    <th className="w-12 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">Rotaldos</th>
+                    <th className="w-28 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-[10px] sm:text-sm whitespace-nowrap" title="But réel marqué par un joueur resté sur le banc - ne compte pas">Buts sur le banc</th>
                   </tr>
                 </thead>
                 <tbody>

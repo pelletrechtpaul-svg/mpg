@@ -382,8 +382,8 @@ const App = () => {
             mercatoData={filteredMercatoData}
             classementGeneral={classementGeneral}
             advancedStats={advancedStats}
-            cleanSheetsStats={cleanSheetsStats}
-            statsDetaillees={statsDetaillees}
+            seasonRecords={seasonRecords}
+            perduUnPoint={perduUnPoint}
             selectedSeason={selectedSeason}
             shareContext={shareContext}
             onOpenPlayer={openPlayer}

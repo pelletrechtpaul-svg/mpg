@@ -4,15 +4,17 @@ import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDeta
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 
-/* Pastilles de forme V/N/D — taille réduite sur mobile pour tenir sur une
-   seule ligne même à 10 pastilles (fiche individuelle). */
+/* Pastilles de forme V/N/D — en fiche individuelle ('lg'), elles s'étirent
+   pour occuper toute la largeur de la carte sur mobile (flex-1 + aspect
+   carré) au lieu de rester minuscules et centrées avec du vide autour ;
+   taille fixe reprise à partir de sm. */
 const FormPills = ({ form, size = 'sm' }) => {
-  const dim = size === 'lg' ? 'w-6 h-6 text-[10px] sm:w-9 sm:h-9 sm:text-sm' : 'w-6 h-6 text-[11px]';
+  const dim = size === 'lg' ? 'flex-1 sm:flex-none sm:w-9 sm:h-9 aspect-square text-sm' : 'w-6 h-6 text-[11px] flex-shrink-0';
   if (!form || form.length === 0) {
     return <span className="text-xs text-slate-400">Aucun match</span>;
   }
   return (
-    <div className="flex gap-0.5 sm:gap-1 flex-nowrap justify-center">
+    <div className={`flex gap-1 ${size === 'lg' ? 'flex-nowrap' : 'flex-wrap justify-center'}`}>
       {form.map((r, i) => (
         <div
           key={i}
@@ -82,7 +84,8 @@ const PillTabs = ({ tabs, active, onChange }) => (
 
 export default function EntraineursTab({
   joueurs, ligues, filteredData, mercatoData,
-  classementGeneral, advancedStats, cleanSheetsStats, statsDetaillees,
+  classementGeneral, advancedStats,
+  seasonRecords, perduUnPoint,
   selectedSeason, shareContext, onOpenPlayer,
   selectedPlayer, onSelectPlayer,
 }) {
@@ -166,38 +169,62 @@ export default function EntraineursTab({
       .filter(Boolean);
   }, [ligues, mercatoData, filteredData, selectedPlayer, selectedSeason]);
 
-  /* Records détenus par chaque coach : tout leader UNIQUE (valeur > 0,
-     strictement supérieure au 2e) sur une métrique, sans limite à un seul
-     titre par coach (contrairement à l'ancien système de "signature" —
-     un coach peut légitimement détenir plusieurs records à la fois). */
+  /* Records détenus par chaque coach : uniquement ceux réellement affichés
+     dans Records > Entraîneurs (Style de jeu / Étude de banc / Séries
+     offensives — pas Ligues/Mercato/Exploits, pas propres à un coach, ni
+     "Séries à oublier"/Face-à-face, pas des records "détenus" au sens
+     flatteur). Un coach détient un record s'il est seul en tête (valeur > 0,
+     pas d'ex-aequo au sommet) de la même liste que celle utilisée là-bas. */
   const recordsDetenus = useMemo(() => {
-    const cs = {};
-    cleanSheetsStats.forEach(c => { cs[c.joueur] = c.cleanSheets; });
-    const cl = j => classementGeneral.find(c => c.joueur === j);
-
-    const metrics = [
-      { key: 'titres',   label: '👑 Roi du championnat',  get: j => cl(j)?.victoiresChampionnat || 0, detail: v => `${v} titre${v > 1 ? 's' : ''} de championnat remporté${v > 1 ? 's' : ''}` },
-      { key: 'buteur',   label: '⚽ Meilleur buteur',      get: j => statsDetaillees[j]?.buts_pour || 0, detail: v => `${v} buts marqués, plus que tous les autres` },
-      { key: 'mur',      label: '🧤 Mur défensif',         get: j => cs[j] || 0, detail: v => `${v} clean sheet${v > 1 ? 's' : ''} (matchs sans encaisser)` },
-      { key: 'diff',     label: '🎯 Meilleure différence', get: j => statsDetaillees[j]?.ga ?? -Infinity, detail: v => `différence de buts de ${v > 0 ? '+' : ''}${v}, la meilleure du groupe` },
-      { key: 'serie',    label: '🔥 Série de feu',         get: j => advancedStats[j]?.maxWinStreak || 0, detail: v => `série record de ${v} victoires consécutives` },
-      { key: 'invinc',   label: '🛡️ Invincible',           get: j => advancedStats[j]?.maxUnbeatenStreak || 0, detail: v => `${v} matchs d'affilée sans défaite` },
-      { key: 'tauxV',    label: '📈 Machine à gagner',     get: j => { const s = cl(j); return s && s.matchs ? s.victoires / s.matchs : 0; }, detail: v => `${Math.round(v * 100)}% de victoires, le meilleur ratio` },
-      { key: 'attaque',  label: '💥 Artilleur',            get: j => { const s = cl(j); return s && s.matchs ? (statsDetaillees[j]?.buts_pour || 0) / s.matchs : 0; }, detail: v => `${v.toFixed(2)} buts marqués par match en moyenne` },
-    ];
-
     const result = {};
     joueurs.forEach(j => { result[j] = []; });
-    metrics.forEach(m => {
-      const ordered = [...joueurs].map(j => ({ j, v: m.get(j) })).sort((a, b) => b.v - a.v);
-      const best = ordered[0];
-      const second = ordered[1];
-      if (best && best.v > 0 && (!second || best.v > second.v)) {
-        result[best.j].push({ label: m.label, detail: m.detail(best.v) });
+    if (!seasonRecords) return result;
+
+    const addLeader = (list, valueKey, label, detail) => {
+      if (!list?.length) return;
+      const leader = list[0];
+      const value = leader[valueKey];
+      if (!(value > 0)) return;
+      if (list[1] && list[1][valueKey] === value) return;
+      result[leader.joueur].push({ label, detail: detail(value) });
+    };
+
+    addLeader(seasonRecords.closeWinsKing, 'count', '🔪 Roi des scores serrés', v => `${v} victoire${v > 1 ? 's' : ''} par exactement 1 but d'écart`);
+    addLeader(seasonRecords.berserkKing, 'count', '💥 Berserk', v => `${v} victoire${v > 1 ? 's' : ''} avec 5 buts d'écart ou plus`);
+    addLeader(seasonRecords.clutchChampion, 'count', '🎯 Clutch', v => `${v} championnat${v > 1 ? 's' : ''} gagné${v > 1 ? 's' : ''} avec exactement 1 point d'écart`);
+
+    const unbeatenCounts = {};
+    (seasonRecords.unbeatenChampion || []).forEach(inst => { unbeatenCounts[inst.joueur] = (unbeatenCounts[inst.joueur] || 0) + 1; });
+    const unbeatenList = joueurs.map(j => ({ joueur: j, count: unbeatenCounts[j] || 0 })).sort((a, b) => b.count - a.count);
+    addLeader(unbeatenList, 'count', '🛡️ Titres remportés sans défaite', v => `${v} titre${v > 1 ? 's' : ''} remporté${v > 1 ? 's' : ''} sans perdre un seul match`);
+
+    if (perduUnPoint) {
+      const perduList = joueurs.map(j => ({ joueur: j, count: (perduUnPoint[j] || []).length })).sort((a, b) => b.count - a.count);
+      addLeader(perduList, 'count', '😤 Championnats perdus de justesse', v => `${v} championnat${v > 1 ? 's' : ''} perdu${v > 1 ? 's' : ''} à 1 point, au goal average ou à la différence particulière`);
+    }
+
+    if (hasDetailedData(selectedSeason)) {
+      addLeader(seasonRecords.rotaldoKing, 'count', '🎲 Rotaldinho', v => `${v} rotaldo${v > 1 ? 's' : ''} subi${v > 1 ? 's' : ''} (titulaire absent non remplacé)`);
+      addLeader(seasonRecords.benchGoalsKing, 'count', '🪑⚽ Buts gâchés sur le banc', v => `${v} but${v > 1 ? 's' : ''} marqué${v > 1 ? 's' : ''} par des joueurs restés sur le banc`);
+      addLeader(seasonRecords.cscKing, 'count', '🙈 CSC', v => `${v} but${v > 1 ? 's' : ''} contre son camp inscrit${v > 1 ? 's' : ''} par ses recrues`);
+
+      const bench = seasonRecords.benchVsCompteAvg || [];
+      if (bench.length > 0 && bench[0].diff <= 0 && (!bench[1] || bench[1].diff !== bench[0].diff)) {
+        result[bench[0].joueur].push({ label: '⭐ Banc vs titulaire', detail: `Son banc fait mieux que ses titulaires en moyenne (${bench[0].diff.toFixed(1)})` });
       }
-    });
+    }
+
+    const addStreakLeader = (streakData, label, unit) => {
+      if (!streakData) return;
+      const ranked = joueurs.map(j => ({ joueur: j, length: streakData[j]?.length || 0 })).sort((a, b) => b.length - a.length);
+      addLeader(ranked, 'length', label, v => `${v} ${unit} d'affilée`);
+    };
+    addStreakLeader(seasonRecords.longestWinStreak, '🏆 Plus longue série de victoires', 'victoires');
+    addStreakLeader(seasonRecords.longestUnbeatenStreak, '🛡️ Plus longue série sans défaite', 'matchs sans défaite');
+    addStreakLeader(seasonRecords.longestCleanSheetStreak, '🧤 Plus longue série sans encaisser', 'clean sheets');
+
     return result;
-  }, [joueurs, classementGeneral, statsDetaillees, cleanSheetsStats, advancedStats]);
+  }, [joueurs, seasonRecords, perduUnPoint, selectedSeason]);
 
   /* Head-to-head du joueur sélectionné contre tous les autres (totaux uniquement, triés par % victoire) */
   const h2h = useMemo(() => {
@@ -442,7 +469,7 @@ export default function EntraineursTab({
                         </tr>
                       </thead>
                       <tbody>
-                        {topButeurs.map((p, index) => (
+                        {topButeurs.slice(0, 10).map((p, index) => (
                           <tr key={p.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                             <td className="px-1 py-2 sm:px-4 sm:py-3 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                             <td className="px-1 py-2 sm:px-4 sm:py-3 font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base">{p.joueur}</td>
