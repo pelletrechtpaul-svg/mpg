@@ -1,0 +1,18 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 5,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Niño",
+      "prenom": "Fernando",
+      "poste": "A",
+      "club": "Elche",
+      "prix": 16,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    }
+  ]
+}

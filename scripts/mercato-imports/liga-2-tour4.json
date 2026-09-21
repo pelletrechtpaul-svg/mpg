@@ -1,0 +1,27 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 4,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Álvaro García",
+      "poste": "MO",
+      "club": "Rayo Vallecano",
+      "prix": 15,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Brugué",
+      "prenom": "Roger",
+      "poste": "A",
+      "club": "Levante",
+      "prix": 9,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    }
+  ]
+}
