@@ -3769,5 +3769,59 @@
       "Betis"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/dtq91e1723628718.jpg"
+  },
+  "Lemar|Liga": {
+    "prenom": "Thomas",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Elche"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0yai0f1534441522.jpg"
+  },
+  "Szczesny|Liga": {
+    "prenom": "Wojciech",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3epoxq1713428540.jpg"
+  },
+  "Rivero|Liga": {
+    "prenom": "Cristian",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Valencia"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7qyqo11662074373.jpg"
+  },
+  "Beitia|Liga": {
+    "prenom": "Luken",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Real Sociedad"
+    ],
+    "photo": null
+  },
+  "Oláiz|Liga": {
+    "prenom": "Xanet",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Alavés"
+    ],
+    "photo": null
+  },
+  "Fidalgo|Liga": {
+    "prenom": "Álvaro",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bgwqzf1750327819.jpg"
   }
 }
