@@ -3958,5 +3958,23 @@
       "Sevilla"
     ],
     "photo": null
+  },
+  "Brugué|Liga": {
+    "prenom": "Roger",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Levante"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/pefufm1762459765.jpg"
+  },
+  "Niño|Liga": {
+    "prenom": "Fernando",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Elche"
+    ],
+    "photo": null
   }
 }
