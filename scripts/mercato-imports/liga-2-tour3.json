@@ -1,0 +1,65 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 3,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Camello",
+      "prenom": "Sergio",
+      "poste": "A",
+      "club": "Rayo Vallecano",
+      "prix": 35,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [ { "equipe": "Maison Dothrakis", "prix": 18 } ]
+    },
+    {
+      "joueur": "Valverde",
+      "poste": "MD",
+      "club": "Real Madrid",
+      "prix": 20,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [ { "equipe": "Maison Dothrakis", "prix": 18 } ]
+    },
+    {
+      "joueur": "Roca",
+      "prenom": "Marc",
+      "poste": "MD",
+      "club": "Betis",
+      "prix": 16,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Rodri",
+      "poste": "MD",
+      "club": "Barcelona",
+      "prix": 15,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Rüdiger",
+      "poste": "DC",
+      "club": "Real Madrid",
+      "prix": 13,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Stassin",
+      "prenom": "Lucas",
+      "poste": "A",
+      "club": "Sevilla",
+      "prix": 8,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    }
+  ]
+}
