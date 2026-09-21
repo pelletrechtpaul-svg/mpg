@@ -28,8 +28,8 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-      - name: Run migration (dry-run)
-        run: node scripts/fix-homonym-collisions.cjs
+      - name: Run migration
+        run: DRY_RUN=false node scripts/fix-homonym-collisions.cjs
 
       - name: Remove service account key
         run: rm -f serviceAccountKey.json
