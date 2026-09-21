@@ -3598,5 +3598,176 @@
       "Athletic"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9x234o1632752663.jpg"
+  },
+  "Díaz|Liga": {
+    "prenom": "Mariano",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Alavés"
+    ],
+    "photo": null
+  },
+  "Vicente|Liga": {
+    "prenom": "Iñigo",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Santander"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w3z3wb1629188474.jpg"
+  },
+  "Pérez|Liga": {
+    "prenom": "Ángel",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Alavés"
+    ],
+    "photo": null
+  },
+  "Huijsen|Liga": {
+    "prenom": "Dean",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gbhpsa1771264927.jpg"
+  },
+  "Valles|Liga": {
+    "prenom": "Álvaro",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hrfcqr1701092804.jpg"
+  },
+  "Agirrezabala|Liga": {
+    "prenom": "Julen",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Santander"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v57a1629187942.jpg"
+  },
+  "Espart|Liga": {
+    "prenom": "Xavi",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wwbwky1782654294.jpg"
+  },
+  "Terrats|Liga": {
+    "prenom": "Ramón",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Getafe"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yp3vf31658690878.jpg"
+  },
+  "David|Liga": {
+    "prenom": "Jonathan",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
+  },
+  "Romero|Liga": {
+    "prenom": "Cristian",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/16rd0s1780011158.jpg"
+  },
+  "Otto|Liga": {
+    "prenom": "Jonny",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Alavés"
+    ],
+    "photo": null
+  },
+  "Zabiri|Liga": {
+    "prenom": "Yassir",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Santander"
+    ],
+    "photo": "https://www.thesportsdb.com/images/media/player/thumb/m17q4v1789724862.jpg"
+  },
+  "Soriano|Liga": {
+    "prenom": "Mario",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "La Corogne"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v9btrl1735417990.jpg"
+  },
+  "Agoumé|Liga": {
+    "prenom": "Lucien",
+    "nationalite": null,
+    "poste": "MD",
+    "clubs": [
+      "Sevilla"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5t6ili1601070156.jpg"
+  },
+  "Carreras|Liga": {
+    "prenom": "Álvaro",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Real Madrid"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/77qzkw1771264102.jpg"
+  },
+  "El Hilali|Liga": {
+    "prenom": "Omar",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Espanyol"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zq0xbs1723569350.jpg"
+  },
+  "Paredes|Liga": {
+    "prenom": "Aitor",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3y5ei71678568879.jpg"
+  },
+  "Le Normand|Liga": {
+    "prenom": "Robin",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iqosdp1724311723.jpg"
+  },
+  "Conde|Liga": {
+    "prenom": "Diego",
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/dtq91e1723628718.jpg"
   }
 }
