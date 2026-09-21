@@ -8,12 +8,12 @@ const colorBg = playerColors;
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 
-function AllPlayersGrid({ data, valueKey = 'count', children }) {
+function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl font-bold', children }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
       {data.map(entry => (
         <div key={entry.joueur} className={`rounded-lg border-2 ${colorBorder[entry.joueur]} p-3 text-center`}>
-          <div className={`text-3xl font-bold ${colorText[entry.joueur]}`}>{entry[valueKey]}</div>
+          <div className={`${valueClassName} ${colorText[entry.joueur]}`}>{entry[valueKey]}</div>
           <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1">{entry.joueur}</div>
           {children && children(entry)}
         </div>
@@ -653,7 +653,7 @@ export default function RecordsTab({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🎯 One shots</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🎯 One shots</h3>
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosse enchère</h4>
                   {mercatoData.biggestBids.length > 0 ? (
@@ -718,7 +718,7 @@ export default function RecordsTab({
 
                 {/* ── CUMUL DES MANDATS ── */}
                 <RecordCard className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-900/30 dark:to-amber-900/30 dark:border-orange-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🔁 Cumul des mandats</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🔁 Cumul des mandats</h3>
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💰 Plus grosse mise cumulée</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Total dépensé sur un même joueur, tous mercatos et toutes ligues confondus</p>
@@ -792,17 +792,18 @@ export default function RecordsTab({
 
                 {/* ── DIVERS ── */}
                 <RecordCard className="bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200 dark:from-sky-900/30 dark:to-blue-900/30 dark:border-sky-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🗂️ Divers</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🗂️ Divers</h3>
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏠 Fidélité</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Nombre de recrutement d'affilé</p>
                   {mercatoData.longevite.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.longevite.map((l, i) => (
                         <div key={i} className="text-sm">
                           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{l.joueur}</span>
-                          <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak} championnats d'affilée</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur} · {l.ligue}</span>
+                          <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur}</span>
                         </div>
                       ))}
                     </div>
@@ -827,7 +828,7 @@ export default function RecordsTab({
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">📊 Enchère médiane</h4>
                   {mercatoData.medianBidCoach.length > 0 ? (
-                    <AllPlayersGrid data={mercatoData.medianBidCoach} valueKey="medianLabel" />
+                    <AllPlayersGrid data={mercatoData.medianBidCoach} valueKey="medianLabel" valueClassName="text-xl font-bold" />
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
                 </RecordCard>
               </div>

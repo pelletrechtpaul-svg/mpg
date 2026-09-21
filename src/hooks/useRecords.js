@@ -31,6 +31,35 @@ const topN = (arr, scoreFn, tiebreakerFn = null, n = 3) => {
   }).slice(0, n);
 };
 
+// Comme topN, mais à score EXACTEMENT égal, priorise la diversité des
+// entraîneurs avant d'autoriser une 2e entrée du même entraîneur - sinon
+// "3 fidélités à 2 chez le même coach" peut masquer un autre coach à la
+// même égalité.
+const topNDiverseCoach = (arr, scoreFn, coachFn, tiebreakerFn = null, n = 3) => {
+  if (!arr.length) return [];
+  const sorted = [...arr].sort((a, b) => {
+    const diff = scoreFn(b) - scoreFn(a);
+    if (diff !== 0) return diff;
+    return tiebreakerFn ? tiebreakerFn(b) - tiebreakerFn(a) : 0;
+  });
+  const groups = new Map();
+  sorted.forEach(item => {
+    const score = scoreFn(item);
+    if (!groups.has(score)) groups.set(score, []);
+    groups.get(score).push(item);
+  });
+  const ordered = [];
+  [...groups.keys()].sort((a, b) => b - a).forEach(score => {
+    const seen = new Set(), first = [], rest = [];
+    groups.get(score).forEach(item => {
+      const coach = coachFn(item);
+      if (!seen.has(coach)) { seen.add(coach); first.push(item); } else rest.push(item);
+    });
+    ordered.push(...first, ...rest);
+  });
+  return ordered.slice(0, n);
+};
+
 // Regroupement en 4 grandes familles de postes (noms au pluriel pour
 // l'affichage - distinct du POSTE_GROUP de FormationPitch.jsx qui sert à
 // l'agencement du terrain, pas seulement à l'affichage).
@@ -202,7 +231,7 @@ const computeMercatoRecords = (mercato, matches) => {
     longeviteGroups[key].championnats.add(m.championnat);
     longeviteGroups[key].saisons.add(m.saison);
   });
-  const longevite = Object.values(longeviteGroups).map(g => {
+  const longeviteCandidates = Object.values(longeviteGroups).map(g => {
     const sorted = [...g.championnats].sort((a, b) => a - b);
     let best = 1, cur = 1;
     for (let i = 1; i < sorted.length; i++) {
@@ -210,7 +239,8 @@ const computeMercatoRecords = (mercato, matches) => {
       else cur = 1;
     }
     return { joueur: g.joueur, ligue: g.ligue, acheteur: g.acheteur, streak: sorted.length ? best : 0, saisons: [...g.saisons] };
-  }).filter(g => g.streak > 1).sort((a, b) => b.streak - a.streak).slice(0, 3);
+  }).filter(g => g.streak > 1);
+  const longevite = topNDiverseCoach(longeviteCandidates, g => g.streak, g => g.acheteur, g => Math.max(...g.saisons.map(saisonTs)));
 
   return {
     // One shots (une seule enchère/championnat)
