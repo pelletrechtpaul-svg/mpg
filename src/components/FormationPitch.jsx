@@ -163,40 +163,20 @@ export function computeFormation(squad, rating = (m) => m.prix || 0) {
   return { starters, bench };
 }
 
-function median(arr) {
-  const sorted = [...arr].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-}
-
-// Teinte subtile du rapport note/prix par rapport à la médiane du banc (vert
-// = sur-performe nettement son prix, rouge = sous-performe nettement) —
-// seuil à ±10% pour ne pas colorer le moindre écart, et seulement quand il y
-// a au moins 2 joueurs notés à comparer entre eux.
-function valueTint(ratio, med) {
-  if (ratio == null || med == null) return '';
-  if (ratio > med * 1.1) return 'text-emerald-600 dark:text-emerald-400';
-  if (ratio < med * 0.9) return 'text-rose-600 dark:text-rose-400';
-  return '';
-}
-
 // Liste "Reste de l'effectif" (banc), extraite de FormationPitch pour être
 // affichable séparément du terrain (voir EntraineursTab, layout desktop
-// terrain à gauche / stats à droite).
+// terrain à gauche / stats à droite). Déjà trié par ligne de poste (voir
+// computeFormation ci-dessus). Note et prix dans deux couleurs fixes
+// différentes, juste pour bien distinguer les deux valeurs visuellement —
+// pas de comparaison de performance entre joueurs.
 export function SquadBench({ bench, onOpenPlayer, avgNoteFor }) {
   if (!bench.length) return null;
-  const ratios = bench
-    .map(m => { const n = avgNoteFor?.(m); return typeof n === 'number' && m.prix ? n / m.prix : null; })
-    .filter(r => r != null);
-  const med = ratios.length >= 2 ? median(ratios) : null;
   return (
     <div>
       <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
       <div className="grid grid-cols-2 gap-x-4">
         {bench.map((m, i) => {
           const avgNote = avgNoteFor?.(m);
-          const ratio = typeof avgNote === 'number' && m.prix ? avgNote / m.prix : null;
-          const tint = valueTint(ratio, med);
           return (
             <div key={i} className="flex items-center justify-between text-sm gap-2 py-1">
               <button
@@ -205,8 +185,9 @@ export function SquadBench({ bench, onOpenPlayer, avgNoteFor }) {
               >
                 {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
               </button>
-              <span className={`font-semibold flex-shrink-0 ${tint || 'text-slate-600 dark:text-slate-300'}`}>
-                {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M
+              <span className="font-semibold flex-shrink-0">
+                {typeof avgNote === 'number' && <span className="text-amber-600 dark:text-amber-400">{avgNote.toFixed(1)} · </span>}
+                <span className="text-slate-600 dark:text-slate-300">{m.prix}M</span>
               </span>
             </div>
           );

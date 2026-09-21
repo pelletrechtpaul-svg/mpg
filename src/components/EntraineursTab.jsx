@@ -4,14 +4,15 @@ import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDeta
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 
-/* Pastilles de forme V/N/D */
+/* Pastilles de forme V/N/D — taille réduite sur mobile pour tenir sur une
+   seule ligne même à 10 pastilles (fiche individuelle). */
 const FormPills = ({ form, size = 'sm' }) => {
-  const dim = size === 'lg' ? 'w-9 h-9 text-sm' : 'w-6 h-6 text-[11px]';
+  const dim = size === 'lg' ? 'w-6 h-6 text-[10px] sm:w-9 sm:h-9 sm:text-sm' : 'w-6 h-6 text-[11px]';
   if (!form || form.length === 0) {
     return <span className="text-xs text-slate-400">Aucun match</span>;
   }
   return (
-    <div className="flex gap-1 flex-wrap justify-center">
+    <div className="flex gap-0.5 sm:gap-1 flex-nowrap justify-center">
       {form.map((r, i) => (
         <div
           key={i}
@@ -33,6 +34,7 @@ const LIGUE_ABBR = {
   'Liga': 'Liga',
   'Premier League': 'PL',
   'Serie A': 'Serie A',
+  'Ligue des Champions': 'LDC',
   'Champions League': 'LDC',
 };
 
@@ -51,25 +53,28 @@ const Avatar = ({ joueur, className }) => (
 );
 
 const SUB_TABS = [
-  { key: 'effectifs', label: 'Effectifs actuels' },
-  { key: 'confrontations', label: 'Confrontations' },
-  { key: 'tops', label: 'Tops joueurs' },
-  { key: 'records', label: 'Records détenus' },
+  { key: 'effectifs', label: 'Effectifs actuels', short: 'Effectifs' },
+  { key: 'confrontations', label: 'Confrontations', short: 'Confront.' },
+  { key: 'tops', label: 'Tops joueurs', short: 'Tops' },
+  { key: 'records', label: 'Records détenus', short: 'Records' },
 ];
 
+// flex-nowrap + libellés abrégés sur mobile : tient sur une seule ligne à 4
+// onglets même sur un écran étroit (voir FormPills, même logique).
 const PillTabs = ({ tabs, active, onChange }) => (
-  <div className="flex flex-wrap gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+  <div className="flex flex-nowrap gap-1 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
     {tabs.map(t => (
       <button
         key={t.key}
         onClick={() => onChange(t.key)}
-        className={`flex-1 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${
+        className={`flex-1 min-w-0 px-1 sm:px-4 py-1.5 sm:py-2 rounded-xl font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${
           active === t.key
             ? 'bg-violet-500 text-white shadow'
             : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
         }`}
       >
-        {t.label}
+        <span className="sm:hidden">{t.short}</span>
+        <span className="hidden sm:inline">{t.label}</span>
       </button>
     ))}
   </div>
@@ -319,7 +324,7 @@ export default function EntraineursTab({
                   // min-w-0 + libellé abrégé) plutôt que de déborder, pour
                   // tenir sur une seule ligne même à 5 ligues (LDC à venir).
                   <div className="flex flex-nowrap gap-1.5 mb-4">
-                    {effectifsParLigue.map(({ ligue, championnat, squad }) => (
+                    {effectifsParLigue.map(({ ligue, championnat }) => (
                       <button
                         key={ligue}
                         onClick={() => setEffectifLigue(ligue)}
@@ -330,7 +335,7 @@ export default function EntraineursTab({
                             : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                         }`}
                       >
-                        {LIGUE_ABBR[ligue] || ligue} #{championnat} <span className="opacity-70">({squad.length})</span>
+                        {LIGUE_ABBR[ligue] || ligue} #{championnat}
                       </button>
                     ))}
                   </div>

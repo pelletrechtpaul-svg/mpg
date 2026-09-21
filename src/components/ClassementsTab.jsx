@@ -79,6 +79,7 @@ export default function ClassementsTab({
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
   const [valiseSortKey, setValiseSortKey] = useState('utilisees');
+  const [butsSortKey, setButsSortKey] = useState('buts_pour');
   const photos = usePlayerPhotos();
 
   // Filtre par coach (un seul à la fois) dans les classements Buteurs/Note/
@@ -354,8 +355,7 @@ export default function ClassementsTab({
           {/* Ligne 2+ : stats, centrées, flex-wrap */}
           <div className="flex flex-wrap justify-center gap-2">
             {[
-              { key: 'buteurs', label: '⚽ Buteurs' },
-              { key: 'loosers', label: '🥅 Loosers' },
+              { key: 'buteurs', label: '⚽ Buts' },
               { key: 'cleansheets', label: '🧤 Clean sheets' },
               { key: 'pannes', label: '🚫 Pannes' },
               ...(valiseStats ? [
@@ -584,42 +584,38 @@ export default function ClassementsTab({
                 <tr>
                   <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
                   <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
-                  <th className="w-12 sm:w-16 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                  <th className="w-12 sm:w-16 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setButsSortKey('buts_pour')}
+                      className={`whitespace-nowrap ${butsSortKey === 'buts_pour' ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
+                    >
+                      Buts{butsSortKey === 'buts_pour' ? ' ▾' : ''}
+                    </button>
+                  </th>
+                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
+                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setButsSortKey('buts_contre')}
+                      className={`whitespace-nowrap ${butsSortKey === 'buts_contre' ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
+                    >
+                      Buts enc.{butsSortKey === 'buts_contre' ? ' ▾' : ''}
+                    </button>
+                  </th>
+                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_pour - a.buts_pour).map((player, index) => (
+                {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b[butsSortKey] - a[butsSortKey]).map((player, index) => (
                   <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 truncate"><div className="flex items-center gap-1 sm:gap-3 min-w-0"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">{player.joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{player.buts_pour}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                    <td className="px-1 py-2 sm:px-4 sm:py-4 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{player.buts_pour}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-blue-600 dark:text-blue-400 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_pour / player.matchs).toFixed(2) : '0.00'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {statsTable === 'loosers' && (
-            <table className="w-full table-fixed text-xs sm:text-sm">
-              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                <tr>
-                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm whitespace-nowrap">Buts enc.</th>
-                  <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
-                  <th className="w-12 sm:w-16 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(statsDetaillees).map(([joueur, data]) => ({ joueur, ...data })).sort((a, b) => b.buts_contre - a.buts_contre).map((player, index) => (
-                  <tr key={player.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 truncate"><div className="flex items-center gap-1 sm:gap-3 min-w-0"><PlayerBadge joueur={player.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">{player.joueur}</span></div></td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 dark:text-red-400 text-xs sm:text-base">{player.buts_contre}</td>
-                    <td className="px-1 py-2 sm:px-6 sm:py-4 text-center text-slate-700 dark:text-slate-200 text-xs sm:text-base">{player.matchs}</td>
+                    <td className="px-1 py-2 sm:px-4 sm:py-4 text-center font-bold text-red-600 dark:text-red-400 text-xs sm:text-base">{player.buts_contre}</td>
                     <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-orange-600 dark:text-orange-400 text-xs sm:text-base">{player.matchs > 0 ? (player.buts_contre / player.matchs).toFixed(2) : '0.00'}</td>
                   </tr>
                 ))}
@@ -652,7 +648,6 @@ export default function ClassementsTab({
           )}
           {statsTable === 'pannes' && (
             <>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1 sm:px-6 pt-3">Matchs sans marquer le moindre but</p>
               <table className="w-full table-fixed text-xs sm:text-sm mt-2">
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
@@ -675,21 +670,22 @@ export default function ClassementsTab({
                   ))}
                 </tbody>
               </table>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-1 sm:px-6 py-3">Matchs sans marquer le moindre but</p>
             </>
           )}
           {statsTable === 'valises' && valiseStats && (
             <table className="w-full table-fixed text-xs sm:text-sm">
               <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                 <tr>
-                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
+                  <th className="w-6 sm:w-10 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
                   {VALISE_COLUMNS.map(col => (
-                    <th key={col.key} className="w-12 sm:w-20 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                    <th key={col.key} className="w-14 sm:w-24 px-1.5 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
                       <button
                         type="button"
                         title={col.title}
                         onClick={() => setValiseSortKey(col.key)}
-                        className={`whitespace-nowrap ${valiseSortKey === col.key ? `${col.color} underline` : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
+                        className={`whitespace-nowrap ${valiseSortKey === col.key ? col.color : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
                       >
                         {col.label}{valiseSortKey === col.key ? ' ▾' : ''}
                       </button>
@@ -797,10 +793,10 @@ export default function ClassementsTab({
         </div>
       ) : (
         <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6 transition-all duration-200">
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
+          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0 text-center">Évolution des points au fil du temps</h3>
           {historicalEvolution.length > 0 ? (
             <>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Déplacez les poignées de la tirette en bas pour zoomer sur une période</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Glissez les poignées en bas pour zoomer</p>
               <div className="w-full sm:w-1/2 sm:mx-auto">
                 <ResponsiveContainer width="100%" height={480}>
                   <LineChart data={historicalEvolution} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
@@ -1050,7 +1046,7 @@ export default function ClassementsTab({
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
                     <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
                     <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">Rotaldos</th>
-                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="But réel marqué par un joueur resté sur le banc - ne compte pas">Buts sur le banc</th>
+                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm whitespace-nowrap" title="But réel marqué par un joueur resté sur le banc - ne compte pas">Buts sur le banc</th>
                   </tr>
                 </thead>
                 <tbody>

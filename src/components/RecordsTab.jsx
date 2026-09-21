@@ -20,6 +20,10 @@ const posteGroupColor = poste => POSTE_GROUP_COLORS[poste] || 'text-violet-600 d
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 
+// "Premier League" est le seul nom de ligue assez long pour forcer un retour
+// à la ligne sur mobile dans les listes de Records > Ligues.
+const ligueLabel = l => l === 'Premier League' ? 'PL' : l;
+
 // Rang façon Records > Mercato : "1." / "2." / ... et rien du tout (label
 // vide) au lieu de répéter un rang déjà attribué à la même valeur juste
 // au-dessus — l'alignement fixe de RankBadge fait que le nom/la pastille se
@@ -559,7 +563,7 @@ export default function RecordsTab({
                         {withRankLabels(sorted, renderValue).map(({ item: l, label: rankLbl }) => (
                           <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                             <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
                             <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
                             <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
                           </div>
@@ -594,7 +598,7 @@ export default function RecordsTab({
                       {withRankLabels(mercatoData.bigTransfersByLigue[bigTransferThreshold], l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
                           <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count}</span>
                         </div>
                       ))}
@@ -610,7 +614,7 @@ export default function RecordsTab({
                       {withRankLabels(mercatoData.bidWarsByLigue, l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
                           <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.count}</span>
                         </div>
                       ))}
