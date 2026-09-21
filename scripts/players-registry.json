@@ -3823,5 +3823,104 @@
       "Betis"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bgwqzf1750327819.jpg"
+  },
+  "Alvarez|Liga": {
+    "prenom": "Julián",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Atlético"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rm3tj11741979331.jpg"
+  },
+  "Óskarsson|Liga": {
+    "prenom": "Orri",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Real Sociedad"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ovmayu1701980504.jpg"
+  },
+  "Joan García|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "G",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uee5ya1779730733.jpg"
+  },
+  "Sancet|Liga": {
+    "prenom": "Oihan",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m38pld1603579770.jpg"
+  },
+  "Ezzalzouli|Liga": {
+    "prenom": "Abdessamad",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/oyg3ag1723792598.jpg"
+  },
+  "Gabriel Jesus|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iwt0021678196502.jpg"
+  },
+  "Berchiche|Liga": {
+    "prenom": "Yuri",
+    "nationalite": null,
+    "poste": "DL",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9ruoyu1519327520.jpg"
+  },
+  "Berenguer|Liga": {
+    "prenom": "Álex",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ranylg1723532557.jpg"
+  },
+  "Laporte|Liga": {
+    "prenom": "Aymeric",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zldp8b1779732163.jpg"
+  },
+  "Martín|Liga": {
+    "prenom": "Gerard",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Barcelona"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mqqef11668790648.jpg"
+  },
+  "Córdoba|Liga": {
+    "prenom": "Iker",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Valencia"
+    ],
+    "photo": null
   }
 }
