@@ -20,6 +20,19 @@ const posteGroupColor = poste => POSTE_GROUP_COLORS[poste] || 'text-violet-600 d
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 
+// Rang façon Records > Mercato : "1." / "2." / ... et "Ex-aequo" au lieu de
+// répéter un rang déjà attribué à la même valeur juste au-dessus.
+function withRankLabels(items, scoreFn) {
+  return items.map((item, i) => ({
+    item,
+    label: i > 0 && scoreFn(item) === scoreFn(items[i - 1]) ? 'Ex-aequo' : `${i + 1}.`,
+  }));
+}
+
+function RankBadge({ label, className = '' }) {
+  return <span className={`text-xs font-bold text-slate-400 dark:text-slate-500 flex-shrink-0 ${className}`}>{label}</span>;
+}
+
 function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl font-bold', children }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
@@ -34,23 +47,41 @@ function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl f
   );
 }
 
+// Liste classée façon Records > Mercato, pour les records par entraîneur
+// (remplace les grilles de tuiles AllPlayersGrid dans Style de jeu / Étude
+// de banc) : rang numéroté + ex-aequo, pastille couleur, valeur, détail
+// optionnel sur une ligne à part.
+function CoachRankList({ data, valueKey = 'count', unit = '', renderExtra }) {
+  const sorted = [...data].sort((a, b) => b[valueKey] - a[valueKey]);
+  const ranked = withRankLabels(sorted, e => e[valueKey]);
+  return (
+    <div className="space-y-1.5 mt-2">
+      {ranked.map(({ item: entry, label }) => (
+        <div key={entry.joueur} className="text-sm">
+          <div className="flex flex-wrap items-baseline gap-x-1.5">
+            <RankBadge label={label} />
+            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
+            <span className="font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
+            <span className={`font-bold ${colorText[entry.joueur]}`}>{entry[valueKey]}{unit}</span>
+          </div>
+          {renderExtra && renderExtra(entry)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Top3List({ entries, renderValue, renderDetail }) {
   if (!entries?.length) return null;
-  const ranked = entries.reduce((acc, entry, i) => {
-    const score = renderValue(entry);
-    const prevScore = acc.length ? acc[acc.length - 1].score : null;
-    const rank = score === prevScore ? acc[acc.length - 1].rank : i;
-    acc.push({ entry, score, rank });
-    return acc;
-  }, []);
+  const ranked = withRankLabels(entries, renderValue);
   return (
     <div className="space-y-2 mt-2">
-      {ranked.map(({ entry, score, rank }, i) => (
+      {ranked.map(({ item: entry, label }, i) => (
         <div key={i} className="text-sm">
           <div className="flex flex-wrap items-baseline gap-x-1.5">
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{rank + 1}.</span>
+            <RankBadge label={label} />
             <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[entry.joueur || entry.champion]}`} />
-            <span className="font-semibold text-slate-700 dark:text-slate-200">{score}</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-200">{renderValue(entry)}</span>
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400">{renderDetail(entry)}</div>
         </div>
@@ -72,18 +103,12 @@ function StreakRows({ streakData, joueurs, unit }) {
   const sorted = joueurs
     .map(j => ({ joueur: j, ...(streakData[j] || { length: 0, startDate: null, endDate: null }) }))
     .sort((a, b) => b.length - a.length);
-  const medals = ['🥇', '🥈', '🥉', ''];
-  const ranked = sorted.reduce((acc, entry, i) => {
-    const prevLen = acc.length ? acc[acc.length - 1].entry.length : null;
-    const rank = entry.length === prevLen ? acc[acc.length - 1].rank : i;
-    acc.push({ entry, rank });
-    return acc;
-  }, []);
+  const ranked = withRankLabels(sorted, e => e.length);
   return (
     <div className="space-y-2 mt-2">
-      {ranked.map(({ entry, rank }) => (
+      {ranked.map(({ item: entry, label }) => (
         <div key={entry.joueur} className="flex items-center gap-2">
-          <span className="w-5 text-base">{entry.length > 0 ? (medals[rank] || '') : ''}</span>
+          <span className="w-14 flex-shrink-0"><RankBadge label={entry.length > 0 ? label : ''} /></span>
           <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
           <div className="flex-1 min-w-0">
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
@@ -117,6 +142,12 @@ export default function RecordsTab({
     count: seasonRecords ? (seasonRecords.unbeatenChampion || []).filter(e => e.joueur === j).length : 0,
     instances: seasonRecords ? (seasonRecords.unbeatenChampion || []).filter(e => e.joueur === j) : [],
   })).sort((a, b) => b.count - a.count);
+
+  const perduDeJustesseList = joueurs.map(j => ({
+    joueur: j,
+    count: (perduUnPoint?.[j] || []).length,
+    details: perduUnPoint?.[j] || [],
+  }));
 
   return (
     <>
@@ -156,114 +187,80 @@ export default function RecordsTab({
         {/* ── ENTRAÎNEURS ── */}
         {activeSubTab === 'entraineurs' && seasonRecords && (<>
 
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">🎭 Portraits pas toujours flatteurs</h2>
+          <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">Trop en avance pour leur demander l'heure</h2>
 
-          {/* Championnats perdus de justesse */}
-          {perduUnPoint && (
-            <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-5">
-              <ShareBtn contextText={`Championnats perdus d'un point — ${selectedSeason}`} />
-              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">😤 Championnats perdus de justesse</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Perdu à 1 point, au goal average ou à la différence particulière</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {joueurs.map(joueur => {
-                  const count = (perduUnPoint[joueur] || []).length;
-                  return (
-                    <div key={joueur} className={`rounded-lg border-2 ${colorBorder[joueur]} p-3 text-center`}>
-                      <div className={`text-3xl font-bold ${colorText[joueur]}`}>{count}</div>
-                      <div className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1">{joueur}</div>
-                      {count > 0 && (
-                        <div className="mt-2 space-y-1">
-                          {(perduUnPoint[joueur] || []).map((d, i) => (
-                            <div key={i} className="text-xs text-slate-500 dark:text-slate-400">
-                              <span className="font-medium text-slate-600 dark:text-slate-300">{d.ligue} #{d.championnat}</span>
-                              <br />
-                              <span className="text-slate-400 dark:text-slate-500">vs {d.winner} · </span>
-                              <span className={`font-semibold ${d.raison === '1 pt' ? 'text-red-500' : d.raison === 'goal avg' ? 'text-orange-500' : 'text-purple-500'}`}>{d.raison}</span>
-                            </div>
-                          ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+
+            {/* Style de jeu (+ championnats perdus de justesse) */}
+            <RecordCard className="bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200 dark:from-teal-900/30 dark:to-cyan-900/30 dark:border-teal-700" contextText={selectedSeason}>
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🎮 Style de jeu</h3>
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🔪 Roi des scores serrés</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Victoires par exactement 1 but d'écart</p>
+              <CoachRankList data={seasonRecords.closeWinsKing} valueKey="count" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">💥 Berserk</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Victoires avec 5 buts d'écart ou plus</p>
+              <CoachRankList data={seasonRecords.berserkKing} valueKey="count" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">🎯 Clutch</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés avec exactement 1 point d'écart</p>
+              <CoachRankList data={seasonRecords.clutchChampion} valueKey="count" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">🛡️ Titres remportés sans défaite</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés sans perdre un seul match</p>
+              <CoachRankList data={unbeatenCountPerPlayer} valueKey="count" renderExtra={entry => entry.instances.length > 0 && (
+                <div className="mt-0.5 space-y-0.5">
+                  {entry.instances.map((inst, i) => (
+                    <div key={i} className="text-xs text-slate-400 dark:text-slate-500">{inst.ligue} #{inst.championnat} · {inst.saison}</div>
+                  ))}
+                </div>
+              )} />
+
+              {perduUnPoint && (
+                <>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">😤 Championnats perdus de justesse</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Perdu à 1 point, au goal average ou à la différence particulière</p>
+                  <CoachRankList data={perduDeJustesseList} valueKey="count" renderExtra={entry => entry.details.length > 0 && (
+                    <div className="mt-0.5 space-y-0.5">
+                      {entry.details.map((d, i) => (
+                        <div key={i} className="text-xs text-slate-400 dark:text-slate-500">
+                          {d.ligue} #{d.championnat} vs {d.winner} · <span className={d.raison === '1 pt' ? 'text-red-500' : d.raison === 'goal avg' ? 'text-orange-500' : 'text-purple-500'}>{d.raison}</span>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Style de jeu */}
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎮 Style de jeu</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-              <RecordCard className="bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200 dark:from-teal-900/30 dark:to-cyan-900/30 dark:border-teal-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🔪 Roi des scores serrés</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Victoires par exactement 1 but d'écart</p>
-                <AllPlayersGrid data={seasonRecords.closeWinsKing} valueKey="count" />
-              </RecordCard>
-
-              <RecordCard className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200 dark:from-red-900/30 dark:to-orange-900/30 dark:border-red-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💥 Berserk</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Victoires avec 5 buts d'écart ou plus</p>
-                <AllPlayersGrid data={seasonRecords.berserkKing} valueKey="count" />
-              </RecordCard>
-
-              <RecordCard className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200 dark:from-violet-900/30 dark:to-purple-900/30 dark:border-violet-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Clutch</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés avec exactement 1 point d'écart</p>
-                <AllPlayersGrid data={seasonRecords.clutchChampion} valueKey="count" />
-              </RecordCard>
-
-              <RecordCard className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-900/30 dark:to-indigo-900/30 dark:border-blue-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🛡️ Titres remportés sans défaite</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés sans perdre un seul match</p>
-                <AllPlayersGrid data={unbeatenCountPerPlayer} valueKey="count">
-                  {entry => entry.instances.length > 0 && (
-                    <div className="mt-1 space-y-0.5">
-                      {entry.instances.map((inst, i) => (
-                        <div key={i} className="text-xs text-slate-400 dark:text-slate-500">{inst.ligue} #{inst.championnat} · {inst.saison}</div>
                       ))}
                     </div>
-                  )}
-                </AllPlayersGrid>
-              </RecordCard>
+                  )} />
+                </>
+              )}
+            </RecordCard>
 
-            </div>
-          </div>
-
-          {/* Étude de banc — nécessite les notes/buteurs par match, pas
-              saisis sur 2024/2025 et 2025/2026 (ni sur All-Time, qui les
-              mélange) */}
-          {hasDetailedData(selectedSeason) && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🎲 Étude de banc</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+            {/* Étude de banc — nécessite les notes/buteurs par match, pas
+                saisis sur 2024/2025 et 2025/2026 (ni sur All-Time, qui les
+                mélange) */}
+            {hasDetailedData(selectedSeason) && (
               <RecordCard className="bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Rotaldinho</h3>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🎲 Étude de banc</h3>
+
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎲 Rotaldinho</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Titulaires absents non remplacés (rotaldos subis)</p>
-                <AllPlayersGrid data={seasonRecords.rotaldoKing} valueKey="count" />
-              </RecordCard>
+                <CoachRankList data={seasonRecords.rotaldoKing} valueKey="count" />
 
-              <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🪑⚽ Buts gâchés sur le banc</h3>
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-fuchsia-200 dark:border-fuchsia-800">🪑⚽ Buts gâchés sur le banc</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Buts marqués par des joueurs restés sur le banc - ne comptent pas</p>
-                <AllPlayersGrid data={seasonRecords.benchGoalsKing} valueKey="count" />
-              </RecordCard>
+                <CoachRankList data={seasonRecords.benchGoalsKing} valueKey="count" />
 
-              <RecordCard className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:to-red-900/30 dark:border-orange-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🙈 CSC</h3>
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-fuchsia-200 dark:border-fuchsia-800">🙈 CSC</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Buts contre son camp inscrits par les recrues de chaque entraîneur</p>
-                <AllPlayersGrid data={seasonRecords.cscKing} valueKey="count" />
-              </RecordCard>
+                <CoachRankList data={seasonRecords.cscKing} valueKey="count" />
 
-              <RecordCard className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/30 dark:border-emerald-700" contextText={selectedSeason}>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⭐ Banc vs titulaire</h3>
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-fuchsia-200 dark:border-fuchsia-800">⭐ Banc vs titulaire</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Écart entre la note moyenne des joueurs qui ont compté et celle des joueurs restés sur le banc (min. 3 notes banc)</p>
                 {seasonRecords.benchVsCompteAvg.length > 0 ? (
-                  <div className="space-y-2 mt-2">
-                    {seasonRecords.benchVsCompteAvg.map(e => (
+                  <div className="space-y-1.5 mt-2">
+                    {withRankLabels(seasonRecords.benchVsCompteAvg, e => e.diff).map(({ item: e, label }) => (
                       <div key={e.joueur} className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[e.joueur]}`} />
+                        <RankBadge label={label} />
+                        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[e.joueur]}`} />
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{e.joueur}</span>
                         <span className={`font-bold ${e.diff <= 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
                           {e.diff >= 0 ? '+' : ''}{e.diff.toFixed(1)}
@@ -275,54 +272,59 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">Pas encore assez de données.</p>
                 )}
               </RecordCard>
+            )}
 
-            </div>
-          </div>
-          )}
+            {/* Séries remarquables */}
+            <RecordCard className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:border-green-700" contextText={selectedSeason}>
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🔥 Séries offensives</h3>
 
-          {/* Séries remarquables */}
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">📊 Séries remarquables</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { key: 'longestWinStreak', label: '🏆 Plus longue série de victoires', color: 'from-green-50 to-green-100 border-green-200', unit: 'victoires' },
-                { key: 'longestUnbeatenStreak', label: '🛡️ Plus longue série sans défaite', color: 'from-blue-50 to-blue-100 border-blue-200', unit: 'matchs' },
-                { key: 'longestLossStreak', label: '💔 Plus longue série de défaites', color: 'from-red-50 to-red-100 border-red-200', unit: 'défaites' },
-                { key: 'longestDrawStreak', label: '🤝 Plus longue série de nuls', color: 'from-slate-50 to-slate-100 border-slate-200', unit: 'nuls' },
-                { key: 'longestGoalDrought', label: '🚫 Plus longue disette offensive', color: 'from-amber-50 to-amber-100 border-amber-200', unit: 'matchs sans marquer' },
-                { key: 'longestCleanSheetStreak', label: '🧤 Plus longue série sans encaisser', color: 'from-teal-50 to-teal-100 border-teal-200', unit: 'clean sheets' },
-              ].map(({ key, label, color, unit }) => (
-                <div key={key} data-card className={`relative bg-gradient-to-br ${color} dark:from-slate-700/40 dark:to-slate-700/40 dark:border-slate-600 rounded-lg p-4 border-2`}>
-                  <ShareBtn contextText={selectedSeason} />
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">{label}</h3>
-                  <StreakRows streakData={seasonRecords[key]} joueurs={joueurs} unit={unit} />
-                </div>
-              ))}
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏆 Plus longue série de victoires</h4>
+              <StreakRows streakData={seasonRecords.longestWinStreak} joueurs={joueurs} unit="victoires" />
 
-              <div data-card className="relative bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 dark:from-amber-900/30 dark:to-orange-900/30 dark:border-amber-700 rounded-lg p-4 border-2">
-                <ShareBtn contextText={selectedSeason} />
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">⚔️ Meilleure série en face-à-face</h3>
-                <div className="space-y-2">
-                  {joueurs.map(j => {
-                    const best = seasonRecords.bestH2HStreak[j];
-                    return (
-                      <div key={j} className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[j]}`} />
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-14">{j}</span>
-                        {best ? (
-                          <>
-                            <span className={`font-bold ${colorText[j]}`}>{best.length} victoires</span>
-                            <span className="text-xs text-slate-400 dark:text-slate-500">vs {best.adversaire}</span>
-                          </>
-                        ) : (
-                          <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">🛡️ Plus longue série sans défaite</h4>
+              <StreakRows streakData={seasonRecords.longestUnbeatenStreak} joueurs={joueurs} unit="matchs" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">🧤 Plus longue série sans encaisser</h4>
+              <StreakRows streakData={seasonRecords.longestCleanSheetStreak} joueurs={joueurs} unit="clean sheets" />
+            </RecordCard>
+
+            <RecordCard className="bg-gradient-to-br from-red-50 to-rose-50 border-red-200 dark:from-red-900/30 dark:to-rose-900/30 dark:border-red-700" contextText={selectedSeason}>
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🥶 Séries à oublier</h3>
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💔 Plus longue série de défaites</h4>
+              <StreakRows streakData={seasonRecords.longestLossStreak} joueurs={joueurs} unit="défaites" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-red-200 dark:border-red-800">🤝 Plus longue série de nuls</h4>
+              <StreakRows streakData={seasonRecords.longestDrawStreak} joueurs={joueurs} unit="nuls" />
+
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-red-200 dark:border-red-800">🚫 Plus longue disette offensive</h4>
+              <StreakRows streakData={seasonRecords.longestGoalDrought} joueurs={joueurs} unit="matchs sans marquer" />
+            </RecordCard>
+
+            <RecordCard className="bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 dark:from-amber-900/30 dark:to-orange-900/30 dark:border-amber-700" contextText={selectedSeason}>
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">⚔️ Face-à-face</h3>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">Meilleure série en face-à-face</h4>
+              <div className="space-y-2 mt-2">
+                {joueurs.map(j => {
+                  const best = seasonRecords.bestH2HStreak[j];
+                  return (
+                    <div key={j} className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${playerColors[j]}`} />
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-14">{j}</span>
+                      {best ? (
+                        <>
+                          <span className={`font-bold ${colorText[j]}`}>{best.length} victoires</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">vs {best.adversaire}</span>
+                        </>
+                      ) : (
+                        <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            </RecordCard>
+
           </div>
 
           {/* Régularité */}
