@@ -509,7 +509,7 @@ export default function RecordsTab({
         {/* ── LIGUES ── */}
         {activeSubTab === 'ligues' && (
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">🌍 Qui a hérité de la meilleure ligue ?</h2>
+            <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Méfie-toi même des petits, car il n'y a plus de grands</h2>
             {!ligueData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
             ) : (
@@ -553,9 +553,9 @@ export default function RecordsTab({
                       <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">{label}</h3>
                       <div className="space-y-1">
-                        {sorted.map((l, i) => (
+                        {withRankLabels(sorted, renderValue).map(({ item: l, label: rankLbl }) => (
                           <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5">{i + 1}.</span>
+                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-14">{rankLbl}</span>
                             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
                             <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
                             <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
@@ -569,7 +569,7 @@ export default function RecordsTab({
                 {mercatoData && (
                   <div data-card className="relative bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700 rounded-lg p-4 border-2 mt-4">
                     <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
-                    <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                    <div className="flex items-center justify-between flex-wrap gap-2 mb-2 pr-8">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">💎 Ligues avec le plus de gros transferts</h3>
                       <div className="flex gap-1">
                         {mercatoData.BIG_TRANSFER_THRESHOLDS.map(t => (
@@ -587,14 +587,12 @@ export default function RecordsTab({
                         ))}
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">En moyenne par fenêtre de mercato (un tour, au sein d'un championnat #) - à {bigTransferThreshold}M ou plus.</p>
-                    <div className="space-y-1">
-                      {mercatoData.bigTransfersByLigue[bigTransferThreshold].map((l, i) => (
+                    <div className="space-y-1 mt-2">
+                      {withRankLabels(mercatoData.bigTransfersByLigue[bigTransferThreshold], l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5">{i + 1}.</span>
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-14">{rankLbl}</span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
-                          <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.avg.toFixed(2)} / fenêtre</span>
-                          <span className="text-xs text-slate-400 dark:text-slate-500">({l.count} sur {l.windows} fenêtre{l.windows > 1 ? 's' : ''})</span>
+                          <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count}</span>
                         </div>
                       ))}
                     </div>
@@ -605,14 +603,12 @@ export default function RecordsTab({
                   <div data-card className="relative bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 dark:from-orange-900/30 dark:to-red-900/30 dark:border-orange-700 rounded-lg p-4 border-2 mt-4">
                     <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
                     <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⚔️ Ligues avec le plus de batailles d'enchères</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Enchères ayant reçu au moins une offre perdante, en moyenne par fenêtre de mercato</p>
-                    <div className="space-y-1">
-                      {mercatoData.bidWarsByLigue.map((l, i) => (
+                    <div className="space-y-1 mt-2">
+                      {withRankLabels(mercatoData.bidWarsByLigue, l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5">{i + 1}.</span>
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-14">{rankLbl}</span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
-                          <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.avg.toFixed(2)} / fenêtre</span>
-                          <span className="text-xs text-slate-400 dark:text-slate-500">({l.count} sur {l.windows} fenêtre{l.windows > 1 ? 's' : ''})</span>
+                          <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.count}</span>
                         </div>
                       ))}
                     </div>
