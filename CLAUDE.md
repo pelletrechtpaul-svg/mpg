@@ -25,6 +25,18 @@ Le script gère déjà automatiquement :
 - **Anti-doublon transactions** : bloque l'import si le même joueur/ligue/championnat/tour existe déjà en DB.
 - **Anti-duplication de fiche joueur** : avertit (sans bloquer) si le nom d'un nouveau joueur ressemble fortement (distance de Levenshtein ≤2) à une fiche déjà existante dans `players-registry.json` pour la même ligue — vérifier avant d'importer qu'il ne s'agit pas de la même personne avec une orthographe/prénom différent (sinon deux fiches distinctes pour le même joueur réel). Toujours réutiliser exactement le même `joueur` (chaîne) déjà présent en registre pour un joueur déjà connu, plutôt que d'en écrire une variante.
   - **⚠️ Depuis le 2026-09-17, la fiche joueur (onglet Joueurs) est unique par nom, toutes ligues confondues** (`useJoueursSearch.js` regroupe par `joueur` seul, plus par `joueur+ligue` — un même Mbappé acheté en Liga et en Ligue des Champions n'a qu'une seule fiche, avec les deux dans son historique). Cela **augmente l'enjeu d'un homonyme exact entre deux ligues différentes** : deux joueurs réels distincts partageant le même nom de famille dans deux ligues fusionneraient silencieusement en une seule fiche. La vérification d'identité par club (étape 2 ci-dessus) reste donc la seule protection — elle s'applique désormais aussi bien aux collisions inter-ligues qu'intra-ligue.
+  - **⚠️ Le check anti-duplication ci-dessus (Levenshtein ≤2) ne scanne QUE la ligue en cours d'import** — il ne détecte donc rien si le même nom exact existe déjà dans une AUTRE ligue avec un club différent. Ça a causé deux fusions incorrectes en prod (2026-09-21) : "Díaz" = Luis Díaz (Bayern, Ligue des Champions) fusionné avec Mariano Díaz (Alavés, Liga) ; "Ndiaye" = Rassoul Ndiaye (Le Havre, Ligue 1) fusionné avec Iliman Ndiaye (Man City, Ligue des Champions) — ce dernier avait même déjà des buts enregistrés sous le mauvais nom. **Avant d'écrire un nouveau joueur, scanner `players-registry.json` en entier (toutes ligues) par nom exact**, pas seulement dans la ligue cible :
+    ```python
+    import json
+    with open('scripts/players-registry.json', encoding='utf-8') as f:
+        data = json.load(f)
+    for k, v in data.items():
+        if k.split('|')[0] == NOM_A_VERIFIER:
+            print(k, '->', v)   # comparer le(s) club(s) à celui du screen
+    ```
+    - Si une entrée existe déjà avec le **même club** → c'est le même joueur réel acheté dans une autre ligue, réutiliser exactement le même `joueur` (chaîne) tel quel, ne rien renommer.
+    - Si une entrée existe avec un **club différent** → homonyme, deux personnes distinctes : donner au nouveau joueur un `joueur` désambiguïsé avec le nom complet (ex. `"Mariano Díaz"`, `"Iliman Ndiaye"`, `"Yeremay Hernández"`, `"Álvaro García"`) plutôt que le seul nom de famille, pour ne pas fusionner avec la fiche existante.
+    - Si une collision de ce type est découverte *après* l'import (déjà en DB), la corriger avec un script one-off qui renomme le champ `joueur` à la fois dans `mercato` ET dans `matches` (les entrées `buteurs[]`/`notes[]` référencent aussi le joueur par ce même champ) — voir `git log` pour l'exemple `fix-homonym-collisions.cjs` (supprimé après usage, pattern à reproduire).
 
 **⚠️ Règle stricte, dans cet ordre — ne jamais sauter l'étape 2 :**
 1. **Générer un JSON** au format attendu par `scripts/import-mercato.cjs`, avec `poste`/`club` pour chaque joueur.

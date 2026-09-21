@@ -650,9 +650,12 @@ export default function RecordsTab({
             {!mercatoData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosses enchères</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🎯 One shots</h3>
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosse enchère</h4>
                   {mercatoData.biggestBids.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestBids.map((m, i) => (
@@ -666,8 +669,8 @@ export default function RecordsTab({
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
 
                   {mercatoData.recordParPoste.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Record par poste</h4>
+                    <div className="mt-3">
+                      <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Par poste</h5>
                       <div className="space-y-1.5">
                         {mercatoData.recordParPoste.map((m, i) => (
                           <div key={i} className="text-sm">
@@ -680,10 +683,9 @@ export default function RecordsTab({
                       </div>
                     </div>
                   )}
-                </RecordCard>
 
-                <RecordCard className="bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 dark:from-emerald-900/30 dark:to-green-900/30 dark:border-emerald-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Meilleur rapport qualité/prix</h3>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">🎯 Meilleur rapport qualité/prix</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Sur un seul championnat</p>
                   {mercatoData.bestValueForMoney.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.bestValueForMoney.map((m, i) => (
@@ -695,10 +697,9 @@ export default function RecordsTab({
                       ))}
                     </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas assez de buts pour établir ce classement.</p>}
-                </RecordCard>
 
-                <RecordCard className="bg-gradient-to-br from-rose-50 to-red-50 border-rose-200 dark:from-rose-900/30 dark:to-red-900/30 dark:border-rose-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">📉 Plus gros flops</h3>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">📉 Plus gros flop</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Sur un seul championnat, à partir de 3 matchs joués</p>
                   {mercatoData.biggestFlops.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.biggestFlops.map((m, i) => (
@@ -712,8 +713,11 @@ export default function RecordsTab({
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun flop pour l'instant.</p>}
                 </RecordCard>
 
+                {/* ── CUMUL DES MANDATS ── */}
                 <RecordCard className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-900/30 dark:to-amber-900/30 dark:border-orange-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💰 Plus grosse mise cumulée</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🔁 Cumul des mandats</h3>
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💰 Plus grosse mise cumulée</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Total dépensé sur un même joueur, tous mercatos et toutes ligues confondus</p>
                   {mercatoData.biggestCumulativeSpend.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
@@ -727,8 +731,8 @@ export default function RecordsTab({
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
 
                   {mercatoData.cumulativeSpendParPoste.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
-                      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Par poste</h4>
+                    <div className="mt-3">
+                      <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Par poste</h5>
                       <div className="space-y-1.5">
                         {mercatoData.cumulativeSpendParPoste.map((m, i) => (
                           <div key={i} className="text-sm">
@@ -740,10 +744,51 @@ export default function RecordsTab({
                       </div>
                     </div>
                   )}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🎯 Meilleur rapport qualité/prix cumulé</h4>
+                  {mercatoData.bestValueForMoneyCumule.length > 0 ? (
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.bestValueForMoneyCumule.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.total}M</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas assez de buts pour établir ce classement.</p>}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">📉 Plus gros flop cumulé</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">À partir de 3 matchs joués au total</p>
+                  {mercatoData.biggestFlopsCumule.length > 0 ? (
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.biggestFlopsCumule.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">0 but / {m.total}M</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun flop pour l'instant.</p>}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🔂 Plus grand nombre d'enchères cumulées</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Sur un même joueur, toutes ligues confondues</p>
+                  {mercatoData.mostBidsCumulees.length > 0 ? (
+                    <div className="space-y-1.5 mt-2">
+                      {mercatoData.mostBidsCumulees.map((m, i) => (
+                        <div key={i} className="text-sm">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
+                          <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.count} enchères remportées</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucun joueur racheté plusieurs fois pour l'instant.</p>}
                 </RecordCard>
 
+                {/* ── DIVERS ── */}
                 <RecordCard className="bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200 dark:from-sky-900/30 dark:to-blue-900/30 dark:border-sky-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏠 Fidélité</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3">🗂️ Divers</h3>
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏠 Fidélité</h4>
                   {mercatoData.longevite.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {mercatoData.longevite.map((l, i) => (
@@ -755,6 +800,28 @@ export default function RecordsTab({
                       ))}
                     </div>
                   ) : <p className="text-sm text-slate-500 dark:text-slate-400">Pas encore de fidélité mercato notable.</p>}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">👥 Joueurs recrutés (distincts)</h4>
+                  {mercatoData.recruitsCountByCoach.length > 0 ? (
+                    <>
+                      <AllPlayersGrid data={mercatoData.recruitsCountByCoach} valueKey="count" />
+                      {(() => {
+                        const min = Math.min(...mercatoData.recruitsCountByCoach.map(c => c.count));
+                        const fewest = mercatoData.recruitsCountByCoach.filter(c => c.count === min).map(c => c.joueur).join(', ');
+                        return <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Le moins de recrues : {fewest} ({min})</p>;
+                      })()}
+                    </>
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">⚔️ Batailles d'enchères remportées</h4>
+                  {mercatoData.bidWarsWonCoach.length > 0 ? (
+                    <AllPlayersGrid data={mercatoData.bidWarsWonCoach} valueKey="count" />
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune bataille d'enchères pour l'instant.</p>}
+
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-sky-200 dark:border-sky-800">📊 Enchère médiane</h4>
+                  {mercatoData.medianBidCoach.length > 0 ? (
+                    <AllPlayersGrid data={mercatoData.medianBidCoach} valueKey="medianLabel" />
+                  ) : <p className="text-sm text-slate-500 dark:text-slate-400">Aucune donnée.</p>}
                 </RecordCard>
               </div>
             )}

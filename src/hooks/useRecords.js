@@ -124,6 +124,70 @@ const computeMercatoRecords = (mercato, matches) => {
     .filter(m => m.buts >= 2);
   const bestValueForMoney = topN(ratioCandidates, m => m.ratio, m => m.buts);
 
+  // --- Records "cumul des mandats" : mêmes métriques que ci-dessus mais
+  // agrégées sur toutes les enchères remportées d'un même joueur réel
+  // (toutes ligues/championnats/tours confondus), plutôt que sur une seule
+  // enchère isolée.
+  const totalGoalsByPlayer = {};
+  Object.entries(goalMap).forEach(([key, g]) => {
+    const joueur = key.split('|')[0];
+    totalGoalsByPlayer[joueur] = (totalGoalsByPlayer[joueur] || 0) + g.buts;
+  });
+  const totalMatchesByPlayer = {};
+  Object.entries(matchesPlayedMap).forEach(([key, count]) => {
+    const joueur = key.split('|')[0];
+    totalMatchesByPlayer[joueur] = (totalMatchesByPlayer[joueur] || 0) + count;
+  });
+
+  const bestValueForMoneyCumule = Object.entries(cumulByPlayer)
+    .filter(([, total]) => total > 0)
+    .map(([joueur, total]) => ({ joueur, total, buts: totalGoalsByPlayer[joueur] || 0, ratio: (totalGoalsByPlayer[joueur] || 0) / total }))
+    .filter(m => m.buts >= 2)
+    .sort((a, b) => b.ratio - a.ratio || b.buts - a.buts)
+    .slice(0, 3);
+
+  const biggestFlopsCumule = Object.entries(cumulByPlayer)
+    .filter(([joueur, total]) => total > 0 && !(totalGoalsByPlayer[joueur] > 0) && (totalMatchesByPlayer[joueur] || 0) >= 3)
+    .map(([joueur, total]) => ({ joueur, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 3);
+
+  // Plus grand nombre d'enchères remportées cumulées sur un même joueur
+  // (toutes ligues/championnats/tours) — combien de fois il a été racheté.
+  const purchaseCountByPlayer = {};
+  mercato.forEach(m => { if (!m.joueur) return; purchaseCountByPlayer[m.joueur] = (purchaseCountByPlayer[m.joueur] || 0) + 1; });
+  const mostBidsCumulees = Object.entries(purchaseCountByPlayer)
+    .map(([joueur, count]) => ({ joueur, count }))
+    .filter(m => m.count > 1)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
+
+  // --- Records "divers" : statistiques mercato par entraîneur.
+  const distinctPlayersByCoach = {}, bidWarsWonByCoach = {}, bidsByCoach = {};
+  mercato.forEach(m => {
+    if (!m.acheteur) return;
+    if (!distinctPlayersByCoach[m.acheteur]) distinctPlayersByCoach[m.acheteur] = new Set();
+    if (m.joueur) distinctPlayersByCoach[m.acheteur].add(m.joueur);
+    if ((m.encheres_perdues || []).length > 0) bidWarsWonByCoach[m.acheteur] = (bidWarsWonByCoach[m.acheteur] || 0) + 1;
+    if (!bidsByCoach[m.acheteur]) bidsByCoach[m.acheteur] = [];
+    bidsByCoach[m.acheteur].push(m.prix || 0);
+  });
+  const median = arr => {
+    if (!arr.length) return 0;
+    const sorted = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  };
+  const recruitsCountByCoach = Object.entries(distinctPlayersByCoach)
+    .map(([joueur, set]) => ({ joueur, count: set.size }))
+    .sort((a, b) => b.count - a.count);
+  const bidWarsWonCoach = Object.entries(bidWarsWonByCoach)
+    .map(([joueur, count]) => ({ joueur, count }))
+    .sort((a, b) => b.count - a.count);
+  const medianBidCoach = Object.entries(bidsByCoach)
+    .map(([joueur, prix]) => { const med = median(prix); return { joueur, median: med, medianLabel: `${med}M` }; })
+    .sort((a, b) => b.median - a.median);
+
   // Longévité mercato : plus longue série de championnats consécutifs (même joueur, même ligue, même coach)
   const longeviteGroups = {};
   mercato.forEach(m => {
@@ -142,7 +206,14 @@ const computeMercatoRecords = (mercato, matches) => {
     return { joueur: g.joueur, ligue: g.ligue, acheteur: g.acheteur, streak: sorted.length ? best : 0, saisons: [...g.saisons] };
   }).filter(g => g.streak > 1).sort((a, b) => b.streak - a.streak).slice(0, 3);
 
-  return { biggestBids, recordParPoste, biggestCumulativeSpend, cumulativeSpendParPoste, biggestFlops, bestValueForMoney, longevite };
+  return {
+    // One shots (une seule enchère/championnat)
+    biggestBids, recordParPoste, bestValueForMoney, biggestFlops,
+    // Cumul des mandats (agrégé sur toutes les enchères d'un même joueur)
+    biggestCumulativeSpend, cumulativeSpendParPoste, bestValueForMoneyCumule, biggestFlopsCumule, mostBidsCumulees,
+    // Divers
+    longevite, recruitsCountByCoach, bidWarsWonCoach, medianBidCoach,
+  };
 };
 
 export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, selectedSeason, mercatoData, filteredMercatoData) => {
