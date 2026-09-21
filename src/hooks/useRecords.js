@@ -112,7 +112,7 @@ const computeMercatoRecords = (mercato, matches) => {
   // => le prix MOYEN par joueur est peu discriminant, mais le nombre de
   // très grosses enchères l'est). Toutes les ligues connues du mercato
   // apparaissent, même à 0.
-  const BIG_TRANSFER_THRESHOLDS = [20, 40, 60, 80, 100];
+  const BIG_TRANSFER_THRESHOLDS = [40, 80, 120];
   const bigTransfersByLigue = {};
   BIG_TRANSFER_THRESHOLDS.forEach(threshold => {
     const counts = {};
