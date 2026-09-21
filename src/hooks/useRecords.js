@@ -94,24 +94,12 @@ const computeMercatoRecords = (mercato, matches) => {
     });
   });
 
-  // Nombre de fenêtres de mercato distinctes par ligue (saison|championnat|
-  // tour) - certaines ligues ont eu plus de tours importés que d'autres,
-  // donc un compteur brut les avantagerait artificiellement. Tous les
-  // comptages "par ligue" ci-dessous sont ramenés à une moyenne par fenêtre
-  // pour rester comparables.
-  const windowsByLigue = {};
-  mercato.forEach(m => {
-    if (!m.ligue) return;
-    if (!windowsByLigue[m.ligue]) windowsByLigue[m.ligue] = new Set();
-    windowsByLigue[m.ligue].add(`${m.saison}|${m.championnat}|${m.tour}`);
-  });
-  const ligueSet = Object.keys(windowsByLigue);
-
-  // Nombre moyen de "gros transferts" par fenêtre de mercato, par ligue,
-  // pour plusieurs seuils au choix (budget fixe de 500M pour tout le monde
-  // => le prix MOYEN par joueur est peu discriminant, mais le nombre de
-  // très grosses enchères l'est). Toutes les ligues connues du mercato
+  // Nombre cumulé (brut, pas ramené à une moyenne) de "gros transferts" par
+  // ligue, pour plusieurs seuils au choix (budget fixe de 500M pour tout le
+  // monde => le prix MOYEN par joueur est peu discriminant, mais le nombre
+  // de très grosses enchères l'est). Toutes les ligues connues du mercato
   // apparaissent, même à 0.
+  const ligueSet = [...new Set(mercato.map(m => m.ligue).filter(Boolean))];
   const BIG_TRANSFER_THRESHOLDS = [40, 80, 120];
   const bigTransfersByLigue = {};
   BIG_TRANSFER_THRESHOLDS.forEach(threshold => {
@@ -119,18 +107,18 @@ const computeMercatoRecords = (mercato, matches) => {
     ligueSet.forEach(l => { counts[l] = 0; });
     mercato.forEach(m => { if (m.ligue && (m.prix || 0) >= threshold) counts[m.ligue]++; });
     bigTransfersByLigue[threshold] = ligueSet
-      .map(ligue => { const windows = windowsByLigue[ligue].size; return { ligue, count: counts[ligue], windows, avg: counts[ligue] / windows }; })
-      .sort((a, b) => b.avg - a.avg);
+      .map(ligue => ({ ligue, count: counts[ligue] }))
+      .sort((a, b) => b.count - a.count);
   });
 
-  // Nombre moyen de batailles d'enchères (au moins une offre perdante) par
-  // fenêtre de mercato, par ligue.
+  // Nombre cumulé de batailles d'enchères (au moins une offre perdante),
+  // par ligue.
   const bidWarsCounts = {};
   ligueSet.forEach(l => { bidWarsCounts[l] = 0; });
   mercato.forEach(m => { if (m.ligue && (m.encheres_perdues || []).length > 0) bidWarsCounts[m.ligue]++; });
   const bidWarsByLigue = ligueSet
-    .map(ligue => { const windows = windowsByLigue[ligue].size; return { ligue, count: bidWarsCounts[ligue], windows, avg: bidWarsCounts[ligue] / windows }; })
-    .sort((a, b) => b.avg - a.avg);
+    .map(ligue => ({ ligue, count: bidWarsCounts[ligue] }))
+    .sort((a, b) => b.count - a.count);
 
   // Plus grosses enchères
   const biggestBids = topN(mercato, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
@@ -301,7 +289,7 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
     const rawMostProlificMatch = [], rawMostProlificDraw = [];
     const rawMostGoalsInChamp = [], rawMostConcededInChamp = [];
     const rawBestGA = [], rawWorstGA = [];
-    const rawTightest = [], rawMostExplosive = [], rawLeastExplosive = [], rawMostDrawsChamp = [];
+    const rawTightest = [];
 
     // Streak records: per-player dict
     const longestWinStreak = {}, longestUnbeatenStreak = {}, longestLossStreak = {};
@@ -450,11 +438,6 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       const meanPoints = pointsValues.reduce((a, b) => a + b, 0) / pointsValues.length;
       const sigmaRounded = parseFloat(Math.sqrt(pointsValues.reduce((sum, p) => sum + Math.pow(p - meanPoints, 2), 0) / pointsValues.length).toFixed(2));
       rawTightest.push({ sigma: sigmaRounded, ranking: ranking.map(p => ({ joueur: p.joueur, points: p.points })), championnat: matches[0].championnat, ligue: matches[0].ligue, saison: matches[0].saison });
-      const totalGoals = matches.reduce((sum, m) => sum + (m.buts_j1 || 0) + (m.buts_j2 || 0), 0);
-      rawMostExplosive.push({ totalGoals, avgGoals: totalGoals / matches.length, championnat: matches[0].championnat, ligue: matches[0].ligue, saison: matches[0].saison });
-      rawLeastExplosive.push({ totalGoals, avgGoals: totalGoals / matches.length, championnat: matches[0].championnat, ligue: matches[0].ligue, saison: matches[0].saison });
-      const totalDraws = matches.filter(m => m.buts_j1 === m.buts_j2).length;
-      if (totalDraws > 0) rawMostDrawsChamp.push({ count: totalDraws, total: matches.length, championnat: matches[0].championnat, ligue: matches[0].ligue, saison: matches[0].saison });
     });
 
     // Clutch: all championships (including incomplete)
@@ -477,10 +460,6 @@ export const useRecords = (filteredData, joueurs, ligueMetadata, matchData, sele
       bestGAChampionship: topN(rawBestGA, v => v.ga, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
       worstGAChampionship: topN(rawWorstGA, v => -v.ga, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
       tightestChampionship: topN(rawTightest, v => -v.sigma, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
-      mostExplosive: topN(rawMostExplosive, v => v.totalGoals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
-      leastExplosive: topN(rawLeastExplosive, v => -v.totalGoals, v => saisonTs(v.saison) * 1000 + (v.championnat || 0)),
-      // Tiebreaker pour nuls : % de nuls (count/total), puis saison récente
-      mostDrawsChampionship: topN(rawMostDrawsChamp, v => v.count, v => (v.count / v.total) * 1000 + saisonTs(v.saison) * 0.001),
       closeWinsKing: Object.entries(closeWinsCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       berserkKing: Object.entries(berserkCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
       clutchChampion: Object.entries(clutchCounts).map(([j, c]) => ({ joueur: j, count: c })).sort((a, b) => b.count - a.count),
