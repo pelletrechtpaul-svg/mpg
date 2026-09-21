@@ -15,7 +15,7 @@ const computeLigueStats = (matches, minMatchs = 3) => {
   });
   const ligues = Object.entries(ligueStats).filter(([, s]) => s.matchs >= minMatchs).map(([ligue, s]) => ({ ligue, matchs: s.matchs, avgGoals: s.totalGoals / s.matchs, totalGoals: s.totalGoals, drawRate: s.draws / s.matchs, drawCount: s.draws, cleanSheetRate: s.cleanSheets / s.matchs, cleanSheetCount: s.cleanSheets, avgMargin: s.totalMargin / s.matchs })).sort((a, b) => b.avgGoals - a.avgGoals);
   if (ligues.length === 0) return null;
-  return { ligues, mostProlific: ligues[0], leastProlific: ligues[ligues.length - 1], mostDraws: [...ligues].sort((a, b) => b.drawRate - a.drawRate)[0], mostCleanSheets: [...ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate)[0], tightest: [...ligues].sort((a, b) => a.avgMargin - b.avgMargin)[0] };
+  return { ligues };
 };
 
 const saisonTs = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };

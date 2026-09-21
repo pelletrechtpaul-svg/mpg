@@ -561,10 +561,10 @@ export default function RecordsTab({
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     {
-                      label: '⚽ Ligue la plus prolifique',
+                      label: '⚽ Ligues les plus prolifiques',
                       color: 'from-green-50 to-green-100 border-green-200 dark:from-green-900/30 dark:border-green-700',
                       sorted: [...ligueData.ligues].sort((a, b) => b.avgGoals - a.avgGoals),
                       renderValue: l => `${l.avgGoals.toFixed(2)} buts/match`,
@@ -572,15 +572,7 @@ export default function RecordsTab({
                       textColor: 'text-green-700 dark:text-green-400',
                     },
                     {
-                      label: '🥱 Ligue la moins prolifique',
-                      color: 'from-slate-50 to-slate-100 border-slate-200 dark:from-slate-700/50 dark:border-slate-600',
-                      sorted: [...ligueData.ligues].sort((a, b) => a.avgGoals - b.avgGoals),
-                      renderValue: l => `${l.avgGoals.toFixed(2)} buts/match`,
-                      renderDetail: l => `${l.totalGoals} buts sur ${l.matchs} matchs`,
-                      textColor: 'text-slate-600 dark:text-slate-300',
-                    },
-                    {
-                      label: '🤝 Ligue avec le plus de nuls',
+                      label: '🤝 Ligues avec le plus de nuls',
                       color: 'from-zinc-50 to-zinc-100 border-zinc-300 dark:from-zinc-800/50 dark:border-zinc-600',
                       sorted: [...ligueData.ligues].sort((a, b) => b.drawRate - a.drawRate),
                       renderValue: l => `${(l.drawRate * 100).toFixed(1)}%`,
@@ -588,7 +580,7 @@ export default function RecordsTab({
                       textColor: 'text-zinc-700 dark:text-zinc-300',
                     },
                     {
-                      label: '🧤 Ligue avec le plus de clean sheets',
+                      label: '🧤 Ligues avec le plus de clean sheets',
                       color: 'from-teal-50 to-teal-100 border-teal-200 dark:from-teal-900/30 dark:border-teal-700',
                       sorted: [...ligueData.ligues].sort((a, b) => b.cleanSheetRate - a.cleanSheetRate),
                       renderValue: l => `${(l.cleanSheetRate * 100).toFixed(1)}%`,
@@ -596,7 +588,7 @@ export default function RecordsTab({
                       textColor: 'text-teal-700 dark:text-teal-400',
                     },
                     {
-                      label: '🎯 Ligue la plus serrée',
+                      label: '🎯 Ligues les plus serrées',
                       color: 'from-blue-50 to-blue-100 border-blue-200 dark:from-blue-900/30 dark:border-blue-700',
                       sorted: [...ligueData.ligues].sort((a, b) => a.avgMargin - b.avgMargin),
                       renderValue: l => `${l.avgMargin.toFixed(2)} buts d'écart/match`,
@@ -604,17 +596,15 @@ export default function RecordsTab({
                       textColor: 'text-blue-700 dark:text-blue-400',
                     },
                   ].map(({ label, color, sorted, renderValue, renderDetail, textColor }) => {
-                    const top = sorted.slice(0, 3);
                     const medals = ['🥇', '🥈', '🥉'];
                     return (
                       <div key={label} data-card className={`relative bg-gradient-to-br ${color} rounded-lg p-4 border-2`}>
                         <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
-                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</h3>
-                        <p className={`text-2xl font-bold ${textColor} mb-2`}>{renderValue(top[0])}</p>
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">{label}</h3>
                         <div className="space-y-1">
-                          {top.map((l, i) => (
+                          {sorted.map((l, i) => (
                             <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm">{medals[i]}</span>
+                              <span className="text-sm w-5">{medals[i] || `${i + 1}.`}</span>
                               <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
                               <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
                               <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
@@ -624,31 +614,6 @@ export default function RecordsTab({
                       </div>
                     );
                   })}
-                </div>
-
-                <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-indigo-50/50 dark:bg-[#151228]/50 text-slate-600 dark:text-slate-300">
-                        <th className="text-left px-3 py-2 font-semibold">Ligue</th>
-                        <th className="text-center px-3 py-2 font-semibold">Matchs</th>
-                        <th className="text-center px-3 py-2 font-semibold">Buts/match</th>
-                        <th className="text-center px-3 py-2 font-semibold">% Nuls</th>
-                        <th className="text-center px-3 py-2 font-semibold">% CS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ligueData.ligues.map((l, i) => (
-                        <tr key={l.ligue} className={`border-t border-slate-100 dark:border-slate-700 ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-slate-700/20'}`}>
-                          <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{l.ligue}</td>
-                          <td className="px-3 py-2 text-center text-slate-600 dark:text-slate-300">{l.matchs}</td>
-                          <td className="px-3 py-2 text-center font-mono text-slate-800 dark:text-slate-100">{l.avgGoals.toFixed(2)}</td>
-                          <td className="px-3 py-2 text-center text-slate-600 dark:text-slate-300">{(l.drawRate * 100).toFixed(0)}%</td>
-                          <td className="px-3 py-2 text-center text-slate-600 dark:text-slate-300">{(l.cleanSheetRate * 100).toFixed(0)}%</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 </div>
               </>
             )}
