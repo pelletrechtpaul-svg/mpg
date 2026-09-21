@@ -34,7 +34,7 @@ function withRankLabels(items, scoreFn) {
 // Largeur fixe : que le label soit "1.", "12." ou vide (ex-aequo), tout ce
 // qui suit (pastille + nom) démarre exactement au même endroit.
 function RankBadge({ label, className = '' }) {
-  return <span className={`inline-block w-5 flex-shrink-0 text-xs font-bold text-slate-400 dark:text-slate-500 ${className}`}>{label}</span>;
+  return <span className={`inline-block w-3.5 flex-shrink-0 text-xs font-bold text-slate-400 dark:text-slate-500 ${className}`}>{label}</span>;
 }
 
 function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl font-bold', children }) {
@@ -558,7 +558,7 @@ export default function RecordsTab({
                       <div className="space-y-1">
                         {withRankLabels(sorted, renderValue).map(({ item: l, label: rankLbl }) => (
                           <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5 flex-shrink-0">{rankLbl}</span>
+                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
                             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
                             <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
                             <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
@@ -593,7 +593,7 @@ export default function RecordsTab({
                     <div className="space-y-1 mt-2">
                       {withRankLabels(mercatoData.bigTransfersByLigue[bigTransferThreshold], l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5 flex-shrink-0">{rankLbl}</span>
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
                           <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count}</span>
                         </div>
@@ -609,7 +609,7 @@ export default function RecordsTab({
                     <div className="space-y-1 mt-2">
                       {withRankLabels(mercatoData.bidWarsByLigue, l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-5 flex-shrink-0">{rankLbl}</span>
+                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
                           <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.count}</span>
                         </div>
