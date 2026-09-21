@@ -3302,15 +3302,6 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/opcqpo1668712724.jpg"
   },
-  "Ndiaye|Ligue des Champions": {
-    "prenom": "Iliman",
-    "nationalite": null,
-    "poste": "MO",
-    "clubs": [
-      "Man City"
-    ],
-    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mewy8h1628334209.jpg"
-  },
   "Havertz|Ligue des Champions": {
     "prenom": "Kai",
     "nationalite": null,
@@ -3598,15 +3589,6 @@
       "Athletic"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9x234o1632752663.jpg"
-  },
-  "Díaz|Liga": {
-    "prenom": "Mariano",
-    "nationalite": null,
-    "poste": "A",
-    "clubs": [
-      "Alavés"
-    ],
-    "photo": null
   },
   "Vicente|Liga": {
     "prenom": "Iñigo",
@@ -3976,5 +3958,23 @@
       "Elche"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/eju2mp1609280660.jpg"
+  },
+  "Mariano Díaz|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Alavés"
+    ],
+    "photo": null
+  },
+  "Iliman Ndiaye|Ligue des Champions": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Man City"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mewy8h1628334209.jpg"
   }
 }
