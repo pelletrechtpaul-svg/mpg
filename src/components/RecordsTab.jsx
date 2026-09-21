@@ -176,7 +176,7 @@ export default function RecordsTab({
         </div>
 
         {!seasonRecords && activeSubTab !== 'ligues' && activeSubTab !== 'mercato' && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-8 text-center">
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-8 text-center">
             <p className="text-slate-500 dark:text-slate-400">
               Les records entraîneurs et exploits ne sont disponibles que par saison.
               Sélectionne une saison ou consulte l'onglet <button onClick={() => setActiveSubTab('ligues')} className="text-blue-500 underline">Ligues</button>.
@@ -329,7 +329,7 @@ export default function RecordsTab({
 
           {/* Régularité */}
           {seasonRecords.allPlayerStdDevs.length > 0 && (
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">📈 Régularité des scores</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Du plus constant au plus imprévisible — basé sur l'écart-type des différences de buts</p>
               <div data-card className="relative">
@@ -365,7 +365,7 @@ export default function RecordsTab({
             <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">La puissance ne respecte que la puissance</h2>
 
             {/* Records de match */}
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Records de match</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -416,7 +416,7 @@ export default function RecordsTab({
             </div>
 
             {/* Records de championnat */}
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -508,7 +508,7 @@ export default function RecordsTab({
 
         {/* ── LIGUES ── */}
         {activeSubTab === 'ligues' && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
             <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Méfie-toi même des petits, car il n'y a plus de grands</h2>
             {!ligueData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
@@ -621,7 +621,7 @@ export default function RecordsTab({
 
         {/* ── MERCATO ── */}
         {activeSubTab === 'mercato' && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
             <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Ma question préférée ?</h2>
             {!mercatoData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>

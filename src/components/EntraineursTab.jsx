@@ -311,7 +311,7 @@ export default function EntraineursTab({
             const active = effectifsParLigue.find(e => e.ligue === effectifLigue) || effectifsParLigue[0];
             const { bench } = computeFormation(active.squad, active.ratingFor);
             return (
-              <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+              <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden transition-all duration-200 p-5">
                 <ShareBtn contextText={shareContext} />
                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Effectifs actuels</h3>
                 {effectifsParLigue.length > 1 && (

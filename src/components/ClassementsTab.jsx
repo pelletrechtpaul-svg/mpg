@@ -1,11 +1,29 @@
 import { useState, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
 import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDetailedData } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 import { champNum } from './AdminScorerSection.jsx';
+
+// Tooltip du graphique d'évolution, entrées triées par classement à la date
+// survolée plutôt que par ordre de déclaration des lignes (recharts n'ordonne
+// pas le payload par valeur par défaut).
+const EvolutionTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  const sorted = [...payload].sort((a, b) => b.value - a.value);
+  return (
+    <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-[#15131f]/95 px-3 py-2 text-sm shadow-lg">
+      <p className="font-semibold text-slate-700 dark:text-slate-200 mb-1">{label}</p>
+      {sorted.map(entry => (
+        <p key={entry.dataKey} style={{ color: entry.color }} className="font-medium">
+          {entry.dataKey} : {entry.value}
+        </p>
+      ))}
+    </div>
+  );
+};
 
 const PlayerBadge = ({ joueur, sm = true }) => (
   <div
@@ -66,23 +84,52 @@ export default function ClassementsTab({
     setCoachFilter(null);
   }
 
+  // "Meilleurs effectifs" (sélecteur sur "Total") : pour chaque coach, le
+  // championnat #N de cette ligue où il a cumulé le plus de points —
+  // matchesListForChampionnat couvre déjà tous les championnats de la ligue
+  // quand selectedChampionnat === 'total'.
+  const bestChampionnatByCoach = useMemo(() => {
+    if (selectedLigue === 'general' || selectedChampionnat !== 'total') return {};
+    const pointsByCoachChamp = {};
+    matchesListForChampionnat.forEach(m => {
+      const cn = champNum(m.championnat);
+      if (cn == null) return;
+      if (m.joueur1) { const c = pointsByCoachChamp[m.joueur1] || (pointsByCoachChamp[m.joueur1] = {}); c[cn] = (c[cn] || 0) + (m.points_j1 || 0); }
+      if (m.joueur2) { const c = pointsByCoachChamp[m.joueur2] || (pointsByCoachChamp[m.joueur2] = {}); c[cn] = (c[cn] || 0) + (m.points_j2 || 0); }
+    });
+    const best = {};
+    Object.entries(pointsByCoachChamp).forEach(([coach, champs]) => {
+      const entries = Object.entries(champs);
+      if (entries.length) best[coach] = parseInt(entries.sort((a, b) => b[1] - a[1])[0][0], 10);
+    });
+    return best;
+  }, [selectedLigue, selectedChampionnat, matchesListForChampionnat]);
+
   // Effectif de chaque coach pour le championnat sélectionné, trié par poste.
-  // "Total" n'affiche pas d'effectif (pas de synthèse pour l'instant — à
-  // revoir plus tard) : il faut un championnat #N précis.
+  // Sur "Total", montre le meilleur championnat de chaque coach (ci-dessus)
+  // plutôt qu'une absence de synthèse.
   const effectifsData = useMemo(() => {
-    if (selectedLigue === 'general' || selectedChampionnat === 'total') return null;
+    if (selectedLigue === 'general') return null;
     const byCoach = {};
     joueurs.forEach(j => { byCoach[j] = []; });
 
-    // Le championnat des matchs (et du sélecteur) est stocké "#N", celui du
-    // mercato est un nombre — sans ce parsing la comparaison échoue toujours
-    // et l'effectif du tour sélectionné ressort vide.
-    const championnatNum = champNum(selectedChampionnat);
-    (mercatoData || []).forEach(m => {
-      if (m.ligue !== selectedLigue || m.championnat !== championnatNum) return;
-      if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
-      byCoach[m.acheteur].push(m);
-    });
+    if (selectedChampionnat === 'total') {
+      joueurs.forEach(coach => {
+        const bestChamp = bestChampionnatByCoach[coach];
+        if (bestChamp == null) return;
+        byCoach[coach] = (mercatoData || []).filter(m => m.ligue === selectedLigue && m.acheteur === coach && m.championnat === bestChamp);
+      });
+    } else {
+      // Le championnat des matchs (et du sélecteur) est stocké "#N", celui du
+      // mercato est un nombre — sans ce parsing la comparaison échoue toujours
+      // et l'effectif du tour sélectionné ressort vide.
+      const championnatNum = champNum(selectedChampionnat);
+      (mercatoData || []).forEach(m => {
+        if (m.ligue !== selectedLigue || m.championnat !== championnatNum) return;
+        if (!byCoach[m.acheteur]) byCoach[m.acheteur] = [];
+        byCoach[m.acheteur].push(m);
+      });
+    }
 
     Object.values(byCoach).forEach(squad => {
       squad.sort((a, b) => {
@@ -92,43 +139,23 @@ export default function ClassementsTab({
       });
     });
     return byCoach;
-  }, [mercatoData, selectedLigue, selectedChampionnat, joueurs]);
+  }, [mercatoData, selectedLigue, selectedChampionnat, joueurs, bestChampionnatByCoach]);
 
   // Coach propriétaire de chaque joueur pour le championnat #x sélectionné
   // (dérivé du même effectif que ci-dessus) — sert à teinter les lignes des
   // classements buteurs/note/CSC pour distinguer visuellement les
-  // entraineurs. null sur "Total" comme effectifsData : un joueur peut avoir
-  // changé de coach d'un championnat à l'autre, teinter n'aurait pas de sens.
+  // entraineurs. null sur "Total" : un joueur peut avoir changé de coach d'un
+  // championnat à l'autre, teinter les classements cumulés n'aurait pas de
+  // sens (contrairement à "Meilleurs effectifs" ci-dessus, qui affiche un
+  // seul championnat précis par coach).
   const coachByPlayer = useMemo(() => {
-    if (!effectifsData) return null;
+    if (!effectifsData || selectedChampionnat === 'total') return null;
     const map = {};
     Object.entries(effectifsData).forEach(([coach, squad]) => {
       squad.forEach(m => { map[m.joueur] = coach; });
     });
     return map;
-  }, [effectifsData]);
-
-  // Note moyenne par coach/joueur sur le championnat sélectionné, une fois
-  // qu'au moins un match y a été saisi avec des notes — sert à choisir les
-  // titulaires par note plutôt que par prix (voir usage plus bas) et à
-  // l'afficher sur les cartes effectif.
-  const avgNotesByCoach = useMemo(() => {
-    const byCoach = {};
-    matchesListForChampionnat.forEach(m => {
-      (m.notes || []).filter(isCompte).forEach(n => {
-        const players = byCoach[n.acheteur] || (byCoach[n.acheteur] = {});
-        const entry = players[n.joueur] || (players[n.joueur] = { sum: 0, count: 0 });
-        entry.sum += n.note;
-        entry.count += 1;
-      });
-    });
-    const avg = {};
-    Object.entries(byCoach).forEach(([coach, players]) => {
-      avg[coach] = {};
-      Object.entries(players).forEach(([joueur, { sum, count }]) => { avg[coach][joueur] = sum / count; });
-    });
-    return avg;
-  }, [matchesListForChampionnat]);
+  }, [effectifsData, selectedChampionnat]);
 
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
@@ -164,7 +191,8 @@ export default function ClassementsTab({
 
   // Classement par note moyenne (toutes notes saisies dans le championnat
   // sélectionné, ou tous championnats confondus sur "Total") — indépendant
-  // du coach, contrairement à avgNotesByCoach qui sert à l'affichage effectif.
+  // du coach, contrairement au calcul par championnat précis fait pour la
+  // carte "Effectifs" (voir plus bas).
   const noteRanking = useMemo(() => {
     const acc = {};
     matchesListForChampionnat.forEach(m => {
@@ -298,16 +326,16 @@ export default function ClassementsTab({
       {selectedLigue === 'general' && (
         <div className="mb-4">
           {/* Ligne 1 : Tableau + Évolution */}
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 justify-center">
             <button
               onClick={() => { setRankingsView('table'); setStatsTable(null); }}
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+              className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📊 Tableau
             </button>
             <button
               onClick={() => { setRankingsView('graph'); setStatsTable(null); }}
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'graph' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+              className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'graph' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📈 Évolution
             </button>
@@ -343,7 +371,7 @@ export default function ClassementsTab({
       {/* Tableau classement / stats / graphique / effectifs / matchs */}
       {selectedLigue !== 'general' && ligueView === 'matchs' ? (
         selectedChampionnat !== 'total' && matchesListForChampionnat.length > 0 ? (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 hover:-translate-y-0.5 transition-all duration-200">
+          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 transition-all duration-200">
             <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
               Matchs du championnat {selectedChampionnat}
             </h3>
@@ -460,35 +488,48 @@ export default function ClassementsTab({
             {(() => {
               const coach = effectifsCoach ?? joueurs[0];
               const squad = effectifsData[coach] || [];
-              // Au moins un match du championnat a été noté : les titulaires
-              // sont choisis par note moyenne plutôt que par prix.
-              const coachNotes = matchesListForChampionnat.length > 0 ? avgNotesByCoach[coach] : null;
-              const ratingFor = coachNotes ? (m => coachNotes[m.joueur] ?? 0) : undefined;
-              const avgNoteFor = coachNotes ? (m => coachNotes[m.joueur]) : undefined;
+              // Championnat #N précis à utiliser pour les notes/moyennes de
+              // ce coach : celui sélectionné, ou son meilleur championnat sur
+              // "Total" (voir bestChampionnatByCoach) — jamais un mélange de
+              // plusieurs championnats, qui pourrait pooler les notes de
+              // joueurs différents recrutés à des moments différents.
+              const champForStats = selectedChampionnat === 'total' ? bestChampionnatByCoach[coach] : champNum(selectedChampionnat);
+              const champMatchesForCoach = champForStats != null
+                ? matchesListForChampionnat.filter(m => champNum(m.championnat) === champForStats && (m.joueur1 === coach || m.joueur2 === coach))
+                : [];
 
-              // Moyenne d'équipe (toutes les notes "compte" du coach sur le
-              // championnat, pas une moyenne des moyennes par joueur) et
-              // nombre moyen de joueurs au loft par match (effectif recruté
-              // moins les joueurs classés compte/banc ce match-là) - propre à
-              // un championnat #x précis, pas de sens agrégé sur "Total".
-              let teamAvg = null, loftAvg = null;
-              if (selectedChampionnat !== 'total') {
-                let noteSum = 0, noteCount = 0, loftSum = 0, matchCount = 0;
-                matchesListForChampionnat.forEach(match => {
-                  if (match.joueur1 !== coach && match.joueur2 !== coach) return;
-                  (match.notes || []).filter(n => n.acheteur === coach).forEach(n => {
-                    if (isCompte(n) && n.note != null) { noteSum += n.note; noteCount++; }
-                  });
-                  const classified = (match.notes || []).filter(n => n.acheteur === coach).length;
-                  loftSum += Math.max(0, squad.length - classified);
-                  matchCount++;
+              // Note moyenne par joueur sur ce championnat (au moins un match
+              // noté) : les titulaires sont choisis par note plutôt que par
+              // prix. Moyenne d'équipe (toutes les notes "compte", pas une
+              // moyenne des moyennes par joueur) et nombre moyen de joueurs
+              // au loft par match (effectif recruté moins les joueurs
+              // classés compte/banc ce match-là).
+              const noteSums = {};
+              let noteSum = 0, noteCount = 0, loftSum = 0, matchCount = 0;
+              champMatchesForCoach.forEach(match => {
+                const coachNotes = (match.notes || []).filter(n => n.acheteur === coach);
+                coachNotes.filter(isCompte).forEach(n => {
+                  if (n.note == null) return;
+                  const entry = noteSums[n.joueur] || (noteSums[n.joueur] = { sum: 0, count: 0 });
+                  entry.sum += n.note;
+                  entry.count += 1;
+                  noteSum += n.note;
+                  noteCount += 1;
                 });
-                teamAvg = noteCount > 0 ? noteSum / noteCount : null;
-                loftAvg = matchCount > 0 ? loftSum / matchCount : null;
-              }
+                loftSum += Math.max(0, squad.length - coachNotes.length);
+                matchCount += 1;
+              });
+              const avgNotes = {};
+              Object.entries(noteSums).forEach(([joueur, { sum, count }]) => { avgNotes[joueur] = sum / count; });
+              const hasNotes = champMatchesForCoach.length > 0 && Object.keys(avgNotes).length > 0;
+
+              const ratingFor = hasNotes ? (m => avgNotes[m.joueur] ?? 0) : undefined;
+              const avgNoteFor = hasNotes ? (m => avgNotes[m.joueur]) : undefined;
+              const teamAvg = hasNotes && noteCount > 0 ? noteSum / noteCount : null;
+              const loftAvg = hasNotes && matchCount > 0 ? loftSum / matchCount : null;
 
               return (
-                <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 p-5">
+                <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden transition-all duration-200 p-5">
                   <ShareBtn contextText={shareContext} />
                   {(teamAvg != null || loftAvg != null) && (
                     <div className="flex flex-wrap gap-3 mb-4">
@@ -509,7 +550,9 @@ export default function ClassementsTab({
                   {squad.length > 0 ? (
                     <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={ratingFor} avgNoteFor={avgNoteFor} />
                   ) : (
-                    <p className="text-sm text-slate-400 dark:text-slate-500">Aucun achat.</p>
+                    <p className="text-sm text-slate-400 dark:text-slate-500">
+                      {selectedChampionnat === 'total' ? "Aucune donnée pour déterminer son meilleur effectif." : 'Aucun achat.'}
+                    </p>
                   )}
                 </div>
               );
@@ -518,12 +561,12 @@ export default function ClassementsTab({
         ) : (
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-8 text-center">
             <p className="text-slate-500 dark:text-slate-400">
-              {selectedChampionnat === 'total' ? 'Sélectionne un championnat pour afficher l\'effectif.' : 'Pas de données mercato pour cette ligue.'}
+              {selectedChampionnat === 'total' ? 'Aucun championnat joué pour déterminer le meilleur effectif.' : 'Pas de données mercato pour cette ligue.'}
             </p>
           </div>
         )
       ) : statsTable ? (
-        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden transition-all duration-200">
           <ShareBtn contextText={shareContext} />
           {statsTable === 'buteurs' && (
             <table className="w-full table-fixed text-xs sm:text-sm">
@@ -555,7 +598,7 @@ export default function ClassementsTab({
                 <tr>
                   <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts enc.</th>
+                  <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm whitespace-nowrap">Buts enc.</th>
                   <th className="w-10 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">MJ</th>
                   <th className="w-12 sm:w-16 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Moy.</th>
                 </tr>
@@ -756,22 +799,22 @@ export default function ClassementsTab({
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6 hover:-translate-y-0.5 transition-all duration-200">
+        <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-0 sm:p-6 transition-all duration-200">
           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1 px-2 sm:px-0 pt-2 sm:pt-0">Évolution des points au fil du temps</h3>
           {historicalEvolution.length > 0 ? (
             <>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 px-2 sm:px-0">Déplacez les poignées de la tirette en bas pour zoomer sur une période</p>
               <div className="w-full sm:w-1/2 sm:mx-auto">
                 <ResponsiveContainer width="100%" height={480}>
-                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} height={40} />
+                  <LineChart data={historicalEvolution} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
+                    <XAxis dataKey="date" tick={{ fontSize: 11 }} height={40} padding={{ left: 16, right: 16 }} />
                     <YAxis label={{ value: 'Points cumulés', angle: -90, position: 'insideLeft' }} domain={['dataMin - 5', 'dataMax + 5']} scale="linear" />
-                    <Tooltip contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                    <Tooltip content={<EvolutionTooltip />} />
                     <Legend verticalAlign="top" height={36} />
-                    <Brush dataKey="date" height={30} stroke="#94a3b8" fill="#f1f5f9" startIndex={Math.max(0, historicalEvolution.length - 20)} endIndex={historicalEvolution.length - 1} travellerWidth={8} />
+                    {/* Tirette par défaut sur toute la saison en cours (pas les 20 derniers points) */}
+                    <Brush dataKey="date" height={30} stroke="#94a3b8" fill="#f1f5f9" startIndex={0} endIndex={historicalEvolution.length - 1} travellerWidth={8} />
                     {joueurs.map((joueur) => (
-                      <Line key={joueur} type="monotone" dataKey={joueur} stroke={playerColorHex[joueur] || '#6b7280'} strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
+                      <Line key={joueur} type="natural" dataKey={joueur} stroke={playerColorHex[joueur] || '#6b7280'} strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
@@ -889,7 +932,7 @@ export default function ClassementsTab({
           nécessite le mercato + les notes/buteurs par match, pas saisis sur
           2024/2025 et 2025/2026 */}
       {selectedLigue !== 'general' && ligueView === 'classement' && hasDetailedData(selectedSeason) && (
-        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden hover:-translate-y-0.5 transition-all duration-200 mt-6">
+        <div data-card className="relative bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] overflow-hidden transition-all duration-200 mt-6">
           <ShareBtn contextText={shareContext} />
           <div className="flex items-center gap-3 px-6 pt-6 pb-2">
             <div className="flex gap-1 bg-slate-100 dark:bg-white/5 rounded-xl p-1 flex-shrink-0">
@@ -944,7 +987,7 @@ export default function ClassementsTab({
                     <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Joueur</th>
                     <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Buts</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG">dont <VirtualGoalIcon /></th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Dont buts MPG"><span className="inline-flex items-center justify-center gap-1 whitespace-nowrap">dont <VirtualGoalIcon /></span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1008,9 +1051,9 @@ export default function ClassementsTab({
                 <thead className="bg-indigo-50/50 dark:bg-[#151228]">
                   <tr>
                     <th className="px-1 py-2 sm:px-6 sm:py-3 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">🙈 CSC</th>
-                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">🎲 Rotaldos</th>
-                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="But réel marqué par un joueur resté sur le banc - ne compte pas">🪑⚽ Banc</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">CSC</th>
+                    <th className="w-14 sm:w-20 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="Titulaire absent non remplacé">Rotaldos</th>
+                    <th className="w-16 sm:w-24 px-1 py-2 sm:px-6 sm:py-3 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm" title="But réel marqué par un joueur resté sur le banc - ne compte pas">Buts sur le banc</th>
                   </tr>
                 </thead>
                 <tbody>

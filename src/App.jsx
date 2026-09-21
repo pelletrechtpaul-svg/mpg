@@ -246,26 +246,28 @@ const App = () => {
         {/* Header */}
         <div className="mb-6 lg:flex lg:items-end lg:justify-between lg:gap-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400">MesPetitsBavons</h1>
-            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Statistiques et performances</p>
-            <div className="flex items-center gap-2 mt-2">
-              {isOnline ? (
-                <div className="flex items-center gap-1.5 text-green-600 text-xs">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <span>Synchronisé</span>
-                  {lastSyncTime && (
-                    <span className="text-slate-400">
-                      • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-red-600 text-xs">
-                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                  <span>Hors ligne</span>
-                </div>
-              )}
-            </div>
+            <a href={window.location.pathname} className="inline-block text-3xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400 hover:text-violet-600 dark:hover:text-violet-300 transition-colors">MesPetitsBavons</a>
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Stats et perf entre amis</p>
+            {activeTab === 'admin' && (
+              <div className="flex items-center gap-2 mt-2">
+                {isOnline ? (
+                  <div className="flex items-center gap-1.5 text-green-600 text-xs">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                    <span>Synchronisé</span>
+                    {lastSyncTime && (
+                      <span className="text-slate-400">
+                        • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-red-600 text-xs">
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                    <span>Hors ligne</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Season Navigation — à droite du header sur desktop */}
