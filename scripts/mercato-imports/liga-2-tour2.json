@@ -1,0 +1,188 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 2,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Bellingham",
+      "poste": "MO",
+      "club": "Real Madrid",
+      "prix": 93,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": [ { "equipe": "Les Pesto Rosso", "prix": 84 } ]
+    },
+    {
+      "joueur": "Adeyemi",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 84,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [ { "equipe": "Maison Dothrakis", "prix": 28 } ]
+    },
+    {
+      "joueur": "Gordon",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 72,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Budimir",
+      "poste": "A",
+      "club": "Osasuna",
+      "prix": 61,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Alvarez",
+      "prenom": "Julián",
+      "poste": "A",
+      "club": "Atlético",
+      "prix": 41,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "López",
+      "poste": "MO",
+      "club": "Barcelona",
+      "prix": 27,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [ { "equipe": "Maison Dothrakis", "prix": 24 } ]
+    },
+    {
+      "joueur": "Óskarsson",
+      "prenom": "Orri",
+      "poste": "A",
+      "club": "Real Sociedad",
+      "prix": 24,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Joan García",
+      "poste": "G",
+      "club": "Barcelona",
+      "prix": 17,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Sancet",
+      "prenom": "Oihan",
+      "poste": "MO",
+      "club": "Athletic",
+      "prix": 17,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Ezzalzouli",
+      "prenom": "Abdessamad",
+      "poste": "A",
+      "club": "Betis",
+      "prix": 16,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Gabriel Jesus",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 16,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Berchiche",
+      "prenom": "Yuri",
+      "poste": "DL",
+      "club": "Athletic",
+      "prix": 15,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Berenguer",
+      "prenom": "Álex",
+      "poste": "MO",
+      "club": "Athletic",
+      "prix": 15,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Laporte",
+      "prenom": "Aymeric",
+      "poste": "DC",
+      "club": "Athletic",
+      "prix": 15,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Martín",
+      "prenom": "Gerard",
+      "poste": "DC",
+      "club": "Barcelona",
+      "prix": 13,
+      "acheteur": "roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Renato Veiga",
+      "poste": "DC",
+      "club": "Villarreal",
+      "prix": 11,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Yeremay Hernández",
+      "poste": "MO",
+      "club": "La Corogne",
+      "prix": 11,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Riquelme",
+      "poste": "MO",
+      "club": "Betis",
+      "prix": 11,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [ { "equipe": "Maison Dothrakis", "prix": 11 } ]
+    },
+    {
+      "joueur": "Córdoba",
+      "prenom": "Iker",
+      "poste": "DC",
+      "club": "Valencia",
+      "prix": 1,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    }
+  ]
+}
