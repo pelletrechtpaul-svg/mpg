@@ -1,0 +1,193 @@
+{
+  "ligue": "Liga",
+  "championnat": 2,
+  "tour": 1,
+  "saison": "2026/2027",
+  "joueurs": [
+    {
+      "joueur": "Raphinha",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 187,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 142 },
+        { "equipe": "Les Pesto Rosso", "prix": 134 },
+        { "equipe": "Les meringuées", "prix": 123 }
+      ]
+    },
+    {
+      "joueur": "Bartra",
+      "prenom": "Marc",
+      "poste": "DC",
+      "club": "Betis",
+      "prix": 21,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Les meringuées", "prix": 14 }
+      ]
+    },
+    {
+      "joueur": "Pape Gueye",
+      "poste": "MD",
+      "club": "Villarreal",
+      "prix": 19,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Olmo",
+      "poste": "MO",
+      "club": "Barcelona",
+      "prix": 19,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Aubameyang",
+      "poste": "A",
+      "club": "La Corogne",
+      "prix": 18,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Pedri",
+      "poste": "MD",
+      "club": "Barcelona",
+      "prix": 18,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Hernández",
+      "poste": "A",
+      "club": "Betis",
+      "prix": 18,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Antony",
+      "poste": "MO",
+      "club": "Betis",
+      "prix": 24,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Pepe",
+      "prenom": "Nicolas",
+      "poste": "MO",
+      "club": "Villarreal",
+      "prix": 24,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": [
+        { "equipe": "Maison Dothrakis", "prix": 19 }
+      ]
+    },
+    {
+      "joueur": "Cubarsí",
+      "poste": "DC",
+      "club": "Barcelona",
+      "prix": 23,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Roberto Fernández",
+      "poste": "A",
+      "club": "Espanyol",
+      "prix": 22,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Navarro",
+      "prenom": "Robert",
+      "poste": "A",
+      "club": "Athletic",
+      "prix": 22,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Güler",
+      "poste": "MO",
+      "club": "Real Madrid",
+      "prix": 41,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": [
+        { "equipe": "Les Pesto Rosso", "prix": 26 },
+        { "equipe": "Maison Dothrakis", "prix": 19 }
+      ]
+    },
+    {
+      "joueur": "Vinícius Júnior",
+      "poste": "A",
+      "club": "Real Madrid",
+      "prix": 37,
+      "acheteur": "Tiago",
+      "equipe_acheteur": "Les meringuées",
+      "encheres_perdues": []
+    },
+    {
+      "joueur": "Lee Kang-In",
+      "poste": "MO",
+      "club": "Atlético",
+      "prix": 25,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Les Pesto Rosso", "prix": 24 },
+        { "equipe": "Les meringuées", "prix": 21 }
+      ]
+    },
+    {
+      "joueur": "Mbappé",
+      "poste": "A",
+      "club": "Real Madrid",
+      "prix": 162,
+      "acheteur": "Roman",
+      "equipe_acheteur": "Maison Dothrakis",
+      "encheres_perdues": [
+        { "equipe": "Les meringuées", "prix": 44 }
+      ]
+    },
+    {
+      "joueur": "Lamine Yamal",
+      "poste": "A",
+      "club": "Barcelona",
+      "prix": 133,
+      "acheteur": "Adrien",
+      "equipe_acheteur": "Les Pesto Rosso",
+      "encheres_perdues": [
+        { "equipe": "Les meringuées", "prix": 84 }
+      ]
+    },
+    {
+      "joueur": "Baena",
+      "poste": "MO",
+      "club": "Atlético",
+      "prix": 44,
+      "acheteur": "Paul",
+      "equipe_acheteur": "Ose la Sunna",
+      "encheres_perdues": [
+        { "equipe": "Les Pesto Rosso", "prix": 22 }
+      ]
+    }
+  ]
+}
