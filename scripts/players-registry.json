@@ -3562,5 +3562,41 @@
       "Atlético"
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
+  },
+  "Bartra|Liga": {
+    "prenom": "Marc",
+    "nationalite": null,
+    "poste": "DC",
+    "clubs": [
+      "Betis"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/87ldtd1531053841.jpg"
+  },
+  "Pepe|Liga": {
+    "prenom": "Nicolas",
+    "nationalite": null,
+    "poste": "MO",
+    "clubs": [
+      "Villarreal"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7ewjmz1724779988.jpg"
+  },
+  "Roberto Fernández|Liga": {
+    "prenom": null,
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Espanyol"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/nn0p641719613832.jpg"
+  },
+  "Navarro|Liga": {
+    "prenom": "Robert",
+    "nationalite": null,
+    "poste": "A",
+    "clubs": [
+      "Athletic"
+    ],
+    "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9x234o1632752663.jpg"
   }
 }
