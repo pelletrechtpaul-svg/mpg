@@ -20,17 +20,21 @@ const posteGroupColor = poste => POSTE_GROUP_COLORS[poste] || 'text-violet-600 d
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
 
-// Rang façon Records > Mercato : "1." / "2." / ... et "Ex-aequo" au lieu de
-// répéter un rang déjà attribué à la même valeur juste au-dessus.
+// Rang façon Records > Mercato : "1." / "2." / ... et rien du tout (label
+// vide) au lieu de répéter un rang déjà attribué à la même valeur juste
+// au-dessus — l'alignement fixe de RankBadge fait que le nom/la pastille se
+// retrouvent alignés sur ceux de l'entrée ex-aequo au-dessus.
 function withRankLabels(items, scoreFn) {
   return items.map((item, i) => ({
     item,
-    label: i > 0 && scoreFn(item) === scoreFn(items[i - 1]) ? 'Ex-aequo' : `${i + 1}.`,
+    label: i > 0 && scoreFn(item) === scoreFn(items[i - 1]) ? '' : `${i + 1}.`,
   }));
 }
 
+// Largeur fixe : que le label soit "1.", "12." ou vide (ex-aequo), tout ce
+// qui suit (pastille + nom) démarre exactement au même endroit.
 function RankBadge({ label, className = '' }) {
-  return <span className={`text-xs font-bold text-slate-400 dark:text-slate-500 flex-shrink-0 ${className}`}>{label}</span>;
+  return <span className={`inline-block w-8 flex-shrink-0 text-xs font-bold text-slate-400 dark:text-slate-500 ${className}`}>{label}</span>;
 }
 
 function AllPlayersGrid({ data, valueKey = 'count', valueClassName = 'text-3xl font-bold', children }) {
@@ -507,12 +511,11 @@ export default function RecordsTab({
         )}
 
         {/* ── LIGUES ── */}
-        {activeSubTab === 'ligues' && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
-            <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Méfie-toi même des petits, car il n'y a plus de grands</h2>
-            {!ligueData ? (
-              <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
-            ) : (
+        {activeSubTab === 'ligues' && (<>
+          <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Méfie-toi même des petits, car il n'y a plus de grands</h2>
+          {!ligueData ? (
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Pas assez de données pour cette période.</p>
+          ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
@@ -616,16 +619,14 @@ export default function RecordsTab({
                 )}
               </>
             )}
-          </div>
-        )}
+        </>)}
 
         {/* ── MERCATO ── */}
-        {activeSubTab === 'mercato' && (
-          <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
-            <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Ma question préférée ?</h2>
-            {!mercatoData ? (
-              <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>
-            ) : (
+        {activeSubTab === 'mercato' && (<>
+          <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Ma question préférée ?</h2>
+          {!mercatoData ? (
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>
+          ) : (
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
@@ -810,8 +811,7 @@ export default function RecordsTab({
                 </RecordCard>
               </div>
             )}
-          </div>
-        )}
+        </>)}
       </div>
     </>
   );

@@ -25,6 +25,16 @@ const EvolutionTooltip = ({ active, payload, label }) => {
   );
 };
 
+// Colonnes du tableau Valises fusionné, triable en cliquant l'en-tête (voir
+// valiseSortKey) — remplace les deux anciens tableaux séparés "Valises" /
+// "Valises efficaces" qui partageaient déjà la même donnée valiseStats[j].
+const VALISE_COLUMNS = [
+  { key: 'utilisees', label: 'Utilisées', title: 'Valises utilisées', color: 'text-blue-600 dark:text-blue-400' },
+  { key: 'recues', label: 'Reçues', title: 'Valises reçues', color: 'text-red-600 dark:text-red-400' },
+  { key: 'efficaces', label: 'Effic.', title: 'Valises efficaces infligées', color: 'text-green-600 dark:text-green-400' },
+  { key: 'efficacesRecues', label: 'Eff. reçues', title: 'Valises efficaces reçues', color: 'text-orange-600 dark:text-orange-400' },
+];
+
 const PlayerBadge = ({ joueur, sm = true }) => (
   <div
     className={`${sm ? 'w-4 h-4 sm:w-5 sm:h-5' : 'w-5 h-5'} rounded-full flex-shrink-0 ring-2 ring-white dark:ring-[#0f0e1a]`}
@@ -68,6 +78,7 @@ export default function ClassementsTab({
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
   const [rankingsView, setRankingsView] = useState('table');
   const [statsTable, setStatsTable] = useState(null);
+  const [valiseSortKey, setValiseSortKey] = useState('utilisees');
   const photos = usePlayerPhotos();
 
   // Filtre par coach (un seul à la fois) dans les classements Buteurs/Note/
@@ -349,7 +360,6 @@ export default function ClassementsTab({
               { key: 'pannes', label: '🚫 Pannes' },
               ...(valiseStats ? [
                 { key: 'valises', label: '💼 Valises' },
-                { key: 'valises-efficaces', label: '🎯 Valises eff.' },
               ] : []),
             ].map(({ key, label }) => (
               <button
@@ -673,43 +683,30 @@ export default function ClassementsTab({
                 <tr>
                   <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
                   <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-16 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Utilisées</th>
-                  <th className="w-16 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Reçues</th>
-                </tr>
-              </thead>
-              <tbody>
-                {joueurs.map(j => ({ joueur: j, utilisees: valiseStats[j].utilisees, recues: valiseStats[j].recues }))
-                  .sort((a, b) => b.utilisees - a.utilisees || a.recues - b.recues)
-                  .map((item, index) => (
-                    <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 truncate"><div className="flex items-center gap-1 sm:gap-3 min-w-0"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">{item.joueur}</span></div></td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-blue-600 dark:text-blue-400 text-xs sm:text-base">{item.utilisees}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-600 dark:text-red-400 text-xs sm:text-base">{item.recues}</td>
-                    </tr>
+                  {VALISE_COLUMNS.map(col => (
+                    <th key={col.key} className="w-12 sm:w-20 px-1 py-2 sm:px-4 sm:py-4 text-center font-semibold text-xs sm:text-sm">
+                      <button
+                        type="button"
+                        title={col.title}
+                        onClick={() => setValiseSortKey(col.key)}
+                        className={`whitespace-nowrap ${valiseSortKey === col.key ? `${col.color} underline` : 'text-slate-700 dark:text-slate-200 hover:underline'}`}
+                      >
+                        {col.label}{valiseSortKey === col.key ? ' ▾' : ''}
+                      </button>
+                    </th>
                   ))}
-              </tbody>
-            </table>
-          )}
-          {statsTable === 'valises-efficaces' && valiseStats && (
-            <table className="w-full table-fixed text-xs sm:text-sm">
-              <thead className="bg-indigo-50/50 dark:bg-[#151228]">
-                <tr>
-                  <th className="w-8 sm:w-14 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">#</th>
-                  <th className="px-1 py-2 sm:px-6 sm:py-4 text-left font-semibold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Entraîneur</th>
-                  <th className="w-16 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-green-700 dark:text-green-400 text-xs sm:text-sm">Infligées</th>
-                  <th className="w-16 sm:w-20 px-1 py-2 sm:px-6 sm:py-4 text-center font-semibold text-red-700 dark:text-red-400 text-xs sm:text-sm">Reçues</th>
                 </tr>
               </thead>
               <tbody>
-                {joueurs.map(j => ({ joueur: j, efficaces: valiseStats[j].efficaces, efficacesRecues: valiseStats[j].efficacesRecues }))
-                  .sort((a, b) => b.efficaces - a.efficaces || a.efficacesRecues - b.efficacesRecues)
+                {joueurs.map(j => ({ joueur: j, ...valiseStats[j] }))
+                  .sort((a, b) => b[valiseSortKey] - a[valiseSortKey])
                   .map((item, index) => (
                     <tr key={item.joueur} className="border-t border-indigo-50 dark:border-[#1e1c3a] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 transition-colors">
                       <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-sm sm:text-lg text-indigo-300 dark:text-indigo-500">{index + 1}</td>
                       <td className="px-1 py-2 sm:px-6 sm:py-4 truncate"><div className="flex items-center gap-1 sm:gap-3 min-w-0"><PlayerBadge joueur={item.joueur} /><span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-base truncate">{item.joueur}</span></div></td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-green-600 dark:text-green-400 text-xs sm:text-base">{item.efficaces}</td>
-                      <td className="px-1 py-2 sm:px-6 sm:py-4 text-center font-bold text-red-500 dark:text-red-400 text-xs sm:text-base">{item.efficacesRecues}</td>
+                      {VALISE_COLUMNS.map(col => (
+                        <td key={col.key} className={`px-1 py-2 sm:px-4 sm:py-4 text-center font-bold text-xs sm:text-base ${col.color}`}>{item[col.key]}</td>
+                      ))}
                     </tr>
                   ))}
               </tbody>
