@@ -94,6 +94,21 @@ const computeMercatoRecords = (mercato, matches) => {
     });
   });
 
+  // Nombre de "gros transferts" par ligue, pour plusieurs seuils au choix
+  // (budget fixe de 500M pour tout le monde => le prix MOYEN par ligue est
+  // peu discriminant, mais le nombre de très grosses enchères l'est).
+  // Toutes les ligues connues du mercato apparaissent, même à 0, pour
+  // rester comparables entre elles quel que soit le seuil choisi.
+  const BIG_TRANSFER_THRESHOLDS = [20, 40, 60, 80, 100];
+  const ligueSet = [...new Set(mercato.map(m => m.ligue).filter(Boolean))];
+  const bigTransfersByLigue = {};
+  BIG_TRANSFER_THRESHOLDS.forEach(threshold => {
+    const counts = {};
+    ligueSet.forEach(l => { counts[l] = 0; });
+    mercato.forEach(m => { if (m.ligue && (m.prix || 0) >= threshold) counts[m.ligue]++; });
+    bigTransfersByLigue[threshold] = Object.entries(counts).map(([ligue, count]) => ({ ligue, count })).sort((a, b) => b.count - a.count);
+  });
+
   // Plus grosses enchères
   const biggestBids = topN(mercato, m => m.prix || 0, m => saisonTs(m.saison) * 1000 + (m.championnat || 0));
 
@@ -249,6 +264,8 @@ const computeMercatoRecords = (mercato, matches) => {
     biggestCumulativeSpend, cumulativeSpendParPoste, bestValueForMoneyCumule, biggestFlopsCumule, mostBidsCumulees,
     // Divers
     longevite, recruitsCountByCoach, bidWarsWonCoach, medianBidCoach,
+    // Par ligue
+    bigTransfersByLigue, BIG_TRANSFER_THRESHOLDS,
   };
 };
 

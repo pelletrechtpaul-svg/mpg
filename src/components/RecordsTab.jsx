@@ -106,6 +106,7 @@ export default function RecordsTab({
   mercatoRecordsSeason,
 }) {
   const [activeSubTab, setActiveSubTab] = useState('entraineurs');
+  const [bigTransferThreshold, setBigTransferThreshold] = useState(80);
 
   const ligueData = selectedSeason === 'All-Time' ? ligueRecordsAllTime : ligueRecordsSeason;
   // mercatoRecordsSeason est déjà null tant qu'une saison sans mercato importé
@@ -615,6 +616,40 @@ export default function RecordsTab({
                     );
                   })}
                 </div>
+
+                {mercatoData && (
+                  <div data-card className="relative bg-gradient-to-br from-fuchsia-50 to-purple-50 border-fuchsia-200 dark:from-fuchsia-900/30 dark:to-purple-900/30 dark:border-fuchsia-700 rounded-lg p-4 border-2 mt-4">
+                    <ShareBtn contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason} />
+                    <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">💎 Ligues avec le plus de gros transferts</h3>
+                      <div className="flex gap-1">
+                        {mercatoData.BIG_TRANSFER_THRESHOLDS.map(t => (
+                          <button
+                            key={t}
+                            onClick={() => setBigTransferThreshold(t)}
+                            className={`px-2 py-0.5 rounded text-xs font-semibold transition-colors ${
+                              bigTransferThreshold === t
+                                ? 'bg-fuchsia-500 text-white'
+                                : 'bg-white/60 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/20'
+                            }`}
+                          >
+                            ≥{t}M
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Budget fixe pour tout le monde, donc le prix moyen ne dit pas grand-chose - ici le nombre d'enchères à {bigTransferThreshold}M ou plus.</p>
+                    <div className="space-y-1">
+                      {mercatoData.bigTransfersByLigue[bigTransferThreshold].map((l, i) => (
+                        <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm w-5">{['🥇', '🥈', '🥉'][i] || `${i + 1}.`}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.ligue}</span>
+                          <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count} joueur{l.count > 1 ? 's' : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
