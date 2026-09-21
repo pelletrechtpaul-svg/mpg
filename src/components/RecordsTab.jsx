@@ -622,7 +622,7 @@ export default function RecordsTab({
         {/* ── MERCATO ── */}
         {activeSubTab === 'mercato' && (
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] hover:-translate-y-0.5 transition-all duration-200 p-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">💸 L'argent parti en fumée</h2>
+            <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Ma question préférée ?</h2>
             {!mercatoData ? (
               <p className="text-slate-500 dark:text-slate-400 text-sm">Pas de données mercato pour cette période.</p>
             ) : (
@@ -634,10 +634,10 @@ export default function RecordsTab({
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosse enchère</h4>
                   {mercatoData.biggestBids.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.biggestBids.map((m, i) => (
+                      {withRankLabels(mercatoData.biggestBids, m => m.prix).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
                           <div className="flex flex-wrap items-baseline gap-x-1.5">
-                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <RankBadge label={label} />
                             <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                             <span className="font-bold text-amber-700 dark:text-amber-400">{m.prix}M</span>
                           </div>
@@ -669,10 +669,10 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-500 dark:text-slate-400">Sur un seul championnat</p>
                   {mercatoData.bestValueForMoney.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.bestValueForMoney.map((m, i) => (
+                      {withRankLabels(mercatoData.bestValueForMoney, m => m.ratio).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
                           <div className="flex flex-wrap items-baseline gap-x-1.5">
-                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <RankBadge label={label} />
                             <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                             <span className="font-bold text-emerald-700 dark:text-emerald-400">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.prix}M</span>
                           </div>
@@ -686,10 +686,10 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-500 dark:text-slate-400">Sur un seul championnat, à partir de 3 matchs joués</p>
                   {mercatoData.biggestFlops.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.biggestFlops.map((m, i) => (
+                      {withRankLabels(mercatoData.biggestFlops, m => m.prix).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
                           <div className="flex flex-wrap items-baseline gap-x-1.5">
-                            <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{i + 1}.</span>
+                            <RankBadge label={label} />
                             <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                             <span className="font-bold text-rose-700 dark:text-rose-400">0 but / {m.prix}M</span>
                           </div>
@@ -708,9 +708,9 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-500 dark:text-slate-400">Total dépensé sur un même joueur, tous mercatos et toutes ligues confondus</p>
                   {mercatoData.biggestCumulativeSpend.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.biggestCumulativeSpend.map((m, i) => (
+                      {withRankLabels(mercatoData.biggestCumulativeSpend, m => m.total).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
+                          <RankBadge label={label} className="mr-1" />
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.total}M</span>
                         </div>
@@ -736,9 +736,9 @@ export default function RecordsTab({
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🎯 Meilleur rapport qualité/prix cumulé</h4>
                   {mercatoData.bestValueForMoneyCumule.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.bestValueForMoneyCumule.map((m, i) => (
+                      {withRankLabels(mercatoData.bestValueForMoneyCumule, m => m.ratio).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
+                          <RankBadge label={label} className="mr-1" />
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-emerald-700 dark:text-emerald-400 ml-1.5">{m.buts} but{m.buts > 1 ? 's' : ''} / {m.total}M</span>
                         </div>
@@ -749,9 +749,9 @@ export default function RecordsTab({
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">📉 Plus gros flop cumulé</h4>
                   {mercatoData.biggestFlopsCumule.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.biggestFlopsCumule.map((m, i) => (
+                      {withRankLabels(mercatoData.biggestFlopsCumule, m => m.total).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
+                          <RankBadge label={label} className="mr-1" />
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-rose-700 dark:text-rose-400 ml-1.5">0 but / {m.total}M</span>
                         </div>
@@ -763,9 +763,9 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-500 dark:text-slate-400">Total des enchères reçues (gagnées + perdues) sur un même joueur, toutes ligues confondues</p>
                   {mercatoData.mostBidsCumulees.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.mostBidsCumulees.map((m, i) => (
+                      {withRankLabels(mercatoData.mostBidsCumulees, m => m.count).map(({ item: m, label }, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
+                          <RankBadge label={label} className="mr-1" />
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{m.joueur}</span>
                           <span className="font-bold text-orange-700 dark:text-orange-400 ml-1.5">{m.count} mises</span>
                         </div>
@@ -782,9 +782,9 @@ export default function RecordsTab({
                   <p className="text-xs text-slate-500 dark:text-slate-400">Nombre de recrutement d'affilé</p>
                   {mercatoData.longevite.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
-                      {mercatoData.longevite.map((l, i) => (
+                      {withRankLabels(mercatoData.longevite, l => l.streak).map(({ item: l, label }, i) => (
                         <div key={i} className="text-sm">
-                          <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">{i + 1}.</span>
+                          <RankBadge label={label} className="mr-1" />
                           <span className="font-semibold text-slate-700 dark:text-slate-200">{l.joueur}</span>
                           <span className="font-bold text-sky-700 dark:text-sky-400 ml-1.5">{l.streak}</span>
                           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">chez {l.acheteur}</span>
