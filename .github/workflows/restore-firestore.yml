@@ -1,0 +1,64 @@
+name: Restore Firestore
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Id du run "Backup Firestore" à restaurer (le nombre à la fin de son URL)'
+        required: true
+      confirm_restore:
+        description: 'Écrire EXACTEMENT "restaurer" pour écrire en base (sinon dry-run : résumé seulement)'
+        required: false
+        default: ''
+      collections:
+        description: 'Collections à restaurer, séparées par des virgules (vide = toutes)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: firestore-restore
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download backup
+        uses: actions/download-artifact@v4
+        with:
+          name: firestore-backup
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: backup
+
+      - name: Write service account key
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccountKey.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Restore (dry-run unless confirmed)
+        env:
+          DRY_RUN: ${{ github.event.inputs.confirm_restore == 'restaurer' && 'false' || 'true' }}
+          COLLECTIONS: ${{ github.event.inputs.collections }}
+        run: node scripts/restore-firestore.cjs
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f serviceAccountKey.json

@@ -1,0 +1,57 @@
+name: Backup Firestore
+
+# Sauvegarde hebdo de toute la base, gardée 90 jours en artefact
+# "firestore-backup" (téléchargeable depuis la page du run). Restauration :
+# workflow "Restore Firestore" avec l'id de ce run.
+#
+# NB : GitHub ne lance les tâches planifiées (schedule) que pour les
+# workflows présents sur la branche PAR DÉFAUT du repo.
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # lundi 3h UTC
+  workflow_dispatch:
+  push:
+    branches: [claude/charming-goodall-4nt05x]
+    paths:
+      - 'scripts/backup-firestore.cjs'
+      - '.github/workflows/backup-firestore.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write service account key
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccountKey.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Export Firestore
+        run: node scripts/backup-firestore.cjs
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f serviceAccountKey.json
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: firestore-backup
+          path: backup/
+          retention-days: 90
+          if-no-files-found: error

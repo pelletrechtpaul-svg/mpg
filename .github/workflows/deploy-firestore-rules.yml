@@ -1,0 +1,58 @@
+name: Deploy Firestore rules
+
+# Publie firestore.rules en production dès qu'il change sur la branche de
+# prod. Le log affiche d'abord la différence avec la version en ligne ; la
+# publication est refusée si celle-ci a été modifiée hors du repo.
+on:
+  push:
+    branches: [claude/charming-goodall-4nt05x]
+    paths:
+      - 'firestore.rules'
+      - 'scripts/deploy-firestore-rules.cjs'
+      - '.github/workflows/deploy-firestore-rules.yml'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Écrire EXACTEMENT "publier" pour publier même si les règles en ligne ont été modifiées ailleurs (sinon : affiche seulement la différence)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firestore-rules
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write service account key
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccountKey.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Publish rules
+        env:
+          DRY_RUN: ${{ (github.event_name == 'push' || github.event.inputs.publish == 'publier') && 'false' || 'true' }}
+          FORCE: ${{ github.event.inputs.publish == 'publier' && 'true' || 'false' }}
+        run: node scripts/deploy-firestore-rules.cjs
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f serviceAccountKey.json
