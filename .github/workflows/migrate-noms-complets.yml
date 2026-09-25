@@ -2,8 +2,15 @@ name: Migrate noms complets
 
 # Migration one-off (voir scripts/migrate-noms-complets.cjs). Simulation par
 # défaut ; avec confirm = "migrer", sauvegarde la base (artefact
-# firestore-backup) puis écrit.
+# firestore-backup) puis écrit. Un push du script lance une simulation
+# (et enregistre le workflow auprès de GitHub, qui ne le verrait pas sinon :
+# il n'est pas sur la branche par défaut).
 on:
+  push:
+    branches: [claude/charming-goodall-4nt05x]
+    paths:
+      - 'scripts/migrate-noms-complets.cjs'
+      - '.github/workflows/migrate-noms-complets.yml'
   workflow_dispatch:
     inputs:
       confirm:
