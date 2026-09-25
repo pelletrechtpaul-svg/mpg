@@ -28,10 +28,10 @@ Police système (`-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, …`), 
 |---|---|---|
 | Principal | `text-slate-800` | `dark:text-slate-100` |
 | Secondaire | `text-slate-600` / `text-slate-700` | `dark:text-slate-300` / `dark:text-slate-200` |
-| Discret (légendes, dates) | `text-slate-500` | `dark:text-slate-400` |
-| Très discret (rang « 1. » des Records, séparateurs) | `text-slate-400` | `dark:text-slate-500` |
+| Discret, mais à lire (légendes, dates, détails, messages « Aucun… ») | `text-slate-500` | `dark:text-slate-400` |
+| Décoratif (icônes ✕/partage, rang « 1. » des Records, élément désactivé ou volontairement éteint) | `text-slate-400` | `dark:text-slate-500` |
 
-`text-slate-400` sur fond blanc est peu contrasté : le réserver à ce qui est vraiment secondaire, jamais à une information qu'on doit lire.
+Contraste : `slate-400` sur blanc = 2,6:1 et `slate-500` sur le fond sombre = 4,0:1, sous le minimum de 4,5:1 pour un texte courant. Ne jamais les utiliser pour une information qu'on doit lire.
 
 ### Couleurs de sens
 | Signification | Classe |
@@ -85,6 +85,7 @@ Tout onglet et toute vue doivent être reflétés dans l'URL (hash, voir `App.js
 - **Tableaux** : rang en chiffre `font-bold text-indigo-300 dark:text-indigo-500`, pas de gestion d'ex-aequo.
 - **Records** : `RankBadge` « 1. » en `text-slate-400`, largeur fixe ; en cas d'ex-aequo, rang vide et nom aligné sur la ligne du dessus (`withRankLabels`).
 - Pas de médailles emoji (🥇🥈🥉) pour les rangs.
+- Titres et médailles de championnat : émojis uniquement, 🏆 (championnat à 6 matchs) et 🥇 (championnat plus court), jamais d'icône lucide.
 
 ---
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
-import { Trophy, Medal, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDetailedData, ligueAbbr } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
@@ -175,14 +175,14 @@ export default function ClassementsTab({
   const getTrophyForRow = (index) => {
     if (index !== 0) return null;
     if (selectedLigue === 'general') {
-      return isSeasonFinished ? <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" /> : null;
+      return isSeasonFinished ? <span className="text-sm sm:text-base leading-none flex-shrink-0">🏆</span> : null;
     }
     if (selectedChampionnat !== 'total') {
       const metadata = ligueMetadata[`${selectedSeason}-${selectedLigue}-${selectedChampionnat}`];
       if (metadata && metadata.matchsEntered >= metadata.matchsTotal) {
         return metadata.matchsTotal < 6
-          ? <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
-          : <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />;
+          ? <span className="text-sm sm:text-base leading-none flex-shrink-0">🥇</span>
+          : <span className="text-sm sm:text-base leading-none flex-shrink-0">🏆</span>;
       }
     }
     return null;
@@ -563,7 +563,7 @@ export default function ClassementsTab({
                   {squad.length > 0 ? (
                     <FormationPitch squad={squad} onOpenPlayer={onOpenPlayer} photos={photos} ratingFor={ratingFor} avgNoteFor={avgNoteFor} />
                   ) : (
-                    <p className="text-sm text-slate-400 dark:text-slate-500">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                       {selectedChampionnat === 'total' ? "Aucune donnée pour déterminer son meilleur effectif." : 'Aucun achat.'}
                     </p>
                   )}
@@ -854,7 +854,7 @@ export default function ClassementsTab({
                         </div>
                       ))}
                       {matchPlayerRows(showMatchDetail, coach).length === 0 && (
-                        <p className="text-xs text-slate-400 dark:text-slate-500 italic">Aucun joueur noté.</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 italic">Aucun joueur noté.</p>
                       )}
                     </div>
                     {rotaldos > 0 && (
@@ -896,7 +896,7 @@ export default function ClassementsTab({
           <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] p-6 max-w-xs w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                {showChampDetail.joueur} — {showChampDetail.type === 'titres' ? '🏆 Titres' : '🥈 Médailles'}
+                {showChampDetail.joueur} — {showChampDetail.type === 'titres' ? '🏆 Titres' : '🥇 Médailles'}
               </h3>
               <button onClick={() => setShowChampDetail(null)} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none">✕</button>
             </div>

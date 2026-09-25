@@ -48,7 +48,7 @@ function TriageRow({ m, statut, onSetStatut, photos, compteFull, bancFull, bancM
         <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
       </div>
       <span className="min-w-0 flex-1 truncate text-sm text-slate-700 dark:text-slate-200">
-        {m.joueur} <span className="text-slate-400 dark:text-slate-500 text-xs">({m.poste})</span>
+        {m.joueur} <span className="text-slate-500 dark:text-slate-400 text-xs">({m.poste})</span>
       </span>
       <div className="flex gap-1 w-40 flex-shrink-0">
         <StatutButton active={statut === 'compte'} disabled={compteDisabled} title={compteDisabled ? 'Max 11 joueurs qui comptent' : undefined}
@@ -76,7 +76,7 @@ function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, o
         <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="sm" />
       </div>
       <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
-        {m.joueur} <span className="text-slate-400 dark:text-slate-500">({m.poste})</span>
+        {m.joueur} <span className="text-slate-500 dark:text-slate-400">({m.poste})</span>
       </span>
       {!nonNote && (
         <span className="flex items-center gap-1 flex-shrink-0">
@@ -105,7 +105,7 @@ function NotationRow({ m, note, buts, onBumpNote, onBumpReal, onDecrementReal, o
         </span>
       )}
       {nonNote ? (
-        <span className="flex-shrink-0 italic text-slate-400 dark:text-slate-500 px-1">n'a pas joué</span>
+        <span className="flex-shrink-0 italic text-slate-500 dark:text-slate-400 px-1">n'a pas joué</span>
       ) : (
         <span className="flex items-center gap-0.5 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded px-0.5 py-0.5">
           <button type="button" onClick={() => onBumpNote(m.joueur, -0.5)} className="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-sm leading-none">−</button>
@@ -302,7 +302,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
 
   if (squad.length === 0) {
     return (
-      <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-2">
+      <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-2">
         Aucun joueur recruté par {coach} sur ce championnat.
       </p>
     );
@@ -374,10 +374,10 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
 
       {loftList.length > 0 && (
         <>
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">📦 Loft, indicatif ({loftList.length})</p>
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-1">📦 Loft, indicatif ({loftList.length})</p>
           <div className="flex flex-wrap gap-1">
             {loftList.map(m => (
-              <span key={m.joueur} className="text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 rounded px-1.5 py-0.5">{m.joueur}</span>
+              <span key={m.joueur} className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 rounded px-1.5 py-0.5">{m.joueur}</span>
             ))}
           </div>
         </>

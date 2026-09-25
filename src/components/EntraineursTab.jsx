@@ -11,7 +11,7 @@ import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_
 const FormPills = ({ form, size = 'sm' }) => {
   const dim = size === 'lg' ? 'flex-1 sm:flex-none sm:w-9 sm:h-9 aspect-square text-sm' : 'w-6 h-6 text-[11px] flex-shrink-0';
   if (!form || form.length === 0) {
-    return <span className="text-xs text-slate-400">Aucun match</span>;
+    return <span className="text-xs text-slate-500">Aucun match</span>;
   }
   return (
     <div className={`flex gap-1 ${size === 'lg' ? 'flex-nowrap' : 'flex-wrap justify-center'}`}>
@@ -428,7 +428,7 @@ export default function EntraineursTab({
                       <span className="text-slate-500 dark:text-slate-400">• {bf}-{ba} buts</span>
                     </div>
                   ) : (
-                    <span className="text-sm text-slate-400">Aucune confrontation</span>
+                    <span className="text-sm text-slate-500">Aucune confrontation</span>
                   )}
                 </div>
               ))}
@@ -566,7 +566,7 @@ export default function EntraineursTab({
               {/* Points */}
               <div className="mt-1.5 flex items-baseline gap-1">
                 <span className="text-2xl font-black" style={{ color }}>{pointsOf(joueur)}</span>
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">pts</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">pts</span>
               </div>
 
               {/* Forme */}
@@ -574,7 +574,7 @@ export default function EntraineursTab({
                 <FormPills form={form} />
               </div>
 
-              <span className="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
+              <span className="mt-3 text-[11px] font-medium text-slate-500 dark:text-slate-400 group-hover:text-violet-500 dark:group-hover:text-violet-400 transition-colors">
                 Voir le profil →
               </span>
             </div>

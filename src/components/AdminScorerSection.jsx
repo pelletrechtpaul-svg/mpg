@@ -48,7 +48,7 @@ export default function CoachPlayerSearch({ coach, saison, ligue, championnat, m
 
   if (pool.length === 0) {
     return (
-      <p className="text-xs text-slate-400 dark:text-slate-500 italic">
+      <p className="text-xs text-slate-500 dark:text-slate-400 italic">
         Aucun joueur recruté par {coach} sur ce championnat.
       </p>
     );

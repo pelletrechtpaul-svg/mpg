@@ -173,7 +173,7 @@ export function SquadBench({ bench, onOpenPlayer, avgNoteFor }) {
   if (!bench.length) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1.5">Reste de l'effectif</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5">Reste de l'effectif</h4>
       <div className="grid grid-cols-2 gap-x-4">
         {bench.map((m, i) => {
           const avgNote = avgNoteFor?.(m);
@@ -183,7 +183,7 @@ export function SquadBench({ bench, onOpenPlayer, avgNoteFor }) {
                 onClick={() => onOpenPlayer?.(m.joueur, m.ligue)}
                 className="text-slate-700 dark:text-slate-200 truncate text-left hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
               >
-                {m.joueur} <span className="text-xs text-slate-400 dark:text-slate-500">({m.poste})</span>
+                {m.joueur} <span className="text-xs text-slate-500 dark:text-slate-400">({m.poste})</span>
               </button>
               <span className="font-semibold flex-shrink-0">
                 {typeof avgNote === 'number' && <span className="text-amber-600 dark:text-amber-400">{avgNote.toFixed(1)} · </span>}

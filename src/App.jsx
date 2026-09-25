@@ -270,7 +270,7 @@ const App = () => {
                     <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                     <span>Synchronisé</span>
                     {lastSyncTime && (
-                      <span className="text-slate-400">
+                      <span className="text-slate-500">
                         • {lastSyncTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     )}
@@ -286,7 +286,7 @@ const App = () => {
           </div>
 
           {/* Season Navigation — à droite du header sur desktop */}
-          <div className="flex gap-1 mt-9 sm:mt-4 lg:mt-0 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+          <div className="flex gap-1 mt-4 lg:mt-0 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
             {[...saisons, 'All-Time'].map(season => (
               <button
                 key={season}

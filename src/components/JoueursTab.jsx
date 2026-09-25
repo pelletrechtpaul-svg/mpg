@@ -141,7 +141,7 @@ function FormFrise({ matches }) {
                 <span className="text-[9px] font-bold text-white leading-none">{m.note % 1 === 0 ? m.note : m.note.toFixed(1)}</span>
               )}
             </div>
-            <span className="text-[8px] text-slate-400 dark:text-slate-500 mt-0.5 whitespace-nowrap">
+            <span className="text-[8px] text-slate-500 dark:text-slate-400 mt-0.5 whitespace-nowrap">
               {m.date ? new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : ''}
             </span>
             {/* Toujours rendue (même vide) et à hauteur fixe : sinon les
@@ -206,7 +206,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               {avgNote !== null && (
                 <span className="mr-4 mb-1">⭐ <span className="font-semibold text-slate-800 dark:text-slate-200">{avgNote.toFixed(1)}</span> note moy.</span>
               )}
-              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-400 dark:text-slate-500"> (dont {virtuels} <VirtualGoalIcon />)</span>}</span>
+              <span className="mr-4 mb-1">⚽ <span className="font-semibold text-slate-800 dark:text-slate-200">{buts}</span> but{buts > 1 ? 's' : ''}{virtuels > 0 && <span className="text-slate-500 dark:text-slate-400"> (dont {virtuels} <VirtualGoalIcon />)</span>}</span>
               {csc > 0 && (
                 <span className="text-orange-600 dark:text-orange-400 mb-1">🙈 <span className="font-semibold">{csc}</span> CSC</span>
               )}
@@ -236,17 +236,17 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                         <div className="flex items-center min-w-0">
                           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${colors.dot}`}></span>
                           <span className={`text-sm font-semibold flex-shrink-0 ml-2 ${colors.text}`}>{e.acheteur}</span>
-                          {e.equipe_acheteur && <span className="text-xs text-slate-400 dark:text-slate-500 truncate min-w-0 flex-1 ml-2" title={e.equipe_acheteur}>{truncateText(e.equipe_acheteur, 18)}</span>}
+                          {e.equipe_acheteur && <span className="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 flex-1 ml-2" title={e.equipe_acheteur}>{truncateText(e.equipe_acheteur, 18)}</span>}
                         </div>
                         <span className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0 ml-2">{e.prix}M</span>
                       </div>
-                      <div className="flex items-center text-xs text-slate-400 dark:text-slate-500 mb-1">
+                      <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-1">
                         <span>Tour {e.tour}</span>
                         {e.club && <><span className="mx-2">·</span><span>{e.club}</span></>}
                       </div>
                       {e.encheres_perdues?.length > 0 && (
                         <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-600">
-                          <div className="text-xs text-slate-400 dark:text-slate-500 mb-1">Enchères perdues :</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Enchères perdues :</div>
                           <div className="flex flex-wrap">
                             {e.encheres_perdues.map((ep, j) => {
                               const epColors = COACH_COLORS[ep.equipe] || { dot: 'bg-slate-400', text: 'text-slate-500' };
@@ -254,7 +254,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
                                 <span key={j} className="inline-flex items-center text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5 mr-1.5 mb-1.5">
                                   <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${epColors.dot}`}></span>
                                   <span className="text-slate-600 dark:text-slate-300 ml-1" title={ep.equipe}>{truncateText(ep.equipe, 16)}</span>
-                                  <span className="text-slate-400 ml-1">{ep.prix}M</span>
+                                  <span className="text-slate-500 ml-1">{ep.prix}M</span>
                                 </span>
                               );
                             })}
@@ -288,7 +288,7 @@ function ResultRow({ s, onClick, photos }) {
         <PlayerAvatar joueur={s.joueur} ligue={photoLigue} displayName={s.displayName} photos={photos} size="md" />
         <div className="min-w-0">
           <div className="font-medium text-slate-900 dark:text-slate-100 text-sm truncate">{s.displayName}</div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             <span>{liguesLabel}</span>
             {s.nbAchats > 1 && <><span>·</span><span>{s.nbAchats} achats</span></>}
             {s.acheteurPrincipal && coachColor && (<><span>·</span><span className={coachColor.text}>{s.acheteurPrincipal}</span></>)}
@@ -362,7 +362,7 @@ export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, o
 
   if (mercatoData.length === 0) {
     return (
-      <div className="text-center py-16 text-slate-400 dark:text-slate-500">
+      <div className="text-center py-16 text-slate-500 dark:text-slate-400">
         <div className="text-5xl mb-3">🕵️‍♂️</div>
         <p className="text-base max-w-sm mx-auto">{joke}</p>
       </div>
@@ -420,13 +420,13 @@ export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, o
                 <ResultRow key={s.key} s={s} onClick={() => selectPlayer(s)} photos={photos} />
               ))}
               {results.length > 60 && (
-                <div className="px-4 py-2 text-xs text-center text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-700">
+                <div className="px-4 py-2 text-xs text-center text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700">
                   Affine ta recherche pour voir les {results.length - 60} autres
                 </div>
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-6 text-sm text-center text-slate-400 dark:text-slate-500">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-6 text-sm text-center text-slate-500 dark:text-slate-400">
               Aucun joueur trouvé
             </div>
           )}
@@ -435,7 +435,7 @@ export default function JoueursTab({ mercatoData, matchData, initialPlayerKey, o
 
       {/* Empty state */}
       {!selectedPlayer && !isSearching && (
-        <div className="text-center py-16 text-slate-400 dark:text-slate-500">
+        <div className="text-center py-16 text-slate-500 dark:text-slate-400">
           <div className="text-5xl mb-3">⚽</div>
           <p className="text-base">Recherche un joueur par son nom</p>
         </div>

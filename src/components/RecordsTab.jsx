@@ -118,7 +118,7 @@ function StreakRows({ streakData, joueurs, unit }) {
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{entry.joueur}</span>
             <span className={`ml-2 font-bold ${colorText[entry.joueur]}`}>{entry.length} {unit}</span>
             {entry.startDate && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 ml-2">{fmt(entry.startDate)} → {fmt(entry.endDate)}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">{fmt(entry.startDate)} → {fmt(entry.endDate)}</span>
             )}
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function RecordsTab({
               <CoachRankList data={unbeatenCountPerPlayer} valueKey="count" renderExtra={entry => entry.instances.length > 0 && (
                 <div className="mt-0.5 space-y-0.5">
                   {entry.instances.map((inst, i) => (
-                    <div key={i} className="text-xs text-slate-400 dark:text-slate-500">{inst.ligue} #{inst.championnat} · {inst.saison}</div>
+                    <div key={i} className="text-xs text-slate-500 dark:text-slate-400">{inst.ligue} #{inst.championnat} · {inst.saison}</div>
                   ))}
                 </div>
               )} />
@@ -228,7 +228,7 @@ export default function RecordsTab({
                   <CoachRankList data={perduDeJustesseList} valueKey="count" renderExtra={entry => entry.details.length > 0 && (
                     <div className="mt-0.5 space-y-0.5">
                       {entry.details.map((d, i) => (
-                        <div key={i} className="text-xs text-slate-400 dark:text-slate-500">
+                        <div key={i} className="text-xs text-slate-500 dark:text-slate-400">
                           {d.ligue} #{d.championnat} vs {d.winner} · <span className={d.raison === '1 pt' ? 'text-red-500' : d.raison === 'goal avg' ? 'text-orange-500' : 'text-purple-500'}>{d.raison}</span>
                         </div>
                       ))}
@@ -273,7 +273,7 @@ export default function RecordsTab({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">Pas encore assez de données.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 italic">Pas encore assez de données.</p>
                 )}
               </RecordCard>
             )}
@@ -318,7 +318,7 @@ export default function RecordsTab({
                       {best ? (
                         <>
                           <span className={`font-bold ${colorText[j]}`}>{best.length} victoires</span>
-                          <span className="text-xs text-slate-400 dark:text-slate-500">vs {best.adversaire}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">vs {best.adversaire}</span>
                         </>
                       ) : (
                         <span className="text-slate-400 dark:text-slate-500 text-sm">—</span>
@@ -329,37 +329,39 @@ export default function RecordsTab({
               </div>
             </RecordCard>
 
-          </div>
-
-          {/* Régularité */}
-          {seasonRecords.allPlayerStdDevs.length > 0 && (
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">📈 Régularité des scores</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Du plus constant au plus imprévisible — basé sur l'écart-type des différences de buts</p>
-              <div data-card className="relative">
-                <ShareBtn contextText={selectedSeason} />
+            {/* Régularité */}
+            {seasonRecords.allPlayerStdDevs.length > 0 && (
+              <RecordCard className="bg-gradient-to-br from-sky-50 to-indigo-50 border-sky-200 dark:from-sky-900/30 dark:to-indigo-900/30 dark:border-sky-700" contextText={selectedSeason}>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1 text-center">📈 Régularité des scores</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 text-center">Du plus constant au plus imprévisible, d'après l'écart-type des différences de buts</p>
                 {(() => {
                   const players = seasonRecords.allPlayerStdDevs;
                   const maxStd = players[players.length - 1]?.stdDev || 1;
                   const labels = ['🎖️ Très régulier', '✅ Régulier', '🎲 Variable', '🌪️ Imprévisible'];
-                  return players.map((entry, i) => (
-                    <div key={entry.joueur} className="flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
-                      <span className="w-6 text-center font-bold text-sm text-indigo-300 dark:text-indigo-500">{i + 1}</span>
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{entry.joueur}</span>
-                      <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
-                        <div
-                          className={`h-4 rounded-full ${colorBg[entry.joueur]}`}
-                          style={{ width: `${(entry.stdDev / maxStd) * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-slate-400 dark:text-slate-500 w-8 font-mono">{entry.stdDev.toFixed(1)}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block w-32">{labels[i]}</span>
+                  return (
+                    <div className="space-y-2">
+                      {withRankLabels(players, e => e.stdDev.toFixed(1)).map(({ item: entry, label }, i) => (
+                        <div key={entry.joueur}>
+                          <div className="flex items-center gap-2">
+                            <RankBadge label={label} />
+                            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${playerColors[entry.joueur]}`} />
+                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-14">{entry.joueur}</span>
+                            <div className="flex-1 bg-white/70 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                              <div className={`h-3 rounded-full ${colorBg[entry.joueur]}`} style={{ width: `${(entry.stdDev / maxStd) * 100}%` }} />
+                            </div>
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 w-7 text-right">{entry.stdDev.toFixed(1)}</span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 pl-10">{labels[i]}</div>
+                        </div>
+                      ))}
                     </div>
-                  ));
+                  );
                 })()}
-              </div>
-            </div>
-          )}
+              </RecordCard>
+            )}
+
+          </div>
+
         </>)}
 
         {/* ── EXPLOITS ── */}
@@ -502,7 +504,7 @@ export default function RecordsTab({
                   <div className="md:col-span-2 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-dashed border-yellow-200 dark:from-yellow-900/10 dark:border-yellow-700 rounded-lg p-4 text-center">
                     <p className="text-2xl mb-1">🌟</p>
                     <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Saison parfaite (6V/6)</p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Aucun joueur n'a encore réussi à remporter les 6 matchs d'un championnat</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Aucun joueur n'a encore réussi à remporter les 6 matchs d'un championnat</p>
                   </div>
                 )}
               </div>
@@ -561,7 +563,7 @@ export default function RecordsTab({
                             <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
                             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueAbbr(l.ligue)}</span>
                             <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
-                            <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">({renderDetail(l)})</span>
                           </div>
                         ))}
                       </div>
