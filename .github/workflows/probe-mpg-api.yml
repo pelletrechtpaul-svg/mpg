@@ -1,0 +1,33 @@
+name: Probe MPG API (read-only)
+
+on:
+  push:
+    branches: [claude/charming-goodall-4nt05x]
+    paths:
+      - '.github/workflows/probe-mpg-api.yml'
+      - 'scripts/probe-mpg-api.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout production branch
+        uses: actions/checkout@v4
+        with:
+          ref: claude/charming-goodall-4nt05x
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Inspect authenticated MPG API response shapes
+        run: node scripts/probe-mpg-api.mjs
+        env:
+          MAIL_MPG: ${{ secrets.MAIL_MPG }}
+          PASSWORD_MPG: ${{ secrets.PASSWORD_MPG }}
