@@ -5,7 +5,7 @@ import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDeta
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
-import { champNum } from './AdminScorerSection.jsx';
+import { champNum } from '../helpers.js';
 
 // Tooltip du graphique d'évolution, entrées triées par classement à la date
 // survolée plutôt que par ordre de déclaration des lignes (recharts n'ordonne

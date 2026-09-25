@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { compareChampionnats } from '../helpers.js';
+import { LIGUES } from '../constants.js';
 
 export const useSeasonData = (matchData, selectedSeason) => {
   const filteredData = useMemo(() => {
@@ -15,15 +17,14 @@ export const useSeasonData = (matchData, selectedSeason) => {
   const ligues = useMemo(() => {
     const unique = new Set(matchData.map(d => d.ligue));
     const result = [...unique];
-    return result.length > 0 ? result : ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+    return result.length > 0 ? result : LIGUES;
   }, [matchData]);
 
   const championnatsByLigue = useMemo(() => {
     const map = {};
     ligues.forEach(ligue => {
       const championnats = new Set(filteredData.filter(d => d.ligue === ligue).map(d => d.championnat));
-      // Tri numérique sur "#N" (pas un tri lexical : "#10" < "#2" en lexical)
-      map[ligue] = [...championnats].sort((a, b) => (parseInt(String(a).replace('#', ''), 10) || 0) - (parseInt(String(b).replace('#', ''), 10) || 0));
+      map[ligue] = [...championnats].sort(compareChampionnats);
     });
     return map;
   }, [filteredData, ligues]);

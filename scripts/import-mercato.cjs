@@ -13,7 +13,8 @@
  *   "saison": "2026/2027",
  *   "joueurs": [
  *     {
- *       "joueur": "Yamal",
+ *       "joueur": "Lamine Yamal",   // nom complet (ou nom seul s'il n'a qu'un nom : "Pedri")
+ *       "prenom": "Lamine",
  *       "poste": "A",
  *       "club": "Barcelona",
  *       "prix": 45,
@@ -107,6 +108,35 @@ function findSimilarRegistryKeys(joueur, ligue, registry) {
   });
 }
 
+// Nom complet écrit en DB. Accepte "Lamine Yamal", ou "Yamal" + prenom, ou
+// "Yamal" seul si un seul joueur de ce nom de famille est au registre de la
+// ligue. Renvoie { nom } ou { erreur }.
+function resolveName(j, ligue) {
+  if (j.prenom && !j.joueur.startsWith(j.prenom)) {
+    const complet = `${j.prenom} ${j.joueur}`;
+    // Registre pas encore passé aux noms complets (migrate-noms-complets.cjs) :
+    // garder l'ancienne clé plutôt que de créer une seconde fiche.
+    if (!registry[`${complet}|${ligue}`] && registry[`${j.joueur}|${ligue}`]?.prenom === j.prenom) return { nom: j.joueur };
+    return { nom: complet };
+  }
+  if (registry[`${j.joueur}|${ligue}`]) return { nom: j.joueur };
+  const candidats = Object.keys(registry)
+    .map(k => k.split('|'))
+    .filter(([n, l]) => l === ligue && n.endsWith(` ${j.joueur}`))
+    .map(([n]) => n);
+  if (candidats.length === 1) return { nom: candidats[0], parNomSeul: true };
+  if (candidats.length > 1) return { erreur: `"${j.joueur}" ambigu en ${ligue} (${candidats.join(', ')}) : renseigner "prenom".` };
+  return { nom: j.joueur };
+}
+
+// Même nom déjà présent dans une AUTRE ligue avec un autre club : homonyme
+// probable, qui fusionnerait avec cette fiche (la fiche joueur est unique par nom).
+function otherLigueHomonyms(nom, ligue, club) {
+  return Object.entries(registry)
+    .filter(([k, v]) => { const [n, l] = k.split('|'); return n === nom && l !== ligue && club && !(v.clubs || []).includes(club); })
+    .map(([k, v]) => `${k.split('|')[1]} (${(v.clubs || []).join('/') || '?'})`);
+}
+
 function writePhotosPublic() {
   const photos = {};
   Object.entries(registry).forEach(([key, val]) => {
@@ -138,9 +168,20 @@ async function main() {
 
   const input = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
   const { ligue, tour, saison, joueurs } = input;
+  // Le reste de l'appli compare les ligues par égalité stricte : une faute
+  // ("Champions League") passerait sans erreur mais rendrait l'import invisible.
+  const { LIGUES } = await import('../src/constants.js');
+  if (!LIGUES.includes(ligue)) {
+    console.error(`❌ Ligue inconnue "${ligue}". Ligues valides : ${LIGUES.join(', ')}`);
+    process.exit(1);
+  }
   const championnat = input.championnat === 'next'
     ? await getNextChampionnat(ligue)
     : Number(input.championnat);
+  if (!Number.isInteger(championnat) || championnat < 1) {
+    console.error(`❌ Championnat invalide "${input.championnat}" : un nombre (2, pas "#2") ou "next".`);
+    process.exit(1);
+  }
 
   console.log(`\n=== IMPORT MERCATO ===`);
   console.log(`Ligue: ${ligue} | Championnat: ${championnat} | Tour: ${tour} | Saison: ${saison}`);
@@ -150,12 +191,18 @@ async function main() {
   const warnings = [];
 
   for (const j of joueurs) {
-    const regKey = j.joueur + '|' + ligue;
+    const { nom, erreur, parNomSeul } = resolveName(j, ligue);
+    if (erreur) { warnings.push(`⚠️  AMBIGU: ${erreur}`); continue; }
+    const regKey = nom + '|' + ligue;
     const known = registry[regKey];
+    // "Díaz" rattaché à "Mariano Díaz" : bloquant si le club ne correspond pas.
+    if (parNomSeul && j.club && !(known.clubs || []).includes(j.club)) {
+      warnings.push(`⚠️  RATTACHEMENT: "${j.joueur}" (${j.club}) rattaché à "${nom}" (${(known.clubs || []).join('/')}) — renseigner "prenom" si c'est un autre joueur.`);
+    }
 
     const nat = j.nationalite || known?.nationalite || null;
     const entry = {
-      joueur: j.joueur,
+      joueur: nom,
       ligue,
       championnat,
       tour,
@@ -170,30 +217,31 @@ async function main() {
     };
 
     const prenom = j.prenom || known?.prenom || null;
-    if (prenom && !entry.joueur.startsWith(prenom)) entry.prenom = prenom;
+    if (prenom) entry.prenom = prenom;
 
     // Photo auto pour les nouveaux joueurs (TheSportsDB, source unique)
     if (!known || !known.photo) {
-      const searchName = entry.prenom ? `${entry.prenom} ${j.joueur}` : j.joueur;
-      const result = await fetchPlayerPhoto(searchName);
-      const regKey2 = j.joueur + '|' + ligue;
-      if (!registry[regKey2]) registry[regKey2] = { prenom: entry.prenom || null, nationalite: entry.nationalite, poste: entry.poste, clubs: entry.club ? [entry.club] : [], photo: null };
-      if (result) { registry[regKey2].photo = result.photo; console.log(`  📸 Photo trouvée (${result.source}): ${searchName}`); }
+      const result = await fetchPlayerPhoto(nom);
+      if (!registry[regKey]) registry[regKey] = { prenom: entry.prenom || null, nationalite: entry.nationalite, poste: entry.poste, clubs: entry.club ? [entry.club] : [], photo: null };
+      if (result) { registry[regKey].photo = result.photo; console.log(`  📸 Photo trouvée (${result.source}): ${nom}`); }
     }
 
-    const dupes = await checkDuplicate(j.joueur, ligue, championnat, tour);
-    if (dupes.length > 0) warnings.push(`⚠️  DOUBLON: ${j.joueur} déjà en DB (id: ${dupes[0].id})`);
+    const dupes = await checkDuplicate(nom, ligue, championnat, tour);
+    if (dupes.length > 0) warnings.push(`⚠️  DOUBLON: ${nom} déjà en DB (id: ${dupes[0].id})`);
     if (!known) {
-      warnings.push(`❓ INCONNU: ${j.joueur} — vérifier prenom/nationalite`);
-      const similar = findSimilarRegistryKeys(j.joueur, ligue, registry);
+      warnings.push(`❓ INCONNU: ${nom} — vérifier prenom/nationalite`);
+      const similar = findSimilarRegistryKeys(nom, ligue, registry);
       if (similar.length) {
-        warnings.push(`🔎 NOM PROCHE: "${j.joueur}" ressemble à ${similar.map(k => `"${k.split('|')[0]}"`).join(', ')} déjà en registre — vérifier qu'il ne s'agit pas du même joueur avant d'importer (sinon fiche dupliquée).`);
+        warnings.push(`🔎 NOM PROCHE: "${nom}" ressemble à ${similar.map(k => `"${k.split('|')[0]}"`).join(', ')} déjà en registre — vérifier qu'il ne s'agit pas du même joueur avant d'importer (sinon fiche dupliquée).`);
       }
+    }
+    const homonymes = otherLigueHomonyms(nom, ligue, entry.club);
+    if (homonymes.length) {
+      warnings.push(`🔎 HOMONYME ?: "${nom}" (${entry.club}) existe déjà en ${homonymes.join(', ')} — même personne transférée, ou préciser le nom pour ne pas fusionner les fiches.`);
     }
 
     toWrite.push(entry);
-    const prenomDisplay = entry.prenom ? entry.prenom + ' ' : '';
-    console.log(`${known ? '✅' : '❓'} ${prenomDisplay}${j.joueur} | ${entry.poste} | ${entry.nationalite || '?'} | ${entry.club || '?'} → ${j.acheteur} ${j.prix}M`);
+    console.log(`${known ? '✅' : '❓'} ${nom} | ${entry.poste} | ${entry.nationalite || '?'} | ${entry.club || '?'} → ${j.acheteur} ${j.prix}M`);
   }
 
   if (warnings.length) {

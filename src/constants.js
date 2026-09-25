@@ -17,6 +17,11 @@ export const LIGUE_NAT_EXCLUE = {
   'Bundesliga': 'Allemand',
 };
 
+// Liste officielle des ligues, dans l'ordre d'affichage. Ces chaînes exactes
+// servent de clé partout (matches, mercato, metadata) : l'import mercato
+// refuse tout autre nom.
+export const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
+
 // Règle unique d'abréviation des ligues ; Liga et Serie A restent en entier.
 const LIGUE_ABBR = { 'Premier League': 'PL', 'Ligue des Champions': 'LDC', 'Ligue 1': 'L1' };
 export const ligueAbbr = ligue => LIGUE_ABBR[ligue] || ligue;

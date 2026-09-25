@@ -1,20 +1,21 @@
 import { useState, useMemo, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, collection, writeBatch, getDocs, query, where } from 'firebase/firestore';
-import { encodeFirestoreKey } from '../shared.jsx';
+import { encodeFirestoreKey, champNum, compareChampionnats, LIGUES } from '../shared.jsx';
 import CoachPlayerSearch from './AdminScorerSection';
 import { AdminFormationEntry } from './AdminFormationEntry.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
 
-const LIGUE_CONFIG = [
-  { id: 'Ligue 1',           label: 'Ligue 1',           flag: '🇫🇷', color: 'bg-blue-600 hover:bg-blue-700' },
-  { id: 'Premier League',    label: 'Premier League',    flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: 'bg-purple-600 hover:bg-purple-700' },
-  { id: 'Liga',              label: 'Liga',              flag: '🇪🇸', color: 'bg-red-600 hover:bg-red-700' },
-  { id: 'Serie A',           label: 'Serie A',           flag: '🇮🇹', color: 'bg-green-700 hover:bg-green-800' },
-  { id: 'Ligue des Champions', label: 'Champions',       flag: '⭐', color: 'bg-slate-700 hover:bg-slate-800' },
-];
+const LIGUE_STYLE = {
+  'Ligue 1':             { label: 'Ligue 1',        flag: '🇫🇷', color: 'bg-blue-600 hover:bg-blue-700' },
+  'Premier League':      { label: 'Premier League', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: 'bg-purple-600 hover:bg-purple-700' },
+  'Liga':                { label: 'Liga',           flag: '🇪🇸', color: 'bg-red-600 hover:bg-red-700' },
+  'Serie A':             { label: 'Serie A',        flag: '🇮🇹', color: 'bg-green-700 hover:bg-green-800' },
+  'Ligue des Champions': { label: 'Champions',      flag: '⭐', color: 'bg-slate-700 hover:bg-slate-800' },
+};
+const LIGUE_CONFIG = LIGUES.map(id => ({ id, ...LIGUE_STYLE[id] }));
 
 const EMPTY_MATCH = { joueur1: '', joueur2: '', buts1: '', buts2: '', valise1: false, valise2: false };
 
@@ -33,18 +34,14 @@ function resultLabel(j1, j2, b1, b2) {
 function getChampStatus(matchData, ligueMetadata, saison, ligue) {
   const championnats = [...new Set(
     matchData.filter(m => m.saison === saison && m.ligue === ligue).map(m => m.championnat)
-  )].sort((a, b) => {
-    const na = parseInt(a.match(/#(\d+)/)?.[1] || 0);
-    const nb = parseInt(b.match(/#(\d+)/)?.[1] || 0);
-    return na - nb;
-  });
+  )].sort(compareChampionnats);
 
   if (championnats.length === 0) return { championnat: null, number: 0, isFull: false, meta: null };
 
   const current = championnats[championnats.length - 1];
   const key = `${saison}-${ligue}-${current}`;
   const meta = ligueMetadata[key] || null;
-  const number = parseInt(current.match(/#(\d+)/)?.[1] || 0);
+  const number = champNum(current) ?? 0;
   const isFull = meta ? meta.matchsEntered >= meta.matchsTotal : false;
 
   return { championnat: current, number, isFull, meta };

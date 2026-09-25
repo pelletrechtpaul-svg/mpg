@@ -1,3 +1,4 @@
+import { nomCourt } from '../helpers.js';
 import { PlayerAvatar } from './PlayerAvatar.jsx';
 
 export const FORMATION_SLOTS = { Attaquants: 3, Milieux: 3, Défenseurs: 4, Gardien: 1 };
@@ -39,7 +40,7 @@ function FormationRow({ group, players, onOpenPlayer, photos, avgNoteFor }) {
               <PlayerAvatar joueur={m.joueur} ligue={m.ligue} displayName={m.joueur} photos={photos} size="formation" />
             </div>
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-max px-1.5 py-0.5 rounded bg-black/55 text-[11px] sm:text-sm font-bold text-white leading-tight text-center whitespace-nowrap group-hover:underline">
-              {m.joueur}
+              {nomCourt(m)}
             </span>
             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-6 sm:mt-7 w-max text-[10px] sm:text-xs font-semibold text-white/90 leading-none whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
               {typeof avgNote === 'number' && `${avgNote.toFixed(1)} · `}{m.prix}M

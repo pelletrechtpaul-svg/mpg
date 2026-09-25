@@ -1,13 +1,8 @@
 import { useState, useMemo, useRef } from 'react';
+import { champNum } from '../helpers.js';
 
 function normalize(str) {
   return (str || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-}
-
-// Le championnat des matchs est stocké "#1", celui du mercato est un nombre (1).
-export function champNum(championnat) {
-  const n = parseInt(String(championnat).replace('#', ''), 10);
-  return isNaN(n) ? null : n;
 }
 
 // Nom affiché : "Prénom Nom" quand le prénom est connu et pas déjà inclus

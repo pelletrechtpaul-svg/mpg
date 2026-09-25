@@ -4,6 +4,8 @@ import { useChampionshipStats } from '../hooks/useChampionshipStats.js';
 import { useRecords } from '../hooks/useRecords.js';
 import { useSeasonData } from '../hooks/useSeasonData.js';
 import { useEvolutionData } from '../hooks/useEvolutionData.js';
+import { champNum, compareChampionnats, nomCourt } from '../helpers.js';
+import { LIGUES } from '../constants.js';
 
 // Mini-championnat fictif, résultat connu à la main :
 //   Paul 7 pts (V, V, N) — champion à 1 point d'Adrien
@@ -150,5 +152,24 @@ describe('useEvolutionData', () => {
     expect(total.matchesListForChampionnat).toHaveLength(7);
     const un = renderHook(() => useEvolutionData(data, JOUEURS, 'Liga', '#1', complet)).result.current;
     expect(un.matchesListForChampionnat).toHaveLength(6);
+  });
+});
+
+describe('helpers — championnats et noms', () => {
+  it('compare "#2" (matches) et 2 (mercato) et trie numériquement', () => {
+    expect(champNum('#2')).toBe(champNum(2));
+    expect(champNum('total')).toBeNull();
+    expect(['#10', '#2', '#1'].sort(compareChampionnats)).toEqual(['#1', '#2', '#10']);
+  });
+
+  it('nomCourt garde le nom de famille quand le prénom est connu', () => {
+    expect(nomCourt({ joueur: 'Federico Valverde', prenom: 'Federico' })).toBe('Valverde');
+    expect(nomCourt({ joueur: 'Pedri' })).toBe('Pedri');
+    expect(nomCourt({ joueur: 'Valverde', prenom: 'Federico' })).toBe('Valverde');
+  });
+
+  it('la liste des ligues contient les chaînes exactes utilisées en base', () => {
+    expect(LIGUES).toContain('Ligue des Champions');
+    expect(LIGUES).not.toContain('Champions League');
   });
 });

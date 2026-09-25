@@ -74,8 +74,8 @@ src/
 ├── App.jsx            # en-tête, navigation (état dans le hash de l'URL), lecteur, dark mode
 ├── components/        # un composant par onglet (Classements, Entraineurs, Records, Joueurs, Admin…)
 ├── hooks/             # tous les calculs (useChampionshipStats, useRecords, usePlayerStats, useEvolutionData…)
-├── constants.js       # couleurs des entraîneurs, abréviations de ligues (ligueAbbr), saisons sans détail
-├── helpers.js         # calculatePlayerStats, groupMatchesByChampionship, isCompte, rotaldosFor…
+├── constants.js       # ligues (LIGUES, ligueAbbr), couleurs des entraîneurs, saisons sans détail
+├── helpers.js         # champNum, compareChampionnats, nomCourt, calculatePlayerStats, isCompte…
 └── test/              # tests Vitest (npm test)
 ```
 
@@ -85,8 +85,8 @@ Navigation : tout l'état visible (onglet, saison, ligue, championnat, vues et s
 
 ## Pièges connus
 
-1. **Championnat : `"#2"` dans `matches`, `2` dans `mercato`.** Toujours convertir avec `champNum()` (`AdminScorerSection.jsx`) avant de comparer — source de plusieurs bugs.
-2. **Noms de ligue en dur** : une faute (ex. `"Champions League"`) passe partout sans erreur mais désynchronise les données. Voir `CLAUDE.md`.
+1. **Championnat : `"#2"` dans `matches`, `2` dans `mercato`.** Toujours comparer via `champNum()` et trier via `compareChampionnats()` (`helpers.js`) — source de plusieurs bugs.
+2. **Noms de ligue** : chaînes exactes, liste unique `LIGUES` dans `constants.js`. L'import mercato refuse une ligue hors liste ; ne jamais réécrire une liste de ligues dans un composant.
 3. **Homonymes de joueurs** : deux footballeurs réels de même nom fusionnent en une seule fiche. Procédure de vérification dans `CLAUDE.md`.
 4. **Joueur d'un coach** : un joueur peut changer de coach d'un championnat à l'autre ; toute stat « par coach » doit se limiter aux championnats où il lui appartenait (clé joueur + ligue + championnat).
 5. **Après un changement de calcul** : lancer `npm test`.

@@ -3,7 +3,7 @@ import { useJoueursSearch } from '../hooks/useJoueursSearch';
 import { ShareBtn, playerColors, playerColorText, isCompte, ligueAbbr } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
-import { champNum } from './AdminScorerSection.jsx';
+import { champNum } from '../helpers.js';
 
 // html2canvas (utilisé pour le partage) ne respecte pas text-overflow:
 // ellipsis / overflow:hidden — il peint le texte complet non tronqué, ce qui

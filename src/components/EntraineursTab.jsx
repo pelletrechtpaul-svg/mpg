@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData, ligueAbbr } from '../shared.jsx';
+import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData, ligueAbbr, champNum } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 
@@ -109,7 +109,7 @@ export default function EntraineursTab({
         if (!squad.length) return null;
 
         const champMatches = (filteredData || []).filter(m =>
-          m.ligue === ligue && m.championnat === `#${dernier}` && (m.joueur1 === selectedPlayer || m.joueur2 === selectedPlayer));
+          m.ligue === ligue && champNum(m.championnat) === dernier && (m.joueur1 === selectedPlayer || m.joueur2 === selectedPlayer));
 
         const posteOf = {};
         squad.forEach(m => { posteOf[m.joueur] = m.poste; });

@@ -3,9 +3,9 @@ import { db } from '../firebase';
 import { doc, deleteDoc, setDoc } from 'firebase/firestore';
 import { TeamButeurs, CscToggle } from './AdminAddMatchForm';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
+import { LIGUES, compareChampionnats } from '../shared.jsx';
 
 const JOUEURS = ['Paul', 'Adrien', 'Tiago', 'Roman'];
-const LIGUES = ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
 
 function normalizeLegacyButeurs(match) {
   if (match.buteurs) return match.buteurs;
@@ -35,11 +35,7 @@ const AdminEditPanel = ({ matchData, joueurs, saisons, mercatoData, showToast, o
 
   const championnats = useMemo(() => {
     if (!selSaison || !selLigue) return [];
-    return [...new Set(matchData.filter(m => m.saison === selSaison && m.ligue === selLigue).map(m => m.championnat))].sort((a, b) => {
-      const na = parseInt(a.match(/#(\d+)/)?.[1] || '0');
-      const nb = parseInt(b.match(/#(\d+)/)?.[1] || '0');
-      return na - nb;
-    });
+    return [...new Set(matchData.filter(m => m.saison === selSaison && m.ligue === selLigue).map(m => m.championnat))].sort(compareChampionnats);
   }, [matchData, selSaison, selLigue]);
 
   const currentMatches = useMemo(() => {

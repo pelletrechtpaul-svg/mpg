@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { Check } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar.jsx';
 import { POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
-import { champNum, playerDisplayName } from './AdminScorerSection.jsx';
+import { playerDisplayName } from './AdminScorerSection.jsx';
+import { champNum } from '../helpers.js';
 
 function formatNote(n) {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);

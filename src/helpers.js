@@ -31,6 +31,21 @@ export const medianFn = (arr) => {
   return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 };
 
+// Numéro de championnat : "#2" dans matches (et dans le sélecteur), 2 dans
+// mercato. Toute comparaison entre les deux passe par champNum().
+export function champNum(championnat) {
+  const n = parseInt(String(championnat).replace('#', ''), 10);
+  return isNaN(n) ? null : n;
+}
+// Tri numérique ("#2" avant "#10", ce que ne fait pas un tri alphabétique).
+export const compareChampionnats = (a, b) => (champNum(a) ?? 0) - (champNum(b) ?? 0);
+
+// Nom de famille seul ("Valverde" pour "Federico Valverde"), pour les
+// endroits trop étroits pour le nom complet (terrain). Entrée mercato avec
+// `prenom` ; sinon le nom est rendu tel quel.
+export const nomCourt = (p) =>
+  p.prenom && p.joueur.startsWith(`${p.prenom} `) ? p.joueur.slice(p.prenom.length + 1) : p.joueur;
+
 export const encodeFirestoreKey = (key) => key.replace(/\//g, '_');
 export const decodeFirestoreKey = (key) => key.replace(/_/g, '/');
 
