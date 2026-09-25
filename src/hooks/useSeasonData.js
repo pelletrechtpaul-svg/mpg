@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { MANUAL_CHAMPIONSHIPS } from '../shared.jsx';
 
 export const useSeasonData = (matchData, selectedSeason) => {
   const filteredData = useMemo(() => {
@@ -15,26 +14,19 @@ export const useSeasonData = (matchData, selectedSeason) => {
 
   const ligues = useMemo(() => {
     const unique = new Set(matchData.map(d => d.ligue));
-    MANUAL_CHAMPIONSHIPS.forEach(mc => unique.add(mc.ligue));
     const result = [...unique];
     return result.length > 0 ? result : ['Ligue 1', 'Premier League', 'Liga', 'Serie A', 'Ligue des Champions'];
   }, [matchData]);
 
   const championnatsByLigue = useMemo(() => {
     const map = {};
-    const filteredSeasons = new Set(filteredData.map(m => m.saison));
     ligues.forEach(ligue => {
       const championnats = new Set(filteredData.filter(d => d.ligue === ligue).map(d => d.championnat));
-      MANUAL_CHAMPIONSHIPS.forEach(mc => {
-        if (mc.ligue === ligue && (selectedSeason === 'All-Time' || filteredSeasons.has(mc.saison))) {
-          championnats.add(mc.championnat);
-        }
-      });
       // Tri numérique sur "#N" (pas un tri lexical : "#10" < "#2" en lexical)
       map[ligue] = [...championnats].sort((a, b) => (parseInt(String(a).replace('#', ''), 10) || 0) - (parseInt(String(b).replace('#', ''), 10) || 0));
     });
     return map;
-  }, [filteredData, ligues, selectedSeason]);
+  }, [filteredData, ligues]);
 
   return { filteredData, joueurs, ligues, championnatsByLigue };
 };

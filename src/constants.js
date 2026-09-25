@@ -92,18 +92,3 @@ export const PLAYLIST = [
   { title: 'Merci',           src: '/audio/Merci .mp3' },
   { title: "Sur la route d'Auxerre", src: "/audio/Sur la route d'Auxerre .mp3" },
 ];
-
-export const MANUAL_CHAMPIONSHIPS = [
-  {
-    saison: '2024/2025',
-    ligue: 'Ligue des Champions',
-    championnat: '#1',
-    matchsTotal: 6,
-    standings: [
-      { joueur: 'Paul',   points: 15, ga: 8,   matchs: 6, victoires: 5, nuls: 0, defaites: 1 },
-      { joueur: 'Roman',  points: 12, ga: 4,   matchs: 6, victoires: 4, nuls: 0, defaites: 2 },
-      { joueur: 'Adrien', points: 7,  ga: -2,  matchs: 6, victoires: 2, nuls: 1, defaites: 3 },
-      { joueur: 'Tiago',  points: 1,  ga: -10, matchs: 6, victoires: 0, nuls: 1, defaites: 5 },
-    ]
-  }
-];
