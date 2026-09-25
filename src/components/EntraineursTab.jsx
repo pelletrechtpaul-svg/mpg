@@ -179,7 +179,7 @@ export default function EntraineursTab({
     };
 
     addLeader(seasonRecords.closeWinsKing, 'count', '🔪 Roi des scores serrés', v => `${v} victoire${v > 1 ? 's' : ''} par exactement 1 but d'écart`);
-    addLeader(seasonRecords.berserkKing, 'count', '💥 Berserk', v => `${v} victoire${v > 1 ? 's' : ''} avec 5 buts d'écart ou plus`);
+    addLeader(seasonRecords.berserkKing, 'count', '🪓 Berserk', v => `${v} victoire${v > 1 ? 's' : ''} avec 5 buts d'écart ou plus`);
     addLeader(seasonRecords.clutchChampion, 'count', '🎯 Clutch', v => `${v} championnat${v > 1 ? 's' : ''} gagné${v > 1 ? 's' : ''} avec exactement 1 point d'écart`);
 
     const unbeatenCounts = {};

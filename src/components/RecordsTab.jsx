@@ -203,7 +203,7 @@ export default function RecordsTab({
               <p className="text-xs text-slate-500 dark:text-slate-400">Victoires par exactement 1 but d'écart</p>
               <CoachRankList data={seasonRecords.closeWinsKing} valueKey="count" />
 
-              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">💥 Berserk</h4>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">🪓 Berserk</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">Victoires avec 5 buts d'écart ou plus</p>
               <CoachRankList data={seasonRecords.berserkKing} valueKey="count" />
 
