@@ -8,7 +8,7 @@
 
 Dashboard privé de 4 amis (Paul, Adrien, Tiago, Roman) qui jouent à MonPetitGazon (MPG). Les matchs sont saisis à la main dans l'onglet Admin ; le mercato est importé depuis des captures d'écran (voir `CLAUDE.md`).
 
-**Stack** : React 19 + Vite, Tailwind CSS 3, Firebase Firestore + Auth, Recharts, lucide-react, tests Vitest.
+**Stack** : React 19 + Vite, Tailwind CSS 3, Firebase Firestore + Auth, Recharts, lucide-react, tests Vitest, Vercel Analytics (une page par onglet, déclarée dans `App.jsx`).
 **Déploiement** : Vercel, depuis `claude/charming-goodall-4nt05x` (chaque push part en ligne).
 
 ---

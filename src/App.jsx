@@ -5,6 +5,7 @@ const EntraineursTab = lazy(() => import('./components/EntraineursTab'));
 const RecordsTab = lazy(() => import('./components/RecordsTab'));
 const ClassementsTab = lazy(() => import('./components/ClassementsTab'));
 const AdminTab = lazy(() => import('./components/AdminTab'));
+import { Analytics } from '@vercel/analytics/react';
 import { db } from './firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
@@ -194,8 +195,13 @@ const App = () => {
     );
   }
 
+  // Vercel Analytics ne voit pas le hash : on lui déclare une « page » par
+  // onglet (et par sous-onglet de Records), sans saison ni ligue.
+  const analyticsPath = activeTab === 'records' ? `/records/${recordsTab}` : `/${activeTab}`;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-[#0a0918] dark:to-[#0d0a1a]">
+      <Analytics route={analyticsPath} path={analyticsPath} />
       {/* Fixed top-right controls: MP3 Player + Buttons */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 pointer-events-none">
         {/* Mini music player */}
