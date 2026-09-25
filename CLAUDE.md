@@ -16,6 +16,12 @@ Ne jamais poser de question du type "je push ?" — faire directement.
 
 *(Note du 2026-09-08 : la branche `claude/fantasy-football-dashboard-89253` — ancien default branch du repo — a divergé de `charming-goodall-4nt05x` au point d'avoir chacune ~200-400 commits que l'autre n'a pas. Ce n'est plus une branche liée au déploiement actif ; l'étape "PR + merge dedans après chaque push" a été retirée du protocole pour cette raison, plutôt que risquer un merge massif et non maîtrisé sur une branche potentiellement obsolète.)*
 
+## Règles Firestore et sauvegardes
+
+- **Règles** : modifier uniquement `firestore.rules` puis pousser sur la branche de prod — le workflow `deploy-firestore-rules.yml` les publie automatiquement (diff affiché dans le log). Il refuse de publier si la version en ligne a été modifiée hors du repo (console Firebase) : dans ce cas, lire le diff du log, et si rien n'est à préserver, relancer le workflow à la main avec l'input `publish: publier`. Ne jamais éditer les règles directement dans la console (vécu 2026-09-25 : la prod tournait sur une version plus faible que le repo, où tout compte connecté pouvait modifier `config/adminRoles`).
+- **Sauvegardes** : `backup-firestore.yml` exporte toute la base (sans `config/adminRoles`) en artefact `firestore-backup` gardé 90 jours. Restauration : workflow `restore-firestore.yml` avec l'id du run de sauvegarde (dry-run par défaut, `confirm_restore: restaurer` pour écrire). Faire une sauvegarde manuelle avant toute opération risquée sur la base (reset, migration, script one-off).
+- Ces workflows ne sont que sur la branche de prod, pas sur la branche par défaut du repo : leurs boutons « Run workflow » n'apparaissent pas dans l'UI GitHub, mais le déclenchement via l'API (outil `actions_run_trigger`, `ref: claude/charming-goodall-4nt05x`) fonctionne.
+
 ## Import mercato depuis un screen
 
 Quand l'utilisateur envoie un screen (ou des screens) de mercato MPG :
