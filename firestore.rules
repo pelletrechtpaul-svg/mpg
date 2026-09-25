@@ -22,16 +22,6 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // Post-its collection (collaborative notes)
-    match /postits/{postItId} {
-      // Allow anyone to read and write post-its
-      // This is a collaborative feature accessible to all users
-      allow read: if true;
-      allow create: if true;
-      allow delete: if true;
-      allow update: if true;
-    }
-
     // Mercato collection
     match /mercato/{mercatoId} {
       allow read: if true;
@@ -42,8 +32,15 @@ service cloud.firestore {
     // "saisons" et "adminRoles" sont réservés aux admins avec le rôle "full" —
     // un admin avec le rôle "matches" (édition de matchs uniquement) ne peut
     // pas y écrire, même en contournant l'UI (ex: console navigateur).
+    // adminRoles contient les emails des admins : lisible uniquement par un
+    // admin qui y figure (l'onglet Admin le lit pour connaître son rôle),
+    // plus par le public. Les autres documents (saisons) restent publics,
+    // l'app les lit sans connexion.
     match /config/{configId} {
-      allow read: if true;
+      allow read: if configId != 'adminRoles' || (
+        request.auth != null &&
+        request.auth.token.email.lower() in resource.data
+      );
       allow write: if request.auth != null && (
         !(configId in ['saisons', 'adminRoles']) ||
         get(/databases/$(database)/documents/config/adminRoles).data[request.auth.token.email.lower()] == 'full'
