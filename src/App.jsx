@@ -22,7 +22,7 @@ const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1
 const mostRecentSeason = (list) => [...list].sort((a, b) => saisonYear(b) - saisonYear(a))[0];
 
 const TABS = ['classements', 'entraineurs', 'records', 'joueurs', 'admin'];
-const NAV_DEFAULTS = { tab: 'classements', saison: null, ligue: 'general', championnat: 'total', vue: 'classement', coach: null, csc: 'buteurs', entraineur: null };
+const NAV_DEFAULTS = { tab: 'classements', saison: null, ligue: 'general', championnat: 'total', vue: 'classement', coach: null, csc: 'buteurs', entraineur: null, general: 'tableau', records: 'entraineurs', fiche: 'effectifs' };
 
 // Toute la position dans la nav (onglet, saison, ligue, championnat, sous-vue,
 // entraîneur sélectionné...) est encodée dans le hash de l'URL sous forme de
@@ -45,6 +45,9 @@ function parseNavFromHash() {
     coach: params.get('coach'),
     csc: params.get('csc') || NAV_DEFAULTS.csc,
     entraineur: params.get('entraineur'),
+    general: params.get('general') || NAV_DEFAULTS.general,
+    records: params.get('records') || NAV_DEFAULTS.records,
+    fiche: params.get('fiche') || NAV_DEFAULTS.fiche,
   };
 }
 
@@ -57,6 +60,9 @@ function serializeNav(nav) {
   if (nav.coach) params.set('coach', nav.coach);
   if (nav.csc !== NAV_DEFAULTS.csc) params.set('csc', nav.csc);
   if (nav.entraineur) params.set('entraineur', nav.entraineur);
+  if (nav.general !== NAV_DEFAULTS.general) params.set('general', nav.general);
+  if (nav.records !== NAV_DEFAULTS.records) params.set('records', nav.records);
+  if (nav.fiche !== NAV_DEFAULTS.fiche) params.set('fiche', nav.fiche);
   const qs = params.toString();
   return nav.tab + (qs ? '?' + qs : '');
 }
@@ -72,6 +78,9 @@ const App = () => {
   const [effectifsCoach, setEffectifsCoach] = useState(() => initialNav.coach);
   const [buteursCscView, setButeursCscView] = useState(() => initialNav.csc);
   const [selectedEntraineur, setSelectedEntraineur] = useState(() => initialNav.entraineur);
+  const [generalView, setGeneralView] = useState(() => initialNav.general);
+  const [recordsTab, setRecordsTab] = useState(() => initialNav.records);
+  const [ficheTab, setFicheTab] = useState(() => initialNav.fiche);
 
   // true dès qu'une saison est fixée explicitement (choix manuel ou déjà
   // présente dans l'URL au chargement) — jamais sur un simple événement de
@@ -89,11 +98,11 @@ const App = () => {
   // au lieu de suivre la vraie saison en cours à chaque nouvelle visite.
   useEffect(() => {
     const saisonForHash = selectedSeason === mostRecentSeason(saisons) ? null : selectedSeason;
-    const target = serializeNav({ tab: activeTab, saison: saisonForHash, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView, entraineur: selectedEntraineur });
+    const target = serializeNav({ tab: activeTab, saison: saisonForHash, ligue: selectedLigue, championnat: selectedChampionnat, vue: ligueView, coach: effectifsCoach, csc: buteursCscView, entraineur: selectedEntraineur, general: generalView, records: recordsTab, fiche: ficheTab });
     if (window.location.hash.slice(1) !== target) {
       window.location.hash = target;
     }
-  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView, selectedEntraineur, saisons]);
+  }, [activeTab, selectedSeason, selectedLigue, selectedChampionnat, ligueView, effectifsCoach, buteursCscView, selectedEntraineur, generalView, recordsTab, ficheTab, saisons]);
 
   // Bouton précédent/suivant du navigateur : relit le hash et réapplique tout.
   useEffect(() => {
@@ -108,6 +117,9 @@ const App = () => {
       setEffectifsCoach(nav.coach);
       setButeursCscView(nav.csc);
       setSelectedEntraineur(nav.entraineur);
+      setGeneralView(nav.general);
+      setRecordsTab(nav.records);
+      setFicheTab(nav.fiche);
     };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
@@ -244,9 +256,12 @@ const App = () => {
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:px-10 lg:py-8">
         {/* Header */}
-        <div className="mb-6 lg:flex lg:items-end lg:justify-between lg:gap-6">
+        {/* pr-60 : place réservée au lecteur et aux boutons flottants (fixed en
+            haut à droite), qui recouvraient le sélecteur de saisons tant que
+            l'écran fait moins de ~1760 px de large. */}
+        <div className="mb-6 lg:flex lg:items-end lg:justify-between lg:gap-6 lg:pr-60 min-[1760px]:pr-0">
           <div>
-            <a href={window.location.pathname} className="inline-block text-3xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400 hover:text-violet-600 dark:hover:text-violet-300 transition-colors">MesPetitsBavons</a>
+            <a href={window.location.pathname} className="inline-block text-2xl sm:text-4xl font-black mb-2 text-violet-700 dark:text-violet-400 hover:text-violet-600 dark:hover:text-violet-300 transition-colors">MesPetitsBavons</a>
             <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">Stats et perf entre amis</p>
             {activeTab === 'admin' && (
               <div className="flex items-center gap-2 mt-2">
@@ -271,7 +286,7 @@ const App = () => {
           </div>
 
           {/* Season Navigation — à droite du header sur desktop */}
-          <div className="flex gap-1 mt-4 lg:mt-0 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
+          <div className="flex gap-1 mt-9 sm:mt-4 lg:mt-0 flex-wrap bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-indigo-100 dark:border-[#2d2b5e]">
             {[...saisons, 'All-Time'].map(season => (
               <button
                 key={season}
@@ -347,6 +362,8 @@ const App = () => {
             matchesListForChampionnat={matchesListForChampionnat}
             ligueMetadata={ligueMetadata}
             historicalEvolution={historicalEvolution}
+            generalView={generalView}
+            setGeneralView={setGeneralView}
             shareContext={shareContext}
             mercatoData={filteredMercatoData}
             onOpenPlayer={openPlayer}
@@ -389,6 +406,8 @@ const App = () => {
             onOpenPlayer={openPlayer}
             selectedPlayer={selectedEntraineur}
             onSelectPlayer={setSelectedEntraineur}
+            subTab={ficheTab}
+            onSubTabChange={setFicheTab}
           />
         )}
 
@@ -401,6 +420,8 @@ const App = () => {
             ligueRecordsAllTime={ligueRecordsAllTime}
             ligueRecordsSeason={ligueRecordsSeason}
             mercatoRecordsSeason={mercatoRecordsSeason}
+            activeSubTab={recordsTab}
+            onSubTabChange={setRecordsTab}
             shareContext={shareContext}
           />
         )}

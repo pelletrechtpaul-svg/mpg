@@ -17,6 +17,10 @@ export const LIGUE_NAT_EXCLUE = {
   'Bundesliga': 'Allemand',
 };
 
+// Règle unique d'abréviation des ligues ; Liga et Serie A restent en entier.
+const LIGUE_ABBR = { 'Premier League': 'PL', 'Ligue des Champions': 'LDC', 'Ligue 1': 'L1' };
+export const ligueAbbr = ligue => LIGUE_ABBR[ligue] || ligue;
+
 export const POSTE_LABEL = { A: 'Attaquants', M: 'Milieux', D: 'Défenseurs', G: 'Gardiens' };
 
 export const playerImages = {

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { Trophy, Medal, Pencil } from 'lucide-react';
-import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDetailedData } from '../shared.jsx';
+import { playerColorHex, playerColorBg, ShareBtn, isCompte, rotaldosFor, hasDetailedData, ligueAbbr } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { FormationPitch, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
@@ -73,11 +73,14 @@ export default function ClassementsTab({
   mercatoData, onOpenPlayer,
   ligueView, setLigueView, effectifsCoach, setEffectifsCoach,
   buteursCscView, setButeursCscView, onEditMatch,
+  generalView, setGeneralView,
 }) {
   const saisonYear = s => { const m = s?.match(/(\d{4})/); return m ? parseInt(m[1]) : 0; };
   const isSeasonFinished = selectedSeason !== 'All-Time' && saisons.some(s => saisonYear(s) > saisonYear(selectedSeason));
-  const [rankingsView, setRankingsView] = useState('table');
-  const [statsTable, setStatsTable] = useState(null);
+  // Vue du Général, gardée dans l'URL : 'tableau', 'evolution' ou une clé de
+  // statistique (buteurs, cleansheets, pannes, valises).
+  const rankingsView = generalView === 'evolution' ? 'graph' : 'table';
+  const statsTable = ['tableau', 'evolution'].includes(generalView) ? null : generalView;
   const [valiseSortKey, setValiseSortKey] = useState('utilisees');
   const [butsSortKey, setButsSortKey] = useState('buts_pour');
   const photos = usePlayerPhotos();
@@ -284,7 +287,7 @@ export default function ClassementsTab({
                   : 'text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/10'
               }`}
             >
-              {ligue === 'Champions League' || ligue === 'Ligue des Champions' ? 'LDC' : ligue === 'Premier League' ? 'PL' : ligue}
+              {ligueAbbr(ligue)}
             </button>
           ))}
         </div>
@@ -340,13 +343,13 @@ export default function ClassementsTab({
           {/* Ligne 1 : Tableau + Évolution */}
           <div className="flex gap-2 mb-2 justify-center">
             <button
-              onClick={() => { setRankingsView('table'); setStatsTable(null); }}
+              onClick={() => setGeneralView('tableau')}
               className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'table' && !statsTable ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📊 Tableau
             </button>
             <button
-              onClick={() => { setRankingsView('graph'); setStatsTable(null); }}
+              onClick={() => setGeneralView('evolution')}
               className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg border ${rankingsView === 'graph' ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white/80 dark:bg-white/5 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
             >
               📈 Évolution
@@ -364,7 +367,7 @@ export default function ClassementsTab({
             ].map(({ key, label }) => (
               <button
                 key={key}
-                onClick={() => { setStatsTable(statsTable === key ? null : key); setRankingsView('table'); }}
+                onClick={() => setGeneralView(statsTable === key ? 'tableau' : key)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                   statsTable === key
                     ? 'bg-blue-600 text-white border-blue-600 shadow'

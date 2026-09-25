@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useJoueursSearch } from '../hooks/useJoueursSearch';
-import { ShareBtn, playerColors, playerColorText, isCompte } from '../shared.jsx';
+import { ShareBtn, playerColors, playerColorText, isCompte, ligueAbbr } from '../shared.jsx';
 import { usePlayerPhotos, PlayerAvatar } from './PlayerAvatar.jsx';
 import { VirtualGoalIcon } from './VirtualGoalIcon.jsx';
 import { champNum } from './AdminScorerSection.jsx';
@@ -19,11 +19,6 @@ function truncateText(str, maxLen) {
 const COACH_COLORS = Object.fromEntries(
   Object.keys(playerColors).map(j => [j, { bg: playerColors[j], text: playerColorText[j], dot: playerColors[j] }])
 );
-
-const LIGUE_SHORT = {
-  'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA',
-  'Champions League': 'UCL', 'Ligue des Champions': 'LDC',
-};
 
 const POSTE_COLORS = {
   G:  'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
@@ -228,7 +223,7 @@ function PlayerCard({ player, onClose, photos, matchData }) {
               <div className="flex items-center mb-2">
                 <span className="absolute -left-[9px] w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-500 border-2 border-white dark:border-slate-800"></span>
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                  {LIGUE_SHORT[ligue] || ligue} · Champ. {championnat} · {saison}
+                  {ligueAbbr(ligue)} · Champ. {championnat} · {saison}
                 </span>
               </div>
               <div className="space-y-2 ml-1">
@@ -279,12 +274,11 @@ function PlayerCard({ player, onClose, photos, matchData }) {
   );
 }
 
-const LIGUE_SHORT_LABEL = { 'Ligue 1': 'L1', 'Liga': 'Liga', 'Premier League': 'PL', 'Serie A': 'SA', 'Champions League': 'UCL', 'Ligue des Champions': 'LDC' };
 
 function ResultRow({ s, onClick, photos }) {
   const coachColor = COACH_COLORS[s.acheteurPrincipal];
   const photoLigue = resolvePhotoLigue(s.entries, s.joueur, photos);
-  const liguesLabel = [...s.ligues].map(l => LIGUE_SHORT_LABEL[l] || l).join(' · ');
+  const liguesLabel = [...s.ligues].map(l => ligueAbbr(l)).join(' · ');
   return (
     <button
       onClick={onClick}

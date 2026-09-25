@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { playerColors, playerColorText, playerColorBorder, ShareBtn, hasDetailedData } from '../shared.jsx';
+import { playerColors, playerColorText, playerColorBorder, ShareBtn, hasDetailedData, ligueAbbr } from '../shared.jsx';
 
 // Couleurs par coach dérivées de la source unique dans shared.jsx.
 const colorText = playerColorText;
@@ -19,10 +19,6 @@ const POSTE_GROUP_COLORS = {
 const posteGroupColor = poste => POSTE_GROUP_COLORS[poste] || 'text-violet-600 dark:text-violet-400';
 
 const fmt = d => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
-
-// "Premier League" est le seul nom de ligue assez long pour forcer un retour
-// à la ligne sur mobile dans les listes de Records > Ligues.
-const ligueLabel = l => l === 'Premier League' ? 'PL' : l;
 
 // Rang façon Records > Mercato : "1." / "2." / ... et rien du tout (label
 // vide) au lieu de répéter un rang déjà attribué à la même valeur juste
@@ -136,8 +132,8 @@ export default function RecordsTab({
   seasonRecords, perduUnPoint,
   ligueRecordsAllTime, ligueRecordsSeason,
   mercatoRecordsSeason,
+  activeSubTab, onSubTabChange: setActiveSubTab,
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('entraineurs');
   const [bigTransferThreshold, setBigTransferThreshold] = useState(80);
 
   const ligueData = selectedSeason === 'All-Time' ? ligueRecordsAllTime : ligueRecordsSeason;
@@ -348,7 +344,7 @@ export default function RecordsTab({
                   const labels = ['🎖️ Très régulier', '✅ Régulier', '🎲 Variable', '🌪️ Imprévisible'];
                   return players.map((entry, i) => (
                     <div key={entry.joueur} className="flex items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
-                      <span className="text-base w-6">{['🥇', '🥈', '🥉', '4️⃣'][i] || ''}</span>
+                      <span className="w-6 text-center font-bold text-sm text-indigo-300 dark:text-indigo-500">{i + 1}</span>
                       <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 w-16">{entry.joueur}</span>
                       <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-4 overflow-hidden">
                         <div
@@ -373,8 +369,8 @@ export default function RecordsTab({
             <h2 className="text-sm font-medium text-slate-500 dark:text-slate-400">La puissance ne respecte que la puissance</h2>
 
             {/* Records de match */}
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">⚽ Records de match</h2>
+            <section>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">⚽ Records de match</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {seasonRecords.mostGoalsInMatch.length > 0 && (
@@ -421,12 +417,12 @@ export default function RecordsTab({
                   </RecordCard>
                 )}
               </div>
-            </div>
+            </section>
 
             {/* Records de championnat */}
-            <div className="bg-white dark:bg-[#0f0e1a] rounded-2xl border border-indigo-100 dark:border-[#2d2b5e] transition-all duration-200 p-6">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Championnats à 6 matchs uniquement</p>
+            <section>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">🏆 Records de championnat</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Championnats à 6 matchs uniquement</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {(seasonRecords.mostGoalsInChampionship.length > 0 || seasonRecords.mostConcededInChampionship.length > 0) && (
@@ -510,7 +506,7 @@ export default function RecordsTab({
                   </div>
                 )}
               </div>
-            </div>
+            </section>
           </div>
         )}
 
@@ -563,7 +559,7 @@ export default function RecordsTab({
                         {withRankLabels(sorted, renderValue).map(({ item: l, label: rankLbl }) => (
                           <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                             <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
+                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueAbbr(l.ligue)}</span>
                             <span className={`text-sm font-bold ${textColor}`}>{renderValue(l)}</span>
                             <span className="text-xs text-slate-400 dark:text-slate-500">({renderDetail(l)})</span>
                           </div>
@@ -598,7 +594,7 @@ export default function RecordsTab({
                       {withRankLabels(mercatoData.bigTransfersByLigue[bigTransferThreshold], l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueAbbr(l.ligue)}</span>
                           <span className="text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400">{l.count}</span>
                         </div>
                       ))}
@@ -614,7 +610,7 @@ export default function RecordsTab({
                       {withRankLabels(mercatoData.bidWarsByLigue, l => l.count).map(({ item: l, label: rankLbl }) => (
                         <div key={l.ligue} className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-3.5 flex-shrink-0">{rankLbl}</span>
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueLabel(l.ligue)}</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{ligueAbbr(l.ligue)}</span>
                           <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{l.count}</span>
                         </div>
                       ))}

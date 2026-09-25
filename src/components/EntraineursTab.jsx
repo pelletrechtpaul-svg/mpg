@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData } from '../shared.jsx';
+import { playerImages, playerColors, playerColorHex, ShareBtn, isCompte, hasDetailedData, ligueAbbr } from '../shared.jsx';
 import { usePlayerPhotos } from './PlayerAvatar.jsx';
 import { FormationPitch, SquadBench, computeFormation, POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
 
@@ -27,17 +27,6 @@ const FormPills = ({ form, size = 'sm' }) => {
       ))}
     </div>
   );
-};
-
-// Abréviations pour la barre de puces "Effectifs actuels" : garde une seule
-// ligne à 5 ligues (LDC à venir) sans scroll horizontal.
-const LIGUE_ABBR = {
-  'Ligue 1': 'L1',
-  'Liga': 'Liga',
-  'Premier League': 'PL',
-  'Serie A': 'Serie A',
-  'Ligue des Champions': 'LDC',
-  'Champions League': 'LDC',
 };
 
 const Avatar = ({ joueur, className }) => (
@@ -88,10 +77,10 @@ export default function EntraineursTab({
   seasonRecords, perduUnPoint,
   selectedSeason, shareContext, onOpenPlayer,
   selectedPlayer, onSelectPlayer,
+  subTab, onSubTabChange: setSubTab,
 }) {
   const [h2hLigue, setH2hLigue] = useState('all');
   const [effectifLigue, setEffectifLigue] = useState(null);
-  const [subTab, setSubTab] = useState('effectifs');
   const photos = usePlayerPhotos();
 
   const selectPlayer = (joueur) => {
@@ -362,7 +351,7 @@ export default function EntraineursTab({
                             : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                         }`}
                       >
-                        {LIGUE_ABBR[ligue] || ligue} #{championnat}
+                        {ligueAbbr(ligue)} #{championnat}
                       </button>
                     ))}
                   </div>
