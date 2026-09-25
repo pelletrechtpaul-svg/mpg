@@ -1,5 +1,5 @@
 {
-  "Vargas|Liga": {
+  "Rubén Vargas|Liga": {
     "prenom": "Rubén",
     "nationalite": "Suisse",
     "poste": "MO",
@@ -8,7 +8,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/j1ztej1578079778.jpg"
   },
-  "Gordon|Liga": {
+  "Anthony Gordon|Liga": {
     "prenom": "Anthony",
     "nationalite": "Anglais",
     "poste": "A",
@@ -17,7 +17,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yleib91770796577.jpg"
   },
-  "Valverde|Liga": {
+  "Federico Valverde|Liga": {
     "prenom": "Federico",
     "nationalite": "Uruguayen",
     "poste": "MD",
@@ -26,7 +26,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/38ndp21771266409.jpg"
   },
-  "Olmo|Liga": {
+  "Dani Olmo|Liga": {
     "prenom": "Dani",
     "nationalite": "Espagnol",
     "poste": "MO",
@@ -35,7 +35,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/b075cd1786385273.jpg"
   },
-  "López|Liga": {
+  "Fermín López|Liga": {
     "prenom": "Fermín",
     "nationalite": "Espagnol",
     "poste": "MO",
@@ -53,7 +53,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n0hew31778972474.jpg"
   },
-  "Courtois|Liga": {
+  "Thibaut Courtois|Liga": {
     "prenom": "Thibaut",
     "nationalite": "Belge",
     "poste": "G",
@@ -62,7 +62,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/54zonn1779039115.jpg"
   },
-  "Budimir|Liga": {
+  "Ante Budimir|Liga": {
     "prenom": "Ante",
     "nationalite": "Croate",
     "poste": "A",
@@ -71,7 +71,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jln8lh1562704806.jpg"
   },
-  "Riquelme|Liga": {
+  "Rodrigo Riquelme|Liga": {
     "prenom": "Rodrigo",
     "nationalite": "Espagnol",
     "poste": "MO",
@@ -98,7 +98,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mc6fd21779730502.jpg"
   },
-  "Lejeune|Liga": {
+  "Florian Lejeune|Liga": {
     "prenom": "Florian",
     "nationalite": "Français",
     "poste": "DC",
@@ -116,7 +116,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knzaeg1735418518.jpg"
   },
-  "Iglesias|Liga": {
+  "Borja Iglesias|Liga": {
     "prenom": "Borja",
     "nationalite": "Espagnol",
     "poste": "A",
@@ -134,7 +134,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t178/p490541/512x556/p490541_t178_2026_0_001_000.png"
   },
-  "Güler|Liga": {
+  "Arda Güler|Liga": {
     "prenom": "Arda",
     "nationalite": "Turc",
     "poste": "MO",
@@ -161,7 +161,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/7m6vzs1786031407.jpg"
   },
-  "Boyomo|Liga": {
+  "Enzo Boyomo|Liga": {
     "prenom": "Enzo",
     "nationalite": "Camerounais",
     "poste": "DC",
@@ -170,7 +170,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jv9e541725091741.jpg"
   },
-  "Mikautadze|Liga": {
+  "Georges Mikautadze|Liga": {
     "prenom": "Georges",
     "nationalite": "Géorgien",
     "poste": "A",
@@ -179,7 +179,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0b6lsq1716622054.jpg"
   },
-  "Fornals|Liga": {
+  "Pablo Fornals|Liga": {
     "prenom": "Pablo",
     "nationalite": "Espagnol",
     "poste": "MD",
@@ -188,7 +188,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/85zkip1707062348.jpg"
   },
-  "Sørloth|Liga": {
+  "Alexander Sørloth|Liga": {
     "prenom": "Alexander",
     "nationalite": "Norvégien",
     "poste": "A",
@@ -197,7 +197,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/slx8ts1724311500.jpg"
   },
-  "Radu|Liga": {
+  "Ionuț Radu|Liga": {
     "prenom": "Ionuț",
     "nationalite": "Roumain",
     "poste": "G",
@@ -206,7 +206,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wnm8sk1546115542.jpg"
   },
-  "Etta Eyong|Liga": {
+  "Karl Etta Eyong|Liga": {
     "prenom": "Karl",
     "nationalite": "Camerounais",
     "poste": "A",
@@ -224,7 +224,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/utuqbx1630065861.jpg"
   },
-  "Buchanan|Liga": {
+  "Tajon Buchanan|Liga": {
     "prenom": "Tajon",
     "nationalite": "Canadien",
     "poste": "MO",
@@ -233,7 +233,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yssum41668624128.jpg"
   },
-  "Jauregizar|Liga": {
+  "Mikel Jauregizar|Liga": {
     "prenom": "Mikel",
     "nationalite": "Espagnol",
     "poste": "MD",
@@ -251,7 +251,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xg2jeu1585495738.jpg"
   },
-  "Simón|Liga": {
+  "Unai Simón|Liga": {
     "prenom": "Unai",
     "nationalite": "Espagnol",
     "poste": "G",
@@ -260,7 +260,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7mte7u1603316714.jpg"
   },
-  "Grimaldo|Liga": {
+  "Alejandro Grimaldo|Liga": {
     "prenom": "Alejandro",
     "nationalite": "Espagnol",
     "poste": "DL",
@@ -269,7 +269,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/14eqd51786385517.jpg"
   },
-  "Bellerín|Liga": {
+  "Héctor Bellerín|Liga": {
     "prenom": "Héctor",
     "nationalite": "Espagnol",
     "poste": "DL",
@@ -287,7 +287,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t185/p467169/512x556/p467169_t185_2026_0_001_000.png"
   },
-  "Rüdiger|Liga": {
+  "Antonio Rüdiger|Liga": {
     "prenom": "Antonio",
     "nationalite": "Allemand",
     "poste": "DC",
@@ -296,7 +296,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qtv86p1779385132.jpg"
   },
-  "Adeyemi|Liga": {
+  "Karim Adeyemi|Liga": {
     "prenom": "Karim",
     "nationalite": "Allemand",
     "poste": "A",
@@ -314,7 +314,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/cdjnqt1786385175.jpg"
   },
-  "Bellingham|Liga": {
+  "Jude Bellingham|Liga": {
     "prenom": "Jude",
     "nationalite": "Anglais",
     "poste": "MO",
@@ -341,7 +341,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lxf1he1771264845.jpg"
   },
-  "Mbappé|Liga": {
+  "Kylian Mbappé|Liga": {
     "prenom": "Kylian",
     "nationalite": "Français",
     "poste": "A",
@@ -350,7 +350,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v08cj31778816426.jpg"
   },
-  "Lunin|Liga": {
+  "Andriy Lunin|Liga": {
     "prenom": "Andriy",
     "nationalite": "Ukrainien",
     "poste": "G",
@@ -359,7 +359,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ka70iy1771265178.jpg"
   },
-  "Lookman|Liga": {
+  "Ademola Lookman|Liga": {
     "prenom": "Ademola",
     "nationalite": "Nigérian",
     "poste": "A",
@@ -377,7 +377,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t3567/p620617/512x556/p620617_t3567_2026_0_001_000.png"
   },
-  "Aubameyang|Liga": {
+  "Pierre-Emerick Aubameyang|Liga": {
     "prenom": "Pierre-Emerick",
     "nationalite": "Gabonais",
     "poste": "A",
@@ -386,7 +386,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q3gswt1660896483.jpg"
   },
-  "Simeone|Liga": {
+  "Giovanni Simeone|Liga": {
     "prenom": "Giovanni",
     "nationalite": "Argentin",
     "poste": "A",
@@ -395,7 +395,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t175/p482652/512x556/p482652_t175_2026_0_001_000.png"
   },
-  "Herrera|Liga": {
+  "Sergio Herrera|Liga": {
     "prenom": "Sergio",
     "nationalite": "Espagnol",
     "poste": "G",
@@ -404,7 +404,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yigy401725092209.jpg"
   },
-  "Cubarsí|Liga": {
+  "Pau Cubarsí|Liga": {
     "prenom": "Pau",
     "nationalite": "Espagnol",
     "poste": "DC",
@@ -422,7 +422,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t185/p80209/512x556/p80209_t185_2026_0_001_000.png"
   },
-  "Oyarzabal|Liga": {
+  "Mikel Oyarzabal|Liga": {
     "prenom": "Mikel",
     "nationalite": "Espagnol",
     "poste": "A",
@@ -431,7 +431,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/gbl3zd1786385954.jpg"
   },
-  "Hjulmand|Liga": {
+  "Morten Hjulmand|Liga": {
     "prenom": "Morten",
     "nationalite": "Danois",
     "poste": "MD",
@@ -440,7 +440,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/fip8xr1678970706.jpg"
   },
-  "Hernández|Liga": {
+  "Cucho Hernández|Liga": {
     "prenom": "Cucho",
     "nationalite": "Colombien",
     "poste": "A",
@@ -449,7 +449,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4d5uuv1730093350.jpg"
   },
-  "Kubo|Liga": {
+  "Takefusa Kubo|Liga": {
     "prenom": "Takefusa",
     "nationalite": "Japonais",
     "poste": "MO",
@@ -467,7 +467,7 @@
     ],
     "photo": "https://assets.laliga.com/squad/2026/t178/p219961/512x556/p219961_t178_2026_0_001_000.png"
   },
-  "Baena|Liga": {
+  "Alex Baena|Liga": {
     "prenom": "Alex",
     "nationalite": "Espagnol",
     "poste": "MO",
@@ -485,7 +485,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ubc6yn1629190504.jpg"
   },
-  "Dumfries|Liga": {
+  "Denzel Dumfries|Liga": {
     "prenom": "Denzel",
     "nationalite": "Néerlandais",
     "poste": "DL",
@@ -494,7 +494,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7uz0v61544971521.jpg"
   },
-  "Cucurella|Liga": {
+  "Marc Cucurella|Liga": {
     "prenom": "Marc",
     "nationalite": "Espagnol",
     "poste": "DL",
@@ -503,7 +503,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/2hjwcz1785328531.jpg"
   },
-  "Barrenetxea|Liga": {
+  "Ander Barrenetxea|Liga": {
     "prenom": "Ander",
     "nationalite": "Espagnol",
     "poste": "MO",
@@ -512,7 +512,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkavks1600722048.jpg"
   },
-  "Vertrouwd|Liga": {
+  "Jozhua Vertrouwd|Liga": {
     "prenom": "Jozhua",
     "nationalite": "Néerlandais",
     "poste": "DC",
@@ -521,7 +521,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p65vl31762546461.jpg"
   },
-  "Copete|Liga": {
+  "José Copete|Liga": {
     "prenom": "José",
     "nationalite": "Espagnol",
     "poste": "DC",
@@ -530,7 +530,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/x39jbq1678829777.jpg"
   },
-  "Parreño|Liga": {
+  "Germán Parreño|Liga": {
     "prenom": "Germán",
     "nationalite": "Espagnol",
     "poste": "G",
@@ -539,7 +539,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8eiw5l1527937375.jpg"
   },
-  "Hancko|Liga": {
+  "Dávid Hancko|Liga": {
     "prenom": "Dávid",
     "nationalite": "Slovaque",
     "poste": "DC",
@@ -557,7 +557,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i3td7p1702563899.jpg"
   },
-  "Starfelt|Liga": {
+  "Carl Starfelt|Liga": {
     "prenom": "Carl",
     "nationalite": "Suédois",
     "poste": "DC",
@@ -584,7 +584,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bjgctf1503241984.jpg"
   },
-  "Sangante|Liga": {
+  "Arouna Sangante|Liga": {
     "prenom": "Arouna",
     "nationalite": "Sénégalais",
     "poste": "DC",
@@ -593,7 +593,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/amu2v01702293177.jpg"
   },
-  "Vivian|Liga": {
+  "Dani Vivian|Liga": {
     "prenom": "Dani",
     "nationalite": "Espagnol",
     "poste": "DC",
@@ -602,7 +602,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v8xx1629191642.jpg"
   },
-  "Bigas|Liga": {
+  "Pedro Bigas|Liga": {
     "prenom": "Pedro",
     "nationalite": "Espagnol",
     "poste": "DC",
@@ -674,7 +674,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8sa4cv1716496520.jpg"
   },
-  "Ratiu|Liga": {
+  "Andrei Ratiu|Liga": {
     "prenom": "Andrei",
     "nationalite": "Roumain",
     "poste": "DL",
@@ -683,7 +683,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qo4bxk1643235335.jpg"
   },
-  "Carreira|Liga": {
+  "Sergio Carreira|Liga": {
     "prenom": "Sergio",
     "nationalite": "Espagnol",
     "poste": "DL",
@@ -692,7 +692,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p7hl8y1603553273.jpg"
   },
-  "Lepaul|Ligue 1": {
+  "Esteban Lepaul|Ligue 1": {
     "prenom": "Esteban",
     "nationalite": null,
     "poste": "A",
@@ -701,7 +701,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qr25kr1765835673.jpg"
   },
-  "Balogun|Ligue 1": {
+  "Folarin Balogun|Ligue 1": {
     "prenom": "Folarin",
     "nationalite": null,
     "poste": "A",
@@ -710,7 +710,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uc8q1x1781348667.jpg"
   },
-  "Dembélé|Ligue 1": {
+  "Ousmane Dembélé|Ligue 1": {
     "prenom": "Ousmane",
     "nationalite": null,
     "poste": "A",
@@ -719,7 +719,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2w39ps1778803599.jpg"
   },
-  "Doué|Ligue 1": {
+  "Désiré Doué|Ligue 1": {
     "prenom": "Désiré",
     "nationalite": null,
     "poste": "MO",
@@ -728,7 +728,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/70imvk1770216646.jpg"
   },
-  "Thauvin|Ligue 1": {
+  "Florian Thauvin|Ligue 1": {
     "prenom": "Florian",
     "nationalite": null,
     "poste": "MO",
@@ -737,7 +737,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/okvymp1625573781.jpg"
   },
-  "Akliouche|Ligue 1": {
+  "Maghnes Akliouche|Ligue 1": {
     "prenom": "Maghnes",
     "nationalite": null,
     "poste": "MO",
@@ -755,7 +755,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6vfpwl1679241239.jpg"
   },
-  "Tolisso|Ligue 1": {
+  "Corentin Tolisso|Ligue 1": {
     "prenom": "Corentin",
     "nationalite": null,
     "poste": "MO",
@@ -764,7 +764,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k7jf3h1660764735.jpg"
   },
-  "Openda|Ligue 1": {
+  "Loïs Openda|Ligue 1": {
     "prenom": "Loïs",
     "nationalite": null,
     "poste": "A",
@@ -773,7 +773,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jthzmk1623844882.jpg"
   },
-  "Zaïre-Emery|Ligue 1": {
+  "Warren Zaïre-Emery|Ligue 1": {
     "prenom": "Warren",
     "nationalite": null,
     "poste": "MD",
@@ -782,7 +782,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6mbhc51778818488.jpg"
   },
-  "Gboho|Ligue 1": {
+  "Yann Gboho|Ligue 1": {
     "prenom": "Yann",
     "nationalite": null,
     "poste": "MO",
@@ -800,7 +800,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/a0b12b1770218109.jpg"
   },
-  "Fati|Ligue 1": {
+  "Ansu Fati|Ligue 1": {
     "prenom": "Ansu",
     "nationalite": null,
     "poste": "A",
@@ -809,7 +809,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gtose41659989447.jpg"
   },
-  "Sulc|Ligue 1": {
+  "Pavel Sulc|Ligue 1": {
     "prenom": "Pavel",
     "nationalite": null,
     "poste": "MO",
@@ -818,7 +818,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h9uwgv1766090368.jpg"
   },
-  "Torres|Ligue 1": {
+  "Ferran Torres|Ligue 1": {
     "prenom": "Ferran",
     "nationalite": null,
     "poste": "A",
@@ -827,7 +827,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ciyw971784511340.jpg"
   },
-  "Godts|Ligue 1": {
+  "Mika Godts|Ligue 1": {
     "prenom": "Mika",
     "nationalite": null,
     "poste": "A",
@@ -836,7 +836,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7zxwbr1723380513.jpg"
   },
-  "Kebbal|Ligue 1": {
+  "Ilan Kebbal|Ligue 1": {
     "prenom": "Ilan",
     "nationalite": null,
     "poste": "MO",
@@ -845,7 +845,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uue0hf1631626009.jpg"
   },
-  "Godo|Ligue 1": {
+  "Martial Godo|Ligue 1": {
     "prenom": "Martial",
     "nationalite": null,
     "poste": "A",
@@ -854,7 +854,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p8z2zg1766054534.jpg"
   },
-  "Nanasi|Ligue 1": {
+  "Sebastian Nanasi|Ligue 1": {
     "prenom": "Sebastian",
     "nationalite": null,
     "poste": "MO",
@@ -863,7 +863,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/c4l61c1632998516.jpg"
   },
-  "Blas|Ligue 1": {
+  "Ludovic Blas|Ligue 1": {
     "prenom": "Ludovic",
     "nationalite": null,
     "poste": "MO",
@@ -890,7 +890,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rsnqt31679568719.jpg"
   },
-  "Ganiou|Ligue 1": {
+  "Ismaëlo Ganiou|Ligue 1": {
     "prenom": "Ismaëlo",
     "nationalite": null,
     "poste": "DC",
@@ -899,7 +899,7 @@
     ],
     "photo": "https://imgs.search.brave.com/yLr6mNnu9bUbzqBAnn_4c7MI3YHcbNgCG_K9qU3c4aE/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9hc3Nl/dHMtZnIuaW1nZm9v/dC5jb20vbWVkaWEv/Y2FjaGUvNjQyeDM4/Mi9kZXNpZ24tc2Fu/cy10aXRyZS0yMDI2/LTA0LTE3dDIyNTM1/Ny0wMzguanBn"
   },
-  "Safonov|Ligue 1": {
+  "Matvey Safonov|Ligue 1": {
     "prenom": "Matvey",
     "nationalite": null,
     "poste": "G",
@@ -908,7 +908,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6u5q2q1718383125.jpg"
   },
-  "Niakhaté|Ligue 1": {
+  "Moussa Niakhaté|Ligue 1": {
     "prenom": "Moussa",
     "nationalite": null,
     "poste": "DC",
@@ -917,7 +917,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/myny341578227368.jpg"
   },
-  "Simon|Ligue 1": {
+  "Moses Simon|Ligue 1": {
     "prenom": "Moses",
     "nationalite": null,
     "poste": "MO",
@@ -926,7 +926,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/j18tv41608669053.jpg"
   },
-  "Haraldsson|Ligue 1": {
+  "Hákon Arnar Haraldsson|Ligue 1": {
     "prenom": "Hákon Arnar",
     "nationalite": null,
     "poste": "MO",
@@ -935,7 +935,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ecrf2c1663233424.jpg"
   },
-  "Risser|Ligue 1": {
+  "Robin Risser|Ligue 1": {
     "prenom": "Robin",
     "nationalite": null,
     "poste": "G",
@@ -953,7 +953,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/463f8a1770217760.jpg"
   },
-  "Reyna|Ligue 1": {
+  "Giovanni Reyna|Ligue 1": {
     "prenom": "Giovanni",
     "nationalite": null,
     "poste": "MO",
@@ -962,7 +962,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k5690h1781348119.jpg"
   },
-  "Teze|Ligue 1": {
+  "Jordan Teze|Ligue 1": {
     "prenom": "Jordan",
     "nationalite": null,
     "poste": "DL",
@@ -971,7 +971,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ec598s1646703475.jpg"
   },
-  "Thomasson|Ligue 1": {
+  "Adrien Thomasson|Ligue 1": {
     "prenom": "Adrien",
     "nationalite": null,
     "poste": "MD",
@@ -980,7 +980,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hedfe41607872006.jpg"
   },
-  "Kouassi|Ligue 1": {
+  "Arsène Kouassi|Ligue 1": {
     "prenom": "Arsène",
     "nationalite": null,
     "poste": "DL",
@@ -989,7 +989,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/f9ncad1748156623.jpg"
   },
-  "Cresswell|Ligue 1": {
+  "Charlie Cresswell|Ligue 1": {
     "prenom": "Charlie",
     "nationalite": null,
     "poste": "DC",
@@ -1007,7 +1007,7 @@
     ],
     "photo": "https://media.gettyimages.com/id/2171889129/fr/photo/lens-abner-vinicius-of-olympique-lyonnais-during-the-french-ligue-1-match-between-rc-lens-and.jpg?s=612x612&w=0&k=20&c=JdwDLrKRrsPodpfaGVCnP1CS704DxLlp26U7dJCvac8="
   },
-  "Trapp|Ligue 1": {
+  "Kevin Trapp|Ligue 1": {
     "prenom": "Kevin",
     "nationalite": null,
     "poste": "G",
@@ -1016,7 +1016,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3hzctu1578087311.jpg"
   },
-  "Zabarnyi|Ligue 1": {
+  "Illia Zabarnyi|Ligue 1": {
     "prenom": "Illia",
     "nationalite": null,
     "poste": "DC",
@@ -1025,7 +1025,7 @@
     ],
     "photo": "https://imgs.search.brave.com/XaqpKW_YsHhUJKcoR4XTYBA9gxyZ4Ey1j8ZE9LXKDVQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjIy/OTE4Njc2Ni9mci9w/aG90by9wYXJpcy1z/YWludC1nZXJtYWlu/cy11a3JhaW5pYW4t/ZGVmZW5kZXItaWxs/aWEtemFiYXJueWkt/Z2VzdHVyZXMtZHVy/aW5nLXRoZS13YXJt/LXVwLWFoZWFkLW9m/LmpwZz9zPTYxMng2/MTImdz0wJms9MjAm/Yz1QaDlvWWhBdzUy/cFhWWk01cXFtT0JB/ZndJRGhyMDc2Wkt3/UndmT3RSVnpNPQ"
   },
-  "Clauss|Ligue 1": {
+  "Jonathan Clauss|Ligue 1": {
     "prenom": "Jonathan",
     "nationalite": null,
     "poste": "DL",
@@ -1034,7 +1034,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kh6hty1608328774.jpg"
   },
-  "Ngoy|Ligue 1": {
+  "Nathan Ngoy|Ligue 1": {
     "prenom": "Nathan",
     "nationalite": null,
     "poste": "DC",
@@ -1052,7 +1052,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gv36bs1767801889.jpg"
   },
-  "Maitland-Niles|Ligue 1": {
+  "Ainsley Maitland-Niles|Ligue 1": {
     "prenom": "Ainsley",
     "nationalite": null,
     "poste": "DL",
@@ -1070,7 +1070,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/opcqpo1668712724.jpg"
   },
-  "Bombito|Ligue 1": {
+  "Moïse Bombito|Ligue 1": {
     "prenom": "Moïse",
     "nationalite": null,
     "poste": "DC",
@@ -1079,7 +1079,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/paxtnr1688047047.jpg"
   },
-  "Raolisoa|Ligue 1": {
+  "Lilian Raolisoa|Ligue 1": {
     "prenom": "Lilian",
     "nationalite": null,
     "poste": "DL",
@@ -1088,7 +1088,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5a6dvj1765835248.jpg"
   },
-  "Coulibaly|Ligue 1": {
+  "Mamadou Coulibaly|Ligue 1": {
     "prenom": "Mamadou",
     "nationalite": null,
     "poste": "MD",
@@ -1097,7 +1097,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m6rdxd1546517513.jpg"
   },
-  "Mayulu|Ligue 1": {
+  "Senny Mayulu|Ligue 1": {
     "prenom": "Senny",
     "nationalite": null,
     "poste": "MO",
@@ -1106,7 +1106,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6xmqya1770217473.jpg"
   },
-  "Lloris|Ligue 1": {
+  "Gautier Lloris|Ligue 1": {
     "prenom": "Gautier",
     "nationalite": null,
     "poste": "DC",
@@ -1124,7 +1124,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ub4k1y1510842357.jpg"
   },
-  "Matondo|Ligue 1": {
+  "Rudy Matondo|Ligue 1": {
     "prenom": "Rudy",
     "nationalite": null,
     "poste": "MD",
@@ -1133,7 +1133,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/e2ilwo1765921385.jpg"
   },
-  "Sima|Ligue 1": {
+  "Abdallah Sima|Ligue 1": {
     "prenom": "Abdallah",
     "nationalite": null,
     "poste": "A",
@@ -1142,7 +1142,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yurb9q1630438603.jpg"
   },
-  "Diomandé|Ligue 1": {
+  "Sinaly Diomandé|Ligue 1": {
     "prenom": "Sinaly",
     "nationalite": null,
     "poste": "DC",
@@ -1151,7 +1151,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xu1ltc1608129435.jpg"
   },
-  "Nuamah|Ligue 1": {
+  "Ernest Nuamah|Ligue 1": {
     "prenom": "Ernest",
     "nationalite": null,
     "poste": "A",
@@ -1160,7 +1160,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/cxbkxe1702207597.jpg"
   },
-  "Kluivert|Ligue 1": {
+  "Ruben Kluivert|Ligue 1": {
     "prenom": "Ruben",
     "nationalite": null,
     "poste": "DC",
@@ -1169,7 +1169,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5vzpfn1766091598.jpg"
   },
-  "Chevalier|Ligue 1": {
+  "Lucas Chevalier|Ligue 1": {
     "prenom": "Lucas",
     "nationalite": null,
     "poste": "G",
@@ -1205,7 +1205,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5sfb821674738822.jpg"
   },
-  "Nkambadio|Ligue 1": {
+  "Obed Nkambadio|Ligue 1": {
     "prenom": "Obed",
     "nationalite": null,
     "poste": "G",
@@ -1214,7 +1214,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2q42aw1727973893.jpg"
   },
-  "Mosengo|Ligue 1": {
+  "Daren Mosengo|Ligue 1": {
     "prenom": "Daren",
     "nationalite": null,
     "poste": "MD",
@@ -1223,7 +1223,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/n893251765988061.jpg"
   },
-  "Harit|Ligue 1": {
+  "Amine Harit|Ligue 1": {
     "prenom": "Amine",
     "nationalite": null,
     "poste": "MO",
@@ -1232,7 +1232,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qesln41724525017.jpg"
   },
-  "Belazzoug|Ligue 1": {
+  "Kilian Belazzoug|Ligue 1": {
     "prenom": "Kilian",
     "nationalite": null,
     "poste": "G",
@@ -1241,7 +1241,7 @@
     ],
     "photo": "https://img.sofascore.com/api/v1/player/2334320/image"
   },
-  "Kvaratskhelia|Ligue 1": {
+  "Khvicha Kvaratskhelia|Ligue 1": {
     "prenom": "Khvicha",
     "nationalite": null,
     "poste": "A",
@@ -1250,7 +1250,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/l1gq7e1770217076.jpg"
   },
-  "Del Castillo|Ligue 1": {
+  "Romain Del Castillo|Ligue 1": {
     "prenom": "Romain",
     "nationalite": null,
     "poste": "A",
@@ -1259,7 +1259,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1s89gm1556569029.jpg"
   },
-  "Ndiaye|Ligue 1": {
+  "Rassoul Ndiaye|Ligue 1": {
     "prenom": "Rassoul",
     "nationalite": null,
     "poste": "MD",
@@ -1268,7 +1268,7 @@
     ],
     "photo": "https://img.sofascore.com/api/v1/player/992026/image"
   },
-  "Gouiri|Ligue 1": {
+  "Amine Gouiri|Ligue 1": {
     "prenom": "Amine",
     "nationalite": null,
     "poste": "A",
@@ -1277,7 +1277,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xl6as41534013643.jpg"
   },
-  "Ajorque|Ligue 1": {
+  "Ludovic Ajorque|Ligue 1": {
     "prenom": "Ludovic",
     "nationalite": null,
     "poste": "A",
@@ -1286,7 +1286,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/p42zci1607871058.jpg"
   },
-  "Pagis|Ligue 1": {
+  "Pablo Pagis|Ligue 1": {
     "prenom": "Pablo",
     "nationalite": null,
     "poste": "A",
@@ -1304,7 +1304,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vbphme1705663101.jpg"
   },
-  "Udol|Ligue 1": {
+  "Matthieu Udol|Ligue 1": {
     "prenom": "Matthieu",
     "nationalite": null,
     "poste": "DL",
@@ -1313,7 +1313,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2xrauz1766004645.jpg"
   },
-  "Rongier|Ligue 1": {
+  "Valentin Rongier|Ligue 1": {
     "prenom": "Valentin",
     "nationalite": null,
     "poste": "MD",
@@ -1322,7 +1322,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/010dsa1544177931.jpg"
   },
-  "Embolo|Ligue 1": {
+  "Breel Embolo|Ligue 1": {
     "prenom": "Breel",
     "nationalite": null,
     "poste": "A",
@@ -1331,7 +1331,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8cl7ut1781423689.jpg"
   },
-  "Ruiz|Ligue 1": {
+  "Fabián Ruiz|Ligue 1": {
     "prenom": "Fabián",
     "nationalite": null,
     "poste": "MD",
@@ -1340,7 +1340,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5wv1ys1786386239.jpg"
   },
-  "Samba|Ligue 1": {
+  "Brice Samba|Ligue 1": {
     "prenom": "Brice",
     "nationalite": null,
     "poste": "G",
@@ -1349,7 +1349,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/psyqxf1778817943.jpg"
   },
-  "Digne|Ligue 1": {
+  "Lucas Digne|Ligue 1": {
     "prenom": "Lucas",
     "nationalite": null,
     "poste": "DL",
@@ -1358,7 +1358,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1nob4p1778803847.jpg"
   },
-  "Biereth|Ligue 1": {
+  "Mika Biereth|Ligue 1": {
     "prenom": "Mika",
     "nationalite": null,
     "poste": "A",
@@ -1367,7 +1367,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xnv7ki1731768704.jpg"
   },
-  "Önal|Ligue 1": {
+  "Başar Önal|Ligue 1": {
     "prenom": "Başar",
     "nationalite": null,
     "poste": "A",
@@ -1376,7 +1376,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h1s4lf1723318878.jpg"
   },
-  "Lemaître|Ligue 1": {
+  "Nicolas Lemaître|Ligue 1": {
     "prenom": "Nicolas",
     "nationalite": null,
     "poste": "G",
@@ -1403,7 +1403,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1kfayc1700821747.jpg"
   },
-  "Jacquet|Premier League": {
+  "Jérémy Jacquet|Premier League": {
     "prenom": "Jérémy",
     "nationalite": null,
     "poste": "DC",
@@ -1412,7 +1412,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kqmgak1766136974.jpg"
   },
-  "Dorgu|Premier League": {
+  "Patrick Dorgu|Premier League": {
     "prenom": "Patrick",
     "nationalite": null,
     "poste": "DL",
@@ -1430,7 +1430,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/livh431779262874.jpg"
   },
-  "Cherki|Premier League": {
+  "Rayan Cherki|Premier League": {
     "prenom": "Rayan",
     "nationalite": null,
     "poste": "MO",
@@ -1439,7 +1439,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7eiohx1778803238.jpg"
   },
-  "O'Reilly|Premier League": {
+  "Nico O'Reilly|Premier League": {
     "prenom": "Nico",
     "nationalite": null,
     "poste": "DL",
@@ -1448,7 +1448,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q6n9cm1722762128.jpg"
   },
-  "Szoboszlai|Premier League": {
+  "Dominik Szoboszlai|Premier League": {
     "prenom": "Dominik",
     "nationalite": null,
     "poste": "MO",
@@ -1457,7 +1457,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1tnwli1746377031.jpg"
   },
-  "Wirtz|Premier League": {
+  "Florian Wirtz|Premier League": {
     "prenom": "Florian",
     "nationalite": null,
     "poste": "MO",
@@ -1466,7 +1466,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k2mwrs1779386689.jpg"
   },
-  "Semenyo|Premier League": {
+  "Antoine Semenyo|Premier League": {
     "prenom": "Antoine",
     "nationalite": null,
     "poste": "MO",
@@ -1484,7 +1484,7 @@
     ],
     "photo": "https://imgs.search.brave.com/LiJNcRP930aIZXwNOWae5ZjhOLkPXImkmGkz1lm5U5U/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjE4/MDgzNDA2MC9waG90/by9yaW8tZGUtamFu/ZWlyby1icmF6aWwt/aWdvci1qZXN1cy1v/Zi1ib3RhZm9nby1j/ZWxlYnJhdGVzLWFm/dGVyLXNjb3Jpbmct/dGhlLXRlYW1zLWZp/ZnRoLWdvYWwuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPUJu/bzFYbkdMbTk2TXNz/ZTlYRS1tZ2xqakpa/azRDd3NQczRFa3Vz/UGNna009"
   },
-  "Palmer|Premier League": {
+  "Cole Palmer|Premier League": {
     "prenom": "Cole",
     "nationalite": null,
     "poste": "MO",
@@ -1493,7 +1493,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/r7yrsa1770541322.jpg"
   },
-  "van Dijk|Premier League": {
+  "Virgil van Dijk|Premier League": {
     "prenom": "Virgil",
     "nationalite": null,
     "poste": "DC",
@@ -1502,7 +1502,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9fe0tn1720452118.jpg"
   },
-  "Isak|Premier League": {
+  "Alexander Isak|Premier League": {
     "prenom": "Alexander",
     "nationalite": null,
     "poste": "A",
@@ -1511,7 +1511,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/537p7s1778608689.jpg"
   },
-  "Gibbs-White|Premier League": {
+  "Morgan Gibbs-White|Premier League": {
     "prenom": "Morgan",
     "nationalite": null,
     "poste": "MO",
@@ -1529,7 +1529,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/emzl1v1749155913.jpg"
   },
-  "Tzolis|Premier League": {
+  "Christos Tzolis|Premier League": {
     "prenom": "Christos",
     "nationalite": null,
     "poste": "MO",
@@ -1538,7 +1538,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1jxetg1732226638.jpg"
   },
-  "Haaland|Premier League": {
+  "Erling Haaland|Premier League": {
     "prenom": "Erling",
     "nationalite": null,
     "poste": "A",
@@ -1547,7 +1547,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bb1agj1727415216.jpg"
   },
-  "Saka|Premier League": {
+  "Bukayo Saka|Premier League": {
     "prenom": "Bukayo",
     "nationalite": null,
     "poste": "MO",
@@ -1592,7 +1592,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/53ckzh1771751120.jpg"
   },
-  "Gakpo|Premier League": {
+  "Cody Gakpo|Premier League": {
     "prenom": "Cody",
     "nationalite": null,
     "poste": "A",
@@ -1601,7 +1601,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m9g2ki1669145821.jpg"
   },
-  "Lacroix|Premier League": {
+  "Maxence Lacroix|Premier League": {
     "prenom": "Maxence",
     "nationalite": null,
     "poste": "DC",
@@ -1610,7 +1610,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3mqoaz1778815471.jpg"
   },
-  "Williams|Premier League": {
+  "Neco Williams|Premier League": {
     "prenom": "Neco",
     "nationalite": null,
     "poste": "DL",
@@ -1619,7 +1619,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bzzwuh1772393717.jpg"
   },
-  "Raya|Premier League": {
+  "David Raya|Premier League": {
     "prenom": "David",
     "nationalite": null,
     "poste": "G",
@@ -1628,7 +1628,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m4qf0r1786386458.jpg"
   },
-  "Keane|Premier League": {
+  "Michael Keane|Premier League": {
     "prenom": "Michael",
     "nationalite": null,
     "poste": "DC",
@@ -1637,7 +1637,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/z5qm2y1771945041.jpg"
   },
-  "Frimpong|Premier League": {
+  "Jeremie Frimpong|Premier League": {
     "prenom": "Jeremie",
     "nationalite": null,
     "poste": "DL",
@@ -1646,7 +1646,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4vfl5h1611865283.jpg"
   },
-  "Brobbey|Premier League": {
+  "Brian Brobbey|Premier League": {
     "prenom": "Brian",
     "nationalite": null,
     "poste": "A",
@@ -1664,7 +1664,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/d6a8by1772141525.jpg"
   },
-  "Havertz|Premier League": {
+  "Kai Havertz|Premier League": {
     "prenom": "Kai",
     "nationalite": null,
     "poste": "A",
@@ -1673,7 +1673,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5c3h061780160105.jpg"
   },
-  "van Hecke|Premier League": {
+  "Jan Paul van Hecke|Premier League": {
     "prenom": "Jan Paul",
     "nationalite": null,
     "poste": "DC",
@@ -1682,7 +1682,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3bddx31772016988.jpg"
   },
-  "Collins|Premier League": {
+  "Nathan Collins|Premier League": {
     "prenom": "Nathan",
     "nationalite": null,
     "poste": "DC",
@@ -1691,7 +1691,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9wl8nl1609962177.jpg"
   },
-  "Doku|Premier League": {
+  "Jérémy Doku|Premier League": {
     "prenom": "Jérémy",
     "nationalite": null,
     "poste": "MO",
@@ -1700,7 +1700,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w37jy41703326117.jpg"
   },
-  "James|Premier League": {
+  "Reece James|Premier League": {
     "prenom": "Reece",
     "nationalite": null,
     "poste": "DL",
@@ -1718,7 +1718,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yi6dt21746034945.jpg"
   },
-  "Eze|Premier League": {
+  "Eberechi Eze|Premier League": {
     "prenom": "Eberechi",
     "nationalite": null,
     "poste": "MO",
@@ -1727,7 +1727,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/sekoz91781208194.jpg"
   },
-  "Foden|Premier League": {
+  "Phil Foden|Premier League": {
     "prenom": "Phil",
     "nationalite": null,
     "poste": "MO",
@@ -1736,7 +1736,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/19o7yc1749157221.jpg"
   },
-  "Donnarumma|Premier League": {
+  "Gianluigi Donnarumma|Premier League": {
     "prenom": "Gianluigi",
     "nationalite": null,
     "poste": "G",
@@ -1745,7 +1745,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7kahd81704447713.jpg"
   },
-  "García|Premier League": {
+  "Gonzalo García|Premier League": {
     "prenom": "Gonzalo",
     "nationalite": null,
     "poste": "A",
@@ -1763,7 +1763,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/oej5bs1725546442.jpg"
   },
-  "Kadioglu|Premier League": {
+  "Ferdi Kadioglu|Premier League": {
     "prenom": "Ferdi",
     "nationalite": null,
     "poste": "DL",
@@ -1772,7 +1772,7 @@
     ],
     "photo": "https://imgs.search.brave.com/pCdur4bFo0DODwL5d5jQsrXAeSaC33j4Z-Wy244O-D4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjI2/ODQ4NTcwMS9mci9w/aG90by9pc3RhbmJ1/bC10dXJrZXktZmVy/ZGkta2FkaW9nbHUt/b2YtdHVya2l5ZS1j/ZWxlYnJhdGVzLXNj/b3JpbmctaGlzLXRl/YW1zLWZpcnN0LWdv/YWwtZHVyaW5nLXRo/ZS5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9QXk0WWNnZGpx/SDlWaXZNWXZBb05D/OFlCRGpMQjJOb0FZ/U0R2Q28xTF93ST0"
   },
-  "Truffert|Premier League": {
+  "Adrien Truffert|Premier League": {
     "prenom": "Adrien",
     "nationalite": null,
     "poste": "DL",
@@ -1781,7 +1781,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ihcsn51771752205.jpg"
   },
-  "Calafiori|Premier League": {
+  "Riccardo Calafiori|Premier League": {
     "prenom": "Riccardo",
     "nationalite": null,
     "poste": "DL",
@@ -1790,7 +1790,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4m5wz21769332133.jpg"
   },
-  "Mitoma|Premier League": {
+  "Kaoru Mitoma|Premier League": {
     "prenom": "Kaoru",
     "nationalite": null,
     "poste": "MO",
@@ -1808,7 +1808,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9kws2w1684833492.jpg"
   },
-  "Ngumoha|Premier League": {
+  "Rio Ngumoha|Premier League": {
     "prenom": "Rio",
     "nationalite": null,
     "poste": "MO",
@@ -1817,7 +1817,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/piel2k1773955508.jpg"
   },
-  "Mingueza|Premier League": {
+  "Óscar Mingueza|Premier League": {
     "prenom": "Óscar",
     "nationalite": null,
     "poste": "DL",
@@ -1826,7 +1826,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/pa81l61723543553.jpg"
   },
-  "Ødegaard|Premier League": {
+  "Martin Ødegaard|Premier League": {
     "prenom": "Martin",
     "nationalite": null,
     "poste": "MO",
@@ -1844,7 +1844,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kdun6w1771428273.jpg"
   },
-  "Mukiele|Premier League": {
+  "Nordi Mukiele|Premier League": {
     "prenom": "Nordi",
     "nationalite": null,
     "poste": "DL",
@@ -1862,7 +1862,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y42vzi1770796833.jpg"
   },
-  "Maddison|Premier League": {
+  "James Maddison|Premier League": {
     "prenom": "James",
     "nationalite": null,
     "poste": "MO",
@@ -1871,7 +1871,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v9h5cx1770893917.jpg"
   },
-  "Manzambi|Premier League": {
+  "Johan Manzambi|Premier League": {
     "prenom": "Johan",
     "nationalite": null,
     "poste": "MO",
@@ -1889,7 +1889,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/smsh6m1562345647.jpg"
   },
-  "Gvardiol|Premier League": {
+  "Joško Gvardiol|Premier League": {
     "prenom": "Joško",
     "nationalite": null,
     "poste": "DC",
@@ -1898,7 +1898,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/dku11k1703326585.jpg"
   },
-  "Enciso|Premier League": {
+  "Julio Enciso|Premier League": {
     "prenom": "Julio",
     "nationalite": null,
     "poste": "MO",
@@ -1907,7 +1907,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ftjgw81661021582.jpg"
   },
-  "Meunier|Premier League": {
+  "Thomas Meunier|Premier League": {
     "prenom": "Thomas",
     "nationalite": null,
     "poste": "DL",
@@ -1916,7 +1916,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uljulm1779040994.jpg"
   },
-  "Arrizabalaga|Premier League": {
+  "Kepa Arrizabalaga|Premier League": {
     "prenom": "Kepa",
     "nationalite": null,
     "poste": "G",
@@ -1925,7 +1925,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mfykkf1769332084.jpg"
   },
-  "Bobb|Premier League": {
+  "Oscar Bobb|Premier League": {
     "prenom": "Oscar",
     "nationalite": null,
     "poste": "MO",
@@ -1934,7 +1934,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/d0ai4y1779408227.jpg"
   },
-  "Araujo|Premier League": {
+  "Ronald Araujo|Premier League": {
     "prenom": "Ronald",
     "nationalite": null,
     "poste": "DC",
@@ -1943,7 +1943,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/z4bmo21771260643.jpg"
   },
-  "Wissa|Premier League": {
+  "Yoane Wissa|Premier League": {
     "prenom": "Yoane",
     "nationalite": null,
     "poste": "A",
@@ -1952,7 +1952,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9a1jrq1608387385.jpg"
   },
-  "Mamardashvili|Premier League": {
+  "Giorgi Mamardashvili|Premier League": {
     "prenom": "Giorgi",
     "nationalite": null,
     "poste": "G",
@@ -1961,7 +1961,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkstyo1716611290.jpg"
   },
-  "Meslier|Premier League": {
+  "Illan Meslier|Premier League": {
     "prenom": "Illan",
     "nationalite": null,
     "poste": "G",
@@ -1979,7 +1979,7 @@
     ],
     "photo": "https://imgs.search.brave.com/QbIoyHkWuRMF9QNqLLuol6wOh0yjPr7pXmuLkZSfo1s/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/c3BvcnRpbmctaGVy/b2VzLm5ldC9jb250/ZW50L3RodW1ibmFp/bHMvMDA0NzIvNDcx/MTItcHJvZHVjdC5q/cGc"
   },
-  "Heaton|Premier League": {
+  "Tom Heaton|Premier League": {
     "prenom": "Tom",
     "nationalite": null,
     "poste": "G",
@@ -1988,7 +1988,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qvsjlt1713182159.jpg"
   },
-  "Gyökeres|Premier League": {
+  "Viktor Gyökeres|Premier League": {
     "prenom": "Viktor",
     "nationalite": null,
     "poste": "A",
@@ -1997,7 +1997,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/83hsmp1778608876.jpg"
   },
-  "Rashford|Premier League": {
+  "Marcus Rashford|Premier League": {
     "prenom": "Marcus",
     "nationalite": null,
     "poste": "A",
@@ -2006,7 +2006,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rb4hx61669799682.jpg"
   },
-  "Mbeumo|Premier League": {
+  "Bryan Mbeumo|Premier League": {
     "prenom": "Bryan",
     "nationalite": null,
     "poste": "A",
@@ -2015,7 +2015,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ntsyk71608410198.jpg"
   },
-  "Anderson|Premier League": {
+  "Elliot Anderson|Premier League": {
     "prenom": "Elliot",
     "nationalite": null,
     "poste": "MD",
@@ -2033,7 +2033,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9c6sim1770894215.jpg"
   },
-  "Madjo|Premier League": {
+  "Brian Madjo|Premier League": {
     "prenom": "Brian",
     "nationalite": null,
     "poste": "A",
@@ -2042,7 +2042,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/117pnx1767869819.jpg"
   },
-  "Pickford|Premier League": {
+  "Jordan Pickford|Premier League": {
     "prenom": "Jordan",
     "nationalite": null,
     "poste": "G",
@@ -2051,7 +2051,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m66e5n1771945410.jpg"
   },
-  "Konsa|Premier League": {
+  "Ezri Konsa|Premier League": {
     "prenom": "Ezri",
     "nationalite": null,
     "poste": "DC",
@@ -2060,7 +2060,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uc1jmw1770201046.jpg"
   },
-  "Shaw|Premier League": {
+  "Luke Shaw|Premier League": {
     "prenom": "Luke",
     "nationalite": null,
     "poste": "DL",
@@ -2069,7 +2069,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wbet0c1770994226.jpg"
   },
-  "Emegha|Premier League": {
+  "Emanuel Emegha|Premier League": {
     "prenom": "Emanuel",
     "nationalite": null,
     "poste": "A",
@@ -2096,7 +2096,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iwt0021678196502.jpg"
   },
-  "Travers|Premier League": {
+  "Mark Travers|Premier League": {
     "prenom": "Mark",
     "nationalite": null,
     "poste": "G",
@@ -2114,7 +2114,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y9j7e11719034723.jpg"
   },
-  "Malen|Serie A": {
+  "Donyell Malen|Serie A": {
     "prenom": "Donyell",
     "nationalite": null,
     "poste": "A",
@@ -2132,7 +2132,7 @@
     ],
     "photo": "https://imgs.search.brave.com/Ek4oAaVxyieUxbx3dwni-hJUCoFeDuQrrgu45H6wTSQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjI1/MjA4ODA5Ny9waG90/by9yb21lLWl0YWx5/LXdlc2xleS1vZi1y/b21hLWNlbGVicmF0/ZXMtaGlzLWdvYWwt/ZHVyaW5nLXRoZS1z/ZXJpZS1hLW1hdGNo/LWJldHdlZW4tYXMt/cm9tYS1hbmQuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVRS/LVBsVHJGNi0yUVEy/WEs3ZE1hWEtLbGVD/RE5mT2RUdFprX01f/LXgzSVE9"
   },
-  "Spence|Serie A": {
+  "Djed Spence|Serie A": {
     "prenom": "Djed",
     "nationalite": null,
     "poste": "DL",
@@ -2141,7 +2141,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/l08fu91609615013.jpg"
   },
-  "De Ketelaere|Serie A": {
+  "Charles De Ketelaere|Serie A": {
     "prenom": "Charles",
     "nationalite": null,
     "poste": "MO",
@@ -2150,7 +2150,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q597y21779039802.jpg"
   },
-  "Castro|Serie A": {
+  "Santiago Castro|Serie A": {
     "prenom": "Santiago",
     "nationalite": null,
     "poste": "A",
@@ -2159,7 +2159,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gf8uwh1715640129.jpg"
   },
-  "Fofana|Serie A": {
+  "Youssouf Fofana|Serie A": {
     "prenom": "Youssouf",
     "nationalite": null,
     "poste": "MD",
@@ -2168,7 +2168,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vmi3171608501371.jpg"
   },
-  "Ndicka|Serie A": {
+  "Evan Ndicka|Serie A": {
     "prenom": "Evan",
     "nationalite": null,
     "poste": "DC",
@@ -2177,7 +2177,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kh9c4i1578087133.jpg"
   },
-  "Dimarco|Serie A": {
+  "Federico Dimarco|Serie A": {
     "prenom": "Federico",
     "nationalite": null,
     "poste": "DL",
@@ -2186,7 +2186,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q7lkrg1546596582.jpg"
   },
-  "Çalhanoglu|Serie A": {
+  "Hakan Çalhanoglu|Serie A": {
     "prenom": "Hakan",
     "nationalite": null,
     "poste": "MD",
@@ -2195,7 +2195,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ays7ot1737352882.jpg"
   },
-  "Rabiot|Serie A": {
+  "Adrien Rabiot|Serie A": {
     "prenom": "Adrien",
     "nationalite": null,
     "poste": "MO",
@@ -2204,7 +2204,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/dqh5pj1778817478.jpg"
   },
-  "da Cunha|Serie A": {
+  "Lucas da Cunha|Serie A": {
     "prenom": "Lucas",
     "nationalite": null,
     "poste": "MO",
@@ -2222,7 +2222,7 @@
     ],
     "photo": "https://img.sofascore.com/api/v1/player/1122835/image"
   },
-  "Laurienté|Serie A": {
+  "Armand Laurienté|Serie A": {
     "prenom": "Armand",
     "nationalite": null,
     "poste": "A",
@@ -2258,7 +2258,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4z17u11617881496.jpg"
   },
-  "McTominay|Serie A": {
+  "Scott McTominay|Serie A": {
     "prenom": "Scott",
     "nationalite": null,
     "poste": "MD",
@@ -2267,7 +2267,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vjfgf21771246923.jpg"
   },
-  "Paz|Serie A": {
+  "Nico Paz|Serie A": {
     "prenom": "Nico",
     "nationalite": null,
     "poste": "MO",
@@ -2276,7 +2276,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ol1v8l1780010884.jpg"
   },
-  "Yildiz|Serie A": {
+  "Kenan Yildiz|Serie A": {
     "prenom": "Kenan",
     "nationalite": null,
     "poste": "A",
@@ -2285,7 +2285,7 @@
     ],
     "photo": "https://imgs.search.brave.com/gTGviBy1QWrkpI7hNl1_bFnlfWRrV6LfGIKnoVx3BoE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjIy/MDc1MzU1MC9mci9w/aG90by9qdXZlbnR1/cy10dXJraXNoLW1p/ZGZpZWxkZXIta2Vu/YW4teWlsZGl6LWNl/bGVicmF0ZXMtc2Nv/cmluZy1oaXMtdGVh/bXMtc2Vjb25kLWdv/YWwtZHVyaW5nLXRo/ZS5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9OXllQXZXWWFt/Q2UzRnZVXzZRZlc3/MU9MYmxDZDJWOGtC/bEFVM2FOaWhlTT0"
   },
-  "Scamacca|Serie A": {
+  "Gianluca Scamacca|Serie A": {
     "prenom": "Gianluca",
     "nationalite": null,
     "poste": "A",
@@ -2294,7 +2294,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hg6sbl1761950864.jpg"
   },
-  "Bastoni|Serie A": {
+  "Alessandro Bastoni|Serie A": {
     "prenom": "Alessandro",
     "nationalite": null,
     "poste": "DC",
@@ -2303,7 +2303,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kgodvf1602959273.jpg"
   },
-  "Kean|Serie A": {
+  "Moise Kean|Serie A": {
     "prenom": "Moise",
     "nationalite": null,
     "poste": "A",
@@ -2312,7 +2312,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7c4ujk1547838016.jpg"
   },
-  "Kempf|Serie A": {
+  "Marc-Oliver Kempf|Serie A": {
     "prenom": "Marc-Oliver",
     "nationalite": null,
     "poste": "DC",
@@ -2321,7 +2321,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/935toz1541086409.jpg"
   },
-  "Nkunku|Serie A": {
+  "Christopher Nkunku|Serie A": {
     "prenom": "Christopher",
     "nationalite": null,
     "poste": "MO",
@@ -2348,7 +2348,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vhhqie1771248629.jpg"
   },
-  "Butez|Serie A": {
+  "Jean Butez|Serie A": {
     "prenom": "Jean",
     "nationalite": null,
     "poste": "G",
@@ -2357,7 +2357,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vv2sk31549741559.jpg"
   },
-  "Maignan|Serie A": {
+  "Mike Maignan|Serie A": {
     "prenom": "Mike",
     "nationalite": null,
     "poste": "G",
@@ -2366,7 +2366,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/8owaul1735364851.jpg"
   },
-  "McKennie|Serie A": {
+  "Weston McKennie|Serie A": {
     "prenom": "Weston",
     "nationalite": null,
     "poste": "MO",
@@ -2375,7 +2375,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k5lx3p1621545726.jpg"
   },
-  "Svilar|Serie A": {
+  "Mile Svilar|Serie A": {
     "prenom": "Mile",
     "nationalite": null,
     "poste": "G",
@@ -2393,7 +2393,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/fg52xa1716706821.jpg"
   },
-  "Solet|Serie A": {
+  "Oumar Solet|Serie A": {
     "prenom": "Oumar",
     "nationalite": null,
     "poste": "DC",
@@ -2402,7 +2402,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/woyxpg1763913445.jpg"
   },
-  "Zaniolo|Serie A": {
+  "Nicolò Zaniolo|Serie A": {
     "prenom": "Nicolò",
     "nationalite": null,
     "poste": "MO",
@@ -2420,7 +2420,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/b5z9cq1609022765.jpg"
   },
-  "Gudmundsson|Serie A": {
+  "Albert Gudmundsson|Serie A": {
     "prenom": "Albert",
     "nationalite": null,
     "poste": "MO",
@@ -2429,7 +2429,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/njw0ii1700049359.jpg"
   },
-  "Mancini|Serie A": {
+  "Gianluca Mancini|Serie A": {
     "prenom": "Gianluca",
     "nationalite": null,
     "poste": "DC",
@@ -2438,7 +2438,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9tf0bn1546084688.jpg"
   },
-  "Pellegrini|Serie A": {
+  "Lorenzo Pellegrini|Serie A": {
     "prenom": "Lorenzo",
     "nationalite": null,
     "poste": "MO",
@@ -2456,7 +2456,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lz8izg1705834934.jpg"
   },
-  "Rrahmani|Serie A": {
+  "Albion Rrahmani|Serie A": {
     "prenom": "Albion",
     "nationalite": null,
     "poste": "A",
@@ -2474,7 +2474,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
   },
-  "Molina|Serie A": {
+  "Nahuel Molina|Serie A": {
     "prenom": "Nahuel",
     "nationalite": null,
     "poste": "DL",
@@ -2483,7 +2483,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uhc6mv1719036284.jpg"
   },
-  "Akanji|Serie A": {
+  "Manuel Akanji|Serie A": {
     "prenom": "Manuel",
     "nationalite": null,
     "poste": "DC",
@@ -2492,7 +2492,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rkw8nb1703327216.jpg"
   },
-  "Chalobah|Serie A": {
+  "Trevoh Chalobah|Serie A": {
     "prenom": "Trevoh",
     "nationalite": null,
     "poste": "DC",
@@ -2501,7 +2501,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/tiw8lz1608388237.jpg"
   },
-  "Milinkovic-Savic|Serie A": {
+  "Vanja Milinkovic-Savic|Serie A": {
     "prenom": "Vanja",
     "nationalite": null,
     "poste": "G",
@@ -2510,7 +2510,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2ie42k1771248542.jpg"
   },
-  "Lobotka|Serie A": {
+  "Stanislav Lobotka|Serie A": {
     "prenom": "Stanislav",
     "nationalite": null,
     "poste": "MD",
@@ -2519,7 +2519,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/c4cknf1771246665.jpg"
   },
-  "Cambiaso|Serie A": {
+  "Andrea Cambiaso|Serie A": {
     "prenom": "Andrea",
     "nationalite": null,
     "poste": "DL",
@@ -2528,7 +2528,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/seted61630826525.jpg"
   },
-  "Anguissa|Serie A": {
+  "Frank Anguissa|Serie A": {
     "prenom": "Frank",
     "nationalite": null,
     "poste": "MD",
@@ -2537,7 +2537,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/g80skn1771245651.jpg"
   },
-  "Spinazzola|Serie A": {
+  "Leonardo Spinazzola|Serie A": {
     "prenom": "Leonardo",
     "nationalite": null,
     "poste": "DL",
@@ -2555,7 +2555,7 @@
     ],
     "photo": "https://imgs.search.brave.com/RLBbVWWwGSHq325_gx4h6a0jzFyblYQ24BqTtJb9oek/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjI0/OTY5NzIzMS9mci9w/aG90by90b3BzaG90/LWludGVyLW1pbGFu/cy1icmF6aWxpYW4t/ZGVmZW5kZXItY2Fy/bG9zLWF1Z3VzdG8t/Y2VsZWJyYXRlcy1z/Y29yaW5nLWhpcy10/ZWFtcy1mb3VydGgu/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PVh4T0lLSUEzbktM/cXVHckVPYUZmZ181/WFludENsazZzRTJh/UE1ZZG15S2c9"
   },
-  "Chukwueze|Serie A": {
+  "Samuel Chukwueze|Serie A": {
     "prenom": "Samuel",
     "nationalite": null,
     "poste": "MO",
@@ -2564,7 +2564,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/x8mfz71772025092.jpg"
   },
-  "Ranieri|Serie A": {
+  "Luca Ranieri|Serie A": {
     "prenom": "Luca",
     "nationalite": null,
     "poste": "DL",
@@ -2573,7 +2573,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/a1aqwk1601156207.jpg"
   },
-  "Cristante|Serie A": {
+  "Bryan Cristante|Serie A": {
     "prenom": "Bryan",
     "nationalite": null,
     "poste": "MD",
@@ -2582,7 +2582,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/4y6tzt1533894093.jpg"
   },
-  "Tomori|Serie A": {
+  "Fikayo Tomori|Serie A": {
     "prenom": "Fikayo",
     "nationalite": null,
     "poste": "DC",
@@ -2591,7 +2591,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yxwruu1469436878.jpg"
   },
-  "Kamara|Serie A": {
+  "Hassane Kamara|Serie A": {
     "prenom": "Hassane",
     "nationalite": null,
     "poste": "DL",
@@ -2600,7 +2600,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wk554v1551781933.jpg"
   },
-  "Hermoso|Serie A": {
+  "Mario Hermoso|Serie A": {
     "prenom": "Mario",
     "nationalite": null,
     "poste": "DC",
@@ -2618,7 +2618,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bxu8tj1767454380.jpg"
   },
-  "Audero|Serie A": {
+  "Emil Audero|Serie A": {
     "prenom": "Emil",
     "nationalite": null,
     "poste": "G",
@@ -2627,7 +2627,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zutfex1546257021.jpg"
   },
-  "Di Lorenzo|Serie A": {
+  "Giovanni Di Lorenzo|Serie A": {
     "prenom": "Giovanni",
     "nationalite": null,
     "poste": "DL",
@@ -2636,7 +2636,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/pxjt3d1771246716.jpg"
   },
-  "Zhegrova|Serie A": {
+  "Edon Zhegrova|Serie A": {
     "prenom": "Edon",
     "nationalite": null,
     "poste": "A",
@@ -2645,7 +2645,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/g1klsb1653486280.jpg"
   },
-  "Traoré|Serie A": {
+  "Hamed Traoré|Serie A": {
     "prenom": "Hamed",
     "nationalite": null,
     "poste": "MO",
@@ -2663,7 +2663,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wwihws1628614265.jpg"
   },
-  "Koné|Serie A": {
+  "Ismaël Koné|Serie A": {
     "prenom": "Ismaël",
     "nationalite": null,
     "poste": "MD",
@@ -2672,7 +2672,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/69e0i71646234880.jpg"
   },
-  "Neri|Serie A": {
+  "Filippo Neri|Serie A": {
     "prenom": "Filippo",
     "nationalite": null,
     "poste": "G",
@@ -2681,7 +2681,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/g5yv8a1633201101.jpg"
   },
-  "Di Gennaro|Serie A": {
+  "Raffaele Di Gennaro|Serie A": {
     "prenom": "Raffaele",
     "nationalite": null,
     "poste": "G",
@@ -2699,7 +2699,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m1sh9x1549742563.jpg"
   },
-  "Højlund|Serie A": {
+  "Rasmus Højlund|Serie A": {
     "prenom": "Rasmus",
     "nationalite": null,
     "poste": "A",
@@ -2708,7 +2708,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hiwj7i1771246544.jpg"
   },
-  "Soulé|Serie A": {
+  "Matías Soulé|Serie A": {
     "prenom": "Matías",
     "nationalite": null,
     "poste": "A",
@@ -2717,7 +2717,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2d5azg1679483677.jpg"
   },
-  "Douvikas|Serie A": {
+  "Anastasios Douvikas|Serie A": {
     "prenom": "Anastasios",
     "nationalite": null,
     "poste": "A",
@@ -2726,7 +2726,7 @@
     ],
     "photo": "https://img.sofascore.com/api/v1/player/894863/image"
   },
-  "Modric|Serie A": {
+  "Luka Modric|Serie A": {
     "prenom": "Luka",
     "nationalite": null,
     "poste": "MO",
@@ -2735,7 +2735,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6j40781707595475.jpg"
   },
-  "Esposito|Serie A": {
+  "Sebastiano Esposito|Serie A": {
     "prenom": "Sebastiano",
     "nationalite": null,
     "poste": "A",
@@ -2753,7 +2753,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gjz66y1716707588.jpg"
   },
-  "Kolo Muani|Serie A": {
+  "Randal Kolo Muani|Serie A": {
     "prenom": "Randal",
     "nationalite": null,
     "poste": "A",
@@ -2762,7 +2762,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/r8fy8t1770893965.jpg"
   },
-  "Motta|Serie A": {
+  "Edoardo Motta|Serie A": {
     "prenom": "Edoardo",
     "nationalite": null,
     "poste": "G",
@@ -2771,7 +2771,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/pn3ucb1773920370.jpg"
   },
-  "Mastantuono|Serie A": {
+  "Franco Mastantuono|Serie A": {
     "prenom": "Franco",
     "nationalite": null,
     "poste": "MO",
@@ -2780,7 +2780,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i1b8sm1771265267.jpg"
   },
-  "Alajbegovic|Serie A": {
+  "Kerim Alajbegovic|Serie A": {
     "prenom": "Kerim",
     "nationalite": null,
     "poste": "MO",
@@ -2789,7 +2789,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/2dtxv61778542471.jpg"
   },
-  "Mkhitaryan|Serie A": {
+  "Henrikh Mkhitaryan|Serie A": {
     "prenom": "Henrikh",
     "nationalite": null,
     "poste": "MO",
@@ -2798,7 +2798,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qvwcq31520755890.jpg"
   },
-  "Kalulu|Serie A": {
+  "Pierre Kalulu|Serie A": {
     "prenom": "Pierre",
     "nationalite": null,
     "poste": "DL",
@@ -2816,7 +2816,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/cfj1k91779129722.jpg"
   },
-  "Rowe|Serie A": {
+  "Jonathan Rowe|Serie A": {
     "prenom": "Jonathan",
     "nationalite": null,
     "poste": "A",
@@ -2825,7 +2825,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/frgnzp1695293335.jpg"
   },
-  "Bisseck|Serie A": {
+  "Yann Bisseck|Serie A": {
     "prenom": "Yann",
     "nationalite": null,
     "poste": "DC",
@@ -2834,7 +2834,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/xz8ecw1654098002.jpg"
   },
-  "Mandas|Serie A": {
+  "Christos Mandas|Serie A": {
     "prenom": "Christos",
     "nationalite": null,
     "poste": "G",
@@ -2843,7 +2843,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/q1ik991698227933.jpg"
   },
-  "Garcia|Premier League": {
+  "Gonzalo Garcia|Premier League": {
     "prenom": "Gonzalo",
     "nationalite": "Espagnol",
     "poste": "A",
@@ -2852,7 +2852,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h6t7zt1756825208.jpg"
   },
-  "Kane|Ligue des Champions": {
+  "Harry Kane|Ligue des Champions": {
     "prenom": "Harry",
     "nationalite": null,
     "poste": "A",
@@ -2879,7 +2879,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/14kuzy1771260047.jpg"
   },
-  "Olise|Ligue des Champions": {
+  "Michael Olise|Ligue des Champions": {
     "prenom": "Michael",
     "nationalite": null,
     "poste": "MO",
@@ -2888,7 +2888,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kumigl1778817330.jpg"
   },
-  "Mbappé|Ligue des Champions": {
+  "Kylian Mbappé|Ligue des Champions": {
     "prenom": "Kylian",
     "nationalite": null,
     "poste": "A",
@@ -2897,7 +2897,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v08cj31778816426.jpg"
   },
-  "Haaland|Ligue des Champions": {
+  "Erling Haaland|Ligue des Champions": {
     "prenom": "Erling",
     "nationalite": null,
     "poste": "A",
@@ -2915,7 +2915,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y9j7e11719034723.jpg"
   },
-  "Guirassy|Ligue des Champions": {
+  "Serhou Guirassy|Ligue des Champions": {
     "prenom": "Serhou",
     "nationalite": null,
     "poste": "A",
@@ -2924,7 +2924,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/448540.png"
   },
-  "Bellingham|Ligue des Champions": {
+  "Jude Bellingham|Ligue des Champions": {
     "prenom": "Jude",
     "nationalite": null,
     "poste": "MO",
@@ -2933,7 +2933,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rfg8xd1771263826.jpg"
   },
-  "Osimhen|Ligue des Champions": {
+  "Victor Osimhen|Ligue des Champions": {
     "prenom": "Victor",
     "nationalite": null,
     "poste": "A",
@@ -2942,7 +2942,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/snhzzq1702566147.jpg"
   },
-  "Kvaratskhelia|Ligue des Champions": {
+  "Khvicha Kvaratskhelia|Ligue des Champions": {
     "prenom": "Khvicha",
     "nationalite": null,
     "poste": "A",
@@ -2951,7 +2951,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/l1gq7e1770217076.jpg"
   },
-  "Tzolis|Ligue des Champions": {
+  "Christos Tzolis|Ligue des Champions": {
     "prenom": "Christos",
     "nationalite": null,
     "poste": "MO",
@@ -2960,7 +2960,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1jxetg1732226638.jpg"
   },
-  "Dimarco|Ligue des Champions": {
+  "Federico Dimarco|Ligue des Champions": {
     "prenom": "Federico",
     "nationalite": null,
     "poste": "DL",
@@ -2978,7 +2978,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1kfayc1700821747.jpg"
   },
-  "Pacho|Ligue des Champions": {
+  "Willian Pacho|Ligue des Champions": {
     "prenom": "Willian",
     "nationalite": null,
     "poste": "DC",
@@ -2987,7 +2987,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y7kx1d1770217817.jpg"
   },
-  "López|Ligue des Champions": {
+  "Fermín López|Ligue des Champions": {
     "prenom": "Fermín",
     "nationalite": null,
     "poste": "MO",
@@ -2996,7 +2996,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5z9d271771253844.jpg"
   },
-  "Saka|Ligue des Champions": {
+  "Bukayo Saka|Ligue des Champions": {
     "prenom": "Bukayo",
     "nationalite": null,
     "poste": "MO",
@@ -3005,7 +3005,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/axl31b1769332282.jpg"
   },
-  "McTominay|Ligue des Champions": {
+  "Scott McTominay|Ligue des Champions": {
     "prenom": "Scott",
     "nationalite": null,
     "poste": "MD",
@@ -3023,7 +3023,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/1nt1i61770993321.jpg"
   },
-  "Cubarsí|Ligue des Champions": {
+  "Pau Cubarsí|Ligue des Champions": {
     "prenom": "Pau",
     "nationalite": null,
     "poste": "DC",
@@ -3032,7 +3032,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ahg7031786385437.jpg"
   },
-  "Bastoni|Ligue des Champions": {
+  "Alessandro Bastoni|Ligue des Champions": {
     "prenom": "Alessandro",
     "nationalite": null,
     "poste": "DC",
@@ -3041,7 +3041,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/kgodvf1602959273.jpg"
   },
-  "Cherki|Ligue des Champions": {
+  "Rayan Cherki|Ligue des Champions": {
     "prenom": "Rayan",
     "nationalite": null,
     "poste": "MO",
@@ -3059,7 +3059,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ocycug1770217690.jpg"
   },
-  "Wirtz|Ligue des Champions": {
+  "Florian Wirtz|Ligue des Champions": {
     "prenom": "Florian",
     "nationalite": null,
     "poste": "MO",
@@ -3068,7 +3068,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/k2mwrs1779386689.jpg"
   },
-  "Schlotterbeck|Ligue des Champions": {
+  "Nico Schlotterbeck|Ligue des Champions": {
     "prenom": "Nico",
     "nationalite": null,
     "poste": "DC",
@@ -3077,7 +3077,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/syw8dg1779385730.jpg"
   },
-  "Undav|Ligue des Champions": {
+  "Deniz Undav|Ligue des Champions": {
     "prenom": "Deniz",
     "nationalite": null,
     "poste": "A",
@@ -3095,7 +3095,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/olw7ts1653164187.jpg"
   },
-  "Safonov|Ligue des Champions": {
+  "Matvey Safonov|Ligue des Champions": {
     "prenom": "Matvey",
     "nationalite": null,
     "poste": "G",
@@ -3104,7 +3104,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/6u5q2q1718383125.jpg"
   },
-  "Upamecano|Ligue des Champions": {
+  "Dayot Upamecano|Ligue des Champions": {
     "prenom": "Dayot",
     "nationalite": null,
     "poste": "DC",
@@ -3113,7 +3113,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/a66k1g1778818296.jpg"
   },
-  "Baena|Ligue des Champions": {
+  "Alex Baena|Ligue des Champions": {
     "prenom": "Alex",
     "nationalite": null,
     "poste": "MO",
@@ -3131,7 +3131,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/f8v9cw1615386504.jpg"
   },
-  "Bensebaini|Ligue des Champions": {
+  "Ramy Bensebaini|Ligue des Champions": {
     "prenom": "Ramy",
     "nationalite": null,
     "poste": "DL",
@@ -3149,7 +3149,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yi6dt21746034945.jpg"
   },
-  "Mancini|Ligue des Champions": {
+  "Gianluca Mancini|Ligue des Champions": {
     "prenom": "Gianluca",
     "nationalite": null,
     "poste": "DC",
@@ -3158,7 +3158,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9tf0bn1546084688.jpg"
   },
-  "Llorente|Ligue des Champions": {
+  "Marcos Llorente|Ligue des Champions": {
     "prenom": "Marcos",
     "nationalite": null,
     "poste": "DL",
@@ -3167,7 +3167,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/nssdrm1779732330.jpg"
   },
-  "Zielinski|Ligue des Champions": {
+  "Piotr Zielinski|Ligue des Champions": {
     "prenom": "Piotr",
     "nationalite": null,
     "poste": "MO",
@@ -3185,7 +3185,7 @@
     ],
     "photo": "https://imgs.search.brave.com/Ek4oAaVxyieUxbx3dwni-hJUCoFeDuQrrgu45H6wTSQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjI1/MjA4ODA5Ny9waG90/by9yb21lLWl0YWx5/LXdlc2xleS1vZi1y/b21hLWNlbGVicmF0/ZXMtaGlzLWdvYWwt/ZHVyaW5nLXRoZS1z/ZXJpZS1hLW1hdGNo/LWJldHdlZW4tYXMt/cm9tYS1hbmQuanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVRS/LVBsVHJGNi0yUVEy/WEs3ZE1hWEtLbGVD/RE5mT2RUdFprX01f/LXgzSVE9"
   },
-  "Güler|Ligue des Champions": {
+  "Arda Güler|Ligue des Champions": {
     "prenom": "Arda",
     "nationalite": null,
     "poste": "MO",
@@ -3194,7 +3194,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0saeov1771265107.jpg"
   },
-  "Gravenberch|Ligue des Champions": {
+  "Ryan Gravenberch|Ligue des Champions": {
     "prenom": "Ryan",
     "nationalite": null,
     "poste": "MD",
@@ -3203,7 +3203,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/s2jcp81603836997.jpg"
   },
-  "Suzuki|Ligue des Champions": {
+  "Zion Suzuki|Ligue des Champions": {
     "prenom": "Zion",
     "nationalite": null,
     "poste": "G",
@@ -3212,7 +3212,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/258ra11709185873.jpg"
   },
-  "Akanji|Ligue des Champions": {
+  "Manuel Akanji|Ligue des Champions": {
     "prenom": "Manuel",
     "nationalite": null,
     "poste": "DC",
@@ -3221,7 +3221,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rkw8nb1703327216.jpg"
   },
-  "Konaté|Ligue des Champions": {
+  "Ibrahima Konaté|Ligue des Champions": {
     "prenom": "Ibrahima",
     "nationalite": null,
     "poste": "DC",
@@ -3230,7 +3230,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/fy4skn1786031628.jpg"
   },
-  "Ruiz|Ligue des Champions": {
+  "Fabián Ruiz|Ligue des Champions": {
     "prenom": "Fabián",
     "nationalite": null,
     "poste": "MD",
@@ -3239,7 +3239,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5wv1ys1786386239.jpg"
   },
-  "Zaïre-Emery|Ligue des Champions": {
+  "Warren Zaïre-Emery|Ligue des Champions": {
     "prenom": "Warren",
     "nationalite": null,
     "poste": "MD",
@@ -3257,7 +3257,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/i3td7p1702563899.jpg"
   },
-  "Davies|Ligue des Champions": {
+  "Alphonso Davies|Ligue des Champions": {
     "prenom": "Alphonso",
     "nationalite": null,
     "poste": "DL",
@@ -3266,7 +3266,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0p7ekk1660764614.jpg"
   },
-  "Ndicka|Ligue des Champions": {
+  "Evan Ndicka|Ligue des Champions": {
     "prenom": "Evan",
     "nationalite": null,
     "poste": "DC",
@@ -3284,7 +3284,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/sejelk1770217582.jpg"
   },
-  "Lewis-Skelly|Ligue des Champions": {
+  "Myles Lewis-Skelly|Ligue des Champions": {
     "prenom": "Myles",
     "nationalite": null,
     "poste": "MD",
@@ -3302,7 +3302,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/opcqpo1668712724.jpg"
   },
-  "Havertz|Ligue des Champions": {
+  "Kai Havertz|Ligue des Champions": {
     "prenom": "Kai",
     "nationalite": null,
     "poste": "A",
@@ -3311,7 +3311,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5c3h061780160105.jpg"
   },
-  "Ganiou|Ligue des Champions": {
+  "Ismaëlo Ganiou|Ligue des Champions": {
     "prenom": "Ismaëlo",
     "nationalite": null,
     "poste": "DC",
@@ -3320,7 +3320,7 @@
     ],
     "photo": "https://imgs.search.brave.com/yLr6mNnu9bUbzqBAnn_4c7MI3YHcbNgCG_K9qU3c4aE/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9hc3Nl/dHMtZnIuaW1nZm9v/dC5jb20vbWVkaWEv/Y2FjaGUvNjQyeDM4/Mi9kZXNpZ24tc2Fu/cy10aXRyZS0yMDI2/LTA0LTE3dDIyNTM1/Ny0wMzguanBn"
   },
-  "Mainoo|Ligue des Champions": {
+  "Kobbie Mainoo|Ligue des Champions": {
     "prenom": "Kobbie",
     "nationalite": null,
     "poste": "MD",
@@ -3329,7 +3329,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/h66a4l1696149845.jpg"
   },
-  "Mamardashvili|Ligue des Champions": {
+  "Giorgi Mamardashvili|Ligue des Champions": {
     "prenom": "Giorgi",
     "nationalite": null,
     "poste": "G",
@@ -3338,7 +3338,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hkstyo1716611290.jpg"
   },
-  "Provedel|Ligue des Champions": {
+  "Ivan Provedel|Ligue des Champions": {
     "prenom": "Ivan",
     "nationalite": null,
     "poste": "G",
@@ -3347,7 +3347,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/abhqpq1546699343.jpg"
   },
-  "Bartra|Ligue des Champions": {
+  "Marc Bartra|Ligue des Champions": {
     "prenom": "Marc",
     "nationalite": null,
     "poste": "DC",
@@ -3356,7 +3356,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/87ldtd1531053841.jpg"
   },
-  "Espart|Ligue des Champions": {
+  "Xavi Espart|Ligue des Champions": {
     "prenom": "Xavi",
     "nationalite": null,
     "poste": "DL",
@@ -3365,7 +3365,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wwbwky1782654294.jpg"
   },
-  "Funk|Ligue des Champions": {
+  "Marius Funk|Ligue des Champions": {
     "prenom": "Marius",
     "nationalite": null,
     "poste": "G",
@@ -3374,7 +3374,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/659086.png"
   },
-  "Woodman|Ligue des Champions": {
+  "Freddie Woodman|Ligue des Champions": {
     "prenom": "Freddie",
     "nationalite": null,
     "poste": "G",
@@ -3383,7 +3383,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/jb5l201509807510.jpg"
   },
-  "Isak|Ligue des Champions": {
+  "Alexander Isak|Ligue des Champions": {
     "prenom": "Alexander",
     "nationalite": null,
     "poste": "A",
@@ -3392,7 +3392,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/537p7s1778608689.jpg"
   },
-  "Doué|Ligue des Champions": {
+  "Désiré Doué|Ligue des Champions": {
     "prenom": "Désiré",
     "nationalite": null,
     "poste": "MO",
@@ -3401,7 +3401,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/70imvk1770216646.jpg"
   },
-  "Díaz|Ligue des Champions": {
+  "Luis Díaz|Ligue des Champions": {
     "prenom": "Luis",
     "nationalite": null,
     "poste": "A",
@@ -3410,7 +3410,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/qkw97r1779753703.jpg"
   },
-  "Semenyo|Ligue des Champions": {
+  "Antoine Semenyo|Ligue des Champions": {
     "prenom": "Antoine",
     "nationalite": null,
     "poste": "MO",
@@ -3419,7 +3419,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mbv2q31767953143.jpg"
   },
-  "Dembélé|Ligue des Champions": {
+  "Ousmane Dembélé|Ligue des Champions": {
     "prenom": "Ousmane",
     "nationalite": null,
     "poste": "A",
@@ -3437,7 +3437,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/lxf1he1771264845.jpg"
   },
-  "Brown|Ligue des Champions": {
+  "Nathaniel Brown|Ligue des Champions": {
     "prenom": "Nathaniel",
     "nationalite": null,
     "poste": "DL",
@@ -3455,7 +3455,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/r6vlwa1545242094.jpg"
   },
-  "van Dijk|Ligue des Champions": {
+  "Virgil van Dijk|Ligue des Champions": {
     "prenom": "Virgil",
     "nationalite": null,
     "poste": "DC",
@@ -3464,7 +3464,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9fe0tn1720452118.jpg"
   },
-  "Donnarumma|Ligue des Champions": {
+  "Gianluigi Donnarumma|Ligue des Champions": {
     "prenom": "Gianluigi",
     "nationalite": null,
     "poste": "G",
@@ -3473,7 +3473,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7kahd81704447713.jpg"
   },
-  "Gordon|Ligue des Champions": {
+  "Anthony Gordon|Ligue des Champions": {
     "prenom": "Anthony",
     "nationalite": null,
     "poste": "A",
@@ -3482,7 +3482,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yleib91770796577.jpg"
   },
-  "Ødegaard|Ligue des Champions": {
+  "Martin Ødegaard|Ligue des Champions": {
     "prenom": "Martin",
     "nationalite": null,
     "poste": "MO",
@@ -3491,7 +3491,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ttlff21727415365.jpg"
   },
-  "Skriniar|Ligue des Champions": {
+  "Milan Skriniar|Ligue des Champions": {
     "prenom": "Milan",
     "nationalite": null,
     "poste": "DC",
@@ -3500,7 +3500,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/knn8491704623903.jpg"
   },
-  "Torres|Ligue des Champions": {
+  "Ferran Torres|Ligue des Champions": {
     "prenom": "Ferran",
     "nationalite": null,
     "poste": "A",
@@ -3518,7 +3518,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/vvvc1w1626791033.jpg"
   },
-  "Malen|Ligue des Champions": {
+  "Donyell Malen|Ligue des Champions": {
     "prenom": "Donyell",
     "nationalite": null,
     "poste": "A",
@@ -3527,7 +3527,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y6zoqt1770201257.jpg"
   },
-  "Barcola|Ligue des Champions": {
+  "Bradley Barcola|Ligue des Champions": {
     "prenom": "Bradley",
     "nationalite": null,
     "poste": "A",
@@ -3536,7 +3536,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/y3v68c1778803099.jpg"
   },
-  "Kimmich|Ligue des Champions": {
+  "Joshua Kimmich|Ligue des Champions": {
     "prenom": "Joshua",
     "nationalite": null,
     "poste": "MD",
@@ -3545,7 +3545,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7r22gx1779383592.jpg"
   },
-  "David|Ligue des Champions": {
+  "Jonathan David|Ligue des Champions": {
     "prenom": "Jonathan",
     "nationalite": null,
     "poste": "A",
@@ -3554,7 +3554,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
   },
-  "Bartra|Liga": {
+  "Marc Bartra|Liga": {
     "prenom": "Marc",
     "nationalite": null,
     "poste": "DC",
@@ -3563,7 +3563,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/87ldtd1531053841.jpg"
   },
-  "Pepe|Liga": {
+  "Nicolas Pepe|Liga": {
     "prenom": "Nicolas",
     "nationalite": null,
     "poste": "MO",
@@ -3581,7 +3581,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/nn0p641719613832.jpg"
   },
-  "Navarro|Liga": {
+  "Robert Navarro|Liga": {
     "prenom": "Robert",
     "nationalite": null,
     "poste": "A",
@@ -3590,7 +3590,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9x234o1632752663.jpg"
   },
-  "Vicente|Liga": {
+  "Iñigo Vicente|Liga": {
     "prenom": "Iñigo",
     "nationalite": null,
     "poste": "MO",
@@ -3599,7 +3599,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w3z3wb1629188474.jpg"
   },
-  "Pérez|Liga": {
+  "Ángel Pérez|Liga": {
     "prenom": "Ángel",
     "nationalite": null,
     "poste": "MO",
@@ -3608,7 +3608,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/1563022.png"
   },
-  "Huijsen|Liga": {
+  "Dean Huijsen|Liga": {
     "prenom": "Dean",
     "nationalite": null,
     "poste": "DC",
@@ -3617,7 +3617,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/gbhpsa1771264927.jpg"
   },
-  "Valles|Liga": {
+  "Álvaro Valles|Liga": {
     "prenom": "Álvaro",
     "nationalite": null,
     "poste": "G",
@@ -3626,7 +3626,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hrfcqr1701092804.jpg"
   },
-  "Agirrezabala|Liga": {
+  "Julen Agirrezabala|Liga": {
     "prenom": "Julen",
     "nationalite": null,
     "poste": "G",
@@ -3635,7 +3635,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/w9v57a1629187942.jpg"
   },
-  "Espart|Liga": {
+  "Xavi Espart|Liga": {
     "prenom": "Xavi",
     "nationalite": null,
     "poste": "DL",
@@ -3644,7 +3644,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/wwbwky1782654294.jpg"
   },
-  "Terrats|Liga": {
+  "Ramón Terrats|Liga": {
     "prenom": "Ramón",
     "nationalite": null,
     "poste": "MD",
@@ -3653,7 +3653,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/yp3vf31658690878.jpg"
   },
-  "David|Liga": {
+  "Jonathan David|Liga": {
     "prenom": "Jonathan",
     "nationalite": null,
     "poste": "A",
@@ -3662,7 +3662,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/hnv78h1742289489.jpg"
   },
-  "Romero|Liga": {
+  "Cristian Romero|Liga": {
     "prenom": "Cristian",
     "nationalite": null,
     "poste": "DC",
@@ -3671,7 +3671,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/16rd0s1780011158.jpg"
   },
-  "Otto|Liga": {
+  "Jonny Otto|Liga": {
     "prenom": "Jonny",
     "nationalite": null,
     "poste": "DL",
@@ -3680,7 +3680,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/360918.png"
   },
-  "Zabiri|Liga": {
+  "Yassir Zabiri|Liga": {
     "prenom": "Yassir",
     "nationalite": null,
     "poste": "A",
@@ -3689,7 +3689,7 @@
     ],
     "photo": "https://www.thesportsdb.com/images/media/player/thumb/m17q4v1789724862.jpg"
   },
-  "Soriano|Liga": {
+  "Mario Soriano|Liga": {
     "prenom": "Mario",
     "nationalite": null,
     "poste": "MO",
@@ -3698,7 +3698,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/v9btrl1735417990.jpg"
   },
-  "Agoumé|Liga": {
+  "Lucien Agoumé|Liga": {
     "prenom": "Lucien",
     "nationalite": null,
     "poste": "MD",
@@ -3707,7 +3707,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/5t6ili1601070156.jpg"
   },
-  "Carreras|Liga": {
+  "Álvaro Carreras|Liga": {
     "prenom": "Álvaro",
     "nationalite": null,
     "poste": "DL",
@@ -3716,7 +3716,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/77qzkw1771264102.jpg"
   },
-  "El Hilali|Liga": {
+  "Omar El Hilali|Liga": {
     "prenom": "Omar",
     "nationalite": null,
     "poste": "DL",
@@ -3725,7 +3725,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zq0xbs1723569350.jpg"
   },
-  "Paredes|Liga": {
+  "Aitor Paredes|Liga": {
     "prenom": "Aitor",
     "nationalite": null,
     "poste": "DC",
@@ -3734,7 +3734,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3y5ei71678568879.jpg"
   },
-  "Le Normand|Liga": {
+  "Robin Le Normand|Liga": {
     "prenom": "Robin",
     "nationalite": null,
     "poste": "DC",
@@ -3743,7 +3743,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iqosdp1724311723.jpg"
   },
-  "Conde|Liga": {
+  "Diego Conde|Liga": {
     "prenom": "Diego",
     "nationalite": null,
     "poste": "G",
@@ -3752,7 +3752,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/dtq91e1723628718.jpg"
   },
-  "Lemar|Liga": {
+  "Thomas Lemar|Liga": {
     "prenom": "Thomas",
     "nationalite": null,
     "poste": "MO",
@@ -3761,7 +3761,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/0yai0f1534441522.jpg"
   },
-  "Szczesny|Liga": {
+  "Wojciech Szczesny|Liga": {
     "prenom": "Wojciech",
     "nationalite": null,
     "poste": "G",
@@ -3770,7 +3770,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/3epoxq1713428540.jpg"
   },
-  "Rivero|Liga": {
+  "Cristian Rivero|Liga": {
     "prenom": "Cristian",
     "nationalite": null,
     "poste": "G",
@@ -3779,7 +3779,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/7qyqo11662074373.jpg"
   },
-  "Beitia|Liga": {
+  "Luken Beitia|Liga": {
     "prenom": "Luken",
     "nationalite": null,
     "poste": "DC",
@@ -3788,7 +3788,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/1697334.png"
   },
-  "Oláiz|Liga": {
+  "Xanet Oláiz|Liga": {
     "prenom": "Xanet",
     "nationalite": null,
     "poste": "DC",
@@ -3797,7 +3797,7 @@
     ],
     "photo": "https://img.sofascore.com/api/v1/player/1606695/image"
   },
-  "Fidalgo|Liga": {
+  "Álvaro Fidalgo|Liga": {
     "prenom": "Álvaro",
     "nationalite": null,
     "poste": "MD",
@@ -3806,7 +3806,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/bgwqzf1750327819.jpg"
   },
-  "Alvarez|Liga": {
+  "Julián Alvarez|Liga": {
     "prenom": "Julián",
     "nationalite": null,
     "poste": "A",
@@ -3815,7 +3815,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/rm3tj11741979331.jpg"
   },
-  "Óskarsson|Liga": {
+  "Orri Óskarsson|Liga": {
     "prenom": "Orri",
     "nationalite": null,
     "poste": "A",
@@ -3833,7 +3833,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/uee5ya1779730733.jpg"
   },
-  "Sancet|Liga": {
+  "Oihan Sancet|Liga": {
     "prenom": "Oihan",
     "nationalite": null,
     "poste": "MO",
@@ -3842,7 +3842,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/m38pld1603579770.jpg"
   },
-  "Ezzalzouli|Liga": {
+  "Abdessamad Ezzalzouli|Liga": {
     "prenom": "Abdessamad",
     "nationalite": null,
     "poste": "A",
@@ -3860,7 +3860,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/iwt0021678196502.jpg"
   },
-  "Berchiche|Liga": {
+  "Yuri Berchiche|Liga": {
     "prenom": "Yuri",
     "nationalite": null,
     "poste": "DL",
@@ -3869,7 +3869,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/9ruoyu1519327520.jpg"
   },
-  "Berenguer|Liga": {
+  "Álex Berenguer|Liga": {
     "prenom": "Álex",
     "nationalite": null,
     "poste": "MO",
@@ -3878,7 +3878,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/ranylg1723532557.jpg"
   },
-  "Laporte|Liga": {
+  "Aymeric Laporte|Liga": {
     "prenom": "Aymeric",
     "nationalite": null,
     "poste": "DC",
@@ -3887,7 +3887,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/zldp8b1779732163.jpg"
   },
-  "Martín|Liga": {
+  "Gerard Martín|Liga": {
     "prenom": "Gerard",
     "nationalite": null,
     "poste": "DC",
@@ -3896,7 +3896,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/mqqef11668790648.jpg"
   },
-  "Córdoba|Liga": {
+  "Iker Córdoba|Liga": {
     "prenom": "Iker",
     "nationalite": null,
     "poste": "DC",
@@ -3905,7 +3905,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/1637860.png"
   },
-  "Camello|Liga": {
+  "Sergio Camello|Liga": {
     "prenom": "Sergio",
     "nationalite": null,
     "poste": "A",
@@ -3914,7 +3914,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/l97zh31679052300.jpg"
   },
-  "Roca|Liga": {
+  "Marc Roca|Liga": {
     "prenom": "Marc",
     "nationalite": null,
     "poste": "MD",
@@ -3932,7 +3932,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/r6vlwa1545242094.jpg"
   },
-  "Stassin|Liga": {
+  "Lucas Stassin|Liga": {
     "prenom": "Lucas",
     "nationalite": null,
     "poste": "A",
@@ -3941,7 +3941,7 @@
     ],
     "photo": "https://images.fotmob.com/image_resources/playerimages/1398377.png"
   },
-  "Brugué|Liga": {
+  "Roger Brugué|Liga": {
     "prenom": "Roger",
     "nationalite": null,
     "poste": "A",
@@ -3950,7 +3950,7 @@
     ],
     "photo": "https://r2.thesportsdb.com/images/media/player/thumb/pefufm1762459765.jpg"
   },
-  "Niño|Liga": {
+  "Fer Niño|Liga": {
     "prenom": "Fer",
     "nationalite": null,
     "poste": "A",

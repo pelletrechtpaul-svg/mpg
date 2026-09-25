@@ -19,9 +19,7 @@ export function useJoueursSearch(mercatoData) {
           prenom: d.prenom || null,
           poste: d.poste,
           nationalite: d.nationalite,
-          displayName: d.prenom && !d.joueur.startsWith(d.prenom)
-            ? `${d.prenom} ${d.joueur}`
-            : d.joueur,
+          displayName: d.joueur,
           entries: [],
           acheteurs: new Set(),
         };

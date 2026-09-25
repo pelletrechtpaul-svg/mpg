@@ -5,12 +5,6 @@ function normalize(str) {
   return (str || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
-// Nom affiché : "Prénom Nom" quand le prénom est connu et pas déjà inclus
-// dans le nom de famille (évite les "Bruno Bruno").
-export function playerDisplayName(p) {
-  return p.prenom && !p.joueur.startsWith(p.prenom) ? `${p.prenom} ${p.joueur}` : p.joueur;
-}
-
 /**
  * Barre de recherche restreinte aux joueurs recrutés par `coach` lors du
  * mercato de ce championnat précis (saison + ligue + championnat + acheteur).
@@ -30,7 +24,7 @@ export default function CoachPlayerSearch({ coach, saison, ligue, championnat, m
       .filter(p => { if (seen.has(p.joueur)) return false; seen.add(p.joueur); return true; })
       .map(p => ({
         joueur: p.joueur,
-        displayName: playerDisplayName(p),
+        displayName: p.joueur,
       }))
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
   }, [coach, saison, ligue, cNum, mercatoData]);

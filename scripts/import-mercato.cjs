@@ -112,13 +112,7 @@ function findSimilarRegistryKeys(joueur, ligue, registry) {
 // "Yamal" seul si un seul joueur de ce nom de famille est au registre de la
 // ligue. Renvoie { nom } ou { erreur }.
 function resolveName(j, ligue) {
-  if (j.prenom && !j.joueur.startsWith(j.prenom)) {
-    const complet = `${j.prenom} ${j.joueur}`;
-    // Registre pas encore passé aux noms complets (migrate-noms-complets.cjs) :
-    // garder l'ancienne clé plutôt que de créer une seconde fiche.
-    if (!registry[`${complet}|${ligue}`] && registry[`${j.joueur}|${ligue}`]?.prenom === j.prenom) return { nom: j.joueur };
-    return { nom: complet };
-  }
+  if (j.prenom && !j.joueur.startsWith(j.prenom)) return { nom: `${j.prenom} ${j.joueur}` };
   if (registry[`${j.joueur}|${ligue}`]) return { nom: j.joueur };
   const candidats = Object.keys(registry)
     .map(k => k.split('|'))

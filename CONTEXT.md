@@ -16,7 +16,7 @@ Dashboard privé de 4 amis (Paul, Adrien, Tiago, Roman) qui jouent à MonPetitGa
 ## Vocabulaire
 
 - **Entraîneur / coach** : l'un des 4 amis. Repéré par son prénom (`joueurs`, `joueur1`, `acheteur`…) — attention, dans le code la variable `joueurs` désigne les entraîneurs.
-- **Joueur** : un footballeur réel recruté au mercato, repéré par le champ `joueur` (nom complet, ou nom seul s'il n'y a pas d'ambiguïté).
+- **Joueur** : un footballeur réel recruté au mercato, repéré par le champ `joueur` : nom complet (« Federico Valverde »), ou nom d'usage unique (« Pedri »). Même chaîne dans `mercato`, `matches` (buteurs/notes), `players-registry.json` et `players-photos.json`. `nomCourt()` donne le nom de famille là où la place manque (terrain).
 - **Ligue** : `Ligue 1`, `Liga`, `Premier League`, `Serie A`, `Ligue des Champions` — chaînes exactes, utilisées telles quelles partout.
 - **Championnat** : mini-saison de 6 matchs maximum dans une ligue, numérotée `#1`, `#2`… indépendamment par ligue.
 - **Compte / banc / loft** : statut d'un joueur sur un match (a compté, est resté sur le banc, n'était pas dans les 18).
@@ -43,7 +43,7 @@ Dashboard privé de 4 amis (Paul, Adrien, Tiago, Roman) qui jouent à MonPetitGa
 ```js
 {
   saison: '2026/2027', ligue: 'Liga', championnat: 2, tour: 1,   // ⚠️ nombre, pas "#N"
-  joueur: 'Yamal', prenom: 'Lamine', poste: 'A', club: 'Barcelona', nationalite: '…',
+  joueur: 'Lamine Yamal', prenom: 'Lamine', poste: 'A', club: 'Barcelona', nationalite: '…',
   prix: 45, acheteur: 'Paul', equipe_acheteur: 'Tout en Miam',
   encheres_perdues: [{ equipe, prix }],
 }
@@ -87,6 +87,6 @@ Navigation : tout l'état visible (onglet, saison, ligue, championnat, vues et s
 
 1. **Championnat : `"#2"` dans `matches`, `2` dans `mercato`.** Toujours comparer via `champNum()` et trier via `compareChampionnats()` (`helpers.js`) — source de plusieurs bugs.
 2. **Noms de ligue** : chaînes exactes, liste unique `LIGUES` dans `constants.js`. L'import mercato refuse une ligue hors liste ; ne jamais réécrire une liste de ligues dans un composant.
-3. **Homonymes de joueurs** : deux footballeurs réels de même nom fusionnent en une seule fiche. Procédure de vérification dans `CLAUDE.md`.
+3. **Homonymes de joueurs** : la fiche joueur est unique par nom complet ; deux homonymes complets fusionneraient. Procédure de vérification dans `CLAUDE.md`. Renommer un joueur = renommer `joueur` partout (mercato, buteurs/notes des matchs, registre, photos), après une sauvegarde.
 4. **Joueur d'un coach** : un joueur peut changer de coach d'un championnat à l'autre ; toute stat « par coach » doit se limiter aux championnats où il lui appartenait (clé joueur + ligue + championnat).
 5. **Après un changement de calcul** : lancer `npm test`.

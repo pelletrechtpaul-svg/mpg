@@ -47,9 +47,10 @@ Le script gère déjà automatiquement :
 **⚠️ Règle stricte, dans cet ordre — ne jamais sauter l'étape 2 :**
 1. **Générer un JSON** au format attendu par `scripts/import-mercato.cjs`, avec `poste`/`club` pour chaque joueur.
 2. **Assainir la liste AVANT toute écriture** : pour chaque joueur qui n'est pas déjà dans `players-registry.json` (nouveau), vérifier son identité réelle (site officiel du club ou Transfermarkt, via recherche web) et **renseigner le champ `"prenom"` dans le JSON** en fonction du `club` indiqué sur le screen — le club est le signal de désambiguïsation, pas juste le nom de famille. Ne jamais laisser un nouveau joueur sans prénom résolu partir vers l'étape suivante.
+   **Depuis le 2026-09-25, `joueur` est le nom complet** (prénom + nom : `"Lamine Yamal"`, `"Federico Valverde"`), ou le seul nom d'usage pour un joueur qui n'en porte qu'un (`"Pedri"`, `"Gavi"`, `"Raphinha"` — sans `prenom` au registre). Les entraîneurs restent au prénom. Le script accepte aussi `"Yamal"` + `"prenom": "Lamine"` et reconstitue le nom complet ; un nom de famille seul sans prénom n'est accepté que s'il ne correspond qu'à un joueur du registre de la ligue (bloqué si ambigu ou si le club diffère).
    ```json
    {
-     "joueur": "Yamal",
+     "joueur": "Lamine Yamal",
      "prenom": "Lamine",
      "poste": "A",
      "club": "Barcelona",

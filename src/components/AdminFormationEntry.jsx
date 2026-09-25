@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Check } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar.jsx';
 import { POSTE_GROUP, POSTE_GROUP_ORDER } from './FormationPitch.jsx';
-import { playerDisplayName } from './AdminScorerSection.jsx';
 import { champNum } from '../helpers.js';
 
 function formatNote(n) {
@@ -231,7 +230,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
       if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel)) return prev;
       const idx = arr.findIndex(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel);
       if (idx >= 0) return { ...prev, [matchKey]: arr.map((s, i) => i === idx ? { ...s, buts: Math.min(10, s.buts + 1) } : s) };
-      return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, statut }] };
+      return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: m.joueur, buts: 1, acheteur: coach, csc: false, statut }] };
     });
   };
 
@@ -255,7 +254,7 @@ export function AdminFormationEntry({ coach, matchKey, saison, ligue, championna
       const arr = prev[matchKey] || [];
       if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && !s.virtuel)) return prev;
       if (arr.some(s => s.acheteur === coach && s.joueur === m.joueur && !s.csc && s.virtuel)) return prev;
-      return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: playerDisplayName(m), buts: 1, acheteur: coach, csc: false, virtuel: true, statut }] };
+      return { ...prev, [matchKey]: [...arr, { joueur: m.joueur, displayName: m.joueur, buts: 1, acheteur: coach, csc: false, virtuel: true, statut }] };
     });
   };
 
