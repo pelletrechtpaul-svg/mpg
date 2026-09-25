@@ -211,7 +211,7 @@ export default function RecordsTab({
               <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés avec exactement 1 point d'écart</p>
               <CoachRankList data={seasonRecords.clutchChampion} valueKey="count" />
 
-              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">🛡️ Titres remportés sans défaite</h4>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-teal-200 dark:border-teal-800">👑 Titres remportés sans défaite</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400">Championnats gagnés sans perdre un seul match</p>
               <CoachRankList data={unbeatenCountPerPlayer} valueKey="count" renderExtra={entry => entry.instances.length > 0 && (
                 <div className="mt-0.5 space-y-0.5">
@@ -285,7 +285,7 @@ export default function RecordsTab({
               <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🏆 Plus longue série de victoires</h4>
               <StreakRows streakData={seasonRecords.longestWinStreak} joueurs={joueurs} unit="victoires" />
 
-              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">🛡️ Plus longue série sans défaite</h4>
+              <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">🧱 Plus longue série sans défaite</h4>
               <StreakRows streakData={seasonRecords.longestUnbeatenStreak} joueurs={joueurs} unit="matchs" />
 
               <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-green-200 dark:border-green-800">🧤 Plus longue série sans encaisser</h4>
@@ -377,7 +377,7 @@ export default function RecordsTab({
 
                 {seasonRecords.mostGoalsInMatch.length > 0 && (
                   <RecordCard className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:border-green-700" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Plus de buts dans un match</h3>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💣 Plus de buts dans un match</h3>
                     <Top3List
                       entries={seasonRecords.mostGoalsInMatch}
                       renderValue={e => `${e.buts} buts`}
@@ -465,7 +465,7 @@ export default function RecordsTab({
 
                 {seasonRecords.tightestChampionship.length > 0 && (
                   <RecordCard className="bg-gradient-to-br from-slate-50 to-zinc-50 border-slate-200 dark:from-slate-700/50 dark:border-slate-600" contextText={selectedSeason}>
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">🎯 Championnat le plus serré</h3>
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">⚖️ Championnat le plus serré</h3>
                     <div className="space-y-3 mt-2">
                       {withRankLabels(seasonRecords.tightestChampionship, e => e.sigma).map(({ item: entry, label }, i) => (
                         <div key={i} className={i > 0 ? 'pt-2 border-t border-slate-200 dark:border-slate-700' : ''}>
@@ -546,7 +546,7 @@ export default function RecordsTab({
                       textColor: 'text-teal-700 dark:text-teal-400',
                     },
                     {
-                      label: '🎯 Ligues les plus serrées',
+                      label: '⚖️ Ligues les plus serrées',
                       color: 'from-blue-50 to-blue-100 border-blue-200 dark:from-blue-900/30 dark:border-blue-700',
                       sorted: [...ligueData.ligues].sort((a, b) => a.avgMargin - b.avgMargin),
                       renderValue: l => `${l.avgMargin.toFixed(2)} buts d'écart/match`,
@@ -632,7 +632,7 @@ export default function RecordsTab({
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🎯 One shots</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🔫 One shots</h3>
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosse enchère</h4>
                   {mercatoData.biggestBids.length > 0 ? (
@@ -668,7 +668,7 @@ export default function RecordsTab({
                     </div>
                   )}
 
-                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">🎯 Meilleur rapport qualité/prix</h4>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-amber-200 dark:border-amber-800">🏷️ Meilleur rapport qualité/prix</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Sur un seul championnat</p>
                   {mercatoData.bestValueForMoney.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
@@ -736,7 +736,7 @@ export default function RecordsTab({
                     </div>
                   )}
 
-                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🎯 Meilleur rapport qualité/prix cumulé</h4>
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1 mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">🏷️ Meilleur rapport qualité/prix cumulé</h4>
                   {mercatoData.bestValueForMoneyCumule.length > 0 ? (
                     <div className="space-y-1.5 mt-2">
                       {withRankLabels(mercatoData.bestValueForMoneyCumule, m => m.ratio).map(({ item: m, label }, i) => (

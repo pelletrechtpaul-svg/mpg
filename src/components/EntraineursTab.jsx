@@ -185,7 +185,7 @@ export default function EntraineursTab({
     const unbeatenCounts = {};
     (seasonRecords.unbeatenChampion || []).forEach(inst => { unbeatenCounts[inst.joueur] = (unbeatenCounts[inst.joueur] || 0) + 1; });
     const unbeatenList = joueurs.map(j => ({ joueur: j, count: unbeatenCounts[j] || 0 })).sort((a, b) => b.count - a.count);
-    addLeader(unbeatenList, 'count', '🛡️ Titres remportés sans défaite', v => `${v} titre${v > 1 ? 's' : ''} remporté${v > 1 ? 's' : ''} sans perdre un seul match`);
+    addLeader(unbeatenList, 'count', '👑 Titres remportés sans défaite', v => `${v} titre${v > 1 ? 's' : ''} remporté${v > 1 ? 's' : ''} sans perdre un seul match`);
 
     if (perduUnPoint) {
       const perduList = joueurs.map(j => ({ joueur: j, count: (perduUnPoint[j] || []).length })).sort((a, b) => b.count - a.count);
@@ -209,7 +209,7 @@ export default function EntraineursTab({
       addLeader(ranked, 'length', label, v => `${v} ${unit} d'affilée`);
     };
     addStreakLeader(seasonRecords.longestWinStreak, '🏆 Plus longue série de victoires', 'victoires');
-    addStreakLeader(seasonRecords.longestUnbeatenStreak, '🛡️ Plus longue série sans défaite', 'matchs sans défaite');
+    addStreakLeader(seasonRecords.longestUnbeatenStreak, '🧱 Plus longue série sans défaite', 'matchs sans défaite');
     addStreakLeader(seasonRecords.longestCleanSheetStreak, '🧤 Plus longue série sans encaisser', 'clean sheets');
 
     return result;
