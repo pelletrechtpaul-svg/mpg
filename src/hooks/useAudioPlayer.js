@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { PLAYLIST, SOUNDCLOUD_PLAYLIST_URL } from '../shared.jsx';
+import { SOUNDCLOUD_PLAYLIST_URL } from '../shared.jsx';
 
 const SC_API = 'https://w.soundcloud.com/player/api.js';
 
@@ -15,7 +15,7 @@ function loadScApi() {
   });
 }
 
-// ── Mode SoundCloud (Widget API pilotant un iframe caché) ──────────────────────
+// Lecteur SoundCloud (Widget API pilotant un iframe caché)
 function useSoundcloudPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTitle, setCurrentTitle] = useState('SoundCloud…');
@@ -56,46 +56,4 @@ function useSoundcloudPlayer() {
   return { isPlaying, currentTitle, playPause, prevTrack, nextTrack };
 }
 
-// ── Mode MP3 local (fallback) ──────────────────────────────────────────────────
-function useLocalPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const audioRef = useRef(null);
-  // Créé une seule fois, dans un effet (pas pendant le render) — React peut
-  // techniquement rendre plusieurs fois sans committer, ce qui créerait des
-  // instances Audio jetées à chaque tentative si on le faisait au render.
-  useEffect(() => {
-    if (!audioRef.current) audioRef.current = new Audio(PLAYLIST[0].src);
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    audio.src = PLAYLIST[currentTrack].src;
-    audio.load();
-    if (isPlaying) audio.play();
-    // isPlaying volontairement exclu : on ne veut recharger/relancer la
-    // piste que sur un changement de currentTrack, pas à chaque pause/play.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrack]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    const handleEnded = () => setCurrentTrack(t => (t + 1) % PLAYLIST.length);
-    audio.addEventListener('ended', handleEnded);
-    return () => audio.removeEventListener('ended', handleEnded);
-  }, []);
-
-  const playPause = () => {
-    const audio = audioRef.current;
-    if (isPlaying) { audio.pause(); setIsPlaying(false); }
-    else { audio.play(); setIsPlaying(true); }
-  };
-  const prevTrack = () => setCurrentTrack(t => (t - 1 + PLAYLIST.length) % PLAYLIST.length);
-  const nextTrack = () => setCurrentTrack(t => (t + 1) % PLAYLIST.length);
-
-  return { isPlaying, currentTitle: PLAYLIST[currentTrack].title, playPause, prevTrack, nextTrack };
-}
-
-const USE_SOUNDCLOUD = !!SOUNDCLOUD_PLAYLIST_URL;
-
-export const useAudioPlayer = USE_SOUNDCLOUD ? useSoundcloudPlayer : useLocalPlayer;
+export const useAudioPlayer = useSoundcloudPlayer;

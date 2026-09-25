@@ -1,131 +1,92 @@
-# MPG Dashboard — Contexte projet
+# MesPetitsBavons — Contexte projet
 
-Ce document est destiné à être lu par Claude Code au démarrage de chaque nouvelle session, pour la webapp existante **ou** la future app grand public.
-
----
-
-## Webapp actuelle (ce repo)
-
-Dashboard privé pour un groupe de 4 amis jouant à MonPetitGazon (MPG), fantasy football français. Toutes les données sont saisies manuellement par un admin via un onglet dédié.
-
-**Stack** : React 19 + Vite, Tailwind CSS, Firebase Firestore + Auth, Recharts, lucide-react.  
-**Déploiement** : Vercel (auto-deploy sur push).  
-**Branch de dev** : `claude/fantasy-football-dashboard-89253`
+À lire au démarrage d'une session. Décrit l'app telle qu'elle est (mis à jour le 2026-09-25). Les règles de travail (branche, import mercato, règles Firestore, sauvegardes) sont dans `CLAUDE.md` ; l'identité visuelle dans `DESIGN.md`.
 
 ---
 
-## Modèle de données Firestore
+## L'app
 
-### Collection `matches`
+Dashboard privé de 4 amis (Paul, Adrien, Tiago, Roman) qui jouent à MonPetitGazon (MPG). Les matchs sont saisis à la main dans l'onglet Admin ; le mercato est importé depuis des captures d'écran (voir `CLAUDE.md`).
+
+**Stack** : React 19 + Vite, Tailwind CSS 3, Firebase Firestore + Auth, Recharts, lucide-react, tests Vitest.
+**Déploiement** : Vercel, depuis `claude/charming-goodall-4nt05x` (chaque push part en ligne).
+
+---
+
+## Vocabulaire
+
+- **Entraîneur / coach** : l'un des 4 amis. Repéré par son prénom (`joueurs`, `joueur1`, `acheteur`…) — attention, dans le code la variable `joueurs` désigne les entraîneurs.
+- **Joueur** : un footballeur réel recruté au mercato, repéré par le champ `joueur` (nom complet, ou nom seul s'il n'y a pas d'ambiguïté).
+- **Ligue** : `Ligue 1`, `Liga`, `Premier League`, `Serie A`, `Ligue des Champions` — chaînes exactes, utilisées telles quelles partout.
+- **Championnat** : mini-saison de 6 matchs maximum dans une ligue, numérotée `#1`, `#2`… indépendamment par ligue.
+- **Compte / banc / loft** : statut d'un joueur sur un match (a compté, est resté sur le banc, n'était pas dans les 18).
+
+---
+
+## Données Firestore
+
+### `matches`
 ```js
 {
-  saison: '2025/2026',          // ex: '2024/2025'
-  ligue: 'Ligue 1',            // ex: 'Premier League', 'Ligue des Champions'
-  championnat: '#3',            // numérotation #1, #2, #3...
-  dateMatch: '2025-03-15',
-  joueur1: 'Paul',
-  joueur2: 'Roman',
-  buts_j1: 3,
-  buts_j2: 1,
-  points_j1: 3,                 // calculé depuis le score seul (voir Valise, règles métier)
-  points_j2: 0,
-  valise_j1: false,             // true si valise posée par j1
-  valise_j2: false,
-  resultat: 'victoire_j1'       // 'victoire_j1' | 'victoire_j2' | 'nul' (source de vérité)
+  saison: '2026/2027', ligue: 'Liga', championnat: '#2',   // ⚠️ chaîne "#N"
+  dateMatch: '2026-09-20', dateEntree: '…ISO…',
+  joueur1: 'Paul', joueur2: 'Roman', buts_j1: 3, buts_j2: 1,
+  points_j1: 3, points_j2: 0,
+  resultat: 'victoire_j1',            // 'victoire_j1' | 'victoire_j2' | 'nul'
+  valise_j1: false, valise_j2: false,
+  notes:   [{ joueur, acheteur, note, statut }],             // statut 'banc' ou absent (= compte)
+  buteurs: [{ joueur, acheteur, buts, csc, virtuel, statut }],
 }
 ```
 
-### Collection `ligueMetadata`
-Clé Firestore : `${saison}-${ligue}-${championnat}` avec `/` → `_`
+### `mercato`
 ```js
 {
-  matchsTotal: 6,               // nb de matchs prévus dans ce championnat
-  matchsEntered: 5              // nb de matchs saisis
+  saison: '2026/2027', ligue: 'Liga', championnat: 2, tour: 1,   // ⚠️ nombre, pas "#N"
+  joueur: 'Yamal', prenom: 'Lamine', poste: 'A', club: 'Barcelona', nationalite: '…',
+  prix: 45, acheteur: 'Paul', equipe_acheteur: 'Tout en Miam',
+  encheres_perdues: [{ equipe, prix }],
 }
 ```
+
+### `metadata`
+Clé `${saison}-${ligue}-${championnat}` avec `/` encodés en `_` : `{ matchsTotal, matchsEntered }`. Un titre ou une médaille n'est attribué que quand `matchsEntered >= matchsTotal`.
+
+### `config`
+- `saisons` : `{ list: ['2026/2027', …] }`, lisible par tous.
+- `adminRoles` : `{ email: 'full' | 'matches' }`, lisible seulement par un admin listé.
 
 ---
 
 ## Règles métier
 
-### Système de points
-- Victoire : 3 pts
-- Nul : 1 pt
-- Défaite : 0 pt
-
-### Valise
-Un joueur peut poser une "valise" sur son adversaire (`valise_j1`/`valise_j2`). **Contrairement à MPG, c'est purement indicatif dans cette appli** : ça n'affecte ni le résultat ni les points. `calcResult(buts_j1, buts_j2)` calcule `resultat`/`points_j1`/`points_j2` uniquement à partir du score, sans tenir compte de la valise. Le champ `resultat` reste la source de vérité pour V/N/D (ne pas recalculer soi-même depuis buts_j1 vs buts_j2), mais uniquement parce qu'il peut y avoir des championnats saisis manuellement sans matchs détaillés (voir plus bas) — pas à cause d'un effet de la valise.
-
-### Classement général
-`points_total = points_matchs + (titres × 3) + (médailles × 2)`
-
-**Titres** : 1er d'un championnat à 6 matchs → +3 pts bonus  
-**Médailles** : 1er d'un championnat à moins de 6 matchs → +2 pts bonus  
-**Tie-breaker** : goal average (buts_pour - buts_contre)
-
-### Saisons et ligues
-- Chaque saison contient plusieurs ligues (Ligue 1, Premier League, Liga, Serie A, Ligue des Champions)
-- Chaque ligue contient plusieurs championnats numérotés #1, #2, #3...
-- Un championnat = round-robin de 6 matchs (ou moins pour les petits formats)
-- Clé unique d'un championnat : `${saison}-${ligue}-${championnat}`
-
-### Championnats manuels (sans détail de matchs)
-Certains championnats n'ont pas de données de matchs (scores perdus). Ils sont hardcodés dans `MANUAL_CHAMPIONSHIPS` (array en dehors du composant) avec le classement final (points, GA, V/N/D). Injectés dans `classementGeneral` et `classementParLigue` sans générer de faux matchs.
+- Victoire 3 pts, nul 1, défaite 0 — calculés depuis le score seul ; la valise est purement indicative.
+- Classement général = points de match + 3 par titre (championnat de 6 matchs) + 2 par médaille (championnat plus court).
+- Départage : points, puis goal average.
+- Saisons sans données détaillées (notes, buteurs, mercato) : `SEASONS_SANS_DONNEES_DETAILLEES` dans `constants.js` ; les vues qui en dépendent sont masquées (`hasDetailedData`).
 
 ---
 
-## Architecture du code (App.jsx)
-
-Tout est dans un seul fichier `src/App.jsx` (~4200 lignes). Les calculs sont dans des `useMemo` enchaînés :
+## Code
 
 ```
-matchData (Firestore)
-  └── filteredData (filtré par selectedSeason)
-        ├── classementGeneral (points matchs + titres/médailles)
-        ├── classementParLigue (idem, filtré par ligue/championnat)
-        ├── victoiresChampionnat / medaillesChampionnat (+ victoiresDetail / medaillesDetail)
-        ├── statsDetaillees (buteurs, loosers)
-        ├── cleanSheetsStats (clean sheets + pannes offensives)
-        ├── scoreDistribution (distribution des scores)
-        ├── seasonRecords (tous les records)
-        ├── versusStats + versusMatchHistory (face à face)
-        ├── heureDeGloire (meilleur championnat par joueur)
-        └── advancedStats (forme récente)
+src/
+├── App.jsx            # en-tête, navigation (état dans le hash de l'URL), lecteur, dark mode
+├── components/        # un composant par onglet (Classements, Entraineurs, Records, Joueurs, Admin…)
+├── hooks/             # tous les calculs (useChampionshipStats, useRecords, usePlayerStats, useEvolutionData…)
+├── constants.js       # couleurs des entraîneurs, abréviations de ligues (ligueAbbr), saisons sans détail
+├── helpers.js         # calculatePlayerStats, groupMatchesByChampionship, isCompte, rotaldosFor…
+└── test/              # tests Vitest (npm test)
 ```
 
-### Fonctions utilitaires clés
-- `calculatePlayerStats(matches, joueurs)` → stats brutes {points, matchs, victoires, nuls, defaites, buts_pour, buts_contre, ga}
-- `groupMatchesByChampionship(matches)` → map `{key: matches[]}` avec clé `${saison}-${ligue}-${championnat}`
-- `calculateLongestStreak(playerMatches, conditionFn)` → {length, endDate}
+Navigation : tout l'état visible (onglet, saison, ligue, championnat, vues et sous-onglets) est dans le hash de l'URL (`parseNavFromHash` / `serializeNav` dans `App.jsx`). Un nouvel onglet ou sous-onglet doit y être ajouté.
 
 ---
 
-## Onglets de l'interface
+## Pièges connus
 
-| Tab ID | Nom affiché | Contenu |
-|---|---|---|
-| `classements` | Classements | Général + par ligue/championnat, évolution graphique |
-| `statistiques` | Statistiques | Buteurs, loosers, clean sheets, pannes offensives, distribution scores |
-| `records` | Records | Records individuels, de match, de championnat, séries, régularité |
-| `versus` | Face à Face | H2H entre 2 joueurs + thermomètre + heure de gloire |
-| `stats-avancees` | Forme | Forme récente (10 derniers matchs) par joueur |
-| `valises` | Valises | Stats valises posées/reçues/efficaces |
-| `admin` | Admin | Saisie des matchs, édition, suppression |
-
----
-
-## Joueurs (groupe actuel)
-- **Paul** — couleur blue-600 / #2563eb
-- **Adrien** — couleur green-600 / #16a34a
-- **Tiago** — couleur purple-600 / #9333ea
-- **Roman** — couleur orange-600 / #ea580c
-
----
-
-## Points d'attention / pièges connus
-
-1. **`resultat` vs comparaison de buts** : toujours utiliser `m.resultat` pour déterminer V/N/D, jamais `buts_j1 > buts_j2` (la valise peut inverser)
-2. **All-Time** : `filteredData` = tous les matchs. Les useMemos fonctionnent déjà en All-Time sans garde-fou supplémentaire
-3. **Classement par championnat en All-Time** : les points bonus (titres) ne sont PAS ajoutés pour éviter le double comptage
-4. **ligueMetadata clé** : les `/` dans les noms sont encodés en `_` dans Firestore
-5. **adminChampionnatsByLigue** : distinct de `championnatsByLigue` — filtré par `adminFormData.saison` pour éviter d'afficher les championnats d'une autre saison dans le formulaire admin
+1. **Championnat : `"#2"` dans `matches`, `2` dans `mercato`.** Toujours convertir avec `champNum()` (`AdminScorerSection.jsx`) avant de comparer — source de plusieurs bugs.
+2. **Noms de ligue en dur** : une faute (ex. `"Champions League"`) passe partout sans erreur mais désynchronise les données. Voir `CLAUDE.md`.
+3. **Homonymes de joueurs** : deux footballeurs réels de même nom fusionnent en une seule fiche. Procédure de vérification dans `CLAUDE.md`.
+4. **Joueur d'un coach** : un joueur peut changer de coach d'un championnat à l'autre ; toute stat « par coach » doit se limiter aux championnats où il lui appartenait (clé joueur + ligue + championnat).
+5. **Après un changement de calcul** : lancer `npm test`.

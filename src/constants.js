@@ -79,20 +79,4 @@ export const playerColorBg = {
 };
 
 // Playlist SoundCloud lue par le mini-player (piloté via la Widget API).
-// Laisser '' pour retomber sur les MP3 locaux (PLAYLIST ci-dessous).
 export const SOUNDCLOUD_PLAYLIST_URL = 'https://soundcloud.com/paul-610524335/sets/mpg';
-
-export const PLAYLIST = [
-  { title: "Baby c'est MPG",  src: "/audio/Baby c'est MPG.mp3" },
-  { title: 'Cette fusion',    src: '/audio/Cette fusion.mp3' },
-  { title: 'Communiqué',      src: '/audio/Communiqué.mp3' },
-  { title: 'Déni',            src: '/audio/Déni.mp3' },
-  { title: 'Faut doser',      src: '/audio/Faut doser.mp3' },
-  { title: 'Greenwood',       src: '/audio/Greenwood.mp3' },
-  { title: 'Jeanette',        src: '/audio/Jeanette.mp3' },
-  { title: 'Looser',          src: '/audio/Looser.mp3' },
-  { title: 'Mercato',         src: '/audio/Mercato.mp3' },
-  { title: "J'm'en vais d'ici", src: "/audio/J'm'en vais d'ici.mp3" },
-  { title: 'Merci',           src: '/audio/Merci .mp3' },
-  { title: "Sur la route d'Auxerre", src: "/audio/Sur la route d'Auxerre .mp3" },
-];
