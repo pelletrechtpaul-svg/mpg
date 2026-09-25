@@ -632,7 +632,7 @@ export default function RecordsTab({
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 {/* ── ONE SHOTS ── */}
                 <RecordCard className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-900/30 dark:to-yellow-900/30 dark:border-amber-700" contextText={selectedSeason === 'All-Time' ? 'All-Time' : selectedSeason}>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">🔫 One shots</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 text-center">💥 One shots</h3>
 
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">💸 Plus grosse enchère</h4>
                   {mercatoData.biggestBids.length > 0 ? (
